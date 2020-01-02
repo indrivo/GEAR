@@ -1,4 +1,3 @@
-
 @import 'https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900';
 /*Theme Colors*/
 /*bootstrap Color*/
@@ -2564,7 +2563,6 @@ File: scss
 	top: 0;
 	margin: 0 auto;
 }
-
 
 .logo-image {
 	background-image: url(../../../images/logo.svg);
@@ -8455,6 +8453,7 @@ File: scss
 		-webkit-column-count: 3;
 		column-count: 3;
 	}
+
 	.login-box {
 		padding-left: 200px !important;
 		padding-right: 200px !important;
@@ -8660,9 +8659,9 @@ File: scss
 		padding: 10% 0;
 	}*/
 
-		.login-sidebar .login-box {
-			position: relative;
-		}
+	.login-sidebar .login-box {
+		position: relative;
+	}
 	/*This is for chat page*/
 	.chat-main-box .chat-left-aside {
 		left: -250px;
@@ -8750,12 +8749,10 @@ File: scss
 	font-weight: 600;
 }
 
-
 .bottom-buttons {
 	bottom: 0;
 	width: 100%;
 }
-
 
 #loginform .form-content,
 #register-company .form-content {

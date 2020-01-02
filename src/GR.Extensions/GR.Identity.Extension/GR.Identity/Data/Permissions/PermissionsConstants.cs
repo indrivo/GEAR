@@ -15,7 +15,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmReadRole = "Core_ReadRole";
             public const string BpmDeleteRole = "Core_DeleteRole";
 
-            #endregion
+            #endregion Roles
 
             #region Groups
 
@@ -24,7 +24,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmGroupUpdate = "Core_GroupUpdate";
             public const string BpmGroupDelete = "Core_GroupDelete";
 
-            #endregion
+            #endregion Groups
 
             #region Users
 
@@ -33,7 +33,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmUserUpdate = "Core_UserUpdate";
             public const string BpmUserDelete = "Core_UserDelete";
 
-            #endregion
+            #endregion Users
 
             #region Profiles
 
@@ -42,7 +42,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmProfileUpdate = "Core_ProfileUpdate";
             public const string BpmProfileDelete = "Core_ProfileDelete";
 
-            #endregion
+            #endregion Profiles
 
             #region Processes
 
@@ -51,7 +51,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmProcessRead = "Core_ProcessRead";
             public const string BpmProcessDelete = "Core_ProcessDelete";
 
-            #endregion
+            #endregion Processes
 
             #region Entity
 
@@ -60,7 +60,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmEntityRead = "Core_EntityRead";
             public const string BpmEntityDelete = "Core_EntityDelete";
 
-            #endregion
+            #endregion Entity
 
             #region Forms
 
@@ -69,7 +69,7 @@ namespace GR.Identity.Data.Permissions
             public const string BpmFormRead = "Core_FormRead";
             public const string BpmFormDelete = "Core_FormDelete";
 
-            #endregion
+            #endregion Forms
 
             #region Tables
 
@@ -78,9 +78,8 @@ namespace GR.Identity.Data.Permissions
             public const string BpmTableRead = "Core_TableRead";
             public const string BpmTableDelete = "Core_TableDelete";
 
-            #endregion
+            #endregion Tables
         }
-
 
         public static IEnumerable<string> PermissionsList(ClientName client = ClientName.All)
         {
@@ -94,11 +93,11 @@ namespace GR.Identity.Data.Permissions
                         permissions.AddRange(corePermissions.Select(_ => _.GetValue(null).ToString()).ToList());
                     }
                     break;
+
                 case ClientName.All:
                     {
                         var corePermissions = typeof(CorePermissions).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
                         permissions.AddRange(corePermissions.Select(_ => _.GetValue(null).ToString()).ToList());
-                        
                     }
                     break;
             }
@@ -108,7 +107,7 @@ namespace GR.Identity.Data.Permissions
 
         public enum ClientName
         {
-            Core,          
+            Core,
             All
         }
     }

@@ -1,9 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Attributes;
 using GR.Identity.Abstractions.Models.AddressModels;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GR.Identity.Abstractions.Models.MultiTenants
 {
@@ -62,6 +62,7 @@ namespace GR.Identity.Abstractions.Models.MultiTenants
         /// Country
         /// </summary>
         public Country Country { get; set; }
+
         [Display(Name = "Select country")]
         [DisplayTranslate(Key = "system_select_country")]
         public string CountryId { get; set; }

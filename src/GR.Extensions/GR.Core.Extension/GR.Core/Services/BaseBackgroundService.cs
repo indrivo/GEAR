@@ -49,7 +49,7 @@ namespace GR.Core.Services
         public Task StartAsync(CancellationToken cancellationToken)
         {
             Logger.LogInformation($"{ServiceName} Background Service is starting.");
-            Timer = new Timer(Execute, null, TimeSpan.Zero,
+            Timer = new Timer(async o => await Execute(o), null, TimeSpan.Zero,
                 Interval);
             return Task.CompletedTask;
         }
@@ -58,7 +58,7 @@ namespace GR.Core.Services
         /// Send logs
         /// </summary>
         /// <param name="state"></param>
-        public abstract void Execute(object state);
+        public abstract Task Execute(object state);
 
         /// <inheritdoc />
         /// <summary>

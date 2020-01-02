@@ -4,8 +4,10 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.6.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
-    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.MsSql\GR.Entities.EntityBuilder.MsSql.csproj" />
-    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.Postgres\GR.Entities.EntityBuilder.Postgres.csproj" />
     <ProjectReference Include="..\GR.Install.Abstractions\GR.Install.Abstractions.csproj" />
   </ItemGroup>
 

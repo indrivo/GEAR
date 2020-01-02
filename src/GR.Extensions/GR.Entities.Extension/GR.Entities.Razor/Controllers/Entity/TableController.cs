@@ -14,6 +14,7 @@ using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.ConnectionStrings;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
@@ -121,7 +122,7 @@ namespace GR.Entities.Razor.Controllers.Entity
             var newTable = new CreateTableViewModel
             {
                 Name = model.Name,
-                EntityType = entityType.Name,
+                EntityType = GearSettings.DEFAULT_ENTITY_SCHEMA,  //entityType.Name,
                 Description = model.Description,
                 TenantId = CurrentUserTenantId,
                 IsCommon = model.IsCommon
@@ -171,13 +172,14 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// List of tables
         /// </summary>
         /// <param name="param"></param>
+        /// <param name="isStatic"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderList(DTParameters param)
+        public JsonResult OrderList(DTParameters param, bool isStatic = false)
         {
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA);
+                out var totalCount, x => x.IsPartOfDbContext.Equals(isStatic) && isStatic || x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA && x.IsPartOfDbContext.Equals(isStatic));
 
             var orderList = filtered.Select(o => new TableModel
             {

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Entities.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Entities.Abstractions;
 
 namespace GR.Entities.Data
 {
-    public static class EntitiesDbContextSeeder<TContext> where  TContext : DbContext, IEntityContext
+    public static class EntitiesDbContextSeeder<TContext> where TContext : DbContext, IEntityContext
     {
         /// <summary>
         /// Seed with default data

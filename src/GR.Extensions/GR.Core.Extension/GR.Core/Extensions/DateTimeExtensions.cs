@@ -44,5 +44,55 @@ namespace GR.Core.Extensions
 
             return index;
         }
+
+        /// <summary>
+        /// Intersects dates
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="intersectingStartDate"></param>
+        /// <param name="intersectingEndDate"></param>
+        /// <returns></returns>
+        public static bool Intersects(this DateTime startDate, DateTime endDate, DateTime intersectingStartDate, DateTime intersectingEndDate)
+        {
+            return (intersectingEndDate >= startDate && intersectingStartDate <= endDate);
+        }
+
+        /// <summary>
+        /// Check if is weekend
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsWeekend(this DateTime value)
+        {
+            return (value.DayOfWeek == DayOfWeek.Sunday || value.DayOfWeek == DayOfWeek.Saturday);
+        }
+
+        /// <summary>
+        /// Get the age of person
+        /// </summary>
+        /// <param name="dateOfBirth"></param>
+        /// <returns></returns>
+        public static int Age(this DateTime dateOfBirth)
+        {
+            if (DateTime.Today.Month < dateOfBirth.Month ||
+                DateTime.Today.Month == dateOfBirth.Month &&
+                DateTime.Today.Day < dateOfBirth.Day)
+            {
+                return DateTime.Today.Year - dateOfBirth.Year - 1;
+            }
+
+            return DateTime.Today.Year - dateOfBirth.Year;
+        }
+
+        /// <summary>
+        /// Returns whether or not a DateTime is during a leap year.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsLeapYear(this DateTime value)
+        {
+            return (System.DateTime.DaysInMonth(value.Year, 2) == 29);
+        }
     }
 }

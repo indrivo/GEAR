@@ -79,6 +79,6 @@ namespace GR.PageRender.Abstractions.Helpers
         /// </summary>
         /// <returns></returns>
         private static IEnumerable<MenuViewModel> GetMenus()
-            => JsonParser.ReadArrayDataFromJsonFile<List<MenuViewModel>>(Path.Combine(AppContext.BaseDirectory, "menus.json"));
+            => JsonParser.ReadArrayDataFromJsonFile<List<MenuViewModel>>(Path.Combine(AppContext.BaseDirectory, "Configuration/menus.json"));
     }
 }

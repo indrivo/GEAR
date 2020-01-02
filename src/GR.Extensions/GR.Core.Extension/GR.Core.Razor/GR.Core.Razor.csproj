@@ -6,30 +6,44 @@
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</RepositoryUrl>
-    <Version>1.0.3</Version>
+    <Version>1.6.0</Version>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</PackageProjectUrl>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Views\**" />
-    <Content Remove="Views\**" />
-    <EmbeddedResource Remove="Views\**" />
-    <None Remove="Views\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Templates\ActionTagTemplate.html" />
     <None Remove="Templates\AddSectionHtmlTemplate.html" />
     <None Remove="Templates\ListBooleanRenderJsTemplate.js" />
+    <None Remove="Templates\ListButtonDropdownRenderJsTemplate.js" />
+    <None Remove="Templates\ListButtonGroupRenderJsTemplate.js" />
     <None Remove="Templates\ListDocumentationHtmlTemplate.html" />
-    <None Remove="Templates\ListRenderJsTemplate.js" />
     <None Remove="Templates\ListTagHelperHtmlTemplate.html" />
     <None Remove="Templates\ListTagHelperJsTemplate.js" />
     <None Remove="Templates\ThSectionHtmlTemplate.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="libman.json" Pack="false">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
+    <Content Update="**\*.cshtml" Pack="false" />
+    <Content Include="wwwroot\**\*">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Templates\ActionTagTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\ListButtonDropdownRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListDocumentationHtmlTemplate.html">
@@ -38,7 +52,7 @@
     <EmbeddedResource Include="Templates\ListBooleanRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\ListRenderJsTemplate.js">
+    <EmbeddedResource Include="Templates\ListButtonGroupRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListTagHelperJsTemplate.js">
@@ -60,6 +74,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>

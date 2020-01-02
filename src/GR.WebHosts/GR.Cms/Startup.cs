@@ -1,74 +1,21 @@
 #region Usings
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using GR.Audit;
+using GR.Audit.Abstractions.Extensions;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
-using GR.Cms.Services.Abstractions;
-using GR.Core.Extensions;
-using GR.DynamicEntityStorage.Extensions;
-using GR.ECommerce.Abstractions.Extensions;
-using GR.ECommerce.Abstractions.Models;
-using GR.Email;
-using GR.Email.Abstractions.Extensions;
-using GR.Entities;
-using GR.Entities.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Entities.EntityBuilder.Postgres;
-using GR.Entities.EntityBuilder.Postgres.Controls.Query;
-using GR.Entities.Razor.Extensions;
-using GR.Entities.Security;
-using GR.Entities.Security.Abstractions.Extensions;
-using GR.Entities.Security.Data;
-using GR.Files;
-using GR.Files.Abstraction.Extension;
-using GR.Files.Data;
-using GR.Forms.Abstractions.Extensions;
-using GR.Forms.Data;
-using GR.Forms.Razor.Extensions;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Extensions;
-using GR.Identity.Data;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.LdapAuth;
-using GR.Identity.LdapAuth.Abstractions.Extensions;
-using GR.Identity.Permissions;
-using GR.Identity.Services;
-using GR.Install.Abstractions.Extensions;
-using GR.Localization.Abstractions;
-using GR.Localization.Abstractions.Extensions;
-using GR.Localization.Abstractions.Models;
-using ST.MPass.Gov;
-using GR.Notifications;
-using GR.Notifications.Abstractions.Extensions;
-using GR.Notifications.Data;
-using GR.Notifications.Razor.Extensions;
-using GR.PageRender.Abstractions.Extensions;
-using GR.PageRender.Data;
-using GR.PageRender.Razor.Extensions;
-using GR.Procesess.Data;
-using GR.Process.Razor.Extensions;
-using GR.Report.Abstractions.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using Newtonsoft.Json;
-using GR.Application.Middleware.Extensions;
-using GR.Audit;
-using GR.Audit.Abstractions.Extensions;
 using GR.Calendar;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
 using GR.Calendar.Abstractions.ExternalProviders.Extensions;
 using GR.Calendar.Data;
+using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.Calendar.Providers.Google.Extensions;
 using GR.Calendar.Providers.Outlook.Extensions;
 using GR.Calendar.Razor.Extensions;
+using GR.Cms.Services.Abstractions;
+using GR.Core.Extensions;
 using GR.Dashboard;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Extensions;
@@ -76,120 +23,150 @@ using GR.Dashboard.Abstractions.Models.WidgetTypes;
 using GR.Dashboard.Data;
 using GR.Dashboard.Razor.Extensions;
 using GR.Dashboard.Renders;
-using GR.Email.Razor.Extensions;
-using GR.Entities.Security.Razor.Extensions;
-using GR.Files.Box;
-using GR.Files.Box.Abstraction.Extension;
-using GR.Files.Box.Data;
-using TreeIsoService = GR.Cms.Services.TreeIsoService;
-using GR.MultiTenant.Abstractions.Extensions;
-using GR.MultiTenant.Razor.Extensions;
-using GR.MultiTenant.Services;
-using GR.Report.Dynamic.Razor.Extensions;
-using GR.TaskManager.Abstractions.Extensions;
-using GR.TaskManager.Data;
-using GR.TaskManager.Razor.Extensions;
-using GR.TaskManager.Services;
-using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.Documents;
+using GR.Documents.Abstractions.Extensions;
+using GR.Documents.Abstractions.Models;
+using GR.Documents.Data;
 using GR.DynamicEntityStorage.Abstractions;
+using GR.DynamicEntityStorage.Extensions;
+using GR.ECommerce.Abstractions.Extensions;
+using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.ECommerce.Razor.Extensions;
+using GR.Email;
+using GR.Email.Abstractions.Extensions;
+using GR.Email.Razor.Extensions;
+using GR.Entities;
+using GR.Entities.Abstractions.Extensions;
+using GR.Entities.Data;
+using GR.Entities.EntityBuilder.Postgres;
+using GR.Entities.EntityBuilder.Postgres.Controls.Query;
 using GR.Entities.Extensions;
+using GR.Entities.Razor.Extensions;
+using GR.Entities.Security;
+using GR.Entities.Security.Abstractions.Extensions;
+using GR.Entities.Security.Data;
+using GR.Entities.Security.Razor.Extensions;
+using GR.Files;
+using GR.Files.Abstraction.Extension;
+using GR.Files.Box;
+using GR.Files.Box.Abstraction.Extension;
+using GR.Files.Box.Data;
+using GR.Files.Data;
+using GR.Forms.Abstractions.Extensions;
+using GR.Forms.Data;
+using GR.Forms.Razor.Extensions;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Data;
+using GR.Identity.IdentityServer4.Extensions;
+using GR.Identity.LdapAuth;
+using GR.Identity.LdapAuth.Abstractions.Extensions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using GR.Identity.Permissions;
+using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Identity.Services;
+using GR.Install;
+using GR.Install.Abstractions.Extensions;
 using GR.Localization;
-using GR.Orders;
-using GR.Orders.Abstractions.Models;
-using GR.PageRender;
-using GR.Paypal;
-using GR.Paypal.Abstractions.Extensions;
+using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Extensions;
+using GR.Localization.Abstractions.Models;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
 using GR.MobilPay.Razor.Extensions;
+using GR.MultiTenant.Abstractions.Extensions;
+using GR.MultiTenant.Razor.Extensions;
+using GR.MultiTenant.Services;
+using GR.Notifications;
+using GR.Notifications.Abstractions.Extensions;
+using GR.Notifications.Data;
+using GR.Notifications.Razor.Extensions;
+using GR.Orders;
 using GR.Orders.Abstractions.Extensions;
+using GR.Orders.Abstractions.Models;
+using GR.PageRender;
+using GR.PageRender.Abstractions.Extensions;
+using GR.PageRender.Data;
+using GR.PageRender.Razor.Extensions;
+using GR.Paypal;
+using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
-using GR.Subscriptions.Abstractions.Models;
-using GR.Subscriptions;
-using GR.Subscriptions.Abstractions.Extensions;
-using GR.Documents.Abstractions.Extensions;
-using GR.Documents.Abstractions.Models;
-using GR.Documents.Data;
-using GR.Identity.IdentityServer4.Extensions;
-using GR.Identity.LdapAuth.Abstractions.Models;
-using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Procesess.Data;
+using GR.Process.Razor.Extensions;
+using GR.Report.Abstractions.Extensions;
 using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
+using GR.Report.Dynamic.Razor.Extensions;
+using GR.Subscriptions;
+using GR.Subscriptions.Abstractions.Extensions;
+using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions.BackgroundServices;
+using GR.TaskManager.Abstractions.Extensions;
+using GR.TaskManager.Data;
+using GR.TaskManager.Razor.Extensions;
+using GR.TaskManager.Services;
 using GR.WebApplication.Extensions;
+using GR.WebApplication.Helpers;
 using GR.WorkFlows;
-using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.Extensions;
+using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Data;
 using GR.WorkFlows.Razor.Extensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using GR.Forms;
+using GR.Identity.Data.Groups;
+using GR.Notifications.Services;
+using TreeIsoService = GR.Cms.Services.TreeIsoService;
 
-#endregion
+#endregion Usings
 
 namespace GR.Cms
 {
-	public class Startup
+	public class Startup : GearCoreStartup
 	{
-		/// <summary>
-		/// Migrations Assembly
-		/// </summary>
-		private static readonly string MigrationsAssembly =
-			typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
-
-		/// <summary>
-		/// AppSettings configuration
-		/// </summary>
-		private IConfiguration Configuration { get; }
-
-		/// <summary>
-		/// Hosting configuration
-		/// </summary>
-		private IHostingEnvironment HostingEnvironment { get; }
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="configuration"></param>
 		/// <param name="env"></param>
-		public Startup(IConfiguration configuration, IHostingEnvironment env)
-		{
-			Configuration = configuration;
-			HostingEnvironment = env;
-		}
+		public Startup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env) { }
 
 		/// <summary>
 		/// Configure cms app
 		/// </summary>
 		/// <param name="app"></param>
-		public void Configure(IApplicationBuilder app)
-		{
-			app.UseGearWebApp(config =>
-				{
-					config.HostingEnvironment = HostingEnvironment;
-					config.Configuration = Configuration;
-					config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
+		public override void Configure(IApplicationBuilder app)
+			=> app.UseGearWebApp(config =>
+			{
+				config.AppName = "ISO APP";
+				config.HostingEnvironment = HostingEnvironment;
+				config.Configuration = Configuration;
+				//rewrite root path to redirect on dynamic page, only for commerce landing page
+				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 					{
-						//rewrite root path to redirect on dynamic page, only for commerce landing page
 						{
-							"/", context =>
-							{
-								var originalPath = context.Request.Path.Value;
-								context.Items["originalPath"] = originalPath;
-								context.Request.Path = "/public";
-							}
+							"/", context => context.MapTo("/public")
 						}
 					};
-				})
-				//----------------------------------Calendar graphQl--------------------------------------
-				.UseCalendarGraphQl();
-		}
+			});
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public IServiceProvider ConfigureServices(IServiceCollection services) =>
+		/// <summary>
+		/// This method gets called by the runtime. Use this method to add services to the container.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
+		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
 			services.RegisterGearWebApp(config =>
 		{
 			config.Configuration = Configuration;
@@ -197,35 +174,19 @@ namespace GR.Cms
 			config.CacheConfiguration.UseInMemoryCache = true;
 
 			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment,
-					MigrationsAssembly, HostingEnvironment)
+			config.GearServices.AddIdentityModule<ApplicationDbContext>()
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
+				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
-				.AddIdentityModuleEvents();
+				.AddIdentityModuleEvents()
+				.RegisterLocationService<LocationService>();
 
-			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+			config.GearServices.AddAuthentication(Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
-				.AddHealthChecks(checks =>
-				{
-					//var minutes = 1;
-					//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-					//	minutes = minutesParsed;
-
-					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-				});
-
-			//Register MPass
-			config.GearServices.AddMPassSigningCredentials(new MPassSigningCredentials
-			{
-				ServiceProviderCertificate =
-					new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
-				IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
-			});
+				.AddIdentityServer(Configuration, MigrationsAssembly);
 
 			//---------------------------------------Entity Module-------------------------------------
 			config.GearServices.AddEntityModule<EntitiesDbContext, EntityRepository>()
@@ -270,8 +231,9 @@ namespace GR.Cms
 				})
 				.RegisterProgramAssembly(typeof(Program));
 
-			//--------------------------Notification subscriptions-------------------------------------
-			config.GearServices.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+			//-------------------------------Notification Module-------------------------------------
+			config.GearServices.AddNotificationModule<Notify<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+				.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 				{
@@ -355,6 +317,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterFormService<FormService<FormDbContext>>()
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
@@ -369,7 +332,6 @@ namespace GR.Cms
 				.RegisterViewModelService<ViewModelService>()
 				.AddPageAclService<PageAclService>();
 
-
 			//---------------------------------------Report Module-------------------------------------
 			config.GearServices.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
 				.AddDynamicReportModuleStorage<DynamicReportDbContext>(options =>
@@ -379,8 +341,8 @@ namespace GR.Cms
 				})
 				.AddReportUIModule();
 
-
-			config.GearServices.AddInstallerModule();
+			//----------------------------------------Installer Module-------------------------------------
+			config.GearServices.AddInstallerModule<GearWebInstallerService>();
 
 			//----------------------------------------Email Module-------------------------------------
 			config.GearServices.AddEmailModule<EmailSender>()
@@ -434,7 +396,6 @@ namespace GR.Cms
 				})
 				.AddWorkflowRazorModule()
 				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
-
 
 			//------------------------------------ Documents Module -----------------------------------
 

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GR.Core.Extensions;
+﻿using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -21,7 +21,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IUserAddressService _addressService;
 
-        #endregion
+        #endregion Injectable
 
         public AddressController(IUserAddressService addressService)
         {
@@ -52,7 +52,6 @@ namespace GR.Identity.Razor.Controllers
         [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Address>>))]
         public async Task<JsonResult> GetUserAddresses() => Json(await _addressService.GetUserAddressesAsync());
-
 
         /// <summary>
         /// Add new address

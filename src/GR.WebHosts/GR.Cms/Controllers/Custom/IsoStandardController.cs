@@ -1,13 +1,13 @@
+using GR.Cms.Services.Abstractions;
+using GR.Core.Helpers;
+using GR.Entities.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GR.Core.Helpers;
-using GR.Entities.Data;
-using GR.Cms.Services.Abstractions;
 
 namespace GR.Cms.Controllers.Custom
 {

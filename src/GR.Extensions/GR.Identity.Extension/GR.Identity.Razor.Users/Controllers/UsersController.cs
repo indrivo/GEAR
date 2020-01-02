@@ -1,9 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using GR.Core;
+using GR.Core.Attributes;
+using GR.Core.BaseControllers;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Entities.Data;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Events.EventArgs.Users;
+using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
+using GR.Identity.Data;
+using GR.Identity.Data.Permissions;
+using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using GR.Identity.Permissions.Abstractions.Attributes;
+using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels;
+using GR.Identity.Razor.Users.ViewModels.UserViewModels;
+using GR.Notifications.Abstractions;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,28 +28,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using GR.Entities.Data;
-using GR.Identity.Data;
-using GR.Identity.Data.Permissions;
-using GR.Identity.Razor.Users.ViewModels.UserViewModels;
-using GR.Notifications.Abstractions;
-using GR.Core;
-using GR.Core.Attributes;
-using GR.Core.BaseControllers;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
-using GR.Identity.Abstractions.Events;
-using GR.Identity.Abstractions.Events.EventArgs.Users;
-using GR.Identity.Abstractions.Models.AddressModels;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
-using GR.Identity.Permissions.Abstractions.Attributes;
-using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels;
-using Mapster;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
 
 namespace GR.Identity.Razor.Users.Controllers
@@ -67,8 +67,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
         private readonly IStringLocalizer _localizer;
 
-        #endregion
-
+        #endregion Injections
 
         /// <summary>
         /// User list for admin visualization
@@ -407,7 +406,6 @@ namespace GR.Identity.Razor.Users.Controllers
             return View(model);
         }
 
-
         /// <summary>
         ///     Save user data
         /// </summary>
@@ -528,7 +526,6 @@ namespace GR.Identity.Razor.Users.Controllers
                     await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
                 ApplicationDbContext.UserGroups.RemoveRange(currentGroupsList);
 
-
                 var userGroupList = model.SelectedGroupId
                     .Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
@@ -546,7 +543,6 @@ namespace GR.Identity.Razor.Users.Controllers
             });
             return RedirectToAction(nameof(Index));
         }
-
 
         /// <summary>
         /// Return list of State Or Provinces by country id
@@ -611,7 +607,6 @@ namespace GR.Identity.Razor.Users.Controllers
             };
             return View(model);
         }
-
 
         /// <summary>
         /// Get view for edit profile info
@@ -834,33 +829,43 @@ namespace GR.Identity.Razor.Users.Controllers
                 case "email":
                     result = result.OrderBy(a => a.Email).ToList();
                     break;
+
                 case "created":
                     result = result.OrderBy(a => a.Created).ToList();
                     break;
+
                 case "userName":
                     result = result.OrderBy(a => a.UserName).ToList();
                     break;
+
                 case "author":
                     result = result.OrderBy(a => a.Author).ToList();
                     break;
+
                 case "changed":
                     result = result.OrderBy(a => a.Changed).ToList();
                     break;
+
                 case "email DESC":
                     result = result.OrderByDescending(a => a.Email).ToList();
                     break;
+
                 case "created DESC":
                     result = result.OrderByDescending(a => a.Created).ToList();
                     break;
+
                 case "userName DESC":
                     result = result.OrderByDescending(a => a.UserName).ToList();
                     break;
+
                 case "author DESC":
                     result = result.OrderByDescending(a => a.Author).ToList();
                     break;
+
                 case "changed DESC":
                     result = result.OrderByDescending(a => a.Changed).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -886,7 +891,6 @@ namespace GR.Identity.Razor.Users.Controllers
                 Result = user
             });
         }
-
 
         /// <summary>
         /// Check if is current user
@@ -1184,7 +1188,6 @@ namespace GR.Identity.Razor.Users.Controllers
             return Json(resultModel);
         }
 
-
         [HttpGet]
         public virtual async Task<IActionResult> EditUserProfileAddress(Guid? addressId)
         {
@@ -1261,7 +1264,6 @@ namespace GR.Identity.Razor.Users.Controllers
             currentAddress.IsDefault = model.IsDefault;
             currentAddress.Changed = DateTime.Now;
 
-
             ApplicationDbContext.Update(currentAddress);
             var result = await ApplicationDbContext.SaveAsync();
             if (!result.IsSuccess)
@@ -1278,7 +1280,7 @@ namespace GR.Identity.Razor.Users.Controllers
             return Json(resultModel);
         }
 
-        #endregion
+        #endregion Partial Views
 
         [HttpPost]
         public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)

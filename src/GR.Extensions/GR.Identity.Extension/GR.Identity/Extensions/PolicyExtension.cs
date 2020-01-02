@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using GR.Identity.Data.Permissions;
+﻿using GR.Identity.Data.Permissions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.Identity.Extensions
 {

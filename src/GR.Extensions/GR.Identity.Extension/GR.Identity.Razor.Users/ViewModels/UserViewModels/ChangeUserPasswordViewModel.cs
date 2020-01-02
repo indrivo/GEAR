@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using GR.Identity.Abstractions.Enums;
+﻿using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -11,14 +11,17 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
         /// User id
         /// </summary>
         public Guid UserId { get; set; }
+
         /// <summary>
         /// User name
         /// </summary>
         public string UserName { get; set; }
+
         /// <summary>
         /// User email
         /// </summary>
         public string Email { get; set; }
+
         /// <summary>
         /// New password
         /// </summary>

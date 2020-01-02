@@ -1,25 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core;
+using GR.Core.BaseControllers;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.Entities.Security.Abstractions;
+using GR.Entities.Security.Abstractions.Helpers;
 using GR.Entities.Security.Razor.ViewModels;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 
 namespace GR.Entities.Security.Razor.Controllers
 {
-    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-    public class EntitySecurityController : Controller
+    [Authorize]
+    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    public class EntitySecurityController : BaseGearController
     {
+        #region Injectable
+
         /// <summary>
         /// Inject role access manager
         /// </summary>
         private readonly IEntityRoleAccessManager _accessManager;
 
-        public EntitySecurityController(IEntityRoleAccessManager accessManager)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
+
+        public EntitySecurityController(IEntityRoleAccessManager accessManager, IUserManager<GearUser> userManager)
         {
             _accessManager = accessManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -46,5 +65,28 @@ namespace GR.Entities.Security.Razor.Controllers
                     model.Permissions);
             return Json(serviceResult);
         }
+
+        #region Api's
+
+
+        /// <summary>
+        /// Get entity permissions for current user
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Roles(GlobalResources.Roles.USER)]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<string>>))]
+        public async Task<JsonResult> GetEntityPermissionsForCurrentUser([Required]Guid entityId)
+        {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return Json(new AccessDeniedResult<object>());
+            var user = userRequest.Result;
+            var permissions = (await _accessManager.GetPermissionsAsync(user, entityId)).Select(x => x.ToString());
+            return Json(new SuccessResultModel<IEnumerable<string>>(permissions));
+        }
+
+        #endregion
     }
 }

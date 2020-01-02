@@ -4,6 +4,5 @@ namespace GR.Identity.Profile.Abstractions
 {
     public interface IProfileContext : IDbContext
     {
-
     }
 }

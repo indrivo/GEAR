@@ -91,7 +91,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script src="~/assets/helpers/icons.js"></script>
     <script>
@@ -133,8 +132,6 @@
 			const selected = $(this).find(":checked");
 			$("#iconView").attr("class", selected.val());
 		});
-
-
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

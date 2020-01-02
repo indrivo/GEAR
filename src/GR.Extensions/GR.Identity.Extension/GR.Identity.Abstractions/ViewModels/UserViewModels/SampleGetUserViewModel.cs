@@ -2,7 +2,9 @@
 {
     public class SampleGetUserViewModel
     {
-        public SampleGetUserViewModel() { }
+        public SampleGetUserViewModel()
+        {
+        }
 
         public SampleGetUserViewModel(GearUser user)
         {
@@ -13,6 +15,7 @@
             LastName = user.UserLastName;
             Email = user.Email;
         }
+
         public virtual string Id { get; set; }
         public virtual string UserName { get; set; }
         public virtual string FirstName { get; set; }

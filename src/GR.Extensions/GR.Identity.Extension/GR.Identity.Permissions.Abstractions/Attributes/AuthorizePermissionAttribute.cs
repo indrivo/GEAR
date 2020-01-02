@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace GR.Identity.Permissions.Abstractions.Attributes
 {
@@ -32,6 +32,7 @@ namespace GR.Identity.Permissions.Abstractions.Attributes
             /// Private readonly not nullable PermissionAuthorizationRequirement object.
             /// </summary>
             private readonly PermissionAuthorizationRequirement _requiredPermissions;
+
             /// <summary>
             /// Inject Permission service
             /// </summary>

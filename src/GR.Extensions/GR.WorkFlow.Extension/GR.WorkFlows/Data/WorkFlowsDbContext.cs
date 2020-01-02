@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
@@ -61,7 +62,7 @@ namespace GR.WorkFlows.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

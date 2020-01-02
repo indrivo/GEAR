@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using GR.Core.Razor.Enums;
+using GR.Core.Razor.TagHelpers.Drawers;
 using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 
 namespace GR.Core.Razor.TagHelpersStructures
@@ -12,7 +13,7 @@ namespace GR.Core.Razor.TagHelpersStructures
         /// <summary>
         /// Jquery table dom
         /// </summary>
-        public virtual string Dom { get; set; } = "<\"CustomizeColumns\">lBfrtip";
+        public virtual string Dom { get; set; } = $"<\"table_render_{{Identifier}}\" <\"CustomizeColumns\">lBfr<\"table-responsive\"t>ip >";
 
         /// <summary>
         /// Style attributes
@@ -64,6 +65,11 @@ namespace GR.Core.Razor.TagHelpersStructures
         public bool HasActions { get; set; }
 
         public ICollection<ListActionViewModel> ListActions { get; set; } = new List<ListActionViewModel>();
+
+        /// <summary>
+        /// Action drawer mode
+        /// </summary>
+        public BaseListActionDrawer ListActionDrawer { get; set; } = new BaseListActionDrawer();
         #endregion
     }
 

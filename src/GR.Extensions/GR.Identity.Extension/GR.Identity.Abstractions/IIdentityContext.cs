@@ -1,15 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GR.Core.Abstractions;
+﻿using GR.Core.Abstractions;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Abstractions.Models.UserProfiles;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Abstractions
 {
     public interface IIdentityContext : IDbContext
     {
+        DbSet<GearRole> Roles { get; set; }
+        DbSet<GearUser> Users { get; set; }
         DbSet<Tenant> Tenants { get; set; }
         DbSet<AuthGroup> AuthGroups { get; set; }
         DbSet<UserGroup> UserGroups { get; set; }

@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Order items";
-    var items  = (IEnumerable<MenuItem>)ViewBag.Items;
+    var items = (IEnumerable<MenuItem>)ViewBag.Items;
 }
 
 <div class="card">
@@ -24,10 +24,9 @@
     </div>
 </div>
 
-<input type="hidden" id="pageId" value="@ViewBag.ParentId"/>
+<input type="hidden" id="pageId" value="@ViewBag.ParentId" />
 
-
-@section Scripts{ 
+@section Scripts{
     <script src="~/assets/js/builder/drag-and-drop-list.js"></script>
     <script>
         $("#update").on("click", function () {

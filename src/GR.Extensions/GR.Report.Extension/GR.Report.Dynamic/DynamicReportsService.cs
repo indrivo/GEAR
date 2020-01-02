@@ -333,9 +333,7 @@ namespace GR.Report.Dynamic
         /// <returns></returns>
         public string GetConnectionString()
         {
-            var connection = _configuration.GetSection("ConnectionStrings")
-                .GetSection("PostgreSQL")
-                .GetValue<string>("ConnectionString");
+            var (_, connection) = _configuration.GetConnectionStringInfo();
             return connection;
         }
 

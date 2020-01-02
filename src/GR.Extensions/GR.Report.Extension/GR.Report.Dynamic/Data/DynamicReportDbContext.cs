@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.Report.Abstractions;
@@ -49,7 +50,7 @@ namespace GR.Report.Dynamic.Data
         /// Seed data 
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

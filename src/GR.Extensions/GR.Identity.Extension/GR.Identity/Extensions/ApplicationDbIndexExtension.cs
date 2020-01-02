@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GR.Identity.Abstractions;
+﻿using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Abstractions.Models.UserProfiles;
-using GR.Identity.Data.Permissions;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Extensions
 {

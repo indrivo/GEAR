@@ -32,6 +32,5 @@ namespace GR.Report.Abstractions.Extensions
         {
             return Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(e => e, e => displayName ? e.GetDisplayName() : e.ToString());
         }
-
     }
 }

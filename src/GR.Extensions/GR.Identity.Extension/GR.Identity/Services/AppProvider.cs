@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using GR.Identity.Abstractions;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using GR.Identity.Abstractions;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Services
 {

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using GR.Core.Helpers;
+using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions.Models.AddressModels;
-using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Identity.Abstractions
 {
@@ -15,6 +15,7 @@ namespace GR.Identity.Abstractions
         /// User manager
         /// </summary>
         UserManager<TUser> UserManager { get; }
+
         /// <summary>
         /// Role manager
         /// </summary>
@@ -29,6 +30,7 @@ namespace GR.Identity.Abstractions
         /// Get the tenant id of current user
         /// </summary>
         Guid? CurrentUserTenantId { get; }
+
         /// <summary>
         /// Get the current user
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -27,11 +28,9 @@ namespace GR.WorkFlows.Abstractions.Extensions
             where TWorkFlowExecutor : class, IWorkFlowExecutorService
             where TEntity : WorkFlow
         {
-            services.AddTransient<IWorkFlowCreatorService<TEntity>, TWorkFlowCreator>();
-            IoC.RegisterTransientService<IWorkFlowCreatorService<TEntity>, TWorkFlowCreator>();
+            services.AddGearTransient<IWorkFlowCreatorService<TEntity>, TWorkFlowCreator>();
 
-            services.AddTransient<IWorkFlowExecutorService, TWorkFlowExecutor>();
-            IoC.RegisterTransientService<IWorkFlowExecutorService, TWorkFlowExecutor>();
+            services.AddGearTransient<IWorkFlowExecutorService, TWorkFlowExecutor>();
             services.RegisterWorkflowAction<SendNotificationAction>();
             return services;
         }
@@ -48,6 +47,7 @@ namespace GR.WorkFlows.Abstractions.Extensions
         {
             services.AddScopedContextFactory<IWorkFlowContext, TContext>();
             services.AddDbContext<TContext>(options, ServiceLifetime.Transient);
+            services.RegisterAuditFor<IWorkFlowContext>($"{nameof(WorkFlow)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();

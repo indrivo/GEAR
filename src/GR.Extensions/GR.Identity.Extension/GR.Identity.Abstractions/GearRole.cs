@@ -1,8 +1,8 @@
-using System;
-using Microsoft.AspNetCore.Identity;
 using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core.Abstractions;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace GR.Identity.Abstractions
 {
@@ -38,35 +38,41 @@ namespace GR.Identity.Abstractions
         {
             Name = roleName
         };
+
         /// <inheritdoc />
         /// <summary>
         /// Stores Id of the User that created the object
         /// </summary>
         public string Author { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Stores the time when object was created
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public DateTime Created { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Stores the Id of the User that modified the object. Nullable
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public string ModifiedBy { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Stores the time when object was modified. Nullable
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public DateTime Changed { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         ///  Stores state of the Object. True if object is deleted and false otherwise
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public bool IsDeleted { get; set; }
+
         /// <summary>
         /// Client Id
         /// </summary>
@@ -78,11 +84,13 @@ namespace GR.Identity.Abstractions
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public string Title { get; set; }
+
         /// <summary>
         /// Is editable or no
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public bool IsNoEditable { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Name

@@ -1,34 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Identity.Data;
-using GR.PageRender.Razor.ViewModels.PageViewModels;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
+using GR.Core.Helpers.Responses;
+using GR.DynamicEntityStorage.Abstractions;
+using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Enums;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
+using GR.Identity.Data;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.ViewModels;
 using GR.PageRender.Razor.Attributes;
+using GR.PageRender.Razor.ViewModels.PageViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -72,7 +73,7 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         private readonly UserManager<GearUser> _userManager;
 
-        #endregion
+        #endregion InjectRegion
 
         /// <summary>
         /// Constructor
@@ -276,11 +277,11 @@ namespace GR.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetScripts(Guid pageId)
         {
-            if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
+            if (pageId == Guid.Empty) return Json(new List<string>());
             var scripts = new HashSet<string>();
             var page = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
 
-            if (page == null) return Json(default(IEnumerable<string>));
+            if (page == null) return Json(new List<string>());
 
             if (!page.IsLayout && page.LayoutId != null)
             {
@@ -303,7 +304,6 @@ namespace GR.PageRender.Razor.Controllers
 
             return new JsonResult(scripts.ToList());
         }
-
 
         /// <summary>
         /// Get scripts as list for page by id
@@ -362,7 +362,7 @@ namespace GR.PageRender.Razor.Controllers
         }
 
         /// <summary>
-        /// Get menu item roles 
+        /// Get menu item roles
         /// </summary>
         /// <param name="menuId"></param>
         /// <returns></returns>
@@ -409,7 +409,6 @@ namespace GR.PageRender.Razor.Controllers
         {
             return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
         }
-
 
         /// <summary>
         /// Get list data by entity id
@@ -702,7 +701,6 @@ namespace GR.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-
             return Json(result);
         }
 
@@ -741,6 +739,51 @@ namespace GR.PageRender.Razor.Controllers
             }
 
             return Json(new { message = "Items was deleted!", success = true });
+        }
+
+        /// <summary>
+        /// Delete page by id
+        /// </summary>
+        /// <param name="viewModelId"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [AjaxOnly, HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> DeletePermanentItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
+        {
+            var response = new ResultModel();
+            if (ids == null)
+            {
+                response.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(response);
+            }
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
+                .FirstOrDefault(x => x.Id.Equals(viewModelId));
+
+            if (viewModel == null)
+            {
+                response.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(response);
+            }
+
+            var fails = 0;
+            try
+            {
+                foreach (var id in ids)
+                {
+                    if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
+                    var deleteRequest = await _service.Table(viewModel.TableModel.Name).DeletePermanent<object>(Guid.Parse(id));
+                    if (!deleteRequest.IsSuccess) fails++;
+                }
+            }
+            catch (Exception e)
+            {
+                response.Errors.Add(new ErrorModel("", e.Message));
+                return Json(response);
+            }
+
+            if (fails == 0) return Json(new SuccessResultModel<object>());
+            response.Errors.Add(new ErrorModel("FAIL_DELETE_ALL_ROWS", "Some recordings could not be deleted because they are used!"));
+            return Json(response);
         }
 
         /// <summary>

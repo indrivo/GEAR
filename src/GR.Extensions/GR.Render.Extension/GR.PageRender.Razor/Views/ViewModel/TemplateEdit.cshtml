@@ -2,7 +2,7 @@
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = $"Edit {Model.Name} view model";
+    ViewData["Title"] = $"Edit {Model.Name} view model";
 }
 
 <link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.css" />
@@ -10,91 +10,89 @@
 <link rel="stylesheet" type="text/css" href="~/lib/codemirror/addon/hint/show-hint.css" />
 
 <style>
-	#jsonPlace {
-		outline: 1px solid #ccc;
-		padding: 5px;
-		margin: 5px;
-	}
+    #jsonPlace {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+    }
 
-	.string {
-		color: green;
-	}
+    .string {
+        color: green;
+    }
 
-	.number {
-		color: darkorange;
-	}
+    .number {
+        color: darkorange;
+    }
 
-	.boolean {
-		color: blue;
-	}
+    .boolean {
+        color: blue;
+    }
 
-	.null {
-		color: magenta;
-	}
+    .null {
+        color: magenta;
+    }
 
-	.key {
-		color: red;
-	}
+    .key {
+        color: red;
+    }
 </style>
 
 <div class="card card-outline-primary">
-	<div class="card-header">
-		<h4 class="mb-0 text-white">Edit @Model.Name field template value </h4>
-	</div>
-	<div class="card-body">
-		<form asp-action="TemplateEdit" role="form">
-			<div class="form-body">
-				@Html.HiddenFor(x => x.Created)
-				@Html.HiddenFor(x => x.Changed)
-				@Html.HiddenFor(x => x.Id)
-				@Html.HiddenFor(x => x.IsDeleted)
-				@Html.HiddenFor(x => x.Author)
-				@Html.HiddenFor(x => x.ModifiedBy)
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Edit @Model.Name field template value </h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="TemplateEdit" role="form">
+            <div class="form-body">
+                @Html.HiddenFor(x => x.Created)
+                @Html.HiddenFor(x => x.Changed)
+                @Html.HiddenFor(x => x.Id)
+                @Html.HiddenFor(x => x.IsDeleted)
+                @Html.HiddenFor(x => x.Author)
+                @Html.HiddenFor(x => x.ModifiedBy)
 
-				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-				<div class="row p-t-20">
-					<div class="col-md-4">
-						<pre id="jsonPlace"></pre>
-					</div>
-					<div class="col-md-8">
-						<h3>Preview</h3>
-						<div class="row" style="border: 1px solid grey; min-height: 8em; margin-bottom: 0.5em;">
-							<div id="preview" style="margin: 0.5em;">
-
-							</div>
-						</div>
-						<div class="form-group">
-							<textarea asp-for="Template" style="height: 100em">@Model.Template</textarea>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row button-group">
-				<div class="col-lg-2 col-md-3">
-					<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
-				</div>
-			</div>
-		</form>
-	</div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-t-20">
+                    <div class="col-md-4">
+                        <pre id="jsonPlace"></pre>
+                    </div>
+                    <div class="col-md-8">
+                        <h3>Preview</h3>
+                        <div class="row" style="border: 1px solid grey; min-height: 8em; margin-bottom: 0.5em;">
+                            <div id="preview" style="margin: 0.5em;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea asp-for="Template" style="height: 100em">@Model.Template</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
-
 @section Scripts {
-	<script src="~/lib/codemirror/codemirror.js"></script>
-	<script src="~/lib/codemirror/keymap/sublime.js"></script>
-	<script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-	<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
-	<script src="~/lib/codemirror/mode/css/css.js"></script>
-	<script src="~/lib/codemirror/mode/xml/xml.js"></script>
-	<script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
-	<script src="~/lib/codemirror/addon/hint/javascript-hint.js"></script>
-	<script>
+    <script src="~/lib/codemirror/codemirror.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.js"></script>
+    <script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
+    <script src="~/lib/codemirror/mode/css/css.js"></script>
+    <script src="~/lib/codemirror/mode/xml/xml.js"></script>
+    <script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+    <script src="~/lib/codemirror/addon/hint/javascript-hint.js"></script>
+    <script>
 		var orig = CodeMirror.hint.javascript;
 		const obj = load("/PageRender/GetJsonExampleOfEntity?viewModelId=@Model.ViewModelId");
 		CodeMirror.hint.javascript = function(cm) {
@@ -147,13 +145,12 @@
 
 		editor.setSize(null, 700);
 
-
 		function output(inp) {
 			$("#jsonPlace").html(inp);
 		}
 
 		function syntaxHighlight(json) {
-			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace( />/g, '&gt;');
 			return json.replace(
 				/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
 				function(match) {
@@ -177,6 +174,5 @@
 
 		//output(str);
 		output(syntaxHighlight(str));
-
-	</script>
+    </script>
 }

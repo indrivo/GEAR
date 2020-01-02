@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GR.Audit.Abstractions.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.BackGroundServices;
@@ -31,7 +32,7 @@ namespace GR.Calendar.Abstractions.Extensions
             where TCalendarService : class, ICalendarManager
         {
             Arg.NotNull(services, nameof(AddCalendarModule));
-            IoC.RegisterTransientService<ICalendarManager, TCalendarService>();
+            services.AddGearTransient<ICalendarManager, TCalendarService>();
             services.AddHostedService<EventReminderBackgroundService>();
             return new CalendarServiceCollection(services);
         }
@@ -50,6 +51,7 @@ namespace GR.Calendar.Abstractions.Extensions
             Arg.NotNull(configuration.Services, nameof(AddCalendarModuleStorage));
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
+            configuration.Services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
                 {
                     GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();

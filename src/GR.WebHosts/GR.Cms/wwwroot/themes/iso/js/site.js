@@ -8,19 +8,15 @@ $(window).on("load",
             });
     });
 
-
 /* Dom Ready */
 (function ($) {
-
     const $body = $("body");
 
     /* Initialize Tooltip */
     $('[data-toggle="tooltip"]').tooltip();
 
-
     /* Initialize Popover */
     $('[data-toggle="popover"]').popover();
-
 
     /* Initialize Lightbox */
     $body.delegate('[data-toggle="lightbox"]',
@@ -30,23 +26,19 @@ $(window).on("load",
             $(this).ekkoLightbox();
         });
 
-
 	/************************************************
 	 Append Preloader (use in ajax call)
 	 ************************************************/
     $body.delegate(".append-preloader",
         "click",
         function () {
-
             $(PreLoader).show();
             $body.append(PreLoader);
             setTimeout(function () {
-
                 $(".loader-wrapper").fadeOut(200,
                     function () {
                         PreLoader = $(this).detach();
                     });
-
             },
                 1000);
         });
@@ -55,18 +47,15 @@ $(window).on("load",
         location.href = "/Home";
     });
 
-
 	/************************************************
 	 Toggle Preloader in card or box
 	 ************************************************/
     $body.delegate('[data-toggle="loader"]',
         "click",
         function () {
-
             var target = $(this).attr("data-target");
             $("#" + target).show();
         });
-
 
 	/************************************************
 	 Toggle Sidebar Nav
@@ -100,7 +89,6 @@ $(window).on("load",
 
     $.fn.setAsideMode = function () {
         if (localStorage.getItem("asideMode") === null) {
-
         } else if (localStorage.getItem("asideMode") === 'collapsed') {
             $('.sidebar').addClass('collapsed');
         } else {
@@ -121,9 +109,6 @@ $(window).on("load",
         return false;
     });
 
-
-
-
 	/************************************************
      Sidebar Colapsed state submenu position
 	 ************************************************/
@@ -138,8 +123,6 @@ $(window).on("load",
             // grab the menu item's position relative to its positioned parent
             const menuItemPos = $menuItem.position();
 
-
-
             // place the submenu in the correct position relevant to the menu item
             $submenuWrapper.css({
                 top: menuItemPos.top,
@@ -148,18 +131,13 @@ $(window).on("load",
         }
     });
 
-
-
 	/************************************************
      On mouseleave collapse in menu items
 	 ************************************************/
     $body.find('.sidebar.collapsed .navigation').on('mouseleave', function () {
-
-
         activeMenuItem.removeClass('open');
 
         $('.sidebar .navigation li.active').parents('li').last().addClass('active');
-
 
         $(".sidebar.collapsed .navigation li.open").each(function (index) {
             $(this).find('.sub-nav').css({ "display": "none" });
@@ -178,19 +156,16 @@ $(window).on("load",
             $(".controls-wrapper").toggle().toggleClass("d-none");
         });
 
-
 	/************************************************
 	 Toast Messages
 	 ************************************************/
     $body.delegate('[data-toggle="toast"]',
         "click",
         function () {
-
             var dataAlignment = $(this).attr("data-alignment");
             var dataPlacement = $(this).attr("data-placement");
             var dataContent = $(this).attr("data-content");
             var dataStyle = $(this).attr("data-style");
-
 
             if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
                 $(".toast." + dataAlignment + "-" + dataPlacement).append(
@@ -210,9 +185,7 @@ $(window).on("load",
                     dataContent +
                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
             }
-
         });
-
 
 	/**************************************
 	 Chosen Form Control
@@ -250,7 +223,6 @@ $(window).on("load",
             }
         });
 
-
 	/*****************************************
 	 Themer Changer with local storage
 	 *****************************************/
@@ -261,7 +233,6 @@ $(window).on("load",
         });
         return this;
     };
-
 
     $body.delegate(".theme-changer",
         "click",
@@ -279,20 +250,15 @@ $(window).on("load",
             $.fn.setThemeTone(primaryColor);
         });
 
-
     $.fn.setThemeTone = function (primaryColor) {
-
         if (localStorage.getItem("primaryColor") === null) {
-
         } else {
-
             /* SIDEBAR */
             if (localStorage.getItem("sidebarBg") === "light") {
                 $(".sidebar ").addClass("sidebar-light");
             } else {
                 $(".sidebar").removeClass("sidebar-light");
             }
-
 
             /* PRIMARY COLOR */
             if (localStorage.getItem("primaryColor") === "primary") {
@@ -303,7 +269,6 @@ $(window).on("load",
                 document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
             }
 
-
             /* LOGO */
             if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
                 $(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
@@ -313,7 +278,6 @@ $(window).on("load",
                     .addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
             }
 
-
             /* HEADER */
             if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
                 $(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
@@ -322,18 +286,11 @@ $(window).on("load",
                 $(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
                     .addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
             }
-
         }
-
-
     };
 
-
     $.fn.setThemeTone();
-
-
 })(jQuery);
-
 
 /*****************************************
  Full Screen Toggle
@@ -359,14 +316,9 @@ function toggleFullScreen() {
     }
 }
 
-
-
-
-
 /************************************************
 			Customize system theme js
 ************************************************/
-
 
 const settings = JSON.parse(localStorage.getItem("settings"));
 
@@ -378,6 +330,7 @@ function IsoTableHeadActions() {
         enabledOptions: {
             add: true,
             deleteRestore: true,
+            deletePermanent: true,
             hiddenColumns: true,
             rows: true
         },
@@ -424,39 +377,58 @@ function changeTextCellPosition() {
     const navBarWidth = $(".navigation").width();
     pos.left -= navBarWidth;
     const wPercent = pos.left * 100 / docWidth;
-    //const diffW = docWidth - pos.left;
 
     if (hPercent > 72 && hPercent < 75) {
         expandCell.css("top", `${pos.top - diffH}px`);
     } else if (hPercent > 80) {
         expandCell.css("top", `${pos.top - diffH
-            // - 240
             }px`);
     }
 
     if (wPercent > 70) {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
-            // * 2
             }px`);
     }
 }
 
-
 $(".table")
     .on("preInit.dt",
         function () {
+            if (!$(this).hasClass("dynamic-table")) return;
             const conf = new IsoTableHeadActions().getConfiguration();
-            //Risk company matrix
-            if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
-                conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
-            }
-            const content = tManager.render("template_headListActions", conf);
-            const selector = $("div.CustomTableHeadBar");
-            selector.html(content);
-            selector.find(".add-matrix").on("click", riskMatrixCreate);
-            window.forceTranslate("div.CustomTableHeadBar");
-        });
+            const domTableId = $(this).attr("id");
+            const tableBuilderInstance = window.TableBuilderInstances.instances.find(x => x.configurations.listId == domTableId);
+            const entityId = tableBuilderInstance.configurations.viewmodelData.tableModelId;
+            $.ajax({
+                url: "/api/EntitySecurity/GetEntityPermissionsForCurrentUser",
+                data: { entityId },
+                async: false,
+                success: function (response) {
+                    if (!response.is_success) {
+                        tableBuilderInstance.toast.notifyErrorList(response.error_keys);
+                        return;
+                    }
+                    const permissions = response.result;
+                    const fullControl = permissions.includes("FullControl");
+                    if (!fullControl) {
+                        conf.settings.enabledOptions.add = permissions.includes("Write");
+                        conf.settings.enabledOptions.deletePermanent = permi0ssions.includes("DeletePermanent");
+                        conf.settings.enabledOptions.deleteRestore = permissions.includes("Delete") | permissions.includes("Restore");
+                    }
 
+                    //Risk company matrix
+                    if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+                        conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+                    }
+                    const content = tManager.render("template_headListActions", conf);
+                    const selector = $("div.CustomTableHeadBar");
+                    selector.html(content);
+                    selector.find(".add-matrix").on("click", riskMatrixCreate);
+                    window.forceTranslate("div.CustomTableHeadBar");
+                },
+                error: function () { }
+            });
+        });
 
 function riskMatrixCreate() {
     const scope = this;
@@ -561,12 +533,10 @@ function riskMatrixCreate() {
     });
 }
 
-
 /***********************************************
 			Override table column visibility
 ************************************************/
 if (typeof TableColumnsVisibility !== "undefined") {
-
     //Container what store column visibility control
     TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
 
@@ -652,6 +622,16 @@ if (typeof TableColumnsVisibility !== "undefined") {
                 if (cTable) {
                     if (typeof TableBuilder !== "undefined") {
                         new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+                    }
+                }
+            });
+
+        $(".delete-multiple-rows-permanent").on("click",
+            function () {
+                const cTable = $(this).closest(".card").find(".dynamic-table");
+                if (cTable) {
+                    if (typeof TableBuilder !== "undefined") {
+                        new TableBuilder().deleteSelectedRowsPermanentHandler(cTable.DataTable());
                     }
                 }
             });
@@ -799,7 +779,6 @@ if (typeof TableBuilder !== "undefined") {
         this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: "focus" });
     };
 }
-
 
 /***********************************************
 			Override inline edit templates
@@ -1342,7 +1321,6 @@ if (typeof TableInlineEdit !== "undefined") {
         });
     };
 
-
 	/**
  * Transform row from edit mode to read mode
  * @param {any} target
@@ -1472,12 +1450,10 @@ if (typeof TableInlineEdit !== "undefined") {
                     });
                 $.Iso.OverflowIndicator(htTable, { trigger: "focus" });
             });
-
         }).catch(err => {
             console.warn(err);
         });
     };
-
 
     //bind events after inline edit was started for row
     TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
@@ -1603,29 +1579,177 @@ if (typeof TableInlineEdit !== "undefined") {
 			Override notificator
 ************************************************/
 if (typeof Notificator !== "undefined") {
+    const noNotifications = `<p id="noNotifications" class="text-muted p-3 m-0">${window.translate('system_notificator_no_notifications')}</p>`;
+
+    const ajaxRequest = (requestUrl, requestType, requestData) => {
+        const baseUrl = '/api/Notifications';
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: baseUrl + requestUrl,
+                type: requestType,
+                data: requestData,
+                success: (data) => {
+                    if (Array.isArray(data)) {
+                        resolve(data);
+                    }
+                    else {
+                        if (data.is_success) {
+                            resolve(data.result);
+                        } else if (!data.is_success) {
+                            reject(data.error_keys);
+                        } else {
+                            resolve(data);
+                        }
+                    }
+                },
+                error: (e) => {
+                    reject(e);
+                }
+            });
+        });
+    }
+
+    const markAsRead = notificationId => {
+        const requestUrl = '/MarkAsRead';
+        return ajaxRequest(requestUrl, 'post', { notificationId });
+    }
+
+    const loaderClassString = 'notification-loader';
+    const loaderClass = `.${loaderClassString}`;
+
+    const addLoader = elementDOM => {
+        const loadermarkup = `<div class="${loaderClassString}">
+			<div class="${loaderClassString}-body justify-content-center align-items-center">
+			<div class="lds-dual-ring"></div>
+				</div>
+			</div>`;
+        elementDOM.append(loadermarkup);
+        elementDOM.find(loaderClass).fadeIn();
+    }
+
+    const removeLoader = elementDOM => {
+        elementDOM.find(loaderClass).fadeOut();
+        setTimeout(function () { elementDOM.find(loaderClass).remove(); }, 400);
+    }
+
+    const getNotificationsFromDropdown = () => {
+        let notifications = [];
+        $('#notificationList .notification-item').each(function () {
+            notifications.push($(this).data('notification-id'));
+        });
+        return notifications;
+    }
+
+    let notificationsPage = 1;
+    let stopGetNotifications = false;
+
+    addLoader($('#notificationList'));
+
+    $(document).click(() => {
+        $("#notificationList").collapse('hide');
+    });
+    $('#notificationDropdown').click(() => {
+        $("#notificationList").collapse('toggle');
+    });
+    $('#notificationList').click(e => {
+        e.stopPropagation();
+    });
+    $('#notificationList .clear-all').click(() => {
+        $('#notificationList .notifications').hide(500);
+        setTimeout(function () {
+            const markNotifications = getNotificationsFromDropdown();
+            $('#notificationList .notifications').html(noNotifications).slideDown(100);
+            $.each(markNotifications, function () {
+                markAsRead(this);
+            });
+        }, 500);
+    });
+
+    $('#notificationList .show-more').click(() => {
+        if (!stopGetNotifications) {
+            addLoader($('#notificationList'));
+            Notificator.prototype.getAllNotifications(notificationsPage, 5, true).then(data => {
+                if (!data) return;
+                if (data.is_success) {
+                    if (data.result.notifications.length > 0) {
+                        notificationsPage++;
+                    }
+                    else {
+                        $('#notificationList .show-more').hide();
+                        stopGetNotifications = true;
+                    }
+                    $.each(data.result.notifications, (i, notification) => {
+                        notificator.appendNotificationToContainer(notification);
+                    });
+                }
+                $('#noNotifications').remove();
+                removeLoader($('#notificationList'));
+            }).catch(e => {
+                new ToastNotifier().notifyErrorList(e);
+            });
+        }
+    });
+
     //override notification populate container
     Notificator.prototype.addNewNotificationToContainer = function (notification) {
         const _ = $("#notificationAlarm");
         if (!_.hasClass("notification"))
             _.addClass("notification");
         const template = this.createNotificationBodyContainer(notification);
-        const target = $("#notificationList");
-        $("#noNotifications").remove();
+        const target = $("#notificationList .notifications");
+        $("#noNotifications").hide();
         target.prepend(template);
         this.registerOpenNotificationEvent();
+        $(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
+            $(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
+            setTimeout(function () {
+                markAsRead(notification.id).then(() => {
+                    $(`.notification-item[data-notification-id="${notification.id}"]`).remove();
+                }).catch(e => {
+                    new ToastNotifier().notifyErrorList(e);
+                    $(`.notification-item[data-notification-id="${notification.id}"]`).show();
+                });
+            }, 500);
+        });
     }
 
     Notificator.prototype.createNotificationBodyContainer = function (n) {
         const block = `
-		<div data-notification-id="${n.id
-            }" class="notification-item dropdown-item py-3 border-bottom">
-            <p><small>${n.subject}</small></p>
-            <p class="text-muted mb-1"><small>${n.content}</small></p>
-            <p class="text-muted mb-1"><small>${n.created}</small></p>
-		</div>`;
+			<div data-notification-id="${n.id
+            }" class="notification-item dropdown-item border-bottom position-relative">
+				<div class="notification-body py-1">
+					<p class="mb-0"><small>${n.subject}</small></p>
+					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
+					<p class="text-muted mb-0"><small>${moment(new Date(n.created)).from(new Date())}</small></p>
+					<span class="delete-notification">
+						<i class="material-icons">close</i>
+					</span>
+				</div>
+			</div>`;
         return block;
     }
+
+    Notificator.prototype.getAllNotifications = function (page, perPage, onlyUnread) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
+                method: "get",
+                data: {
+                    page,
+                    perPage,
+                    onlyUnread
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    };
 }
+else console.warn("Notification plugin not injected");
 
 /***********************************************
 			Override DataInjector
@@ -1787,6 +1911,52 @@ $(document).ready(function () {
     //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
 });
 
+function openColorPicker(event) {
+    if (event.preventDefault) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    else {
+        event.returnValue = false;
+    }
+    const inputId = event.target.id;
+    const inputElem = $(`#${inputId}`);
+    inputElem.addClass('d-block');
+
+    inputElem.spectrum({
+        preferredFormat: "hex",
+        showPalette: true,
+        showButtons: false,
+        showSelectionPalette: true,
+        selectionPalette: [],
+        localStorageKey: 'colorPickerPallette',
+        maxSelectionSize: 10,
+        showInput: true,
+        showAlpha: true,
+        color: inputElem.val(),
+        move: function () {
+            const color = inputElem.spectrum("get").toHexString();
+            inputElem.val(color);
+        },
+        change: function () {
+            const color = inputElem.spectrum("get").toHexString();
+            inputElem.css('background-color', color);
+            inputElem.val(color);
+        }
+    });
+
+    inputElem.siblings('.sp-replacer').ready(() => {
+        inputElem.siblings('.sp-replacer').attr('style', `opacity: 0;
+			width: 100%;
+			height: 47px;
+			padding: 0;
+			top: -46px;
+			position: relative;`);
+        inputElem.spectrum("show");
+    });
+
+    inputElem
+}
 
 /************************************************
 					End Custom js
