@@ -94,11 +94,7 @@ namespace GR.DynamicEntityStorage
             if (!data.IsSuccess) return result;
             var model = GetObject<TEntity>(data.Result)?.ToList();
             if (model == null) return result;
-            foreach (var item in model)
-            {
-                item.TenantId = _userManager.CurrentUserTenantId;
-            }
-
+            foreach (var item in model) item.TenantId = _userManager.CurrentUserTenantId;
             model = (await IncludeReferencesOnList(model)).ToList();
             result.IsSuccess = true;
             var adapt = model.Adapt<IEnumerable<TOutput>>();

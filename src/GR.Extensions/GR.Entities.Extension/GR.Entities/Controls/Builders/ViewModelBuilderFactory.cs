@@ -28,9 +28,7 @@ namespace GR.Entities.Controls.Builders
             if (entityName.IsNullOrEmpty()) return model;
             var entityRequest = await service.FindTableByNameAsync(entityName, d => d.Name == entityName.Trim()
                                                                                     && d.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
-                                                                                    || d.Name == entityName.Trim() && d.IsPartOfDbContext
-            );
-
+                                                                                    || d.Name == entityName.Trim() && d.IsPartOfDbContext);
             if (!entityRequest.IsSuccess) return model;
             var entity = entityRequest.Result;
             foreach (var item in entity.TableFields)

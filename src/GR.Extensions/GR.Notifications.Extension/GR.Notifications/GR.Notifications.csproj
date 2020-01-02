@@ -7,10 +7,10 @@
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Company>Indrivo</Company>
-    <Version>2.0.0</Version>
+    <Version>1.6.0</Version>
     <PackageReleaseNotes>- Add new api</PackageReleaseNotes>
-    <FileVersion>2.0.0</FileVersion>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
 
   </PropertyGroup>
 
