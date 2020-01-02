@@ -2,7 +2,7 @@
 ::---------------------------------------------Configuration-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
 
-SET pushKey="oy2cdyotfbd5rk7thnias2paqkriagtuxahd5t2n3woexy"
+SET pushKey="oy2nr54v2bavfwvqjc4qrivsua7gl62ubbwrtmd22tpcta"
 SET pushHost="https://www.nuget.org"
 
 
