@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
   </ItemGroup>
 
 </Project>

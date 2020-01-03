@@ -38,11 +38,13 @@ namespace GR.UI.Menu
         private readonly IDataFilter _filter;
 
         #endregion
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="cacheService"></param>
+        /// <param name="filter"></param>
         public MenuService(IMenuDbContext context, IMemoryCache cacheService, IDataFilter filter)
         {
             _context = context;
@@ -320,7 +322,7 @@ namespace GR.UI.Menu
         /// </summary>
         /// <param name="menuItemId"></param>
         /// <returns></returns>
-        public async Task<ResultModel> DeleteMenuItemAsync(Guid? menuItemId)
+        public Task<ResultModel> DeleteMenuItemAsync(Guid? menuItemId)
         {
             throw new NotImplementedException();
         }
@@ -330,7 +332,7 @@ namespace GR.UI.Menu
         /// </summary>
         /// <param name="menuGroupId"></param>
         /// <returns></returns>
-        public async Task<ResultModel> DeleteMenuGroupAsync(Guid? menuGroupId)
+        public Task<ResultModel> DeleteMenuGroupAsync(Guid? menuGroupId)
         {
             throw new NotImplementedException();
         }
@@ -367,6 +369,18 @@ namespace GR.UI.Menu
             _cacheService.Remove(MenuHelper.GetCacheKey(menu.MenuId.ToString()));
             var updateRequest = await UpdateMenuItemAsync(menu);
             return updateRequest.IsSuccess ? new SuccessResultModel<Guid>(menuId) : updateRequest.Map<Guid>();
+        }
+
+        /// <summary>
+        /// Append menu items
+        /// </summary>
+        /// <typeparam name="TMenuInitializer"></typeparam>
+        /// <param name="initializer"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AppendMenuItemsAsync<TMenuInitializer>(TMenuInitializer initializer)
+            where TMenuInitializer : MenuInitializer
+        {
+            return await initializer.ExecuteAsync();
         }
     }
 }

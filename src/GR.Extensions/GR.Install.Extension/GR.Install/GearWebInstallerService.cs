@@ -209,8 +209,8 @@ namespace GR.Install
                 });
 
             //sign in user
-            await _signInManager.SignInAsync(superUser, true);
-
+            var e = await _signInManager.PasswordSignInAsync(superUser, model.SysAdminProfile.Password, true, false);
+            response.IsSuccess = true;
             return response;
         }
     }

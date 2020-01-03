@@ -36,8 +36,14 @@ namespace GR.UI.Menu.Data
             builder.HasDefaultSchema(Schema);
         }
 
+        /// <summary>
+        /// Seed
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
+            MenuDbContextSeeder.SeedAsync(services).Wait();
             return Task.CompletedTask;
         }
     }

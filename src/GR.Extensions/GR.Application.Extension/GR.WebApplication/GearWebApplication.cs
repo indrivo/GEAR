@@ -19,6 +19,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
 using GR.Entities.Data;
 using GR.Logger.Extensions;
+using GR.UI.Menu.Data;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
 using Newtonsoft.Json;
@@ -57,6 +58,7 @@ namespace GR.WebApplication
         private static IWebHost Migrate()
         {
             GlobalWebHost?
+                .MigrateDbContext<MenuDbContext>()
                 .MigrateDbContext<EntitiesDbContext>()
                 .MigrateDbContext<ApplicationDbContext>()
                 .MigrateDbContext<PersistedGrantDbContext>()

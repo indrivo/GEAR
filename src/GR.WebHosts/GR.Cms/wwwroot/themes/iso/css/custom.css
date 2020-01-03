@@ -182,3 +182,8 @@ table.dataTable {
 .color-input {
 	text-indent: -9999999px;
 }
+
+
+.swal2-select {
+	width: 100%;
+}

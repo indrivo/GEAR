@@ -7,6 +7,11 @@
 		Title = Localizer["forms"],
 		SubTitle = "List of forms",
 		ListIdentifier = "formTable",
+	    StyleAttributes = new List<InlineStyleAttribute>
+	    {
+	        new InlineStyleAttribute("margin", "0"),
+	        new InlineStyleAttribute("width", "100%"),
+	    },
 		Api = new ListApiConfigurationViewModel
 		{
 			Url = Url.Action("LoadForms", "Form"),

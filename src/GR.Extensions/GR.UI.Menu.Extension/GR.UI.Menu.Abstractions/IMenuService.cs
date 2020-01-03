@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
+using GR.UI.Menu.Abstractions.Helpers;
 using GR.UI.Menu.Abstractions.Models;
 using GR.UI.Menu.Abstractions.ViewModels;
 
@@ -119,5 +120,14 @@ namespace GR.UI.Menu.Abstractions
         /// <param name="parentMenuItemId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<MenuItem>>> GetChildsOfMenuItemAsync(Guid? parentMenuItemId);
+
+        /// <summary>
+        /// Append new menu
+        /// </summary>
+        /// <typeparam name="TMenuInitializer"></typeparam>
+        /// <param name="initializer"></param>
+        /// <returns></returns>
+        Task<ResultModel> AppendMenuItemsAsync<TMenuInitializer>(TMenuInitializer initializer)
+            where TMenuInitializer : MenuInitializer;
     }
 }
