@@ -10,7 +10,6 @@
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <FileVersion>1.6.0</FileVersion>
     <AssemblyVersion>1.6.0</AssemblyVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <ItemGroup>

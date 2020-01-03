@@ -95,6 +95,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic\GR.Report.Dynamic.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager\GR.TaskManager.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.UI.Menu.Extension\GR.UI.Menu.Razor\GR.UI.Menu.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows.Razor\GR.WorkFlows.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows\GR.WorkFlows.csproj" />
   </ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace GR.PageRender.Abstractions.Helpers
+﻿namespace GR.UI.Menu.Abstractions.Helpers
 {
     public static class MenuHelper
     {

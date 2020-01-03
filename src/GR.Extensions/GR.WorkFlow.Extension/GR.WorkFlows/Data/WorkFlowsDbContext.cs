@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
 using GR.WorkFlows.Abstractions;
@@ -52,17 +51,10 @@ namespace GR.WorkFlows.Data
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
-
-        /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync(IServiceProvider services)
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

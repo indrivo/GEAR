@@ -37,18 +37,29 @@
                 </div>
 
                 <div class="logo-holder">
-                    <div class="logo-image"></div>
+                    
                 </div>
 
                 <ul class="navbar-nav flex-row ml-auto">
                     <li id="notificationAlarm" class="nav-item">
-                        <a href="#" id="notificationDropdown" data-toggle="dropdown" class="nav-link">
+                        <a href="#" id="notificationDropdown" class="nav-link">
                             <span class="material-icons align-middle">mail_outline</span>
                         </a>
-                        <div id="notificationList" style="max-height:25em;overflow-y: scroll;"
+                        <div id="notificationList"
                              class="dropdown-menu p-0 dropdown-lg notificationDropdown dropdown-menu-right"
                              aria-labelledby="notificationDropdown">
-                            <p id="noNotifications" class="text-muted p-3">No notifications!</p>
+                            <div class="notifications" style="max-height:25em;overflow-y: scroll;">
+                                <p id="noNotifications" class="text-muted p-3 m-0" translate="system_notificator_no_notifications">No notifications!</p>
+                            </div>
+                            <div class="show-all-wrapper d-flex justify-content-between py-2 px-3">
+                                <div>
+                                    <a href="javascript:void(0)" class="show-more mr-3" translate="system_notifications_show_more">Show more</a>
+                                </div>
+                                <div>
+                                    <a href="/notifications" class="show-all mr-3" translate="system_notifications_show_all">Show all</a>
+                                    <a href="javascript:void(0)" class="clear-all" translate="system_notifications_clear_all">Clear all</a>
+                                </div>
+                            </div>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -61,7 +72,7 @@
                         <a href="#" id="userLogedinDropdown" data-toggle="dropdown"
                            class="nav-link weight-400 dropdown-toggle">
                             <img src="{UserImagePath}" class="mr-2 rounded"
-                                 width="28">{UserName}
+                                 width="28" />{UserName}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userLogedinDropdown">
                             <a class="dropdown-item" href="#"><span translate="organization">Organization</span>: <b>{Organization}</b></a>
@@ -72,12 +83,12 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a href="#" id="notificationDropdown" data-toggle="dropdown" class="nav-link">
-                            <span class="material-icons align-middle">public</span>
+                        <a href="#" id="languageDropdown" data-toggle="dropdown" class="nav-link">
+                            <i id="currentlanguage"></i>
                         </a>
-                        <div style="margin-right:10em;" id="languageRegion"
-                             class="dropdown-menu p-0 dropdown-menu-right notificationDropdown"
-                             aria-labelledby="notificationDropdown">
+                        <div id="languageRegion"
+                             class="dropdown-menu p-0 dropdown-menu-right languageDropdown"
+                             aria-labelledby="languageDropdown">
 
                         </div>
                     </li>

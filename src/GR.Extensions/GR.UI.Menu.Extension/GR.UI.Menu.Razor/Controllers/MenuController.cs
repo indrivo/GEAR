@@ -1,37 +1,35 @@
-using GR.Cache.Abstractions;
-using GR.Core;
-using GR.Core.Attributes;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Core.Helpers.Filters;
-using GR.Core.Helpers.Filters.Enums;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Helpers;
-using GR.PageRender.Abstractions.Models.Pages;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
+using GR.Core.Attributes;
+using GR.Core.BaseControllers;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Attributes;
+using GR.PageRender.Abstractions;
+using GR.UI.Menu.Abstractions;
+using GR.UI.Menu.Abstractions.Helpers;
+using GR.UI.Menu.Abstractions.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace GR.PageRender.Razor.Controllers
+namespace GR.UI.Menu.Razor.Controllers
 {
-    public class MenuController : Controller
+    [Authorize]
+    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    public class MenuController : BaseGearController
     {
-        private readonly IDynamicPagesContext _pagesContext;
+        #region Injectable
 
         /// <summary>
-		/// Inject Data Service
-		/// </summary>
-		private readonly IDynamicService _service;
-
-        /// <summary>
-        /// Inject cache service
+        /// Inject dynamic page context
         /// </summary>
-        private readonly ICacheService _cacheService;
+        private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
         /// Inject menu service
@@ -39,18 +37,36 @@ namespace GR.PageRender.Razor.Controllers
         private readonly IMenuService _menuService;
 
         /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        /// <summary>
+        /// Inject menu context
+        /// </summary>
+        private readonly IMenuDbContext _context;
+
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly IMemoryCache _cacheService;
+        #endregion
+
+        /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="service"></param>
-        /// <param name="cacheService"></param>
         /// <param name="pagesContext"></param>
         /// <param name="menuService"></param>
-        public MenuController(IDynamicService service, ICacheService cacheService, IDynamicPagesContext pagesContext, IMenuService menuService)
+        /// <param name="userManager"></param>
+        /// <param name="context"></param>
+        /// <param name="cacheService"></param>
+        public MenuController(IDynamicPagesContext pagesContext, IMenuService menuService, IUserManager<GearUser> userManager, IMenuDbContext context, IMemoryCache cacheService)
         {
-            _service = service;
-            _cacheService = cacheService;
             _pagesContext = pagesContext;
             _menuService = menuService;
+            _userManager = userManager;
+            _context = context;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -78,11 +94,11 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(Menu model)
+        public async Task<IActionResult> Create(MenuGroup model)
         {
             if (model != null)
             {
-                var req = await _service.AddWithReflection(model);
+                var req = await _menuService.CreateMenuGroupAsync(model);
                 if (req.IsSuccess)
                 {
                     return RedirectToAction("Index");
@@ -100,13 +116,10 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id.Equals(Guid.Empty)) return NotFound();
-            var model = await _service.GetByIdWithReflection<Menu, Menu>(id);
-
+            var model = await _menuService.FindMenuGroupByIdAsync(id);
             if (!model.IsSuccess) return NotFound();
-
             return View(model.Result);
         }
 
@@ -116,20 +129,12 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Edit(Menu model)
+        public async Task<IActionResult> Edit(MenuGroup model)
         {
             if (model == null) return NotFound();
-            var dataModel = (await _service.GetByIdWithReflection<Menu, Menu>(model.Id)).Result;
-
-            if (dataModel == null) return NotFound();
-
-            dataModel.Name = model.Name;
-            dataModel.Description = model.Description;
-            dataModel.Author = model.Author;
-            dataModel.Changed = DateTime.Now;
-            var req = await _service.UpdateWithReflection(dataModel);
-            if (req.IsSuccess) return RedirectToAction("Index");
-            ModelState.AddModelError(string.Empty, "Fail to save");
+            var req = await _menuService.UpdateMenuGroupAsync(model);
+            if (req.IsSuccess) return RedirectToAction(nameof(Index));
+            ModelState.AppendResultModelErrors(req.Errors);
             return View(model);
         }
 
@@ -144,10 +149,8 @@ namespace GR.PageRender.Razor.Controllers
         {
             ViewBag.MenuId = menuId;
             ViewBag.ParentId = parentId;
-            ViewBag.Menu = (await _service.GetByIdWithReflection<Menu, Menu>(menuId)).Result;
-            ViewBag.Parent = (parentId != null) ?
-                                    (await _service.GetByIdWithReflection<MenuItem, MenuItem>(parentId.Value)).Result
-                                    : null;
+            ViewBag.Menu = (await _menuService.FindMenuGroupByIdAsync(menuId)).Result;
+            ViewBag.Parent = (await _menuService.FindMenuItemByIdAsync(parentId)).Result;
             return View();
         }
 
@@ -176,30 +179,18 @@ namespace GR.PageRender.Razor.Controllers
         public async Task<IActionResult> CreateItem(MenuItem model)
         {
             ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
-            if (model != null)
+            if (!ModelState.IsValid) return View(model);
+            var req = await _menuService.CreateMenuItemAsync(model);
+            if (req.IsSuccess)
             {
-                model.AllowedRoles = "Administrator#";
-                var data = await _service.GetAllWhitOutInclude<MenuItem, MenuItem>(x =>
-                    x.ParentMenuItemId == model.ParentMenuItemId);
-                if (data.IsSuccess && data.Result.Any())
+                return RedirectToAction(nameof(GetMenu), new
                 {
-                    model.Order = (int)(data.Result?.Max(x => x.Order) + 1);
-                }
-                else model.Order = 1;
-
-                var req = await _service.AddWithReflection(model);
-                if (req.IsSuccess)
-                {
-                    await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(model.MenuId.ToString()));
-                    return RedirectToAction("GetMenu", new
-                    {
-                        model.MenuId,
-                        ParentId = model.ParentMenuItemId
-                    });
-                }
-
-                ModelState.AddModelError(string.Empty, "Fail to save!");
+                    model.MenuId,
+                    ParentId = model.ParentMenuItemId
+                });
             }
+
+            ModelState.AppendResultModelErrors(req.Errors);
 
             return View(model);
         }
@@ -214,7 +205,7 @@ namespace GR.PageRender.Razor.Controllers
         {
             ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path)
                 .OrderBy(x => x);
-            var item = await _service.GetByIdWithReflection<MenuItem, MenuItem>(itemId);
+            var item = await _menuService.FindMenuItemByIdAsync(itemId);
             if (!item.IsSuccess) return NotFound();
             return View(item.Result);
         }
@@ -227,16 +218,13 @@ namespace GR.PageRender.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> EditItem(MenuItem model)
         {
-            var rq = await _service.UpdateWithReflection(model);
+            var rq = await _menuService.UpdateMenuItemAsync(model);
             if (rq.IsSuccess)
-            {
-                await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(model.MenuId.ToString()));
                 return RedirectToAction("GetMenu", new
                 {
                     model.MenuId,
                     ParentId = model.ParentMenuItemId
                 });
-            }
 
             ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
             ModelState.AddModelError(string.Empty, "Fail to save!");
@@ -251,20 +239,9 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="parentId"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
-        {
-            var (data, count) = await _service.Filter<MenuItem>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length, x => x.MenuId.Equals(menuId) && x.ParentMenuItemId.Equals(parentId));
-
-            var finalResult = new DTResult<MenuItem>
-            {
-                Draw = param.Draw,
-                Data = data.OrderBy(x => x.Order).ToList(),
-                RecordsFiltered = count,
-                RecordsTotal = data.Count()
-            };
-            return Json(finalResult);
-        }
+        [AjaxOnly]
+        public JsonResult LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
+            => Json(_menuService.GetPaginatedMenuItems(param, menuId, parentId));
 
         /// <summary>
         /// Load page types with ajax
@@ -273,20 +250,8 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public async Task<JsonResult> LoadPages(DTParameters param)
-        {
-            var filtered = await _service.Filter<Menu>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length);
-
-            var finalResult = new DTResult<Menu>
-            {
-                Draw = param.Draw,
-                Data = filtered.Item1,
-                RecordsFiltered = filtered.Item2,
-                RecordsTotal = filtered.Item1.Count()
-            };
-            return Json(finalResult);
-        }
+        public JsonResult LoadMenuGroups(DTParameters param)
+            => Json(_menuService.GetPaginatedMenuGroups(param));
 
         /// <summary>
         /// Delete page type by id
@@ -296,12 +261,11 @@ namespace GR.PageRender.Razor.Controllers
         [Route("api/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> Delete(string id)
+        public async Task<JsonResult> Delete(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu!", success = false });
-            var menu = await _service.DeletePermanent<Menu>(Guid.Parse(id));
-            if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu!", success = false });
-            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(id));
+            var removeRequest = await _context.RemoveByIdAsync<MenuGroup, Guid>(id);
+            if (!removeRequest.IsSuccess) return Json(new { message = "Fail to delete menu!", success = false });
+            _cacheService.Remove(MenuHelper.GetCacheKey(id.ToString()));
             return Json(new { message = "Menu was delete with success!", success = true });
         }
 
@@ -313,15 +277,63 @@ namespace GR.PageRender.Razor.Controllers
         [Route("api/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> DeleteMenuItem(string id)
+        public async Task<JsonResult> DeleteMenuItem(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu item!", success = false });
-            var menu = await _service.GetByIdWithReflection<MenuItem, MenuItem>(id.ToGuid());
-            if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
-            var dbOperation = await _service.DeletePermanent<MenuItem>(id.ToGuid());
+            var find = await _context.FindByIdAsync<MenuItem, Guid>(id);
+            var dbOperation = await _context.RemoveByIdAsync<MenuItem, Guid>(id);
             if (!dbOperation.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
-            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.Result.MenuId.ToString()));
+            _cacheService.Remove(MenuHelper.GetCacheKey(find.Result.MenuId.ToString()));
             return Json(new { message = "Model was delete with success!", success = true });
+        }
+
+
+        /// <summary>
+        /// Get menu item roles
+        /// </summary>
+        /// <param name="menuId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public async Task<JsonResult> GetMenuItemRoles([Required] Guid menuId)
+        {
+            if (menuId == Guid.Empty) return Json(new ResultModel());
+            var roles = await _menuService.GetMenuRoles(menuId);
+
+            return Json(roles);
+        }
+
+        /// <summary>
+        /// Get menus
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public async Task<JsonResult> GetMenus(Guid? menuId = null)
+        {
+            if (menuId == null)
+            {
+                menuId = MenuResources.AppMenuId;
+            }
+            IList<string> roles = new List<string>();
+            var user = await _userManager.UserManager.GetUserAsync(User);
+            if (user != null)
+            {
+                roles = await _userManager.UserManager.GetRolesAsync(user);
+            }
+            var req = await _menuService.GetMenus(menuId, roles);
+            return Json(req);
+        }
+
+        /// <summary>
+        /// Update roles
+        /// </summary>
+        /// <param name="menuId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public async Task<JsonResult> UpdateMenuItemRoleAccess([Required] Guid menuId, IList<string> roles)
+        {
+            return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
         }
 
         /// <summary>
@@ -357,10 +369,7 @@ namespace GR.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> OrderMenuChildItems([Required] Guid? parentId)
         {
-            var items = await _service.GetAllWhitOutInclude<MenuItem, MenuItem>(filters: new List<Filter>
-            {
-                new Filter{Value = parentId, Criteria = Criteria.Equals, Parameter = nameof(MenuItem.ParentMenuItemId)}
-            });
+            var items = await _menuService.GetChildsOfMenuItemAsync(parentId);
             if (!items.IsSuccess) return NotFound();
             ViewBag.Items = items.Result.ToList();
             ViewBag.ParentId = parentId;

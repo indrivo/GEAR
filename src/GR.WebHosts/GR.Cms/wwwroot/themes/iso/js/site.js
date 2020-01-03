@@ -1845,7 +1845,7 @@ $(document).ready(function () {
     new ST().registerLocalLogout(".sa-logout");
 
     //Menu render promise
-    const loadMenusPromise = loadAsync("/PageRender/GetMenus");
+    const loadMenusPromise = loadAsync("/Menu/GetMenus");
 
     loadMenusPromise.then(menus => {
         const renderMenuContainer = $("#left-nav-bar");

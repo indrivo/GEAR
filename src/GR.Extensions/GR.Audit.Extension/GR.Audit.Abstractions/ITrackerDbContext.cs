@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GR.Audit.Abstractions.Models;
+using GR.Core.Abstractions;
 
 namespace GR.Audit.Abstractions
 {
-    public interface ITrackerDbContext
+    public interface ITrackerDbContext : IDbContext
     {
         /// <summary>
         /// Track audit entity

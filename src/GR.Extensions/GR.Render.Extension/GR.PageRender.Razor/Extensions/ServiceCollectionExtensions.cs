@@ -20,19 +20,6 @@ namespace GR.PageRender.Razor.Extensions
         }
 
         /// <summary>
-        /// Menu service
-        /// </summary>
-        /// <typeparam name="TMenuService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddMenuService<TMenuService>(this IServiceCollection services)
-            where TMenuService : class, IMenuService
-        {
-            services.AddTransient<IMenuService, TMenuService>();
-            return services;
-        }
-
-        /// <summary>
         /// Add page acl
         /// </summary>
         /// <typeparam name="TPageAclService"></typeparam>

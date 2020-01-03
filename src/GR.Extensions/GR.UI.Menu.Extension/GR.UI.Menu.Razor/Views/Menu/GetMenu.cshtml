@@ -1,8 +1,8 @@
-@using GR.PageRender.Abstractions.Models.Pages
+@using GR.UI.Menu.Abstractions.Models
 @inject IStringLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["system_menu_item_items"];
-    var menu = (Menu)ViewBag.Menu;
+    var menu = (MenuGroup)ViewBag.Menu;
     var parent = (MenuItem)ViewBag.Parent;
 }
 <div class="card">
@@ -156,7 +156,7 @@
 					const menuId = $(context).attr("data-id");
                     storeMenuId = menuId;
 
-					const chosedRoles = load(`/PageRender/GetMenuItemRoles?menuId=${menuId}`);
+					const chosedRoles = load(`/Menu/GetMenuItemRoles?menuId=${menuId}`);
 
 					var options = $("#role-select");
 					options.html(null);
@@ -180,7 +180,7 @@
 							roles.push(role);
 						});
 
-					const response = load("/PageRender/UpdateMenuItemRoleAccess",
+					const response = load("/Menu/UpdateMenuItemRoleAccess",
 						{
 							menuId: storeMenuId,
 							roles: roles

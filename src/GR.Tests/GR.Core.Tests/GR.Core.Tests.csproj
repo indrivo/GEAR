@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Extensions\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Extensions\GR.Core.Extension\GR.Core\GR.Core.csproj" />
   </ItemGroup>
 

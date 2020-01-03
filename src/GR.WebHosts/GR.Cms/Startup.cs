@@ -127,6 +127,9 @@ using System.Collections.Generic;
 using GR.Forms;
 using GR.Identity.Data.Groups;
 using GR.Notifications.Services;
+using GR.UI.Menu;
+using GR.UI.Menu.Abstractions.Extensions;
+using GR.UI.Menu.Data;
 using TreeIsoService = GR.Cms.Services.TreeIsoService;
 
 #endregion Usings
@@ -249,6 +252,15 @@ namespace GR.Cms
 				LocalizationProvider = LocalizationProvider.Yandex
 			});
 
+			//--------------------------------------Menu UI Module-------------------------------------
+			config.GearServices.AddMenuModule<MenuService>()
+				.AddMenuModuleStorage<MenuDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
+
 			//------------------------------Database backup Module-------------------------------------
 			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
@@ -328,7 +340,6 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddPageRenderUIModule<PageRender.PageRender>()
-				.AddMenuService<MenuService<IDynamicService>>()
 				.RegisterViewModelService<ViewModelService>()
 				.AddPageAclService<PageAclService>();
 

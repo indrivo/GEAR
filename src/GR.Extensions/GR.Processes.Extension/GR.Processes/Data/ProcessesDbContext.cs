@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using GR.Audit.Contexts;
@@ -83,6 +85,11 @@ namespace GR.Procesess.Data
                 .WithMany()
                 .HasForeignKey(x => x.ProcessInstanceId)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+
+        public override Task InvokeSeedAsync(IServiceProvider services)
+        {
+            return Task.CompletedTask;
         }
     }
 
