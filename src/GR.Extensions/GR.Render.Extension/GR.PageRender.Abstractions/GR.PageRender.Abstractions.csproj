@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Configuration\menus.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
 
     <EmbeddedResource Include="Configuration\ViewModelFieldConfigCodes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

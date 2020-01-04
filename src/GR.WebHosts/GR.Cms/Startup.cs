@@ -27,7 +27,6 @@ using GR.Documents;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Data;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
@@ -126,6 +125,7 @@ using System;
 using System.Collections.Generic;
 using GR.Forms;
 using GR.Identity.Data.Groups;
+using GR.Identity.Razor.Extensions;
 using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
@@ -184,7 +184,8 @@ namespace GR.Cms
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
-				.RegisterLocationService<LocationService>();
+				.RegisterLocationService<LocationService>()
+				.AddIdentityRazorModule();
 
 			config.GearServices.AddAuthentication(Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()

@@ -6,7 +6,7 @@ using GR.UI.Menu.Abstractions.Models;
 
 namespace GR.UI.Menu.Abstractions.Helpers
 {
-    public abstract class MenuInitializer
+    public abstract class BaseMenuInitializer
     {
         private static IMenuService _service;
         protected IMenuService MenuService => _service ?? (_service = IoC.Resolve<IMenuService>());
@@ -37,7 +37,7 @@ namespace GR.UI.Menu.Abstractions.Helpers
                     Order = item.Order,
                     Translate = item.Translate
                 };
-                var itemResponse = await MenuService.CreateMenuItemAsync(menuItem);
+                var itemResponse = await MenuService.CreateMenuItemAsync(menuItem, item.AllowedRoles);
                 responses.Add(itemResponse);
             }
 
@@ -84,6 +84,11 @@ namespace GR.UI.Menu.Abstractions.Helpers
         /// Order
         /// </summary>
         public int Order { get; set; } = 1;
+
+        /// <summary>
+        /// Allowed roles
+        /// </summary>
+        public IEnumerable<string> AllowedRoles { get; set; } = new List<string>();
     }
 
     public class MenuInitBuilder
@@ -91,7 +96,7 @@ namespace GR.UI.Menu.Abstractions.Helpers
         /// <summary>
         /// Configs
         /// </summary>
-        public IEnumerable<MenuItemConfig> Configs { get; set; } = new List<MenuItemConfig>();
+        public IList<MenuItemConfig> Configs { get; set; } = new List<MenuItemConfig>();
 
         /// <summary>
         /// Menu

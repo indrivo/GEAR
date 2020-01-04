@@ -4,7 +4,7 @@ using GR.UI.Menu.Abstractions.Helpers.Icons;
 
 namespace GR.UI.Menu.Helpers
 {
-    public class BaseAppMenuInitializer : MenuInitializer
+    public class AppBaseMenuInitializer : BaseMenuInitializer
     {
         /// <summary>
         /// Config for menu items
@@ -28,6 +28,14 @@ namespace GR.UI.Menu.Helpers
                     Href = "#",
                     Translate = "administration",
                     Icon = FontAwesomeIcons.FA_GEARS
+                },
+                new MenuItemConfig
+                {
+                    Id = MenuResources.MenuItems.ConfigurationItem,
+                    ParentMenuItemId = MenuResources.MenuItems.AdministrationItem,
+                    Name = "Configuration",
+                    Href = "#",
+                    Translate = "configuration",
                 },
                 new MenuItemConfig
                 {

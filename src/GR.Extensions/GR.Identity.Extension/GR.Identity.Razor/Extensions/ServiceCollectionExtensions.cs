@@ -1,28 +1,27 @@
 ﻿using GR.Core;
 using GR.Core.Helpers;
-using Microsoft.Extensions.DependencyInjection;
-using GR.MultiTenant.Razor.Helpers;
+using GR.Identity.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace GR.MultiTenant.Razor.Extensions
+namespace GR.Identity.Razor.Extensions
 {
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Register ui module
+        /// Add identity razor module
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMultiTenantRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddIdentityRazorModule(this IServiceCollection services)
         {
-            services.ConfigureOptions(typeof(MultiTenantRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
            {
                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
                {
                    var service = IoC.Resolve<IMenuService>();
-                   await service.AppendMenuItemsAsync(new MultiTenantMenuInitializer());
+                   await service.AppendMenuItemsAsync(new IdentityMenuInitializer());
                });
            };
             return services;

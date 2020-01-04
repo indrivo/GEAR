@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
@@ -11,6 +12,12 @@ namespace GR.Core
                                         "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
+        /// <summary>
+        /// Background task queue
+        /// </summary>
+        private static IBackgroundTaskQueue _internBackgroundTaskQueue;
+        public static IBackgroundTaskQueue BackgroundTaskQueue => _internBackgroundTaskQueue ?? (_internBackgroundTaskQueue = IoC.ResolveNonRequired<IBackgroundTaskQueue>());
+
         /// <summary>
         /// Services container
         /// </summary>

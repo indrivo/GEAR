@@ -3,6 +3,7 @@ using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
+using GR.UI.Menu.Abstractions.Events;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace GR.UI.Menu.Abstractions.Extensions
             where TMenuService : class, IMenuService
         {
             services.AddGearScoped<IMenuService, TMenuService>();
+            MenuEvents.RegisterEvents();
             return services;
         }
 
@@ -35,8 +37,8 @@ namespace GR.UI.Menu.Abstractions.Extensions
             Action<DbContextOptionsBuilder> options)
             where TMenuContext : DbContext, IMenuDbContext
         {
-            services.AddScopedContextFactory<IMenuDbContext, TMenuContext>();
             services.AddDbContext<TMenuContext>(options);
+            services.AddScopedContextFactory<IMenuDbContext, TMenuContext>();
             services.RegisterAuditFor<IMenuDbContext>($"{nameof(Menu)} module");
 
             SystemEvents.Database.OnMigrate += (sender, args) =>

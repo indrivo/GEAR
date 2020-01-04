@@ -37,6 +37,7 @@ namespace GR.PageRender.Abstractions.Events
             /// <param name="e"></param>
             public static void PageUpdated(PageCreatedEventArgs e) => SystemEvents.InvokeEvent(null, OnPageUpdated, e, nameof(OnPageUpdated));
         }
+
         /// <summary>
         /// Register app events
         /// </summary>

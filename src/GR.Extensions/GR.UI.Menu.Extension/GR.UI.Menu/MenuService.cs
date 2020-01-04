@@ -185,11 +185,19 @@ namespace GR.UI.Menu
         /// Create menu item
         /// </summary>
         /// <param name="menuItem"></param>
+        /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateMenuItemAsync(MenuItem menuItem)
+        public async Task<ResultModel<Guid>> CreateMenuItemAsync(MenuItem menuItem, IEnumerable<string> roles = null)
         {
             if (menuItem == null) return new InvalidParametersResultModel().Map<Guid>();
-            menuItem.AllowedRoles = "Administrator#";
+            menuItem.AllowedRoles = $"{GlobalResources.Roles.ADMINISTRATOR}#";
+
+            foreach (var role in roles)
+            {
+                if (role.Equals(GlobalResources.Roles.ADMINISTRATOR)) continue;
+                menuItem.AllowedRoles += $"{role}#";
+            }
+
             var data = await _context.MenuItems.Where(x =>
                 x.ParentMenuItemId == menuItem.ParentMenuItemId).ToListAsync();
             menuItem.Order = data.Any() ? data.Max(x => x.Order) + 1 : 1;
@@ -378,7 +386,7 @@ namespace GR.UI.Menu
         /// <param name="initializer"></param>
         /// <returns></returns>
         public virtual async Task<ResultModel> AppendMenuItemsAsync<TMenuInitializer>(TMenuInitializer initializer)
-            where TMenuInitializer : MenuInitializer
+            where TMenuInitializer : BaseMenuInitializer
         {
             return await initializer.ExecuteAsync();
         }

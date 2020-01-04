@@ -53,8 +53,9 @@ namespace GR.UI.Menu.Abstractions
         /// Create menu item
         /// </summary>
         /// <param name="menuItem"></param>
+        /// <param name="roles"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateMenuItemAsync(MenuItem menuItem);
+        Task<ResultModel<Guid>> CreateMenuItemAsync(MenuItem menuItem, IEnumerable<string> roles = null);
 
         /// <summary>
         /// Find menu group by id
@@ -128,6 +129,6 @@ namespace GR.UI.Menu.Abstractions
         /// <param name="initializer"></param>
         /// <returns></returns>
         Task<ResultModel> AppendMenuItemsAsync<TMenuInitializer>(TMenuInitializer initializer)
-            where TMenuInitializer : MenuInitializer;
+            where TMenuInitializer : BaseMenuInitializer;
     }
 }

@@ -1,11 +1,11 @@
 ﻿using GR.Core;
 using GR.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using GR.MultiTenant.Razor.Helpers;
+using GR.TaskManager.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
 
-namespace GR.MultiTenant.Razor.Extensions
+namespace GR.TaskManager.Razor.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -14,15 +14,15 @@ namespace GR.MultiTenant.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMultiTenantRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddTaskManagerRazorUIModule(this IServiceCollection services)
         {
-            services.ConfigureOptions(typeof(MultiTenantRazorFileConfiguration));
+            services.ConfigureOptions(typeof(TaskManagerRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
            {
                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
                {
                    var service = IoC.Resolve<IMenuService>();
-                   await service.AppendMenuItemsAsync(new MultiTenantMenuInitializer());
+                   await service.AppendMenuItemsAsync(new TaskManagerMenuInitializer());
                });
            };
             return services;

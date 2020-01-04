@@ -48,6 +48,9 @@ namespace GR.WebApplication.Extensions
             };
             configAction(configuration);
 
+            //Register system config
+            services.RegisterSystemConfig(configuration.Configuration);
+
             services.Configure<FormOptions>(x => x.ValueCountLimit =
                 configuration.ServerConfiguration.UploadMaximSize);
 
@@ -70,9 +73,6 @@ namespace GR.WebApplication.Extensions
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
 
             services.AddHttpClient();
-
-            //Register system config
-            services.RegisterSystemConfig(configuration.Configuration);
 
             services.Configure<SecurityStampValidatorOptions>(options =>
             {

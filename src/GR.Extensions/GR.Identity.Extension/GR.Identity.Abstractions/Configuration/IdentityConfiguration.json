@@ -20,6 +20,13 @@
       "Title": "This role is used for users that are authentificated",
       "ClientId": "1",
       "Author": "System"
+    },
+    {
+      "Name": "Company Administrator",
+      "IsNoEditable": true,
+      "Title": "This role is used for owner of company",
+      "ClientId": "1",
+      "Author": "System"
     }
   ],
   "Groups": [

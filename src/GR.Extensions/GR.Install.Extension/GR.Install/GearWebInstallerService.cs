@@ -209,7 +209,7 @@ namespace GR.Install
                 });
 
             //sign in user
-            var e = await _signInManager.PasswordSignInAsync(superUser, model.SysAdminProfile.Password, true, false);
+            await _signInManager.PasswordSignInAsync(superUser, model.SysAdminProfile.Password, true, false);
             response.IsSuccess = true;
             return response;
         }

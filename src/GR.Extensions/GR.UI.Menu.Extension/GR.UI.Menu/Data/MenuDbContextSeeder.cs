@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.UI.Menu.Abstractions;
+using GR.UI.Menu.Abstractions.Events;
+using GR.UI.Menu.Abstractions.Events.EventArgs;
 using GR.UI.Menu.Abstractions.Helpers;
 using GR.UI.Menu.Abstractions.Models;
 using GR.UI.Menu.Helpers;
@@ -28,7 +30,10 @@ namespace GR.UI.Menu.Data
                 Created = DateTime.Now
             });
 
-            if (serviceRequest.IsSuccess) await menuService.AppendMenuItemsAsync(new BaseAppMenuInitializer());
+            if (serviceRequest.IsSuccess) await menuService.AppendMenuItemsAsync(new AppBaseMenuInitializer());
+
+            //Trigger seed menus
+            MenuEvents.Menu.MenuSeed(new MenuSeedEventArgs());
         }
     }
 }
