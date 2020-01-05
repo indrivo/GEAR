@@ -53,6 +53,23 @@
     </EmbeddedResource>
   </ItemGroup>
 
+
+  <ItemGroup>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\settings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Static\Templates\RenderIsoMenuItem.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

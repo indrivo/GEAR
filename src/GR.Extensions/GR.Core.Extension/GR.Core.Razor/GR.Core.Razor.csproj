@@ -14,18 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Templates\ActionTagTemplate.html" />
-    <None Remove="Templates\AddSectionHtmlTemplate.html" />
-    <None Remove="Templates\ListBooleanRenderJsTemplate.js" />
-    <None Remove="Templates\ListButtonDropdownRenderJsTemplate.js" />
-    <None Remove="Templates\ListButtonGroupRenderJsTemplate.js" />
-    <None Remove="Templates\ListDocumentationHtmlTemplate.html" />
-    <None Remove="Templates\ListTagHelperHtmlTemplate.html" />
-    <None Remove="Templates\ListTagHelperJsTemplate.js" />
-    <None Remove="Templates\ThSectionHtmlTemplate.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="libman.json" Pack="false">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
