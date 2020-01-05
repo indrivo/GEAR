@@ -37,6 +37,9 @@ namespace GR.UI.Menu.Abstractions.Helpers
                     Order = item.Order,
                     Translate = item.Translate
                 };
+
+                var exist = await MenuService.FindMenuItemByIdAsync(menuItem.Id);
+                if (exist.IsSuccess) continue;
                 var itemResponse = await MenuService.CreateMenuItemAsync(menuItem, item.AllowedRoles);
                 responses.Add(itemResponse);
             }
