@@ -12,16 +12,8 @@ namespace GR.Entities.Razor.Helpers
             {
                 new MenuItemConfig
                 {
-                    Id = EntitiesRazorResources.Menu.StructureItem,
-                    Name = "Structure",
-                    ParentMenuItemId = MenuResources.MenuItems.AdministrationItem,
-                    Translate = "structure",
-                    Href = MenuResources.MenuItems.None
-                },
-                new MenuItemConfig
-                {
                     Id = EntitiesRazorResources.Menu.EntitiesItem,
-                    ParentMenuItemId = EntitiesRazorResources.Menu.StructureItem,
+                    ParentMenuItemId = MenuResources.MenuItems.StructureMenuItem,
                     Name = "Entities",
                     Href = MenuResources.MenuItems.None,
                     Translate = "entities"

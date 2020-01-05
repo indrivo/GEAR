@@ -31,6 +31,30 @@ namespace GR.UI.Menu.Helpers
                 },
                 new MenuItemConfig
                 {
+                    Id = MenuResources.MenuItems.StructureMenuItem,
+                    Name = "Structure",
+                    ParentMenuItemId = MenuResources.MenuItems.AdministrationItem,
+                    Translate = "structure",
+                    Href = MenuResources.MenuItems.None
+                },
+                new MenuItemConfig
+                {
+                    Id = MenuResources.MenuItems.AppearanceMenuItem,
+                    Name = "Appearance",
+                    ParentMenuItemId = MenuResources.MenuItems.StructureMenuItem,
+                    Translate = "appearance",
+                    Href = MenuResources.MenuItems.None
+                },
+                new MenuItemConfig
+                {
+                    Id = MenuResources.MenuItems.MenuItem,
+                    Name = "Menu",
+                    ParentMenuItemId = MenuResources.MenuItems.AppearanceMenuItem,
+                    Translate = "menus",
+                    Href = "/Menu"
+                },
+                new MenuItemConfig
+                {
                     Id = MenuResources.MenuItems.ConfigurationItem,
                     ParentMenuItemId = MenuResources.MenuItems.AdministrationItem,
                     Name = "Configuration",

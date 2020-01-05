@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\GR.Forms.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
   </ItemGroup>
 

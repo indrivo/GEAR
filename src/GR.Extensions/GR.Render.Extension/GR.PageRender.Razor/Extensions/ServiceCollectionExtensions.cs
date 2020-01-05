@@ -1,5 +1,9 @@
-﻿using GR.PageRender.Abstractions;
+﻿using GR.Core;
+using GR.Core.Extensions;
+using GR.PageRender.Abstractions;
 using GR.PageRender.Razor.Helpers;
+using GR.UI.Menu.Abstractions;
+using GR.UI.Menu.Abstractions.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.PageRender.Razor.Extensions
@@ -16,6 +20,13 @@ namespace GR.PageRender.Razor.Extensions
         {
             services.AddTransient<IPageRender, TPageRenderService>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
+            MenuEvents.Menu.OnMenuSeed += (sender, args) =>
+            {
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                    {
+                        await args.InjectService<IMenuService>().AppendMenuItemsAsync(new PagesMenuInitializer());
+                    });
+            };
             return services;
         }
 
