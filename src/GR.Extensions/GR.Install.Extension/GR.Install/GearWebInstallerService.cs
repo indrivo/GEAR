@@ -172,6 +172,7 @@ namespace GR.Install
             response.IsSuccess = true;
             GearApplication.AppState.InstallOnProgress = false;
             GearApplication.AppState.Installed = true;
+            GearApplication.BackgroundTaskQueue.AddToExecutePendingBackgroundWorkItems();
             return response;
         }
     }

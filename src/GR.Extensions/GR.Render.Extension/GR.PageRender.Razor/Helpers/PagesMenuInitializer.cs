@@ -33,6 +33,30 @@ namespace GR.PageRender.Razor.Helpers
                     ParentMenuItemId = MenuResources.MenuItems.AppearanceMenuItem,
                     Translate = "page_types",
                     Href = "/PageType"
+                },
+                new MenuItemConfig
+                {
+                    Id = PagesRazorResources.Menu.RenderBlocksMenuItem,
+                    Name = "Render Blocks",
+                    ParentMenuItemId = MenuResources.MenuItems.AppearanceMenuItem,
+                    Translate = "render_blocks",
+                    Href = "/Blocks"
+                },
+                new MenuItemConfig
+                {
+                    Id = PagesRazorResources.Menu.RenderBlocksCategoriesMenuItem,
+                    Name = "Render Block categories",
+                    ParentMenuItemId = MenuResources.MenuItems.AppearanceMenuItem,
+                    Translate = "render_blocks_categories",
+                    Href = "/BlockCategory"
+                },
+                new MenuItemConfig
+                {
+                    Id = PagesRazorResources.Menu.TemplatesMenuItem,
+                    Name = "Templates",
+                    ParentMenuItemId = MenuResources.MenuItems.AppearanceMenuItem,
+                    Translate = "templates",
+                    Href = "/templates"
                 }
             }
         };

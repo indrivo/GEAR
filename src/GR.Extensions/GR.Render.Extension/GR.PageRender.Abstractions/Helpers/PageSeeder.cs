@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace GR.PageRender.Abstractions.Helpers
 {
@@ -52,45 +50,38 @@ namespace GR.PageRender.Abstractions.Helpers
             if (!await context.PageTypes.AnyAsync())
             {
                 await context.PageTypes.AddRangeAsync(PageTypes);
-                context.SaveChanges();
+                await context.PushAsync();
             }
 
             //Add pages
             if (context.Pages.Any()) return;
-            try
-            {
-                var baseDirectory = AppContext.BaseDirectory;
-                var path = Path.Combine(baseDirectory, "Static/Pages");
+            var baseDirectory = AppContext.BaseDirectory;
+            var path = Path.Combine(baseDirectory, "Static/Pages");
 
-                var exists = Directory.Exists(path);
-                if (!exists) return;
-                var directories = Directory.GetDirectories(path);
-                foreach (var dir in directories)
-                {
-                    var pagePath = Path.Combine(dir, "settings.json");
-                    var page = ReadPageSettings(pagePath);
-                    if (page == null) continue;
-                    try
-                    {
-                        page.Settings.CssCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.css"));
-                        page.Settings.JsCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.js"));
-                        page.Settings.HtmlCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.html"));
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                    page.PageTypeId = page.IsLayout ? PageTypes.First().Id : PageTypes[1].Id;
-                    page.Created = DateTime.Now;
-                    page.Changed = DateTime.Now;
-                    context.Pages.Add(page);
-                }
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
+            var exists = Directory.Exists(path);
+            if (!exists) return;
+            var directories = Directory.GetDirectories(path);
+            foreach (var dir in directories)
             {
-                Debug.WriteLine(ex);
+                var pagePath = Path.Combine(dir, "settings.json");
+                var page = JsonParser.ReadObjectDataFromJsonFile<Page>(pagePath);
+                if (page == null) continue;
+                try
+                {
+                    page.Settings.CssCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.css"));
+                    page.Settings.JsCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.js"));
+                    page.Settings.HtmlCode = File.ReadAllText(Path.Combine(dir, $"{page.Settings.Identifier}.html"));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                page.PageTypeId = page.IsLayout ? PageTypes.First().Id : PageTypes[1].Id;
+                page.Created = DateTime.Now;
+                page.Changed = DateTime.Now;
+                await context.Pages.AddAsync(page);
             }
+            await context.PushAsync();
 
 
             //Add block categories
@@ -108,40 +99,8 @@ namespace GR.PageRender.Abstractions.Helpers
                     ModifiedBy = "system"
                 }));
 
-                try
-                {
-                    await context.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                await context.PushAsync();
             }
-        }
-        /// <summary>
-        /// Read page settings
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private static Page ReadPageSettings(string path)
-        {
-            try
-            {
-                using (Stream str = new FileStream(path, FileMode.Open, FileAccess.Read,
-                    FileShare.ReadWrite))
-                using (var sReader = new StreamReader(str))
-                using (var reader = new JsonTextReader(sReader))
-                {
-                    var fileObj = JObject.Load(reader);
-                    return fileObj.ToObject<Page>();
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-
-            return default;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace GR.Core.Services
     {
         private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems =
             new ConcurrentQueue<Func<CancellationToken, Task>>();
+
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
 
         /// <summary>
@@ -40,6 +41,38 @@ namespace GR.Core.Services
             _workItems.TryDequeue(out var workItem);
 
             return workItem;
+        }
+
+        /// <summary>
+        /// Work items on pending
+        /// </summary>
+        private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItemsOnPending =
+            new ConcurrentQueue<Func<CancellationToken, Task>>();
+
+        /// <summary>
+        /// Push new item to be executed after install
+        /// </summary>
+        /// <param name="workItem"></param>
+        public void PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(Func<CancellationToken, Task> workItem)
+        {
+            if (workItem == null)
+            {
+                throw new ArgumentNullException(nameof(workItem));
+            }
+
+            _workItemsOnPending.Enqueue(workItem);
+        }
+
+        /// <summary>
+        /// Add to execute pending background items
+        /// </summary>
+        public void AddToExecutePendingBackgroundWorkItems()
+        {
+            for (var i = 0; i < _workItemsOnPending.Count; i++)
+            {
+                _workItemsOnPending.TryDequeue(out var taskToExecute);
+                PushBackgroundWorkItemInQueue(taskToExecute);
+            }
         }
     }
 }
