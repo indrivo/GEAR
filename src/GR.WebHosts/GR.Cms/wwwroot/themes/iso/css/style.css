@@ -1113,7 +1113,8 @@ Table variables
    .table td {
      padding: 0.75rem;
      vertical-align: top;
-     border-top: 1px solid #f1f1f1; }
+     border-top: 1px solid #f1f1f1;
+     white-space: normal; }
    .table thead th {
      vertical-align: bottom;
      border-bottom: 2px solid #f1f1f1; }
@@ -1318,6 +1319,11 @@ Table variables
    -ms-overflow-style: -ms-autohiding-scrollbar; }
    .table-responsive > .table-bordered {
      border: 0; }
+ 
+ #tenantTable {
+   width: 100% !important; }
+   #tenantTable tr td {
+     white-space: normal; }
  
  .form-control {
    display: block;
@@ -2806,7 +2812,7 @@ Table variables
    .nav-tabs .nav-item.show .nav-link {
      color: #676e7b;
      background-color: #F5F7FA;
-     border-color: #f1f1f1 #f1f1f1 #F5F7FA; }
+     border: 1px solid rgba(0, 0, 0, 0.125); }
    .nav-tabs .dropdown-menu {
      margin-top: -1px;
      border-top-left-radius: 0;
@@ -6434,7 +6440,8 @@ Table variables
    border-top-color: #17a2b8; }
  
  .nav-tabs.active-thik .nav-link {
-   border-top-width: 2px; }
+   border-top-width: 2px;
+   border-bottom: 0; }
  
  .card-header .nav-tabs {
    margin-top: -2px;
@@ -6735,10 +6742,10 @@ Table variables
          .sidebar .navigation ul li.active > a {
            color: #fff;
            background-color: rgba(0, 0, 0, 0.15); }
-         .sidebar .navigation ul li.active {
+         .sidebar .navigation ul li.active.open {
            background-color: rgba(0, 0, 0, 0.15); }
          .sidebar .navigation ul li.open {
-           background-color: rgba(0, 0, 0, 0.15); }
+           background-color: rgba(0, 0, 0, 0.05); }
            .sidebar .navigation ul li.open > a {
              color: #fff; }
              .sidebar .navigation ul li.open > a .toogle-sub-nav {
@@ -8376,7 +8383,8 @@ Table variables
  .inline-editing-input {
    min-width: 10px;
    max-width: 100%;
-   width: 100%; }
+   width: 100%;
+   border-radius: 3px !important; }
    .inline-editing-input .form-control:disabled, .inline-editing-input .form-control[readonly] {
      background-color: white !important; }
    .inline-editing-input input {
@@ -8420,7 +8428,7 @@ Table variables
  
  .address-item .address-data-input .mt-2 {
    display: flex;
-   justify-content: center; }
+   align-items: center; }
    .address-item .address-data-input .mt-2 span.select2.select2-container {
      width: 300px !important; }
  
@@ -8675,7 +8683,9 @@ Table variables
      word-break: inherit;
      overflow: hidden;
      text-align: inherit;
-     margin: 14px 15px; }
+     margin: 0;
+     background: #ffffff;
+     padding: 15px; }
      .table tr td .data-cell .user-thumb {
        margin: 12px 0;
        width: 100%;
@@ -8727,6 +8737,9 @@ Table variables
  
  .table-striped tbody tr:hover, .table-striped tbody .selected {
    background: #f8f8f8; }
+ 
+ .dataTables_scroll .dataTables_scrollBody {
+   padding-bottom: 150px; }
  
  .cell-blue {
    border-color: #0000cc !important;
@@ -8782,17 +8795,24 @@ Table variables
      outline: none; }
  
  .expanded-cell {
-   position: absolute;
+   position: relative;
    display: flex;
    z-index: 100;
    align-items: center;
-   background-color: inherit !important; }
-   .expanded-cell .data-cell {
+   background: #fff !important;
+   border: 1px solid #ccc;
+   top: 0; }
+   .expanded-cell.data-cell {
+     position: absolute;
+     left: 0 !important;
      width: 100%;
      max-height: 300px !important;
      height: 100%;
-     padding: 14px 0; }
-     .expanded-cell .data-cell textarea {
+     padding: 14px 0;
+     top: 0;
+     border-radius: 5px;
+     box-shadow: 3px 3px 10px #cccccc; }
+     .expanded-cell.data-cell textarea {
        height: 100%;
        overflow-y: auto;
        margin: 0;
@@ -8814,14 +8834,28 @@ Table variables
    margin-right: 5px; }
  
  table td .btn, table td a, table td button {
-   color: #2862D6;
+   color: #2862D6 !important;
    background-color: white;
    border-color: #2862D6;
-   line-height: 2 !important; }
+   line-height: 2 !important;
+   margin: 0 7px 0 7px;
+   border: 0; }
    table td .btn:not(:disabled):not(.disabled):active, table td .btn:not(:disabled):not(.disabled).active, table td a:not(:disabled):not(.disabled):active, table td a:not(:disabled):not(.disabled).active, table td button:not(:disabled):not(.disabled):active, table td button:not(:disabled):not(.disabled).active {
      color: #fff;
      background-color: #204eab;
      border-color: #1e49a0; }
+   table td .btn:hover, table td a:hover, table td button:hover {
+     text-decoration: underline;
+     background: transparent;
+     border: 0; }
+ 
+ @media (min-width: 768px) {
+   .table-responsive {
+     min-height: 500px; } }
+ 
+ table td a.dropdown-item,
+ table td button.dropdown-item {
+   margin: 0; }
  
  .overflow-indicator {
    display: none;
@@ -8850,7 +8884,8 @@ Table variables
    width: 250px;
    text-align: center;
    border: 1px solid #f1f1f1;
-   border-radius: 0; }
+   border-radius: 0;
+   font-size: 14px; }
    .dynamic-select option {
      display: none; }
    .dynamic-select .search-bar {
