@@ -6,13 +6,10 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.Entities.Abstractions;
-using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Controls.QueryAbstractions;
 using GR.Entities.EntityBuilder.MsSql.Controls.Query;
 using GR.Entities.EntityBuilder.Postgres.Controls.Query;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Permissions.Abstractions;
 using GR.Install.Abstractions;
 using GR.Install.Abstractions.Models;
@@ -37,11 +34,6 @@ namespace GR.Install
         private readonly IHostingEnvironment _hostingEnvironment;
 
         /// <summary>
-        /// Inject entity db context
-        /// </summary>
-        private readonly IEntityContext _entitiesDbContext;
-
-        /// <summary>
         /// Inject application context
         /// </summary>
         private readonly IIdentityContext _applicationDbContext;
@@ -61,23 +53,10 @@ namespace GR.Install
         /// </summary>
         private readonly INotify<GearRole> _notify;
 
-        /// <summary>
-        /// Inject dynamic service
-        /// </summary>
-        private readonly IDynamicService _dynamicService;
-
-        /// <summary>
-        /// Inject entity repository
-        /// </summary>
-        private readonly IEntityRepository _entityRepository;
-
         #endregion
 
-        public GearWebInstallerService(IEntityContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository, INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostingEnvironment hostingEnvironment)
+        public GearWebInstallerService(INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostingEnvironment hostingEnvironment)
         {
-            _entitiesDbContext = entitiesDbContext;
-            _dynamicService = dynamicService;
-            _entityRepository = entityRepository;
             _notify = notify;
             _permissionService = permissionService;
             _signInManager = signInManager;
@@ -134,28 +113,21 @@ namespace GR.Install
             settings.IsConfigured = true;
             settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
             var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            GearWebApplication.InitMigrations();
+            GearWebApplication.InitModulesMigrations();
             await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
-            await _permissionService.RefreshCache();
+            await _permissionService.SetOrResetPermissionsOnCacheAsync();
 
-            var tenantExist =
-                await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == GearSettings.TenantId);
-            if (tenantExist)
+            var tenant =
+                await _applicationDbContext.Tenants.FirstOrDefaultAsync(x => x.MachineName == tenantMachineName || x.Id == GearSettings.TenantId);
+            if (tenant == null)
             {
-                response.Errors.Add(new ErrorModel(string.Empty, "Invalid name for organization because is used for another organization or organization was configured"));
+                response.Errors.Add(new ErrorModel(string.Empty, "Something went wrong"));
                 return response;
             }
 
-            var tenant = new Tenant
-            {
-                Id = GearSettings.TenantId,
-                Name = model.Organization.Name,
-                MachineName = GearSettings.DEFAULT_ENTITY_SCHEMA,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
-                SiteWeb = model.Organization.SiteWeb,
-                Author = GlobalResources.Roles.ANONIMOUS_USER
-            };
+            tenant.Name = model.Organization.Name;
+            tenant.SiteWeb = model.Organization.SiteWeb;
+            _applicationDbContext.Tenants.Update(tenant);
 
             //Set user settings
             var superUser = await _signInManager.UserManager.Users.FirstOrDefaultAsync();
@@ -164,37 +136,24 @@ namespace GR.Install
             {
                 superUser.UserName = model.SysAdminProfile.UserName;
                 superUser.Email = model.SysAdminProfile.Email;
+                superUser.UserFirstName = model.SysAdminProfile.FirstName;
+                superUser.UserLastName = model.SysAdminProfile.LastName;
+
                 var hasher = new PasswordHasher<GearUser>();
                 var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
                 superUser.PasswordHash = hashedPassword;
                 await _signInManager.UserManager.UpdateAsync(superUser);
             }
-            await _applicationDbContext.Tenants.AddAsync(tenant);
 
             var contextRequest = await _applicationDbContext.PushAsync();
-
             if (!contextRequest.IsSuccess) return contextRequest;
 
-            //Seed entity
-            await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
             {
-                Changed = DateTime.Now,
-                Created = DateTime.Now,
-                IsSystem = true,
-                Author = superUser?.Id,
-                MachineName = tenant.MachineName,
-                Name = tenant.MachineName,
-                TenantId = tenant.Id
+                var service = x.InjectService<IDynamicService>();
+                //Register in memory types
+                await service.RegisterInMemoryDynamicTypesAsync();
             });
-
-            var entitiesRequest = await _entitiesDbContext.PushAsync();
-            if (!entitiesRequest.IsSuccess) return contextRequest;
-
-            //Create dynamic tables for configured tenant
-            await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, GearSettings.DEFAULT_ENTITY_SCHEMA);
-
-            //Register in memory types
-            await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 
             //Send welcome message to user
             await _notify.SendNotificationAsync(new List<Guid>
@@ -203,14 +162,16 @@ namespace GR.Install
                 },
                 new Notification
                 {
-                    Content = $"Welcome to Gear {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
-                    Subject = "Info",
+                    Subject = $"Welcome to Gear App {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
+                    Content = "The GEAR app is an integration system with your company's business, it has the skills to develop new applications, and allows you to create from the visual environment.",
                     NotificationTypeId = NotificationType.Info
                 });
 
             //sign in user
             await _signInManager.PasswordSignInAsync(superUser, model.SysAdminProfile.Password, true, false);
             response.IsSuccess = true;
+            GearApplication.AppState.InstallOnProgress = false;
+            GearApplication.AppState.Installed = true;
             return response;
         }
     }

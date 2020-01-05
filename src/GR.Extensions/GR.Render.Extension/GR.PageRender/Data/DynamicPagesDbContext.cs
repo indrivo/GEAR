@@ -191,7 +191,7 @@ namespace GR.PageRender.Data
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
             DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(this).Wait();
-            PageManager.SyncWebPagesAsync().Wait();
+            PageSeeder.SyncWebPagesAsync().Wait();
             TemplateManager.SeedAsync().Wait();
             return Task.CompletedTask;
         }

@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GR.PageRender.Abstractions.Helpers
 {
-    public static class PageManager
+    public static class PageSeeder
     {
         /// <summary>
         /// page types
@@ -37,9 +37,10 @@ namespace GR.PageRender.Abstractions.Helpers
         /// <summary>
         /// Layouts
         /// </summary>
-        public static readonly List<Guid> Layouts = new List<Guid> {
-            Guid.Parse("D12BDEB9-EC63-4AD6-A9AA-F47D8F1DEE55".ToLower())
-        };
+        public static class Layouts
+        {
+            public static Guid DefaultCosmoLayout = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
+        }
 
         /// <summary>
         /// Default Page Sync

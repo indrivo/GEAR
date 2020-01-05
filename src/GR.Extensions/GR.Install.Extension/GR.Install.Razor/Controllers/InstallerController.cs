@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GR.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -96,6 +97,7 @@ namespace GR.Install.Razor.Controllers
 		public IActionResult Index()
         {
             if (_isConfigured) return RedirectToAction("Index", "Home");
+            GearApplication.AppState.Installed = false;
             return View();
         }
     }

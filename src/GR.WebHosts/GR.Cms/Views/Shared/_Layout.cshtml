@@ -2,6 +2,7 @@
 @using GR.Forms.Razor.Extensions
 @using GR.Identity.Abstractions
 @using GR.Notifications.Razor.Extensions
+@using GR.PageRender.Abstractions.Helpers
 @inject IAppProvider AppProvider
 
 <!DOCTYPE html>
@@ -11,7 +12,7 @@
 
 @if (User.Identity.IsAuthenticated || isDynamicPage)
 {
-	var layoutId = (Guid?)ViewData["layoutId"] ?? Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c"); //PageManager.Layouts[0];
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageSeeder.Layouts.DefaultCosmoLayout;
 
 	<html>
 	<head>

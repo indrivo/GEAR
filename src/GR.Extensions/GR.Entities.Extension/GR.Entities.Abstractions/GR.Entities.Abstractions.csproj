@@ -18,16 +18,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="EntitiesConfiguration.json">
+    <EmbeddedResource Include="Configuration\EntitiesConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="FieldTypes.json">
+    <EmbeddedResource Include="Configuration\FieldTypes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProfileEntities.json">
+    <EmbeddedResource Include="Configuration\ProfileEntities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SysEntities.json">
+    <EmbeddedResource Include="Configuration\SysEntities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

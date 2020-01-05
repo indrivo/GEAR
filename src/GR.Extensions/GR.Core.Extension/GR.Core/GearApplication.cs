@@ -67,5 +67,11 @@ namespace GR.Core
         /// Running project path
         /// </summary>
         public static string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
+
+        public static class AppState
+        {
+            public static bool InstallOnProgress { get; set; } = false;
+            public static bool Installed { get; set; } = true;
+        }
     }
 }
