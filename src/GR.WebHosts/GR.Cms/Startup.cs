@@ -126,6 +126,7 @@ using System.Collections.Generic;
 using GR.Forms;
 using GR.Identity.Data.Groups;
 using GR.Identity.Razor.Extensions;
+using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
@@ -247,11 +248,14 @@ namespace GR.Cms
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
-			config.GearServices.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(new TranslationModuleOptions
-			{
-				Configuration = Configuration,
-				LocalizationProvider = LocalizationProvider.Yandex
-			});
+			config.GearServices
+				.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
+					new TranslationModuleOptions
+					{
+						Configuration = Configuration,
+						LocalizationProvider = LocalizationProvider.Yandex
+					})
+				.AddLocalizationRazorModule();
 
 			//--------------------------------------Menu UI Module-------------------------------------
 			config.GearServices.AddMenuModule<MenuService>()
