@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -20,11 +6,24 @@ using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Abstractions.Constants;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Razor.ViewModels.TableColumnsViewModels;
+using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -161,12 +160,14 @@ namespace GR.PageRender.Razor.Controllers
                             row.Result[property.Name] = parsed;
                         }
                         break;
+
                     case TableFieldDataType.Boolean:
                         {
                             bool.TryParse(value, out var val);
                             row.Result[property.Name] = val;
                         }
                         break;
+
                     case TableFieldDataType.Int:
                         {
                             try
@@ -179,6 +180,7 @@ namespace GR.PageRender.Razor.Controllers
                             }
                         }
                         break;
+
                     case TableFieldDataType.Decimal:
                         {
                             try
@@ -191,6 +193,7 @@ namespace GR.PageRender.Razor.Controllers
                             }
                         }
                         break;
+
                     case TableFieldDataType.Date:
                     case TableFieldDataType.DateTime:
                         {
@@ -199,6 +202,7 @@ namespace GR.PageRender.Razor.Controllers
                             row.Result[property.Name] = parsed;
                         }
                         break;
+
                     default:
                         row.Result[property.Name] = value;
                         break;
@@ -330,7 +334,6 @@ namespace GR.PageRender.Razor.Controllers
             };
 
             return Json(response, _jsonSerializerSettings);
-
         }
 
         /// <summary>

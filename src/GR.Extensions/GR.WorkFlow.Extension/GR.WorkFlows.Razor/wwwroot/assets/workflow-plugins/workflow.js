@@ -9,8 +9,66 @@
     const workflowContainerTemplate = $.templates("#workflow-container-template");
     const stateTemplate = $.templates("#state-template");
     const checkboxDeleteTemplate = $.templates("#checkboxDeleteTemplate");
+    const checkboxDeleteTemplateContract = $.templates("#checkboxDeleteTemplateContract");
     const modal = $('#state-machine-modal');
     let loadedWorkflow = JSON.parse(localStorage.getItem("workflow"));
+
+    const getWorkflowContracts = id => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/api/WorkFlowExecutor/GetWorkflowContracts',
+                type: 'get',
+                data: { workFLowId: id },
+                success: (data) => {
+                    if (Array.isArray(data)) {
+                        resolve(data);
+                    }
+                    else {
+                        if (data.is_success) {
+                            resolve(data.result);
+                        } else if (!data.is_success) {
+                            reject(data.error_keys);
+                        } else {
+                            resolve(data);
+                        }
+                    }
+                },
+                error: (e) => {
+                    reject(e);
+                }
+            });
+        });
+    }
+
+    const removeEntityContractToWorkFlow = (entityName, workFLowId) => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/api/WorkFlowExecutor/RemoveEntityContractToWorkFlow',
+                type: 'delete',
+                data: {
+                    entityName,
+                    workFLowId
+                },
+                success: (data) => {
+                    if (Array.isArray(data)) {
+                        resolve(data);
+                    }
+                    else {
+                        if (data.is_success) {
+                            resolve(data.result);
+                        } else if (!data.is_success) {
+                            reject(data.error_keys);
+                        } else {
+                            resolve(data);
+                        }
+                    }
+                },
+                error: (e) => {
+                    reject(e);
+                }
+            });
+        });
+    }
 
     const findObjectsByProperties = (array, properties) => {
         return array.filter(obj => {
@@ -63,10 +121,10 @@
 
     const addLoader = elementDOM => {
         const loadermarkup = `<div class="st-mch-loader">
-            <div class="state-machine-loader justify-content-center align-items-center">
-            <div class="lds-dual-ring"></div>
-                </div>
-            </div>`;
+										<div class="state-machine-loader justify-content-center align-items-center">
+										<div class="lds-dual-ring"></div>
+											</div>
+										</div>`;
         elementDOM.append(loadermarkup);
         elementDOM.find('.st-mch-loader').fadeIn();
     }
@@ -245,6 +303,11 @@
             $.each(workflow.states, function () {
                 appendStateToWorkflowModal(this);
             });
+            getWorkflowContracts(id).then(contracts => {
+                $.each(contracts, function () {
+                    appendContractToWorkflowModal(this);
+                });
+            });
             attachEditModalActions(id);
             modal.modal('show');
         }).catch(e => {
@@ -266,6 +329,18 @@
             }
             createState(state).then(() => {
                 $('#add-new-state-name').val(null);
+            });
+        });
+        $('#add-new-contract-button').click(function (e) {
+            e.preventDefault();
+            const contract = {
+                entityName: $('#add-new-contract-name').val(),
+                workflowId: id
+            }
+            createContract(contract).then(result => {
+                $('#add-new-contract-name').val(null);
+                contract.id = result;
+                appendContractToWorkflowModal(contract);
             });
         });
         $('#edit-workflow').submit(function (e) {
@@ -299,6 +374,59 @@
             appendStateToWorkflow(state.workflowId, state);
         }).catch(e => {
             toast.notifyErrorList(e);
+        });
+    }
+
+    const createContract = (contract = {
+        entityName: '',
+        workflowId: ''
+    }) => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/api/WorkFlowExecutor/RegisterEntityContractToWorkFlow',
+                type: 'post',
+                data: contract,
+                success: (data) => {
+                    if (Array.isArray(data)) {
+                        resolve(data);
+                    }
+                    else {
+                        if (data.is_success) {
+                            resolve(data.result);
+                        } else if (!data.is_success) {
+                            reject(data.error_keys);
+                        } else {
+                            resolve(data);
+                        }
+                    }
+                },
+                error: (e) => {
+                    reject(e);
+                }
+            });
+        });
+    }
+
+    const appendContractToWorkflowModal = contract => {
+        const htmlOutput = checkboxDeleteTemplateContract.render(contract);
+        modal.find('.contracts-list').append(htmlOutput);
+        attachContractFromModalActions(contract.id);
+    }
+
+    const attachContractFromModalActions = id => {
+        const scope = $(`.contract-item[data-contract-id="${id}"]`);
+        const workflowId = scope.closest('.modal-dialog').data('workflow-id');
+        const entityName = scope.data('entity-name');
+        scope.find('.contract-delete').click(function (e) {
+            e.preventDefault(e);
+            scope.addClass('unavailable');
+            removeEntityContractToWorkFlow(entityName, workflowId).then(() => {
+                scope.remove();
+                toast.notify({ text: window.translate("system_state_machine_deleted_success"), icon: "success" });
+            }).catch(e => {
+                scope.removeClass('unavailable');
+                toast.notifyErrorList(e);
+            });
         });
     }
 

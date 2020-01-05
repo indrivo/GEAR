@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using GR.Core.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using GR.Core.Helpers;
+using System.Collections.Generic;
 
 namespace GR.Identity.Abstractions.Extensions
 {
@@ -39,7 +39,7 @@ namespace GR.Identity.Abstractions.Extensions
         }
 
         /// <summary>
-        /// Identity result to result model 
+        /// Identity result to result model
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="result"></param>

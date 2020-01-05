@@ -13,6 +13,7 @@ namespace GR.Identity.Profile.Abstractions.Models
         /// Reference to role profile
         /// </summary>
         public Guid RoleProfileId { get; set; }
+
         public RoleProfile RoleProfile { get; set; }
     }
 }

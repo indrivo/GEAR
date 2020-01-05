@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using GR.Core.Attributes;
+﻿using GR.Core.Attributes;
 using GR.Identity.Abstractions.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 {

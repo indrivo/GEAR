@@ -1,12 +1,12 @@
-using System.Linq;
-using System.Threading.Tasks;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions;
+using GR.Identity.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {

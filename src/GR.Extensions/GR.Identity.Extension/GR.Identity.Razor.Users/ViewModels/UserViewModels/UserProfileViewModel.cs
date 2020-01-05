@@ -1,7 +1,7 @@
-﻿using System;
+﻿using GR.Identity.Abstractions.Models.MultiTenants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using GR.Identity.Abstractions.Models.MultiTenants;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -24,9 +24,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 
         public Tenant Tenant { get; set; }
 
-
         public IEnumerable<string> Roles { get; set; }
         public IEnumerable<string> Groups { get; set; }
-
     }
 }

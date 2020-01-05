@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using GR.Core.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using GR.Core.Helpers;
+using Newtonsoft.Json;
 
 namespace GR.Identity.Versioning
 {

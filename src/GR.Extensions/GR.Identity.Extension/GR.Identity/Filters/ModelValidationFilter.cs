@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Net;
+﻿using GR.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using GR.Core.Helpers;
+using System.Linq;
+using System.Net;
 
 namespace GR.Identity.Filters
 {
@@ -11,7 +11,7 @@ namespace GR.Identity.Filters
     /// <summary>
     ///     Filter of <see cref="T:Microsoft.AspNetCore.Mvc.Filters.IActionFilter" /> type used to validate Controller MVC
     ///     Model State
-    /// </summary>    
+    /// </summary>
     public sealed class ModelValidationFilter : IActionFilter
     {
         private readonly JsonSerializerSettings _serializerSettings;
@@ -47,7 +47,7 @@ namespace GR.Identity.Filters
             {
                 ContentType = "application/json",
                 Content = JsonConvert.SerializeObject(result, _serializerSettings),
-                StatusCode = (int) HttpStatusCode.OK
+                StatusCode = (int)HttpStatusCode.OK
             };
         }
 

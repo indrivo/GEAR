@@ -8,22 +8,44 @@ using Microsoft.EntityFrameworkCore;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.Table;
 using GR.Entities.Data;
+using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Entities
 {
     public class EntityRepository : IEntityRepository
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject table context
+        /// </summary>
         private readonly EntitiesDbContext _context;
 
-        public EntityRepository(EntitiesDbContext context)
+        /// <summary>
+        /// Inject memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
+
+        public EntityRepository(EntitiesDbContext context, IMemoryCache memoryCache, IUserManager<GearUser> userManager)
         {
             _context = context;
+            _memoryCache = memoryCache;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -158,8 +180,10 @@ namespace GR.Entities
         /// <param name="schemaName"></param>
         public async Task CreateDynamicTablesFromInitialConfigurationsFile(Guid tenantId, string schemaName = null)
         {
-            var syncronizer = IoC.Resolve<EntitySynchronizer>();
-            Arg.NotNull(syncronizer, nameof(EntitySynchronizer));
+            var synchronizer = IoC.Resolve<EntitySynchronizer>();
+            var context = IoC.Resolve<EntitiesDbContext>();
+            Arg.NotNull(synchronizer, nameof(EntitySynchronizer));
+            Arg.NotNull(context, nameof(EntitiesDbContext));
             var entitiesList = new List<SeedEntity>
             {
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
@@ -172,9 +196,9 @@ namespace GR.Entities
                 if (item.SynchronizeTableViewModels == null) continue;
                 foreach (var ent in item.SynchronizeTableViewModels)
                 {
-                    if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
+                    if (!await context.Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
                     {
-                        await syncronizer.SynchronizeEntities(ent, tenantId, schemaName);
+                        await synchronizer.SynchronizeEntities(ent, tenantId, schemaName);
                     }
                 }
             }
@@ -373,10 +397,7 @@ namespace GR.Entities
                 Parallel.ForEach(fields, y =>
                 {
                     var newFieldResult = tableBuilder.AddFieldSql(y, table.Name, connection, true, schema);
-                    if (!newFieldResult.IsSuccess)
-                    {
-                        Debug.WriteLine(newFieldResult.Errors);
-                    }
+                    if (!newFieldResult.IsSuccess) Debug.WriteLine(newFieldResult.Errors);
                 });
             });
         }
@@ -399,7 +420,7 @@ namespace GR.Entities
             _context.EntityTypes.Add(new EntityType
             {
                 MachineName = model.MachineName,
-                Author = "System",
+                Author = nameof(System),
                 Created = DateTime.Now,
                 Changed = DateTime.Now,
                 Name = model.MachineName,
@@ -412,6 +433,41 @@ namespace GR.Entities
             await CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
             response.IsSuccess = true;
             return response;
+        }
+
+        /// <summary>
+        /// Find table by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null)
+        {
+            var key = $"entity_{name}";
+
+            if (filter == null)
+                filter = x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
+                     || x.Name.Equals(name) && x.IsCommon
+                     || x.IsPartOfDbContext && x.Name.Equals(name);
+
+            var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
+
+            var table = tables.FirstOrDefault(filter.GetValueOrDefault());
+
+            if (table != null) return new SuccessResultModel<TableModel>(table);
+
+            var dbTable = await _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .ThenInclude(x => x.TableFieldType)
+                .FirstOrDefaultAsync(filter.GetValueOrDefault().ToExpression());
+
+            if (dbTable == null) return new NotFoundResultModel<TableModel>();
+
+            tables.Add(dbTable);
+            _memoryCache.Set(key, tables);
+            return new SuccessResultModel<TableModel>(dbTable);
         }
 
 

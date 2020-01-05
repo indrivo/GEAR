@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using IdentityServer4.EntityFramework.DbContexts;
 
 namespace GR.Identity.Extensions
 {

@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Castle.MicroKernel.Registration;
+using GR.Audit.Abstractions.Extensions;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GR.Audit.Abstractions.Extensions;
-using GR.Core;
-using GR.Core.Events;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions.Configurations;
-using GR.Identity.Abstractions.Events;
 
 namespace GR.Identity.Abstractions.Extensions
 {
@@ -19,19 +17,51 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add context and identity
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="migrationsAssembly"></param>
-        /// <param name="environment"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services,
-            IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly,
-            IHostingEnvironment environment)
+        public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services)
             where TContext : DbContext, IIdentityContext
         {
-            services.AddIdentity<GearUser, GearRole>()
+            services.AddIdentity<GearUser, GearRole>(options =>
+                {
+                    options.Lockout = new LockoutOptions
+                    {
+                        MaxFailedAccessAttempts = 4,
+                        AllowedForNewUsers = true,
+                        DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15)
+                    };
+
+                    //options.SignIn = new SignInOptions
+                    //{
+                    //    RequireConfirmedEmail = true
+                    //};
+                })
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
+
+            //Register user manager
+            IoC.Container.Register(Component.For<UserManager<GearUser>>());
+            return services;
+        }
+
+
+        /// <summary>
+        /// Add authentication
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authority = configuration.GetSection("WebClients").GetSection("CORE");
+            var uri = authority.GetValue<string>("uri");
+
+            services.AddAuthentication()
+                .AddJwtBearer(opts =>
+                {
+                    opts.Audience = "core";
+                    opts.Authority = uri;
+                    opts.RequireHttpsMetadata = false;
+                });
             return services;
         }
 
@@ -46,7 +76,7 @@ namespace GR.Identity.Abstractions.Extensions
             where TUser : GearUser
             where TUserManager : class, IUserManager<TUser>
         {
-            services.AddTransient<IUserManager<TUser>, TUserManager>();
+            services.AddGearTransient<IUserManager<TUser>, TUserManager>();
             return services;
         }
 
@@ -61,33 +91,11 @@ namespace GR.Identity.Abstractions.Extensions
             IConfiguration configuration, string migrationsAssembly)
             where TIdentityContext : DbContext, IIdentityContext
         {
-            services.AddTransient<IIdentityContext, TIdentityContext>();
-            services.AddDbContext<TIdentityContext>(options =>
-            {
-                var connectionString = DbUtil.GetConnectionString(configuration);
-                if (connectionString.Item1 == DbProviderType.PostgreSql)
-                {
-                    options.UseNpgsql(connectionString.Item2, opts =>
-                    {
-                        opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityMigrationHistory", IdentityConfig.DEFAULT_SCHEMA);
-                    });
-                }
-                else
-                {
-                    options.UseSqlServer(connectionString.Item2, opts =>
-                    {
-                        opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityMigrationHistory", IdentityConfig.DEFAULT_SCHEMA);
-                    });
-                }
-            });
+            services.AddScopedContextFactory<IIdentityContext, TIdentityContext>();
+            services.AddDbContext<TIdentityContext>(builder
+                => builder.RegisterIdentityStorage(configuration, migrationsAssembly), ServiceLifetime.Transient);
 
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
-            {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TIdentityContext>();
-            };
             return services;
         }
 
@@ -100,8 +108,7 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddAppProvider<TAppProvider>(this IServiceCollection services)
             where TAppProvider : class, IAppProvider
         {
-            services.AddTransient<IAppProvider, TAppProvider>();
-            IoC.RegisterTransientService<IAppProvider, TAppProvider>();
+            services.AddGearTransient<IAppProvider, TAppProvider>();
             return services;
         }
 
@@ -114,8 +121,23 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
             where TAddressService : class, IUserAddressService
         {
-            services.AddTransient<IUserAddressService, TAddressService>();
-            IoC.RegisterTransientService<IUserAddressService, TAddressService>();
+            services.AddGearTransient<IUserAddressService, TAddressService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register group repository
+        /// </summary>
+        /// <typeparam name="TGroupRepository"></typeparam>
+        /// <typeparam name="TContext"></typeparam>
+        /// <typeparam name="TUser"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
+            where TGroupRepository : class, IGroupRepository<TContext, TUser>
+            where TContext : DbContext where TUser : IdentityUser
+        {
+            services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;
         }
 
@@ -127,6 +149,19 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddIdentityModuleEvents(this IServiceCollection services)
         {
             IdentityEvents.RegisterEvents();
+            return services;
+        }
+
+        /// <summary>
+        /// Register location service
+        /// </summary>
+        /// <typeparam name="TLocationService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
+            where TLocationService : class, ILocationService
+        {
+            services.AddGearSingleton<ILocationService, TLocationService>();
             return services;
         }
     }

@@ -65,7 +65,7 @@ namespace GR.Core.Extensions
                         //if the sql server container is not created on run docker compose this
                         //migration can't fail for network related exception. The retry options for DbContext only 
                         //apply to transient exceptions
-                        // Note that this is NOT applied when running some orchestrators (let the orchestrator to recreate the failing service)
+                        // Note that this is NOT applied when running some orchestrator (let the orchestrator to recreate the failing service)
                         retry.Execute(() => InvokeSeeder(seeder, context, services));
 
                         SystemEvents.Database.MigrateComplete(new DatabaseMigrateEventArgs
@@ -80,10 +80,7 @@ namespace GR.Core.Extensions
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(TContext).Name);
-                    if (underK8S)
-                    {
-                        throw;          // Rethrow under k8s because we rely on k8s to re-run the pod
-                    }
+                    if (underK8S) throw;          // Rethrow under k8s because we rely on k8s to re-run the pod
                 }
             }
 
@@ -91,7 +88,7 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
-        /// 
+        /// Invoke migrations and seed
         /// </summary>
         /// <typeparam name="TContext"></typeparam>
         /// <param name="seeder"></param>
@@ -102,7 +99,14 @@ namespace GR.Core.Extensions
         {
             context.Database.Migrate();
             seeder(context, services);
-            if (context is IDbContext ctx) ctx.InvokeSeedAsync();
+            try
+            {
+                if (context is IDbContext ctx) ctx.InvokeSeedAsync(services).Wait();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

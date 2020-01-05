@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
+using GR.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
+using GR.Core.Helpers.Responses;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Email.Abstractions;
+using GR.Entities.Abstractions.Enums;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Mappers;
 using GR.Notifications.Abstractions.Models.Notifications;
+using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Services
 {
@@ -177,23 +182,72 @@ namespace GR.Notifications.Services
 
             await SendNotificationAsync(users, notification);
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Get notifications by user id
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="onlyUnread"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId)
+        public virtual async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId, bool onlyUnread = true)
         {
-            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, new List<Filter>
+            var filters = new List<Filter>
             {
-                new Filter("UserId", userId)
-            });
+                new Filter(nameof(SystemNotifications.UserId), userId)
+            };
+
+            if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+
+            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, filters);
             if (notifications.IsSuccess)
             {
                 notifications.Result = notifications.Result.OrderBy(x => x.Created);
             }
+
             return notifications;
+        }
+
+        /// <summary>
+        /// Get notifications with pagination
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="onlyUnread"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool onlyUnread = true)
+        {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return userRequest.Map<PaginatedNotificationsViewModel>();
+            var user = userRequest.Result;
+            var filters = new List<Filter>
+            {
+                new Filter(nameof(SystemNotifications.UserId),user.Id.ToGuid())
+            };
+
+            if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+
+            var sortableDirection = new Dictionary<string, EntityOrderDirection>
+            {
+                { nameof(SystemNotifications.Created), EntityOrderDirection.Desc }
+            };
+
+            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters, sortableDirection, false);
+            if (!paginatedResult.IsSuccess) return paginatedResult.Map(new PaginatedNotificationsViewModel
+            {
+                Page = page,
+                PerPage = perPage,
+                Total = 0
+            });
+            var result = new PaginatedNotificationsViewModel
+            {
+                PerPage = paginatedResult.Result.PerPage,
+                Page = paginatedResult.Result.Page,
+                Total = paginatedResult.Result.Total,
+                Notifications = paginatedResult.Result.ViewModel.Values
+            };
+
+            return new SuccessResultModel<PaginatedNotificationsViewModel>(result);
         }
 
         /// <inheritdoc />
@@ -202,9 +256,10 @@ namespace GR.Notifications.Services
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Dictionary<string, object>>> GetNotificationById(Guid notificationId)
+        public virtual async Task<ResultModel<Dictionary<string, object>>> GetNotificationByIdAsync(Guid? notificationId)
         {
-            return await _dataService.GetById<SystemNotifications>(notificationId);
+            if (notificationId == null) return new NotFoundResultModel<Dictionary<string, object>>();
+            return await _dataService.GetById<SystemNotifications>(notificationId.Value);
         }
 
         /// <inheritdoc />
@@ -215,14 +270,53 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> MarkAsReadAsync(Guid notificationId)
         {
-            if (notificationId == Guid.Empty)
-            {
-                return default;
-            }
+            if (notificationId == Guid.Empty) return new NotFoundResultModel<Guid>();
             var exists = await _dataService.Exists<SystemNotifications>(notificationId);
             if (!exists.IsSuccess) return default;
-            var response = await _dataService.DeletePermanent<SystemNotifications>(notificationId);
+            var response = await _dataService.Delete<SystemNotifications>(notificationId);
             return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete notification
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> PermanentlyDeleteNotificationAsync(Guid? notificationId)
+        {
+            if (notificationId == null) return new NotFoundResultModel();
+            var exists = await _dataService.Exists<SystemNotifications>(notificationId.Value);
+            if (!exists.IsSuccess) return default;
+            var response = await _dataService.DeletePermanent<SystemNotifications>(notificationId.Value);
+            return response.ToBase();
+        }
+
+        /// <summary>
+        /// Clear all notifications
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ClearAllUserNotificationsAsync(Guid userId)
+        {
+            if (userId == Guid.Empty) return new InvalidParametersResultModel();
+            var notificationsRequest = await GetNotificationsByUserIdAsync(userId);
+            if (!notificationsRequest.IsSuccess) return notificationsRequest.ToBase();
+            var notifications = notificationsRequest.Result.ToList();
+            var fails = 0;
+            foreach (var notification in notifications)
+            {
+                var response = await _dataService.Delete<SystemNotifications>(notification.Id);
+                if (!response.IsSuccess) fails++;
+            }
+            if (fails == 0) return new SuccessResultModel<object>().ToBase();
+            return new ResultModel
+            {
+                Errors = new List<IErrorModel>
+                {
+                    new ErrorModel(string.Empty, "Some notifications could not be deleted")
+                }
+            };
         }
 
         /// <inheritdoc />
@@ -231,9 +325,6 @@ namespace GR.Notifications.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual bool IsUserOnline(Guid userId)
-        {
-            return _hub.GetUserOnlineStatus(userId);
-        }
+        public virtual bool IsUserOnline(Guid userId) => userId != Guid.Empty && _hub.GetUserOnlineStatus(userId);
     }
 }

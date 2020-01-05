@@ -1,13 +1,13 @@
-﻿using System;
+﻿using GR.Identity.Abstractions;
+using GR.Identity.Data;
+using GR.Identity.Permissions.Abstractions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using GR.Identity.Abstractions;
-using GR.Identity.Data;
-using GR.Identity.Permissions.Abstractions;
 
 namespace GR.Identity.Extensions
 {
@@ -56,7 +56,6 @@ namespace GR.Identity.Extensions
             var listOfOldClaims = oldClaims.Where(oldCl => !claims.Select(x => x.Type).Contains(oldCl.Type)).ToList();
             await signInManager.UserManager.RemoveClaimsAsync(user, listOfOldClaims);
 
-
             await signInManager.RefreshSignInAsync(user);
         }
 
@@ -80,6 +79,7 @@ namespace GR.Identity.Extensions
                 }
             }
         }
+
         /// <summary>
         /// User has permission
         /// </summary>

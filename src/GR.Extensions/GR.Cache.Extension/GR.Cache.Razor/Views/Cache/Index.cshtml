@@ -1,10 +1,11 @@
 ﻿@using Newtonsoft.Json
 @using GR.Cache.Abstractions
-@model IEnumerable<StackExchange.Redis.RedisKey>
+@using GR.Cache.Services
+@model IEnumerable<GR.Cache.Abstractions.Models.CacheEntry>
 @inject ICacheService CacheService
 
 @{
-    ViewData["Title"] = "Redis keys";
+    ViewData["Title"] = "Cache keys";
 }
 
 <div class="row">
@@ -26,7 +27,7 @@
                         <input type="checkbox" readonly data-on-color="info" data-off-color="success">
                     }
                 </div>
-                <div id="keys-container" class="table-responsive">
+                <div id="keys-container" class="table-responsive" style="height: 82vh; overflow-y: auto">
                     <table class="table color-table primary-table">
                         <thead>
                             <tr>
@@ -39,7 +40,7 @@
                             {
                                 foreach (var item in Model)
                                 {
-                                    var key = item.ToString().Split('@')?[1];
+                                    var key = CacheService is DistributedCacheService ? item.Key.Split('@')?[1] : item.Key;
                                     var pre = await CacheService.GetAsync
                                         <dynamic>
                                         (key);

@@ -19,10 +19,10 @@ namespace GR.Notifications.Abstractions.Models.Config
         public string Message { get; set; }
         public List<string> EmailRecipients { get; set; }
     }
+
     public abstract class SignalrSendMethods
     {
         public const string SendClientEmail = "SendClientEmailNotification";
         public const string SendClientNotification = "SendClientNotification";
-        public const string SendLog = "SendLog";
     }
 }

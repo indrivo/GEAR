@@ -18,7 +18,7 @@ namespace GR.Notifications.Abstractions.Seeders
         {
             var dataService = IoC.Resolve<IDynamicService>();
             if (dataService == null) throw new Exception("IDynamicService is not registered");
-            var types = JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "NotificationTypes.json"));
+            var types = JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/NotificationTypes.json"));
             if (types == null)
                 return;
 
@@ -27,7 +27,7 @@ namespace GR.Notifications.Abstractions.Seeders
                 foreach (var item in types.NotificationTypes)
                 {
                     var exist = await dataService.GetAll<NotificationTypes>(x => x["Name"].Equals(item.Name));
-                    if (exist.Result.Any()) continue;
+                    if (exist.Result?.Any() ?? false) continue;
                     item.Author = "admin";
                     item.ModifiedBy = "admin";
                     var response = await dataService.AddWithReflection(item);
@@ -39,8 +39,11 @@ namespace GR.Notifications.Abstractions.Seeders
             }
         }
 
-        private class SeedEntity
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private sealed class SeedEntity
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public List<NotificationTypes> NotificationTypes { get; set; }
         }
     }

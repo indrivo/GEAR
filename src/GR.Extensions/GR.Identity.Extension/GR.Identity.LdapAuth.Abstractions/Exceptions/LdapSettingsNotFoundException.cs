@@ -6,7 +6,6 @@ namespace GR.Identity.LdapAuth.Abstractions.Exceptions
     {
         public LdapSettingsNotFoundException() : base("In appsettings are missing ldap settings, use documentation on usage for this module")
         {
-
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
@@ -66,7 +67,7 @@ namespace GR.Files.Box.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using IdentityServer4.EntityFramework.DbContexts;
+﻿using IdentityServer4.EntityFramework.DbContexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore.Internal;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
-using IdentityResource = IdentityServer4.Models.IdentityResource;
 using identityModels = IdentityServer4.EntityFramework.Entities;
+using IdentityResource = IdentityServer4.Models.IdentityResource;
 
 namespace GR.Identity.IdentityServer4.Extensions
 {
@@ -22,6 +22,7 @@ namespace GR.Identity.IdentityServer4.Extensions
         {
             return Convert.ToInt32(format);
         }
+
         /// <summary>
         /// Get seed for clients
         /// </summary>
@@ -136,8 +137,8 @@ namespace GR.Identity.IdentityServer4.Extensions
 
                 yield return retClient;
             }
-
         }
+
         /// <summary>
         /// Get seed resources
         /// </summary>

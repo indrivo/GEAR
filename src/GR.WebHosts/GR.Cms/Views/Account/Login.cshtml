@@ -118,7 +118,6 @@
     background-color: hsla(220, 92%, 41%, 0.1);"></div>
 	</section>
 
-
 	<div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog " role="document">
 			<form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
@@ -149,7 +148,7 @@
 	<script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
 	<script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
 	<script src="~/assets/js/core.js" asp-append-version="true"></script>
-
+	
 	<script type="text/javascript">
 		const notification = new ToastNotifier();
 		$("form[name='forgotPasswordForm']").submit(function (e) {
@@ -172,7 +171,6 @@
 				notify({ heading: "Error", text: window.translate("system_internal_error") });
 			});
 		});
-
 	</script>
 	<partial name="_ValidationScriptsPartial" />
 </body>

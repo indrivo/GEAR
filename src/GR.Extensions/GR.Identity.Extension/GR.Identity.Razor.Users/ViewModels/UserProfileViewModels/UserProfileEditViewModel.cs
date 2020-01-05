@@ -6,7 +6,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels
     public class UserProfileEditViewModel
     {
         public string Id { get; set; }
-        
+
         [Required]
         [MaxLength(50)]
         [Display(Name = "First name", Description = "first name", Prompt = "ex: John")]

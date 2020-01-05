@@ -32,7 +32,7 @@ namespace GR.Forms.Data
         private static async Task SeedFormTypesAsync(TContext context, Guid tenantId)
         {
             context.Validate();
-            var formTypes = JsonParser.ReadObjectDataFromJsonFile<SeedFormData>(Path.Combine(AppContext.BaseDirectory, "FormTypes.json"));
+            var formTypes = JsonParser.ReadObjectDataFromJsonFile<SeedFormData>(Path.Combine(AppContext.BaseDirectory, "Configuration/FormTypes.json"));
             if (formTypes == null)
                 return;
 

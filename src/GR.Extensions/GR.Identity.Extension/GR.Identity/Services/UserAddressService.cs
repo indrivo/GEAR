@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GR.Core.Extensions;
+﻿using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Services
 {
@@ -26,7 +26,7 @@ namespace GR.Identity.Services
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
-        #endregion
+        #endregion Injectable
 
         public UserAddressService(IIdentityContext context, IUserManager<GearUser> userManager)
         {

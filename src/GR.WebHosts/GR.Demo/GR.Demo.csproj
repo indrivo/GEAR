@@ -7,23 +7,15 @@
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <LangVersion>7.3</LangVersion>
-    <Version>1.0.1</Version>
+    <Version>1.6.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Product>Gear</Product>
     <Description>BPMN</Description>
     <Copyright>Indrivo 2019</Copyright>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Certificates\testmpass.cer" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Certificates\testmpass.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GR.Audit" Version="1.0.1" />
@@ -62,12 +54,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Certificates\samplempass.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

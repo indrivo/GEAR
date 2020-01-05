@@ -11,15 +11,27 @@ namespace GR.Entities.Abstractions
 {
     public interface IEntityRepository
     {
+        /// <summary>
+        /// Tables
+        /// </summary>
         IQueryable<TableModel> Tables { get; }
 
+        /// <summary>
+        /// Update table field configurations
+        /// </summary>
+        /// <param name="fieldId"></param>
+        /// <param name="viewConfigs"></param>
+        /// <param name="dbConfigs"></param>
+        /// <returns></returns>
         ResultModel UpdateTableFieldConfigurations(Guid fieldId, ICollection<FieldConfigViewModel> viewConfigs,
             ICollection<TableFieldConfigValue> dbConfigs);
+
 
         Task<ResultModel<IEnumerable<FieldConfigViewModel>>> RetrieveConfigurationsOnAddNewTableFieldAsyncTask(
             CreateTableFieldViewModel field);
 
         Task<ResultModel<CreateTableFieldViewModel>> GetAddFieldCreateViewModel(Guid id, string type);
+
         /// <summary>
         /// Create dynamic tables
         /// </summary>
@@ -71,5 +83,13 @@ namespace GR.Entities.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> GenerateTablesForTenantAsync(Tenant model);
+
+        /// <summary>
+        /// Find table by id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null);
     }
 }

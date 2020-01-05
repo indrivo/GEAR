@@ -1,11 +1,11 @@
+using GR.Identity.Abstractions;
+using IdentityModel;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using IdentityModel;
-using Microsoft.AspNetCore.Identity;
-using GR.Identity.Abstractions;
 
 namespace GR.Identity.Data.Permissions
 {
@@ -25,6 +25,7 @@ namespace GR.Identity.Data.Permissions
             _roleManager = roleManager;
             _userManager = userManager;
         }
+
         /// <summary>
         /// Check claims compatibility
         /// </summary>
@@ -40,6 +41,7 @@ namespace GR.Identity.Data.Permissions
 
             return claim.Type == claimType;
         }
+
         /// <summary>
         /// Parse claims
         /// </summary>

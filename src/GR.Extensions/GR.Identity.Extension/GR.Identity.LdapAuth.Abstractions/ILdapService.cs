@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using GR.Identity.LdapAuth.Abstractions.Models;
+﻿using GR.Identity.LdapAuth.Abstractions.Models;
+using System.Collections.Generic;
 
 namespace GR.Identity.LdapAuth.Abstractions
 {

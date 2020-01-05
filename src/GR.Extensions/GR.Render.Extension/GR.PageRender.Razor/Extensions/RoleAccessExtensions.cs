@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using GR.Core;
+using System.Collections.Generic;
 using System.Linq;
-using GR.Core;
 
 namespace GR.PageRender.Razor.Extensions
 {

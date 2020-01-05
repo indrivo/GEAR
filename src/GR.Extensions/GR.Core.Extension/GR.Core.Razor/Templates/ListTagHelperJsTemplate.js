@@ -6,7 +6,11 @@
     }
     $(tableId).DataTable({
         "language": {
-            "url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+            "url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`,
+            "paginate": {
+                "previous": '<i class="material-icons">keyboard_arrow_left</i>',
+                "next": '<i class="material-icons">keyboard_arrow_right</i>'
+            }
         },
         dom: '{Dom}',
         "processing": true,
@@ -27,12 +31,6 @@
                 $('.table_render_{Identifier} .dataTables_paginate').show();
             } else {
                 $('.table_render_{Identifier} .dataTables_paginate').hide();
-            }
-        },
-        "language": {
-            "paginate": {
-                "previous": '<i class="material-icons">keyboard_arrow_left</i>',
-                "next": '<i class="material-icons">keyboard_arrow_right</i>'
             }
         }
     });

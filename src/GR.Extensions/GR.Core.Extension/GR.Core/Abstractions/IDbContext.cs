@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -39,6 +40,6 @@ namespace GR.Core.Abstractions
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        Task InvokeSeedAsync();
+        Task InvokeSeedAsync(IServiceProvider services);
     }
 }

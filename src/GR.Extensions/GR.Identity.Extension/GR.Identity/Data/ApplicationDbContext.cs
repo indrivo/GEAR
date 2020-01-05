@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Identity.Abstractions;
@@ -11,6 +7,11 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Extensions;
+using GR.Identity.Seeders;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Data
 {
@@ -30,10 +31,10 @@ namespace GR.Identity.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-
         }
 
         #region Permissions Store
+
         public virtual DbSet<Tenant> Tenants { get; set; }
         public virtual DbSet<AuthGroup> AuthGroups { get; set; }
         public virtual DbSet<UserGroup> UserGroups { get; set; }
@@ -46,12 +47,13 @@ namespace GR.Identity.Data
         #endregion Permissions Store
 
         #region Address
+
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<District> Districts { get; set; }
 
-        #endregion
+        #endregion Address
 
         /// <summary>
         /// On model creating
@@ -70,7 +72,6 @@ namespace GR.Identity.Data
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
             builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
 
-
             builder.Entity<RoleProfile>().HasKey(ug => new { ug.ApplicationRoleId, ug.ProfileId });
 
             builder.Entity<UserGroup>()
@@ -85,12 +86,16 @@ namespace GR.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
-
             builder.Entity<GearUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
             builder.Entity<GearRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);
+            builder.Entity<StateOrProvince>()
+                .Property(k => k.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.Entity<StateOrProvince>().Property(x => x.Id);
             builder.Entity<GearUser>()
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.ApplicationUser)
@@ -115,8 +120,10 @@ namespace GR.Identity.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
+            var seeder = new ApplicationDbContextSeed();
+            seeder.SeedAsync(this, services).Wait();
             return Task.CompletedTask;
         }
     }

@@ -258,6 +258,7 @@ namespace GR.Dashboard
             if (dashboard == null)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "No active dashboard present"));
+                return response;
             }
 
             response.IsSuccess = true;

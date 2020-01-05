@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using GR.Identity.Abstractions.Models.MultiTenants;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels
 {

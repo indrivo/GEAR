@@ -1,18 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models;
@@ -25,6 +10,21 @@ using GR.Identity.Razor.ViewModels.ApiClientViewModels;
 using GR.Identity.Razor.ViewModels.PermissionViewModels;
 using GR.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using GR.Notifications.Abstractions;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 
 namespace GR.Identity.Razor.Controllers
@@ -126,39 +126,51 @@ namespace GR.Identity.Razor.Controllers
                 case "clientName":
                     result = result.OrderBy(a => a.ClientName).ToList();
                     break;
+
                 case "clientId":
                     result = result.OrderBy(a => a.ClientId).ToList();
                     break;
+
                 case "allowOfflineAccess":
                     result = result.OrderBy(a => a.AllowOfflineAccess).ToList();
                     break;
+
                 case "allowedGrantTypes":
                     result = result.OrderBy(a => a.AllowedGrantTypes).ToList();
                     break;
+
                 case "allowedScopes":
                     result = result.OrderBy(a => a.AllowedScopes).ToList();
                     break;
+
                 case "clientUri":
                     result = result.OrderBy(a => a.ClientUri).ToList();
                     break;
+
                 case "clientName DESC":
                     result = result.OrderByDescending(a => a.ClientName).ToList();
                     break;
+
                 case "clientId DESC":
                     result = result.OrderByDescending(a => a.ClientId).ToList();
                     break;
+
                 case "allowOfflineAccess DESC":
                     result = result.OrderByDescending(a => a.AllowOfflineAccess).ToList();
                     break;
+
                 case "allowedGrantTypes DESC":
                     result = result.OrderByDescending(a => a.AllowedGrantTypes).ToList();
                     break;
+
                 case "allowedScopes DESC":
                     result = result.OrderByDescending(a => a.AllowedScopes).ToList();
                     break;
+
                 case "clientUri DESC":
                     result = result.OrderByDescending(a => a.ClientUri).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -166,7 +178,6 @@ namespace GR.Identity.Razor.Controllers
 
             return result.ToList();
         }
-
 
         /// <summary>
         /// Create client
@@ -178,7 +189,6 @@ namespace GR.Identity.Razor.Controllers
             var model = new ApiClientCreateViewModel { AvailableApiScopes = GetAvailableApiScopes() };
             return View(model);
         }
-
 
         /// <summary>
         /// Get available api scopes
@@ -253,6 +263,7 @@ namespace GR.Identity.Razor.Controllers
                             ModelState.AddModelError(string.Empty, "The API Client Already Exists");
                             //_logger.LogError(exception, "The API Client already exists");
                             break;
+
                         default:
                             ModelState.AddModelError(string.Empty, "An unknown error occured");
                             //_logger.LogError(exception, "Unknown sql error");
@@ -411,12 +422,15 @@ namespace GR.Identity.Razor.Controllers
                 case "title":
                     result = result.OrderBy(a => a.Title).ToList();
                     break;
+
                 case "name DESC":
                     result = result.OrderByDescending(a => a.Name).ToList();
                     break;
+
                 case "title DESC":
                     result = result.OrderByDescending(a => a.Title).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -425,9 +439,8 @@ namespace GR.Identity.Razor.Controllers
             return result.ToList();
         }
 
-
         /// <summary>
-        /// Return view with list of permissions 
+        /// Return view with list of permissions
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -454,7 +467,6 @@ namespace GR.Identity.Razor.Controllers
             ViewBag.ApplicationId = id;
             return PartialView(resultList);
         }
-
 
         public IActionResult _CreateRole(int? id)
         {
@@ -680,7 +692,6 @@ namespace GR.Identity.Razor.Controllers
             var filtered = GetPermissionsFiltered(id, param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
 
-
             var permissionList = filtered.Select(x => new PermissionListItemViewModel
             {
                 Id = x.Id,
@@ -728,42 +739,55 @@ namespace GR.Identity.Razor.Controllers
                 case "clientName":
                     result = result.OrderBy(a => a.ClientId).ToList();
                     break;
+
                 case "permissionName":
                     result = result.OrderBy(a => a.PermissionName).ToList();
                     break;
+
                 case "author":
                     result = result.OrderBy(a => a.Author).ToList();
                     break;
+
                 case "isDeleted":
                     result = result.OrderBy(a => a.IsDeleted).ToList();
                     break;
+
                 case "permissionDescription":
                     result = result.OrderBy(a => a.Description).ToList();
                     break;
+
                 case "permissionKey":
                     result = result.OrderBy(a => a.PermissionKey).ToList();
                     break;
+
                 case "id DESC":
                     result = result.OrderByDescending(a => a.Id).ToList();
                     break;
+
                 case "clientName DESC":
                     result = result.OrderByDescending(a => a.ClientId).ToList();
                     break;
+
                 case "permissionName DESC":
                     result = result.OrderByDescending(a => a.PermissionName).ToList();
                     break;
+
                 case "author DESC":
                     result = result.OrderByDescending(a => a.Author).ToList();
                     break;
+
                 case "isDeleted DESC":
                     result = result.OrderByDescending(a => a.IsDeleted).ToList();
                     break;
+
                 case "permissionDescription DESC":
                     result = result.OrderByDescending(a => a.Description).ToList();
                     break;
+
                 case "permissionKey DESC":
                     result = result.OrderByDescending(a => a.PermissionKey).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -771,7 +795,6 @@ namespace GR.Identity.Razor.Controllers
 
             return result.ToList();
         }
-
 
         /// <summary>
         /// Get permission for update

@@ -13,11 +13,6 @@
 {
     <link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
     <link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
-    <style>
-        #select2-tableSelect-results ul.select2-results__options--nested {
-            columns: 4;
-        }
-    </style>
 }
 
 @section Scripts
@@ -43,91 +38,155 @@
     else
     {
         <script>
-            LoadNew();
+			LoadNew();
         </script>
     }
 }
-<div class="card mb-3">
-    <div class="card-header">
-        @Localizer["data_options"]
-    </div>
-    <div class="card-block pl-3 pt-2">
-        <div class="row">
-            <div class="col-7">
-                <div class="form-group">
-                    <label for="tableSelect">@Localizer["tables"]:</label>
-                    <select class="form-control tableSelect" id="tableSelect" data-request-url="@Url.Action("GetTablesAjax", "DynamicReports")"></select>
+
+
+<div class="multilevel-collapse">
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-link collapsed" data-toggle="collapse"
+                    data-target="#data_options" aria-expanded="false"
+                    aria-controls="data_options">
+                <span class="collapse-icon mr-1"></span>
+                @Localizer["data_options"]
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="data_options" class="collapse">
+                <div class="card mt-1">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <button class="btn btn-link collapsed" data-toggle="collapse"
+                                data-target="#report_tables" aria-expanded="false"
+                                aria-controls="report_tables">
+                            <span class="collapse-icon mr-1"></span>
+                            @Localizer["tables"]
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="report_tables" class="collapse">
+                            <div class="form-group mt-3">
+                                <select class="form-control tableSelect d-none" id="tableSelect" data-request-url="@Url.Action("GetTablesAjax", "DynamicReports")"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <button class="btn btn-link collapsed" data-toggle="collapse"
+                                data-target="#report_relationships" aria-expanded="false"
+                                aria-controls="report_relationships">
+                            <span class="collapse-icon mr-1"></span>
+                            @Localizer["relationships"]
+                        </button>
+                        <button class="btn btn-primary ml-auto text-white fw-500 mw-180" id="AddRelationship"
+                                role="button">
+                            <i class="material-icons mr-2">add_circle_outline</i>
+                            @Localizer["add_relationship"]
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="report_relationships" class="collapse">
+                            <div class="mt-3" id="pnlRelationships" data-request-url="@Url.Action("GetTableColumnsAjax", "DynamicReports")"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-2">
-                <div class="form-group">
-                    <label>@Localizer["relationships"]: </label>
-                    <br />
-                    <button class="btn btn-info text-white" id="AddRelationship"
-                            role="button">
-                        @Localizer["add_relationship"]
-                    </button>
-                </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-link collapsed" data-toggle="collapse"
+                    data-target="#display_options" aria-expanded="false"
+                    aria-controls="display_options">
+                <span class="collapse-icon mr-1"></span>
+                @Localizer["display_options"]
+            </button>
+            <button class="btn btn-primary ml-auto text-white fw-500 mw-180" id="AddField"
+                    role="button">
+                <i class="material-icons mr-2">add_circle_outline</i>
+                @Localizer["add_field"]
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="display_options" class="collapse">
+                <div class="mt-3" id="pnlFields" data-request-url="@Url.Action("GetAggregateTypes", "DynamicReports")"></div>
             </div>
         </div>
-        <div class="row">
-            <!--#region Relationships-->
-
-            <div class="col-8" id="pnlRelationships" data-request-url="@Url.Action("GetTableColumnsAjax", "DynamicReports")"></div>
-            <!--#endregion Relationships-->
+    </div>
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-link collapsed" data-toggle="collapse"
+                    data-target="#filters_group_options" aria-expanded="false"
+                    aria-controls="filters_group_options">
+                <span class="collapse-icon mr-1"></span>
+                @Localizer["filters_group_options"]
+            </button>
+            <button class="btn btn-primary ml-auto text-white fw-500 mw-180" id="AddFilter"
+                    role="button">
+                <i class="material-icons mr-2">add_circle_outline</i>
+                @Localizer["add_filter"]
+            </button>
+        </div>
+        <div class="card-body">
+            <div id="filters_group_options" class="collapse">
+                <div class="mt-3" id="pnlFilters" data-request-url="@Url.Action("GetFilterTypes", "DynamicReports")"></div>
+            </div>
         </div>
     </div>
-</div>
-
-
-<div class="card mb-3">
-    <div class="card-header">
-        @Localizer["display_options"]
-        <button class="btn btn-info text-white ml-2" id="AddField" role="button">@Localizer["add_field"]</button>
-    </div>
-    <div class="card-block pl-3 pt-2" style="display:none" id="cbFields">
-        <div class="row">
-            <div class="col-6" id="pnlFields" data-request-url="@Url.Action("GetAggregateTypes", "DynamicReports")"></div>
-        </div>
-    </div>
-</div>
-
-<div class="card mb-3">
-    <div class="card-header">
-        @Localizer["filters_group_options"]
-        <button class="btn btn-info text-white ml-2" id="AddFilter" role="button">@Localizer["add_filter"]</button>
-    </div>
-    <div class="card-block pl-3 pt-2" style="display:none" id="cbFilters">
-        <div class="row">
-            <div class="col-6" id="pnlFilters" data-request-url="@Url.Action("GetFilterTypes", "DynamicReports")"></div>
-        </div>
-    </div>
-</div>
-
-<div class="card mb-3">
-    <div class="card-header">
-        <div class="row">
-            <div class="mt-1 ml-1">
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-link collapsed" data-toggle="collapse"
+                    data-target="#report_charts" aria-expanded="false"
+                    aria-controls="report_charts">
+                <span class="collapse-icon mr-1"></span>
                 @Localizer["charts"]
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <select class="form-control chartSelector" id="chartSelector" data-request-url="@Url.Action("GetChartTypes", "DynamicReports")">
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-1">
-                <button class="btn btn-info text-white ml-2" id="AddChart" role="button">@Localizer["add_chart"]</button>
-            </div>
+            </button>
         </div>
-    </div>
-    <div class="card-block pl-3 pt-2" style="display:none" id="cbCharts">
-        <div class="row">
-            <div class="col-10" id="pnlCharts" data-request-url="@Url.Action("GetChartFieldTypes", "DynamicReports")">
+        <div class="card-body">
+            <div id="report_charts" class="collapse">
+                <div class="row mt-3">
+                    <div class="col-9" id="pnlCharts" data-request-url="@Url.Action("GetChartFieldTypes", "DynamicReports")"></div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <select class="form-control chartSelector" id="chartSelector" data-request-url="@Url.Action("GetChartTypes", "DynamicReports")">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-primary text-white fw-500 mw-180 d-flex align-items-center ml-auto" id="AddChart"
+                                        role="button">
+                                    <i class="material-icons mr-2">add_circle_outline</i>
+                                    @Localizer["add_chart"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="position-fixed report-actions py-2">
+    <div class="pull-left d-flex h-100 pl-3 py-2">
+        <button id="openReportModal" href="#" class="btn btn-block btn-inverse button-border d-flex align-items-center py-2 px-3">
+            <i class="material-icons mr-2">save</i>
+            @Localizer["save"]
+        </button>
+        <button id="runReport" data-request-url="@Url.Action("GetReportData", "DynamicReports")" class="btn btn-block mt-0 ml-2 btn-primary d-flex align-items-center py-2 px-3">
+            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
+                <path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff"></path>
+            </svg>
+            @Localizer["run"]
+        </button>
+    </div>
+</div>
+
 <div class="modal fade" id="saveReportModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -165,14 +224,14 @@
         </div>
     </div>
 </div>
-<div class="row ml-1">
-    <div class="mt-3 mb-3 mr-2">
-        <button class="btn btn-danger m-t-20" id="openReportModal">@Localizer["save"]</button>
-    </div>
-    <div class="mt-3 mb-3">
-        <button class="btn btn-info m-t-20" id="runReport" data-request-url="@Url.Action("GetReportData", "DynamicReports")">@Localizer["run"]</button>
-    </div>
-</div>
+@*<div class="row ml-1">
+        <div class="mt-3 mb-3 mr-2">
+            <button class="btn btn-danger m-t-20" id="openReportModal">@Localizer["save"]</button>
+        </div>
+        <div class="mt-3 mb-3">
+            <button class="btn btn-info m-t-20" id="runReport" data-request-url="@Url.Action("GetReportData", "DynamicReports")">@Localizer["run"]</button>
+        </div>
+    </div>*@
 <div id="queryResultTable">
 </div>
 <div id="chart-box">

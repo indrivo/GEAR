@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using GR.Identity.LdapAuth.Abstractions.Exceptions;
+﻿using GR.Identity.LdapAuth.Abstractions.Exceptions;
 using GR.Identity.LdapAuth.Abstractions.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Identity.LdapAuth.Abstractions.Extensions
 {

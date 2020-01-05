@@ -1,27 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using GR.Cache.Abstractions;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
+using GR.DynamicEntityStorage.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Controllers
 {
     public class MenuController : Controller
     {
-
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace GR.PageRender.Razor.Controllers
                     x.ParentMenuItemId == model.ParentMenuItemId);
                 if (data.IsSuccess && data.Result.Any())
                 {
-                    model.Order = (int) (data.Result?.Max(x => x.Order) + 1);
+                    model.Order = (int)(data.Result?.Max(x => x.Order) + 1);
                 }
                 else model.Order = 1;
 
@@ -349,7 +348,6 @@ namespace GR.PageRender.Razor.Controllers
             var tree = await _menuService.GetMenus(menuBlockId, new List<string> { GlobalResources.Roles.ADMINISTRATOR });
             return Json(tree);
         }
-
 
         /// <summary>
         /// Get page scripts for manage

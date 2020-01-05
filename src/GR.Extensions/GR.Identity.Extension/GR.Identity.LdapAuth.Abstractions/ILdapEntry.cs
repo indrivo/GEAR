@@ -1,6 +1,6 @@
 ﻿namespace GR.Identity.LdapAuth.Abstractions
 {
-   public interface ILdapEntry
+    public interface ILdapEntry
     {
         string ObjectSid { get; set; }
         string ObjectGuid { get; set; }

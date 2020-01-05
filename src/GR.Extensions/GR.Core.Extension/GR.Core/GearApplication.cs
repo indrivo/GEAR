@@ -1,9 +1,21 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
+using Castle.Windsor;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 
 namespace GR.Core
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Abstract Gear app for be extended on " +
+                                        "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
+        /// <summary>
+        /// Services container
+        /// </summary>
+        public static IWindsorContainer ServicesContainer => IoC.Container;
+
         /// <summary>
         /// Is configured
         /// </summary>
@@ -43,5 +55,10 @@ namespace GR.Core
         /// </summary>
         /// <returns></returns>
         public static bool IsHostedOnLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        /// <summary>
+        /// Running project path
+        /// </summary>
+        public static string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
     }
 }

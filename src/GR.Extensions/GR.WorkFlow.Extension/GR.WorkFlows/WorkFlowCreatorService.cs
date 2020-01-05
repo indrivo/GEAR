@@ -437,9 +437,9 @@ namespace GR.WorkFlows
             if (removeItems.Any())
             {
                 var mappedRoles = removeItems.Select(x =>
-                    {
-                        return transition.TransitionRoles.FirstOrDefault(y => y.RoleId.Equals(x));
-                    });
+                {
+                    return transition.TransitionRoles.FirstOrDefault(y => y.RoleId.Equals(x));
+                }).ToList();
                 _workFlowContext.TransitionRoles.RemoveRange(mappedRoles);
             }
 

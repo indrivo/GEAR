@@ -9,6 +9,11 @@ namespace GR.WebApplication.Helpers.AppConfigurations
     public class GearAppBuilderConfig
     {
         /// <summary>
+        /// App name
+        /// </summary>
+        public virtual string AppName { get; set; } = "GEAR_APP";
+
+        /// <summary>
         /// Hosting environment
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; set; }

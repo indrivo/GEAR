@@ -11,7 +11,6 @@ namespace GR.Core.Helpers
     public static class IoC
     {
         private static IWindsorContainer _container;
-
         public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
 
         /// <summary>
@@ -120,6 +119,14 @@ namespace GR.Core.Helpers
                 throw new IoCNotRegisterServiceException($"{typeof(TService).Name} is not registered in IoC container");
             return Container.Resolve<TService>();
         }
+
+        /// <summary>
+        /// Resolve generic type
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        public static TService ResolveNonRequired<TService>()
+            => !IsServiceRegistered<TService>() ? default : Container.Resolve<TService>();
 
         /// <summary>
         /// Resolve generic type by key

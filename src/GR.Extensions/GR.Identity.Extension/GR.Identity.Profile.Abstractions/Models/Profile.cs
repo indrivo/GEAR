@@ -1,5 +1,5 @@
-﻿using System;
-using GR.Core;
+﻿using GR.Core;
+using System;
 
 namespace GR.Identity.Profile.Abstractions.Models
 {
@@ -10,10 +10,12 @@ namespace GR.Identity.Profile.Abstractions.Models
         /// Profile name
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// Profile description
         /// </summary>
         public string Description { get; set; }
+
         /// <summary>
         /// Describe profile level
         /// </summary>

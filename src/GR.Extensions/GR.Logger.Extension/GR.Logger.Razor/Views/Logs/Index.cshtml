@@ -1,0 +1,137 @@
+@{
+    ViewData["Title"] = "Runtime logs";
+}
+
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+
+<style>
+    .select-error {
+        color: red;
+    }
+
+    .select-warn {
+        color: orange;
+    }
+
+    .select-info {
+        color: green;
+    }
+
+    .select-trace {
+        color: white;
+    }
+</style>
+
+<textarea id="code"></textarea>
+
+@section Scripts{
+    <script src="~/lib/codemirror/codemirror.min.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.js"></script>
+    <script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
+    <script src="~/lib/codemirror/mode/css/css.js"></script>
+    <script src="~/lib/codemirror/mode/xml/xml.js"></script>
+    <script>
+        $(function () {
+            const timeOut = 5000;
+
+            var editor = CodeMirror.fromTextArea(document.getElementById("code"),
+                {
+                    lineNumbers: true,
+                    mode: "xml",
+                    keyMap: "sublime",
+                    autoCloseBrackets: true,
+                    matchBrackets: true,
+                    showCursorWhenSelecting: true,
+                    theme: "monokai",
+                    tabSize: 2
+                });
+
+            editor.on('change', function () {
+                editor.save();
+            });
+
+            editor.setSize(null, 700);
+
+            window.onbeforeunload = confirmExit;
+            function confirmExit() {
+                $.ajax({
+                    url: "/api/Logs/StopStoreLogs",
+                    method: "post"
+                });
+            }
+
+
+            setInterval(function () {
+                $.ajax({
+                    url: "/api/Logs/GetLogs",
+                    method: "get",
+                    success: function (logs) {
+                        var cm = $(".CodeMirror")[0].CodeMirror;
+                        $.each(logs, function (index, log) {
+                            const text = log.message;
+                            insertText(text);
+                            var lineStyle = "";
+
+                            switch (log.level) {
+                                case 'Info':
+                                    {
+                                        lineStyle = "select-info";
+                                    }; break;
+                                case 'Error':
+                                    {
+                                        lineStyle = "select-error";
+                                    }; break;
+                                case 'Fatal':
+                                    {
+                                        lineStyle = "select-error";
+                                    }; break;
+                                case 'Trace':
+                                    {
+                                        lineStyle = "select-trace";
+                                    }; break;
+                                case 'Warn':
+                                    {
+                                        lineStyle = "select-warn";
+                                    }; break;
+                            }
+
+                            var doc = cm.getDoc();
+                            var cursor = doc.getCursor();
+                            var lines = (text.match(new RegExp("\n", "g")) || []).length;
+                            for (let i = 0; i <= lines; i++) {
+                                editor.addLineClass(cursor.line - i, 'wrap', lineStyle);
+                            }
+
+                            insertText("--------------------------------------------------------------------------------------------");
+                        });
+                    },
+                    error: function (e) {
+                        alert("Your session has expired or server not respond, please try to refresh page");
+                    }
+                });
+            }, timeOut);
+
+
+            function insertText(data) {
+                var cm = $(".CodeMirror")[0].CodeMirror;
+                var doc = cm.getDoc();
+                var cursor = doc.getCursor(); // gets the line number in the cursor position
+
+                var line = doc.getLine(cursor.line); // get the line contents
+                var pos = {
+                    line: cursor.line
+                };
+                if (line.length === 0) {
+                    // check if the line is empty
+                    // add the data
+                    doc.replaceRange(data, pos);
+                } else {
+                    // add a new line and the data
+                    doc.replaceRange("\n" + data, pos);
+                }
+            }
+        });
+    </script>
+}

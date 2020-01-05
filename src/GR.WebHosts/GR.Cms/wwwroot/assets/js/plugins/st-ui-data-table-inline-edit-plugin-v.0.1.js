@@ -1,5 +1,5 @@
 /* Table inline edit
- * A plugin for inline edit on dynamic tables 
+ * A plugin for inline edit on dynamic tables
  *
  * v1.0.0
  *
@@ -7,14 +7,12 @@
  * Author: Lupei Nicolae
  */
 
-
 // Make sure jQuery has been loaded
 if (typeof jQuery === "undefined") {
     throw new Error("Inline edit plugin require JQuery");
 }
 
 function TableInlineEdit() {
-
 };
 
 $(document).ready(function () {
@@ -118,7 +116,7 @@ TableInlineEdit.prototype.db = new DataInjector();
 TableInlineEdit.prototype.toast = new ToastNotifier();
 
 /**
- * Default container on unknown column type 
+ * Default container on unknown column type
  */
 TableInlineEdit.prototype.defaultNotEditFieldContainer = "";
 
@@ -161,7 +159,6 @@ TableInlineEdit.prototype.getActionsOnAdd = function () {
 					  </div>`;
     return template;
 };
-
 
 TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
     const scope = this;
@@ -209,11 +206,10 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
     return this.toggleVisibilityColumnsButton(ctx, true);
 };
 
-
 /**
  * Toggle button disable state
- * @param {*} context 
- * @param {*} state 
+ * @param {*} context
+ * @param {*} state
  */
 TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
     if (state) {
@@ -229,7 +225,6 @@ TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) 
     }
 }
 
-
 /**
  * Cancel new item
  * @param {any} context
@@ -241,7 +236,6 @@ TableInlineEdit.prototype.cancelNewItem = function (context) {
     this.cancelTableAddMode(context);
     context.closest("tr").remove();
 };
-
 
 /*
  * Constants
@@ -292,7 +286,6 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 TableInlineEdit.prototype.cancelTableAddMode = function (ctx) {
     ctx.closest("table").attr("add-mode", "false");
 };
-
 
 /**
  * Validate row
@@ -401,12 +394,11 @@ TableInlineEdit.prototype.onGetNewAddCell = function (cell) {
     //do something
 };
 
-
 /**
- * Return new cell container for field definition 
+ * Return new cell container for field definition
  * by data type and references
- * @param {*} column 
- * @param {*} cell 
+ * @param {*} column
+ * @param {*} cell
  */
 TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
     if (!column.config) {
@@ -634,7 +626,6 @@ TableInlineEdit.prototype.getReferenceEditCell = (conf) => {
 				End Get inline cells
 -------------------------------------------------*/
 
-
 /*-------------------------------------------------
 				Bind events to inline cells
 -------------------------------------------------*/
@@ -657,7 +648,6 @@ TableInlineEdit.prototype.onAddedCellBindValidations = function (el) {
         }
     });
 };
-
 
 /**
  * On after init add text cell
@@ -725,7 +715,6 @@ TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
 TableInlineEdit.prototype.onAfterInitAddReferenceCell = function (el, data) {
     $(el).find("select").attr("class", "inline-add-event data-new form-control");
 };
-
 
 /**
  * On after init edit cell
@@ -893,14 +882,10 @@ function addNewToReferenceHandler() {
 				End Events
 -------------------------------------------------*/
 
-
-
-
 /*-------------------------------------------------
 				Event Handlers
 -------------------------------------------------*/
 TableInlineEdit.prototype.getOnNonRecognizedField = function (columnCtx, confs) {
-
 };
 
 /**
@@ -1151,7 +1136,6 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
             const redraw = table.row(index).data(obj).invalidate();
             $(redraw.row(index).nodes()).find(".inline-edit").on("click", inlineEditHandler);
         });
-
     }).catch(err => {
         console.warn(err);
     });
@@ -1242,7 +1226,6 @@ TableInlineEdit.prototype.displayNotification = (conf) => {
 /*-------------------------------------------------
 				End Event Handlers
 -------------------------------------------------*/
-
 
 TableInlineEdit.prototype.elementOffset = function (el) {
     var rect = el.getBoundingClientRect(),

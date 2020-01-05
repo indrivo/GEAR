@@ -30,10 +30,10 @@ namespace GR.Entities.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IEntityContext, TEntityContext>();
+            IoC.RegisterTransientService<IEntityContext, TEntityContext>();
 
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {
-                { typeof(IEntityContext), typeof(TEntityContext) },
                 { typeof(IEntityRepository), typeof(TEntityRepository) }
             });
 
@@ -100,10 +100,10 @@ namespace GR.Entities.Abstractions.Extensions
         {
             services.RegisterAuditFor<IEntityContext>("Entity module");
             services.AddDbContext<TEntityContext>(options, ServiceLifetime.Transient);
-            SystemEvents.Database.OnMigrate += (sender, args) =>
-            {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TEntityContext>();
-            };
+            //SystemEvents.Database.OnMigrate += (sender, args) =>
+            //{
+            //    GearApplication.GetHost<IWebHost>().MigrateDbContext<TEntityContext>();
+            //};
             return services;
         }
     }

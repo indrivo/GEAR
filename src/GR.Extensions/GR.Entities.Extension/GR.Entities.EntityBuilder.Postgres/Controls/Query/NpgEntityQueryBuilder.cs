@@ -298,7 +298,19 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             orderByBuilder.Append(" ORDER BY ");
             foreach (var orderColumn in viewModel.OrderByColumns)
             {
-                orderByBuilder.AppendFormat("\"{0}\" {1} ", orderColumn.Key, orderColumn.Value.ToString());
+                var orderColumnQuery = $"\"{orderColumn.Key}\""; ;
+                var column = viewModel.Fields.FirstOrDefault(x => x.ColumnName.Equals(orderColumn.Key));
+                if (column != null)
+                {
+                    switch (column.Type)
+                    {
+                        case "int32":
+                        case "int":
+                            orderColumnQuery = $" cast ({orderColumnQuery} as double precision)";
+                            break;
+                    }
+                }
+                orderByBuilder.AppendFormat(" {0} {1} ", orderColumnQuery, orderColumn.Value.ToString());
                 if (viewModel.OrderByColumns.IndexOf(orderColumn) != viewModel.OrderByColumns.Count - 1)
                     orderByBuilder.Append(", ");
             }
