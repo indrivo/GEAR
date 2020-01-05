@@ -72,7 +72,7 @@ $(window).on("load",
 	 Toggle Sidebar Nav
 	 ************************************************/
 
-    $(".sidebar.collapsed li.open .sub-nav").css({ "display": "none" });
+    // $(".sidebar.collapsed li.open .sub-nav").css({ "display": "none" });
 
     var activeMenuItem = $(".sidebar li.active").parent().parent();
     activeMenuItem.css({ 'background-color': 'rgba(0, 0, 0, 0.15)' });
@@ -156,7 +156,7 @@ $(window).on("load",
     $body.find('.sidebar.collapsed .navigation').on('mouseleave', function () {
 
 
-        activeMenuItem.removeClass('open');
+        // activeMenuItem.removeClass('open');
 
         $('.sidebar .navigation li.active').parents('li').last().addClass('active');
 
@@ -164,8 +164,16 @@ $(window).on("load",
         $(".sidebar.collapsed .navigation li.open").each(function (index) {
             $(this).find('.sub-nav').css({ "display": "none" });
             // $('active')
-            $(this).removeClass('open');
+            // $(this).removeClass('open');
             // .addClass('active');
+        });
+    });
+    $body.find('.sidebar.collapsed .navigation').on('mouseover', function () { 
+        activeMenuItem.addClass('open');
+
+        $(".sidebar.collapsed .navigation li.open").each(function (index) {
+            $(this).find('.sub-nav').css({ "display": "block" });
+            // $(this).addClass('open');
         });
     });
 
@@ -407,19 +415,70 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 /*
  * text cell position
  */
+function getOffset(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+      left: rect.left + window.scrollX,
+      top: rect.top + window.scrollY
+    };
+  }
+
+// function changeTextCellPosition() {
+//     $(this).parent().focusout(function () {
+//         $(this).css("left", "");
+//         $(this).css("top", "");
+//     });
+
+//     const expandCell = $(this).parent();
+//     const pos = new TableInlineEdit().elementOffset($(this).parent().get(0));
+//     const docHeight = $(document).height();
+//     const docWidth = $(document).width();
+//     const hPercent = pos.top * 100 / docHeight;
+//     const diffH = docHeight - pos.top;
+//     const textareaWidth = $(expandCell).innerWidth();
+
+//     console.log(textareaWidth);
+
+//     const navBarWidth = $(".navigation").width();
+//     pos.left -= navBarWidth;
+//     const wPercent = pos.left * 100 / docWidth;
+//     //const diffW = docWidth - pos.left;
+
+//     if (hPercent > 72 && hPercent < 75) {
+//         expandCell.css("top", `${pos.top - diffH}px`);
+//     } else if (hPercent > 80) {
+//         expandCell.css("top", `${pos.top - diffH
+//             // - 240
+//             }px`);
+//     }
+
+//     if (wPercent > 70) {
+//         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
+//             // * 2
+//             }px`);
+//             console.log('wPercent > 70');
+
+//     }
+//     // getOffset(element).left;
+//     // console.log(left);
+// }
+
+
 function changeTextCellPosition() {
-    $(this).parent().focusout(function () {
+    $(this).focusout(function () {
         $(this).css("left", "");
         $(this).css("top", "");
     });
 
-    const expandCell = $(this).parent();
-    const pos = new TableInlineEdit().elementOffset($(this).parent().get(0));
+    const expandCell = $(this);
+    const pos = new TableInlineEdit().elementOffset($(this).get(0));
     const docHeight = $(document).height();
     const docWidth = $(document).width();
     const hPercent = pos.top * 100 / docHeight;
     const diffH = docHeight - pos.top;
     const textareaWidth = $(expandCell).innerWidth();
+
+    console.log('textareaWidth:  ' + textareaWidth);
 
     const navBarWidth = $(".navigation").width();
     pos.left -= navBarWidth;
@@ -438,7 +497,11 @@ function changeTextCellPosition() {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
             // * 2
             }px`);
+            console.log('wPercent > 70');
+
     }
+    // getOffset(element).left;
+    // console.log(left);
 }
 
 
@@ -1709,7 +1772,10 @@ function makeMenuActive(target) {
         if (a.text()) {
             $(".breadcrumb").prepend(`<li class="breadcrumb-item">${a.text()}</li>`);
         }
-        last.addClass("open");
+        last.addClass("active");
+        $('.navigation').on('mouseover', function () { 
+            last.addClass("open");
+        });
         if (target.closest("nav").length !== 0)
             makeMenuActive(last);
     }
@@ -1783,6 +1849,37 @@ $(document).ready(function () {
     Promise.all([loadMenusPromise, localizationPromise]).then(function (values) {
         window.forceTranslate();
     });
+
+    //horizontal drag
+    if($('.dataTables_scrollBody').length) {
+    const slider = document.querySelector('.dataTables_scrollBody');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.classList.add('active');
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+    slider.addEventListener('mousemove', (e) => {
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 3; //scroll-fast
+      slider.scrollLeft = scrollLeft - walk;
+      console.log(walk);
+    });
+    }
 
     //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
 });
