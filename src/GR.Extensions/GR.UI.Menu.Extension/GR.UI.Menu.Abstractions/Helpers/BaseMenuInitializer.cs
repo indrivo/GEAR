@@ -53,10 +53,17 @@ namespace GR.UI.Menu.Abstractions.Helpers
 
     public class MenuItemConfig
     {
+        public MenuItemConfig() { }
+
+        public MenuItemConfig(Guid id)
+        {
+            Id = id;
+        }
+
         /// <summary>
         /// Menu id
         /// </summary>
-        public virtual Guid Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Name

@@ -2,7 +2,7 @@
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Orders.Abstractions.Models;
 
-namespace GR.ECommerce.Razor.ViewModels.OrderViewModels
+namespace GR.Orders.Razor.ViewModels.OrderViewModels
 {
     public class OrderViewModel
     {

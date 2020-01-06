@@ -8,13 +8,13 @@ using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.ECommerce.Payments.Abstractions;
-using GR.ECommerce.Razor.ViewModels.OrderViewModels;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
+using GR.Orders.Razor.ViewModels.OrderViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GR.ECommerce.Razor.Controllers
+namespace GR.Orders.Razor.Controllers
 {
     [Authorize]
     public class OrdersController : BaseGearController
