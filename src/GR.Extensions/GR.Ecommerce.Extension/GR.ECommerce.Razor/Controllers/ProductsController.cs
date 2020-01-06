@@ -19,6 +19,9 @@ using System.ComponentModel.DataAnnotations;
 using GR.Core;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
+using GR.ECommerce.Razor.Helpers;
+using GR.ECommerce.Razor.Models;
+using GR.ECommerce.Razor.ViewModels.ProductsGalleryViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GR.ECommerce.Razor.Controllers
@@ -32,11 +35,17 @@ namespace GR.ECommerce.Razor.Controllers
         /// Inject product service
         /// </summary>
         private readonly IProductService<Product> _productService;
+
+        /// <summary>
+        /// Inject gallery manager
+        /// </summary>
+        private readonly ProductGalleryManager _galleryManager;
         #endregion
 
-        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService) : base(context, dataFilter)
+        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService, ProductGalleryManager galleryManager) : base(context, dataFilter)
         {
             _productService = productService;
+            _galleryManager = galleryManager;
         }
 
 
@@ -117,20 +126,6 @@ namespace GR.ECommerce.Razor.Controllers
                 return View(model);
             }
 
-            if (model.ProductImagesList != null && model.ProductImagesList.Any())
-            {
-                model.ProductImages = model.ProductImagesList.Select(async x =>
-                {
-                    var stream = new MemoryStream();
-                    await x.CopyToAsync(stream);
-                    return stream;
-                }).Select(x => x.Result).Select(x => x.ToArray()).Select(x => new ProductImage
-                {
-                    Image = x,
-                    ProductId = model.Id
-                }).ToList();
-            }
-
             await Context.Products.AddAsync(model);
             await Context.ProductPrices.AddAsync(new ProductPrice
             {
@@ -141,6 +136,10 @@ namespace GR.ECommerce.Razor.Controllers
 
             if (dbResult.IsSuccess)
             {
+                if (model.ProductImagesList != null && model.ProductImagesList.Any())
+                {
+                    await _galleryManager.AddImagesOnCreateAsync(model.Id, model.ProductImagesList);
+                }
                 return RedirectToAction(nameof(Index));
             }
 
@@ -242,6 +241,40 @@ namespace GR.ECommerce.Razor.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Upload images
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UploadImages(UploadImagesViewModel model)
+        {
+            var jsonFiles = new JsonFiles(new List<ViewDataUploadFilesResult>());
+            return Json(jsonFiles);
+        }
+
+        /// <summary>
+        /// Get user image
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public IActionResult GetImage(Guid? imageId)
+        {
+            if (imageId == null) return NotFound();
+            try
+            {
+                var photo = _productService.Context.ProductImages.SingleOrDefault(x => x.Id == imageId);
+                if (photo?.Image != null) return File(photo.Image, photo.ContentType);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return NotFound();
+        }
         #endregion
 
         #region Api's

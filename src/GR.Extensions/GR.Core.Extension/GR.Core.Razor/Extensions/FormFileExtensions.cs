@@ -1,0 +1,37 @@
+﻿using System.Drawing;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+
+namespace GR.Core.Razor.Extensions
+{
+    public static class FormFileExtensions
+    {
+        /// <summary>
+        /// Get image from form file
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        public static Image GetImageFromFormFile(this IFormFile formFile)
+        {
+            Image response;
+            using (var image = Image.FromStream(formFile.OpenReadStream()))
+            {
+                response = (Image)image.Clone();
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get memory stream from form file
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        public static MemoryStream GetMemoryStream(this IFormFile formFile)
+        {
+            var stream = new MemoryStream();
+            formFile.CopyTo(stream);
+            return stream;
+        }
+    }
+}

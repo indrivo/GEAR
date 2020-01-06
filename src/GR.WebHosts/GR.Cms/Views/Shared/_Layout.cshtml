@@ -1,4 +1,3 @@
-@using GR.Core.Razor.Extensions
 @using GR.Forms.Razor.Extensions
 @using GR.Identity.Abstractions
 @using GR.Notifications.Razor.Extensions
@@ -26,6 +25,7 @@
 		@RenderSection("PreScripts", required: false)
 		<partial name="_BootstrapThemeScripts" />
 		@RenderSection("Styles", required: false)
+		@Html.PartialViewStyles()
 		@Html.IncludeCoreJavascriptPlugins()
 		@Html.IncludeNotificationJavascriptPlugins()
 	</head>
@@ -37,6 +37,7 @@
 			@Html.IncludeFormsJavascriptPlugins()
 			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 			@RenderSection("Scripts", false)
+			@Html.PartialViewScripts()
 			<application-scripts layout-id="@layoutId"></application-scripts>
 			<layout-js-code layout-id="@layoutId"></layout-js-code>
 			<partial name="_AssistanceChat" model="layoutId" />
