@@ -4,27 +4,43 @@
     @Html.Hidden("ProductId", Model)
     <div class="row fileupload-buttonbar">
         <div class="col-lg-7">
-            <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button">
-                <i class="glyphicon glyphicon-plus"></i>
-                <span>Add files...</span>
-                <input type="file" name="files" multiple>
-            </span>
-            <button type="submit" class="btn btn-primary start">
-                <i class="glyphicon glyphicon-upload"></i>
-                <span>Start upload</span>
-            </button>
-            <button type="reset" class="btn btn-warning cancel">
-                <i class="glyphicon glyphicon-ban-circle"></i>
-                <span>Cancel upload</span>
-            </button>
-            <button type="button" class="btn btn-danger delete">
-                <i class="glyphicon glyphicon-trash"></i>
-                <span>Delete</span>
-            </button>
-            <input type="checkbox" class="toggle">
-            <!-- The global file processing state -->
-            <span class="fileupload-process"></span>
+            <div class="row fileUploadOptions">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <div class="fileUploadMenuOption">
+                    <span class="btn btn-success fileinput-button">
+                        <i class="fa fa-plus"></i>
+                        <span>Add files...</span>
+                        <input type="file" name="files" multiple>
+                    </span>
+                </div>
+                <div class="fileUploadMenuOption">
+                    <button type="submit" class="btn btn-primary start">
+                        <i class="fa fa-upload"></i>
+                        <span>Start upload</span>
+                    </button>
+                </div>
+                <div class="fileUploadMenuOption">
+                    <button type="reset" class="btn btn-warning cancel">
+                        <i class="fa fa-window-close"></i>
+                        <span>Cancel upload</span>
+                    </button>
+                </div>
+                <div class="fileUploadMenuOption">
+                    <button type="button" class="btn btn-danger delete">
+                        <i class="fa fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+                <div class="fileUploadMenuOption">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" id="selectAll" class="custom-control-input toggle">
+                        <label class="custom-control-label" for="selectAll">Select all</label>
+                    </div>
+                </div>
+
+                <!-- The global file processing state -->
+                <span class="fileupload-process"></span>
+            </div>
         </div>
         <!-- The global progress state -->
         <div class="col-lg-5 fileupload-progress ">
@@ -73,6 +89,11 @@
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
     <link href="~/lib/blueimp-file-upload/css/jquery.fileupload.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/lib/blueimp-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" asp-append-version="true" />
+    <style>
+        .fileUploadMenuOption {
+            margin: 0.2em;
+        }
+    </style>
 }
 
 
@@ -96,13 +117,13 @@
             <td>
                 {% if (!i && !o.options.autoUpload) { %}
                 <button class="btn btn-primary start" disabled>
-                    <i class="glyphicon glyphicon-upload"></i>
+                    <i class="fa fa-upload"></i>
                     <span>Start</span>
                 </button>
                 {% } %}
                 {% if (!i) { %}
                 <button class="btn btn-warning cancel">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <i class="fa fa-window-close"></i>
                     <span>Cancel</span>
                 </button>
                 {% } %}
@@ -137,18 +158,25 @@
                 <span class="size">{%=o.formatFileSize(file.size)%}</span>
             </td>
             <td>
-                {% if (file.deleteUrl) { %}
-                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deletewithcredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
-                    <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete</span>
-                </button>
-                <input type="checkbox" name="delete" value="1" class="toggle">
-                {% } else { %}
-                <button class="btn btn-warning cancel">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
-                </button>
-                {% } %}
+                <div class="row">
+                    {% if (file.deleteUrl) { %}
+                    <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deletewithcredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
+                        <i class="fa fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="delete" value="1" id="select_{%=file.name%}" class="custom-control-input toggle">
+                        <label class="custom-control-label" for="select_{%=file.name%}">Select</label>
+                    </div>
+
+                    {% } else { %}
+                    <button class="btn btn-warning cancel">
+                        <i class="fa fa-window-close"></i>
+                        <span>Cancel</span>
+                    </button>
+                    {% } %}
+                </div>
             </td>
         </tr>
         {% } %}
@@ -199,6 +227,21 @@
                 dataType: 'json'
             });
 
+        });
+
+        $('#fileupload').addClass('fileupload-processing');
+
+        $.ajax({
+            type: 'GET',
+            contentType: "application/json; charset=utf-8",
+            url: '/Products/GetProductImages',
+            data: {
+                ProductId: '@Model'
+            },
+            success: function (data) {
+                $('#fileupload').fileupload('option', 'done').call($('#fileupload'), $.Event('done'), { result: { files: data.files } })
+                $('#fileupload').removeClass('fileupload-processing');
+            }
         });
     </script>
 }

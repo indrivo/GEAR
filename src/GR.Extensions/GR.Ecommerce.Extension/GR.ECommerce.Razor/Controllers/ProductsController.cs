@@ -16,7 +16,9 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing.Imaging;
 using GR.Core;
+using GR.Core.Razor.Extensions;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using GR.ECommerce.Razor.Helpers;
@@ -242,6 +244,18 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
+        /// Get product images
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<JsonResult> GetProductImages(Guid? productId)
+        {
+            var imagesRequest = await _galleryManager.GetProductImagesOnEditModeAsync(productId);
+            return Json(!imagesRequest.IsSuccess ? new JsonFiles(null) : imagesRequest.Result);
+        }
+
+        /// <summary>
         /// Upload images
         /// </summary>
         /// <param name="model"></param>
@@ -250,8 +264,20 @@ namespace GR.ECommerce.Razor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UploadImages(UploadImagesViewModel model)
         {
-            var jsonFiles = new JsonFiles(new List<ViewDataUploadFilesResult>());
-            return Json(jsonFiles);
+            var result = await _galleryManager.UploadProductImagesAsync(model);
+            return !result.IsSuccess ? Json("Error") : Json(result.Result);
+        }
+
+        /// <summary>
+        /// Delete image by id
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(Guid? imageId)
+        {
+            await _galleryManager.DeleteImageAsync(imageId);
+            return Json("OK");
         }
 
         /// <summary>
@@ -275,6 +301,39 @@ namespace GR.ECommerce.Razor.Controllers
 
             return NotFound();
         }
+
+
+        /// <summary>
+        /// Get user image
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public IActionResult GetImageThumb(Guid? imageId)
+        {
+            if (imageId == null) return NotFound();
+            try
+            {
+                var photo = _productService.Context.ProductImages.SingleOrDefault(x => x.Id == imageId);
+                if (photo?.Image != null)
+                {
+                    var resizedImage = photo.Image
+                        .ToMemoryStream()
+                        .GetImageFromStream()
+                        .ResizeImage(80, 80)
+                        .ToBytes(ImageFormat.Png);
+
+                    return File(resizedImage, photo.ContentType);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return NotFound();
+        }
+
         #endregion
 
         #region Api's

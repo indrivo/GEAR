@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -35,9 +35,7 @@
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-	<None Include="appsettings.Stage.json" />
-  </ItemGroup>
+
   <ItemGroup>
 	  <ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Audit.Extension\GR.Audit.Razor\GR.Audit.Razor.csproj" />
@@ -106,9 +104,6 @@
 	</Content>
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Views\Products\Edit.cshtml">
-	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">

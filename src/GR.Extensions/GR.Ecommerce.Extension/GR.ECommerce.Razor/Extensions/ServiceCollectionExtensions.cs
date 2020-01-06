@@ -24,7 +24,7 @@ namespace GR.ECommerce.Razor.Extensions
                         await x.InjectService<IMenuService>().AppendMenuItemsAsync(new CommerceMenuInitializer());
                     });
             };
-            services.AddSingleton<ProductGalleryManager>();
+            services.AddScoped<ProductGalleryManager>();
             return services;
         }
     }

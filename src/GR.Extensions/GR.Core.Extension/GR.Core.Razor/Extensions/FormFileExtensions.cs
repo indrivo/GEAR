@@ -13,13 +13,10 @@ namespace GR.Core.Razor.Extensions
         /// <returns></returns>
         public static Image GetImageFromFormFile(this IFormFile formFile)
         {
-            Image response;
-            using (var image = Image.FromStream(formFile.OpenReadStream()))
-            {
-                response = (Image)image.Clone();
-            }
-
-            return response;
+            var stream = formFile.OpenReadStream();
+            var result = stream.GetImageFromStream();
+            stream.Close();
+            return result;
         }
 
         /// <summary>

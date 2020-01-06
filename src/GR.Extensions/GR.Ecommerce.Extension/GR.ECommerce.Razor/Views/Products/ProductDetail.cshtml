@@ -1,166 +1,191 @@
 @using GR.ECommerce.Abstractions
 @using GR.ECommerce.Abstractions.Models
+@using IdentityServer4.Extensions
 @model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
 @inject IProductService<Product> ProductService
 
 @{
-    ViewData["Title"] = "Product Detail";
-    var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
+	ViewData["Title"] = "Product Detail";
+	var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
 }
 
+<div class="card">
+	<div class="card-body">
+		<div class="row">
 
-<div class="container">
-    <div class="row">
+			<div class="col-lg-5 order-lg-2 order-1">
+				<partial name="_ProductGalleryPartial" model="@Model.Id" fallback-name="_NotFoundPartialViewPartial" />
+			</div>
 
-        <div class="col-lg-5 order-lg-2 order-1">
-            <partial name="_ProductGalleryPartial" model="@Model.Id" fallback-name="_NotFoundPartialViewPartial"/>
-        </div>
+			<!-- Description -->
+			<div class="col-lg-5 order-3">
+				<div class="product_description">
+					<div class="product_name">@Model.Name</div>
 
-        <!-- Description -->
-        <div class="col-lg-5 order-3">
-            <div class="product_description">
-                <div class="product_name">@Model.Name</div>
+					<div class="product_shortDescription"><p>@Html.Raw(Model.ShortDescription)</p></div>
+					<div class="order_info d-flex flex-row">
+						<form action="#">
+							<div class="clearfix" style="z-index: 1000;">
 
-                <div class="product_shortDescription"><p>@Html.Raw(Model.ShortDescription)</p></div>
-                <div class="order_info d-flex flex-row">
-                    <form action="#">
-                        <div class="clearfix" style="z-index: 1000;">
+								<!-- Product Quantity -->
+								<div class="product_quantity clearfix">
+									<span>Quantity: </span>
+									<div class="input-group mb-3">
+										<div class="input-group-prepend">
+											<a href="#" class="input-group-text btn btn-primary" onclick="decreasesQuantity()">-</a>
+										</div>
+										<input type="text" class="form-control col-3" id="quantity_input" pattern="[0-9]*" value="1" disabled>
+										<div class="input-group-append">
+											<a href="#" class="input-group-text btn btn-primary" onclick="addQuantity()">+</a>
+										</div>
+									</div>
 
-                            <!-- Product Quantity -->
-                            <div class="product_quantity clearfix">
-                                <span>Quantity: </span>
-                                <div class="btn btn-light" onclick="decreasesQuantity()">-</div>
-                                <input class="col-2" id="quantity_input" type="text" pattern="[0-9]*" value="1" disabled>
-                                <div class="btn btn-light" onclick="addQuantity()">+</div>
-                            </div>
+									@*<div class="btn btn-light" onclick="decreasesQuantity()">-</div>
+										<input class="col-2 form-control" id="quantity_input" type="text" pattern="[0-9]*" value="1" disabled>
+										<div class="btn btn-light" onclick="addQuantity()">+</div>*@
+								</div>
 
-                            <!-- Product Variation -->
+								<!-- Product Variation -->
 
-                            <div class="mt-3 mb-3">
-                                <p>Product variation</p>
-                                @*<ul class="list-group">
-                                        @foreach (var productOption in Model.ProductOption)
-                                        {
-                                            <li class="list-group-item col-12" id="@productOption.Value">
-                                                <p class="mb-2">@productOption.Text: </p>
-                                                @foreach (var variatioDetail in Model.ProductVariationDetails.Where(x => x.ProductOptionId.ToString() == productOption.Value))
-                                                {
-                                                    <div class="variationDetails form-check p-2 form-check-inline activVariation" onclick="chengeStatus('@productOption.Value','@variatioDetail.Id')" id="@variatioDetail.Id">
-                                                        @variatioDetail.Value
-                                                    </div>
-                                                }
-                                            </li>
-                                        }
-                                    </ul>*@
+								<div class="mt-3 mb-3">
+									<p>Product variation</p>
+									@*<ul class="list-group">
+											@foreach (var productOption in Model.ProductOption)
+											{
+												<li class="list-group-item col-12" id="@productOption.Value">
+													<p class="mb-2">@productOption.Text: </p>
+													@foreach (var variatioDetail in Model.ProductVariationDetails.Where(x => x.ProductOptionId.ToString() == productOption.Value))
+													{
+														<div class="variationDetails form-check p-2 form-check-inline activVariation" onclick="chengeStatus('@productOption.Value','@variatioDetail.Id')" id="@variatioDetail.Id">
+															@variatioDetail.Value
+														</div>
+													}
+												</li>
+											}
+										</ul>*@
 
 
-                                @foreach (var productVariation in Model.ProductVariationList)
-                                {
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="productVariation" id="variation_@productVariation.Id" value="@productVariation.Id">
-                                        <label class="form-check-label" for="exampleRadios1">
-                                            @foreach (var variationDetail in productVariation.ProductVariationDetails)
-                                            {
-                                                <span>@variationDetail.ProductOption.Name:  @variationDetail.Value</span>
-                                            }
-                                        </label>
-                                    </div>
-                                }
+									@foreach (var productVariation in Model.ProductVariationList)
+									{
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="productVariation" id="variation_@productVariation.Id" value="@productVariation.Id">
+											<label class="form-check-label" for="exampleRadios1">
+												@foreach (var variationDetail in productVariation.ProductVariationDetails)
+												{
+													<span>@variationDetail.ProductOption.Name:  @variationDetail.Value</span>
+												}
+											</label>
+										</div>
+									}
 
-                            </div>
-                        </div>
+								</div>
+							</div>
 
-                        <div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span> @currency?.Symbol</div>
-                        <div>
-                            <button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
-                        </div>
+							<div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span> @currency?.Symbol</div>
+							<div>
+								<button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
+							</div>
 
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="mt-2 col-12 row">
-        <h3 class="col-12">Specifications</h3>
-        <table class="table  col-12 col-md-6">
-            <tr class="table-dark">
-                <th>Atribut</th>
-                <th>Value</th>
-            </tr>
+		<div class="row">
+			<div class="mt-2 col-12">
+				<h3 class="col-12">Specifications</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Attribute</th>
+							<th>Value</th>
+						</tr>
+					</thead>
 
-            @foreach (var atribut in Model.ProductAttributes)
-            {
-                <tr>
-                    <td>@atribut.ProductAttribute?.Name</td>
-                    <td>@atribut.Value</td>
-                </tr>
-            }
-
-        </table>
-    </div>
-
-    <div class="mt-2 col-12">
-        <h3>Description</h3>
-        @Html.Raw(Model.Description)
-    </div>
-
+					<tbody>
+						@if (Model.ProductAttributes.Any())
+						{
+							@foreach (var attribute in Model.ProductAttributes)
+							{
+								<tr>
+									<td>@attribute.ProductAttribute?.Name</td>
+									<td>@attribute.Value</td>
+								</tr>
+							}
+						}
+						else
+						{
+							<tr>
+								<td colspan="2">No specifications!</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<br />
+			<div class="mt-2 col-12">
+				<h3>Description</h3>
+				@Html.Raw(!Model.Description.IsNullOrEmpty() ? Model.Description : "No description!")
+			</div>
+		</div>
+	</div>
 </div>
 
 
 
-<div id="productModal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
+<div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card">
+					<div class="card-body">
 
-                        <div class="col-12">
-                            <p>Product is add to card</p>
-                        </div>
+						<div class="col-12">
+							<p>Product is add to card</p>
+						</div>
 
-                        <div class="row col-12">
-                            <div class="col-3">
-                                Image
-                            </div>
+						<div class="row col-12">
+							<div class="col-3">
+								Image
+							</div>
 
-                            <div class="col-6">
-                                @Model.Name
-                            </div>
-                            <div alignclass="col-3">
-                                <span id="cartQuantity"> 1 </span> x <span id="curentProducePrice">@Model.PriceWithoutDiscount</span> @currency?.Symbol
-                            </div>
-                        </div>
+							<div class="col-6">
+								@Model.Name
+							</div>
+							<div alignclass="col-3">
+								<span id="cartQuantity"> 1 </span> x <span id="curentProducePrice">@Model.PriceWithoutDiscount</span> @currency?.Symbol
+							</div>
+						</div>
 
-                        <div class="mt-2 col-12 row">
-                            <div class="col-6"></div>
-                            <div class="col-6">
-                                total sum: <span id="cartTotalPrice">1 </span> @currency?.Symbol
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue</button>
-                <button type="button" class="btn btn-primary" onclick="redirectToCart()">Go to cart</button>
-            </div>
-        </div>
-    </div>
+						<div class="mt-2 col-12 row">
+							<div class="col-6"></div>
+							<div class="col-6">
+								total sum: <span id="cartTotalPrice">1 </span> @currency?.Symbol
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Continue</button>
+				<button type="button" class="btn btn-primary" onclick="redirectToCart()">Go to cart</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 
 @section Scripts
 {
-    <script type="text/javascript">
+	<script type="text/javascript">
 
 
 		$(document).ready(function() {
@@ -267,11 +292,11 @@
 					if (data.is_success) {
 
 						var amount = data.result.Amount;
-						var productPrice = data.result.Product.PriceWithoutDiscount; // data.result.product.
+						var productPrice = data.result.product.priceWithoutDiscount; // data.result.product.
 
 						if (data.result.ProductVariation != null)
 						{
-							productPrice = data.result.ProductVariation.Price;
+							productPrice = data.result.productVariation.price;
 						}
 
 						$("#cartQuantity").empty();
@@ -298,5 +323,5 @@
 		}
 
 
-    </script>
+	</script>
 }
