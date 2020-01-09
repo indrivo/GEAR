@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Abstractions.Models.MultiTenants;
 
 namespace GR.Identity.Seeders
 {
@@ -34,10 +36,21 @@ namespace GR.Identity.Seeders
             var baseDirectory = AppContext.BaseDirectory;
             var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
 
-            if (entity == null)
+            var tenant = new Tenant
             {
-                return;
-            }
+                Id = GearSettings.TenantId,
+                Name = "Default tenant",
+                MachineName = GearSettings.DEFAULT_ENTITY_SCHEMA,
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                Author = GlobalResources.Roles.ANONIMOUS_USER
+            };
+
+            await context.Tenants.AddAsync(tenant);
+            await context.PushAsync();
+
+            if (entity == null) return;
+
             // Check and seed system roles
             if (entity.ApplicationRoles.Any())
             {

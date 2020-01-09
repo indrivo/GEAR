@@ -938,7 +938,7 @@ namespace GR.Identity.Razor.Controllers
             {
                 ConfigurationDbContext.Remove(client);
                 await ConfigurationDbContext.SaveChangesAsync();
-                await _permissionService.RefreshCache();
+                await _permissionService.SetOrResetPermissionsOnCacheAsync();
                 return Json(new { message = "Deleted", success = true });
             }
             catch (Exception e)

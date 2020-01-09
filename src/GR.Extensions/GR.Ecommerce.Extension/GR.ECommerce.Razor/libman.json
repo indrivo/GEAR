@@ -11,20 +11,84 @@
       ]
     },
     {
-      "provider": "jsdelivr",
-      "library": "xzoom@1.0.14",
-      "destination": "wwwroot/lib/xzoom/",
+      "provider": "unpkg",
+      "library": "blueimp-file-upload@9.18.0",
+      "destination": "wwwroot/lib/blueimp-file-upload/",
       "files": [
-        "dist/xzoom.min.css",
-        "dist/xzoom.min.js"
+        "css/jquery.fileupload-noscript.css",
+        "css/jquery.fileupload-ui-noscript.css",
+        "css/jquery.fileupload-ui.css",
+        "css/jquery.fileupload.css",
+        "img/loading.gif",
+        "img/progressbar.gif",
+        "js/cors/jquery.postmessage-transport.js",
+        "js/cors/jquery.xdr-transport.js",
+        "js/vendor/jquery.ui.widget.js",
+        "js/jquery.fileupload-angular.js",
+        "js/jquery.fileupload-audio.js",
+        "js/jquery.fileupload-image.js",
+        "js/jquery.fileupload-jquery-ui.js",
+        "js/jquery.fileupload-process.js",
+        "js/jquery.fileupload-ui.js",
+        "js/jquery.fileupload-validate.js",
+        "js/jquery.fileupload-video.js",
+        "js/jquery.fileupload.js",
+        "js/jquery.iframe-transport.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "blueimp-gallery@2.25.0",
+      "destination": "wwwroot/lib/blueimp-gallery/",
+      "files": [
+        "css/blueimp-gallery-indicator.css",
+        "css/blueimp-gallery-video.css",
+        "css/blueimp-gallery.css",
+        "css/blueimp-gallery.min.css",
+        "css/blueimp-gallery.min.css.map",
+        "img/error.png",
+        "img/error.svg",
+        "img/loading.gif",
+        "img/play-pause.png",
+        "img/play-pause.svg",
+        "img/video-play.png",
+        "img/video-play.svg",
+        "js/blueimp-gallery-fullscreen.js",
+        "js/blueimp-gallery-indicator.js",
+        "js/blueimp-gallery-video.js",
+        "js/blueimp-gallery-vimeo.js",
+        "js/blueimp-gallery-youtube.js",
+        "js/blueimp-gallery.js",
+        "js/blueimp-gallery.min.js",
+        "js/blueimp-gallery.min.js.map",
+        "js/blueimp-helper.js",
+        "js/jquery.blueimp-gallery.js",
+        "js/jquery.blueimp-gallery.min.js",
+        "js/jquery.blueimp-gallery.min.js.map"
       ]
     },
     {
       "provider": "jsdelivr",
-      "library": "jquery-hammerjs@2.0.0",
-      "destination": "wwwroot/lib/jquery-hammerjs/",
+      "library": "blueimp-canvas-to-blob@3.17.0",
+      "destination": "wwwroot/lib/blueimp-canvas-to-blob/",
       "files": [
-        "jquery.hammer.min.js"
+        "js/canvas-to-blob.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "blueimp-load-image@2.26.0",
+      "destination": "wwwroot/lib/blueimp-load-image/",
+      "files": [
+        "js/load-image.all.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "blueimp-tmpl@3.13.0",
+      "destination": "wwwroot/lib/blueimp-tmpl/",
+      "files": [
+        "js/tmpl.min.js"
       ]
     }
   ]

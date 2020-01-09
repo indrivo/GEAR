@@ -1622,7 +1622,13 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<DateTime>("Changed");
 
+                    b.Property<string>("ContentType");
+
                     b.Property<DateTime>("Created");
+
+                    b.Property<string>("FileName");
+
+                    b.Property<int>("Height");
 
                     b.Property<byte[]>("Image");
 
@@ -1630,11 +1636,15 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<string>("ModifiedBy");
 
+                    b.Property<string>("Name");
+
                     b.Property<Guid>("ProductId");
 
                     b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
+
+                    b.Property<int>("Width");
 
                     b.HasKey("Id");
 

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
@@ -154,31 +153,6 @@ namespace GR.Core.Extensions
         public static ResultModel Push(this IDbContext context)
         {
             return ((DbContext)context).Save();
-        }
-
-        /// <summary>
-        /// Add scoped context factory
-        /// </summary>
-        /// <typeparam name="TIContext"></typeparam>
-        /// <typeparam name="TContext"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddScopedContextFactory<TIContext, TContext>(this IServiceCollection services)
-            where TContext : DbContext, TIContext
-            where TIContext : class, IDbContext
-        {
-            if (!typeof(TIContext).IsInterface)
-                throw new Exception($"{nameof(TIContext)} must be an interface in extension {nameof(AddScopedContextFactory)}");
-
-            TIContext ContextFactory(IServiceProvider x)
-            {
-                var context = x.GetService<TContext>();
-                IoC.RegisterScopedService<TIContext, TContext>(context);
-                return context;
-            }
-
-            services.AddScoped(ContextFactory);
-            return services;
         }
 
         /// <summary>

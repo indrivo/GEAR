@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.6.0</Version>
+    <Version>1.7.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Web app for run gear product</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>c# gear app .net core web webapp framework</PackageTags>
     <PackageReleaseNotes>-Move app extensions</PackageReleaseNotes>
-    <FileVersion>1.6.0</FileVersion>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
   </ItemGroup>
 
 </Project>

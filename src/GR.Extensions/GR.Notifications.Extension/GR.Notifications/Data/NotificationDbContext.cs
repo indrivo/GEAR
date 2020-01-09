@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
+using GR.Core;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Data;
 using GR.Notifications.Abstractions.Seeders;
@@ -53,24 +53,17 @@ namespace GR.Notifications.Data
             builder.RegisterNotificationDbContextBuilder();
         }
 
-        /// <summary>
-        /// Set operational entity
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel
-        {
-            return Set<T>();
-        }
-
 
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync(IServiceProvider services)
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
-            NotificationManager.SeedNotificationTypesAsync().Wait();
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                {
+                    await NotificationManager.SeedNotificationTypesAsync();
+                });
             return Task.CompletedTask;
         }
     }

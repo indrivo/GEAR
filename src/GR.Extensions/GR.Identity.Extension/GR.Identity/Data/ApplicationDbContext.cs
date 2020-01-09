@@ -1,5 +1,4 @@
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
@@ -114,13 +113,11 @@ namespace GR.Identity.Data
             builder.RegisterIndexes();
         }
 
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync(IServiceProvider services)
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             var seeder = new ApplicationDbContextSeed();
             seeder.SeedAsync(this, services).Wait();
