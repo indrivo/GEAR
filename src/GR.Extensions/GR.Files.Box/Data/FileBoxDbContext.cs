@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.Files.Box.Abstraction;
 using GR.Files.Box.Abstraction.Models;
 
@@ -52,22 +51,11 @@ namespace GR.Files.Box.Data
             builder.Ignore<TrackAuditDetails>();
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
-        }
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync(IServiceProvider services)
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

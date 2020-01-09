@@ -1,0 +1,219 @@
+<div class="preloader">
+    <svg class="circular" viewBox="25 25 50 50">
+        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+    </svg>
+</div>
+<div id="main-wrapper">
+    <header class="topbar">
+        <nav class="navbar top-navbar navbar-expand-md navbar-light">
+            <div class="navbar-header">
+                <a class="navbar-brand" style="width:100%" href="/Home">
+                    <b>
+                        <img src="/images/logo-icon.png" alt="homepage" class="dark-logo" />
+                    </b>
+                    <span>
+                        <span class="" alt="homepage">
+                            <b>{AppName}</b>
+                        </span>
+                    </span>
+                </a>
+            </div>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav mr-auto mt-md-0 ">
+                    <li class="nav-item">
+                        <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)">
+                            <i class="ti-menu"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)">
+                            <i class="ti-arrow-circle-left"></i>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav my-lg-0">
+                    <li class="nav-item hidden-sm-down">
+                        <form class="app-search">
+                            <input type="text" class="form-control" placeholder="Search for...">
+                            <a class="srh-btn">
+                                <i class="ti-search"></i>
+                            </a>
+                        </form>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-message"></i>
+                            <div style="display: none" id="notificationAlarm" class="notify">
+                                <span class="heartbit"></span> <span class="point"></span>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown">
+                            <ul>
+                                <li>
+                                    <div class="drop-title" translate="notifications">Notifications</div>
+                                </li>
+                                <li>
+                                    <div id="notificationList" class="message-center"></div>
+                                </li>
+                                <li>
+                                    <a id="clearNotificationsEvent" class="nav-link text-center" href="javascript:void(0);">
+                                        <strong translate="clear_notifications">Clear Notifications</strong> <i class="fa fa-angle-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-email"></i>
+                            <div style="display: none" id="notificationEmailAlarm" class="notify">
+                                <span class="heartbit"></span> <span class="point"></span>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown" aria-labelledby="2">
+                            <ul>
+                                <li>
+                                    <div class="drop-title" translate="you_have">You have<span id="emailNotificationsCounter">0</span><span translate="new_messages">Messages</span></div>
+                                </li>
+                                <li>
+                                    <div id="emailNotificationsContent" class="message-center"></div>
+                                </li>
+                                <li class="notification-items">
+
+                                </li>
+                                <li>
+                                    <a id="SeeAllEmails" class="nav-link text-center" href="javascript:void(0);">
+                                        <strong translate="see_all_e-mails">See emails</strong> <i class="fa fa-angle-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="userImage profile-pic" src="{UserImagePath}" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right animated flipInY">
+                            <ul class="dropdown-user">
+                                <li>
+                                    <div class="dw-user-box">
+                                        <div class="u-img">
+                                            <img class="userImage" src="{UserImagePath}" alt="" />
+                                        </div>
+                                        <div class="u-text">
+                                            <h4>{UserName}</h4>
+                                            <p class="text-muted">{UserEmail}</p>
+                                            <a href="#" class="btn btn-rounded btn-danger btn-sm" translate="view_profile">View Profile</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a href="/Users/Profile">
+                                        <i class="ti-user"></i> <span translate="my_profile">My profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="ti-email"></i> <span translate="inbox">Inbox</span>
+                                    </a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a href="#" class="sa-logout">
+                                        <i class="fa fa-power-off"></i> <span translate="logout">Log Out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i id="currentlanguage"></i>
+                        </a>
+                        <div id="languageRegion" class="dropdown-menu  dropdown-menu-right animated bounceInDown">
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <aside class="left-sidebar">
+        <div class="scroll-sidebar">
+            <nav class="sidebar-nav">
+                <ul id="sidebarnav"></ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <a href="" class="link" data-toggle="tooltip" title="Settings">
+                <i class="ti-settings"></i>
+            </a>
+            <a href="" class="link" data-toggle="tooltip" title="Email">
+                <i class="mdi mdi-gmail"></i>
+            </a>
+            <a href="#" class="link sa-logout" title="Logout" data-toggle="tooltip">
+                <i class="mdi mdi-power"></i>
+            </a>
+        </div>
+    </aside>
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-6 col-8 align-self-center">
+                    <h3 class="text-themecolor mb-0 mt-0">{PageTitle}</h3>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="javascript:void(0)">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">{RouteController}</li>
+                        <li class="breadcrumb-item active">{RouteView}</li>
+                    </ol>
+                </div>
+                <div class="col-md-6 col-4 align-self-center">
+                    <button class="right-side-toggle waves-effect waves-light btn-info btn-circle btn-sm pull-right m-l-10">
+                        <i class="ti-settings text-white"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="renderBody">
+                <div>
+                    @RenderBody()
+                </div>
+            </div>
+            <div class="right-sidebar right-sidebar-central">
+                <div class="slimscrollright">
+                    <div class="rpanel-title">
+                        <b translate="service_panel">Service Panel</b>
+                        <span>
+                            <i class="ti-close right-side-toggle"></i>
+                        </span>
+                    </div>
+                    <div class="r-panel-body">
+                        <ul id="themecolors" class="m-t-20">
+                            <li>
+                                <b>In coming...</b>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="right-sidebar list-sidebar-central">
+                <div class="slimscrollright">
+                    <div class="rpanel-title">
+                        <b translate="column-list">List Columns</b>
+                        <span>
+                            <i class="ti-close list-side-toggle"></i>
+                        </span>
+                    </div>
+                    <div class="r-panel-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            © {SystemYear} {AppName}
+        </footer>
+    </div>
+</div>

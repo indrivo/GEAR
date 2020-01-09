@@ -29,6 +29,7 @@ namespace GR.Notifications.Abstractions.Extensions
             where TRole : IdentityRole<string>
         {
             services.AddGearTransient<INotify<TRole>, TNotifyService>();
+
             return services;
         }
 

@@ -4,10 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.6.0</Version>
+    <Version>1.7.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <FileVersion>1.6.0</FileVersion>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,16 +18,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="EntitiesConfiguration.json">
+    <EmbeddedResource Include="Configuration\EntitiesConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="FieldTypes.json">
+    <EmbeddedResource Include="Configuration\FieldTypes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProfileEntities.json">
+    <EmbeddedResource Include="Configuration\ProfileEntities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SysEntities.json">
+    <EmbeddedResource Include="Configuration\SysEntities.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

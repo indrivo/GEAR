@@ -37,6 +37,19 @@ namespace GR.Core.Helpers
                 .ImplementedBy<TImplementation>().LifestyleTransient());
         }
 
+
+        /// <summary>
+        /// Register new service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
+        public static void RegisterTransientService<TAbstraction, TImplementation>(TImplementation instance) where TImplementation : class, TAbstraction where TAbstraction : class
+        {
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>().Instance(instance)
+                    .LifestyleTransient());
+        }
+
         /// <summary>
         /// Register singleton service
         /// </summary>

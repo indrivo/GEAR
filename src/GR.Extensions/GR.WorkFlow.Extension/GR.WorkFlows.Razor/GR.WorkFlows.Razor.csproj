@@ -6,10 +6,10 @@
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.6.0</Version>
+    <Version>1.7.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <FileVersion>1.6.0</FileVersion>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>
 

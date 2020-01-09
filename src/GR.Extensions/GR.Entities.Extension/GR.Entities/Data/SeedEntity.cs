@@ -6,8 +6,8 @@ namespace GR.Entities.Data
 {
     public class SeedEntity
     {
-        public List<EntityType> EntityTypes { get; set; }
-        public List<SynchronizeTableViewModel> SynchronizeTableViewModels { get; set; }
-        public List<TableFieldGroups> TableFieldGroups { get; set; }
+        public List<EntityType> EntityTypes { get; set; } = new List<EntityType>();
+        public List<SynchronizeTableViewModel> SynchronizeTableViewModels { get; set; } = new List<SynchronizeTableViewModel>();
+        public List<TableFieldGroups> TableFieldGroups { get; set; } = new List<TableFieldGroups>();
     }
 }

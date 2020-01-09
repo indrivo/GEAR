@@ -1,0 +1,67 @@
+﻿@using GR.UI.Menu.Abstractions.Models
+@{
+    ViewData["Title"] = "Order items";
+    var items = (IEnumerable<MenuItem>)ViewBag.Items;
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Order menu items</h4>
+        <h6 class="card-subtitle">You can order items by drag and drop</h6>
+        <div class="table-responsive">
+
+            <ul class="list-group" id="columns">
+                @foreach (var item in items)
+                {
+                    <li class="list-group-item column" menuParentId="@item.ParentMenuItemId" dataId="@item.Id" order="@item.Order" draggable="true">
+                        @item.Name
+                    </li>
+                }
+            </ul>
+            <div class="row">
+                <button id="update" class="save btn btn-success">@Localizer["save"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="pageId" value="@ViewBag.ParentId" />
+
+@section Scripts{
+    <script src="~/assets/js/builder/drag-and-drop-list.js"></script>
+    <script>
+        $("#update").on("click", function () {
+            const columns = $("#columns").children();
+            var data = [];
+            $.each(columns, function (index, col) {
+                const script = $($(col).children()[0]).val();
+                data.push({
+                    order: $(col).attr("order"),
+                    script: script,
+                    pageId: $(col).attr("pageId"),
+                    id: $(col).attr("dataId")
+                });
+            });
+
+            $.ajax({
+                url: "@Url.Action("UpdateScripts")",
+                data: {
+                    scripts: data
+                },
+                type: "post",
+                success: function (data) {
+                    if (data.is_success) {
+                        location.reload();
+                    }
+                    else {
+                        alert("Fail to save data!");
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Fail to save data!");
+                }
+            });
+        });
+    </script>
+}

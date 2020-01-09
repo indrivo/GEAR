@@ -186,6 +186,10 @@ namespace GR.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(Guid entityId)
         {
+            if (GearApplication.AppState.InstallOnProgress) return new List<EntityAccessType>
+            {
+                EntityAccessType.FullControl
+            };
             var user = await _userManager.GetCurrentUserAsync();
             IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
             if (user.IsSuccess)

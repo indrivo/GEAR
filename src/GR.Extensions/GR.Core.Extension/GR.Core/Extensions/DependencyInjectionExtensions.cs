@@ -62,5 +62,14 @@ namespace GR.Core.Extensions
 
             return services;
         }
+
+        /// <summary>
+        /// Inject 
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="_"></param>
+        /// <returns></returns>
+        public static TService InjectService<TService>(this object _)
+            => IoC.Resolve<TService>();
     }
 }

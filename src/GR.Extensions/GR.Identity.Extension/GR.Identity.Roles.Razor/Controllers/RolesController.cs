@@ -658,7 +658,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<IActionResult> RefreshCachedPermissionsForEachRole()
         {
-            await _permissionService.RefreshCache();
+            await _permissionService.SetOrResetPermissionsOnCacheAsync();
             return StatusCode(200);
         }
 

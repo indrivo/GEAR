@@ -1,0 +1,36 @@
+{
+  "Id": "D12BDEB9-EC63-4AD6-A9AA-F47D8F1DEE55",
+  "IsLayout": true,
+  "Settings": {
+    "Name": "Monster admin Layout",
+    "Description": "",
+    "Title": "",
+    "Identifier": "monster-admin-layout"
+  },
+  "Path": "",
+  "IsSystem": true,
+  "PageStyles": [
+    {
+      "Order": 1,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/admin/css/style.css\" />"
+    },
+    {
+      "Order": 2,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/admin/css/colors/green.css\" />"
+    }
+  ],
+  "PageScripts": [
+    {
+      "Order": 0,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/jQuery-slimScroll/jquery.slimscroll.min.js\"></script>"
+    },
+    {
+      "Order": 1,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/sticky-kit/sticky-kit.min.js\"></script>"
+    },
+    {
+      "Order": 2,
+      "Script": "<script type=\"text/javascript\" src=\"/themes/admin/js/admin-theme-script.js\"></script>"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using GR.Core.Extensions;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -47,6 +48,31 @@ namespace GR.Core.Razor.Extensions
             builder.AppendLine(coreScript.Value);
             builder.AppendLine(cookieScript.Value);
             return new HtmlString(builder.ToString());
+        }
+
+        /// <summary>
+        /// Get parameter as string
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string GetViewParameter(this IHtmlHelper helper, string key)
+        {
+            var exist = helper.ViewContext.RouteData.Values?.ContainsKey(key) ?? false;
+            return exist ? helper.ViewContext.RouteData.Values[key].ToString() : null;
+        }
+
+        /// <summary>
+        /// Get parameter as string
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static T GetViewParameter<T>(this IHtmlHelper helper, string key)
+            where T : class
+        {
+            var exist = helper.ViewContext.RouteData.Values?.ContainsKey(key) ?? false;
+            return exist ? helper.ViewContext.RouteData.Values[key].ToString().Deserialize<T>() : default;
         }
     }
 }

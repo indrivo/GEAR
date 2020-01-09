@@ -50,7 +50,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// Refresh cache
         /// </summary>
         /// <returns></returns>
-        Task<Dictionary<string, IEnumerable<string>>> RefreshCache();
+        Task<Dictionary<string, IEnumerable<string>>> SetOrResetPermissionsOnCacheAsync();
 
         /// <summary>
         /// Check if user have permission

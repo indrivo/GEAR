@@ -26,7 +26,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
                 cacheService.FlushAll();
 
                 var permissionService = IoC.Resolve<IPermissionService>();
-                await permissionService.RefreshCache();
+                await permissionService.SetOrResetPermissionsOnCacheAsync();
             };
 
             return services;

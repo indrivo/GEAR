@@ -4,17 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.6.0</Version>
+    <Version>1.7.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <FileVersion>1.6.0</FileVersion>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <FileVersion>1.7.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Configuration\menus.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
 
     <EmbeddedResource Include="Configuration\ViewModelFieldConfigCodes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -26,30 +22,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Static\Pages\index\settings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.css">
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.html">
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\settings.json">
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\settings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Static\Pages\index\settings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Static\Pages\index\index.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -59,13 +51,27 @@
     <EmbeddedResource Include="Static\Pages\index\index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.css">
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\settings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.html">
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.js">
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Static\Templates\RenderIsoMenuItem.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Templates\renderMenu.html">

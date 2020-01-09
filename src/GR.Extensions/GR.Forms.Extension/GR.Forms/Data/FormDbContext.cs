@@ -127,22 +127,11 @@ namespace GR.Forms.Data
             builder.Entity<Field>().Ignore(x => x.TableField);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
-        }
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync(IServiceProvider services)
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId).Wait();
             return Task.CompletedTask;

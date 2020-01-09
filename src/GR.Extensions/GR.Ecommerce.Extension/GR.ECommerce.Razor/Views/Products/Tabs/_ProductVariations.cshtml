@@ -1,26 +1,26 @@
 @model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
 
 <div class="row">
-	<div class="col-lg-12 col-md-12">
+    <div class="col-lg-12 col-md-12">
 
 
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-			Add variation
-		</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+            Add variation
+        </button>
 
-		<div class="card card-outline-info mt-2">
-			<div class="tab-content">
-				<div class="card-body">
+        <div class="card card-outline-info mt-2">
+            <div class="tab-content">
+                <div class="card-body">
 
-					<div class="col-lg-12 col-md-12 row mt-3" id="ListVariationProduct">
-						
+                    <div class="col-lg-12 col-md-12 row mt-3" id="ListVariationProduct">
 
-					</div>
-				</div>
 
-			</div>
-		</div>
-	</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -31,83 +31,83 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
 
-				<div class="card">
-					<div class=" card-body">
-						<form id="createOptionForm">
-							<input type='text' id="VariationId" name="VariationId" class='form-control' value="" hidden/>
+                <div class="card">
+                    <div class=" card-body">
+                        <form id="createOptionForm">
+                            <input type='text' id="VariationId" name="VariationId" class='form-control' value="" hidden />
 
-							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-							<div class="row p-t-20">
-								<div class="col-md-6">
-									<div class="input-group mb-3">
-										<label class="col-md-12">Select Option</label>
-										<select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
-											<option value="">Select</option>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="row p-t-20">
+                                <div class="col-md-6">
+                                    <div class="input-group mb-3">
+                                        <label class="col-md-12">Select Option</label>
+                                        <select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
+                                            <option value="">Select</option>
 
-											@foreach (var productOption in Model.ProductOption)
-											{
-												<option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
-											}
+                                            @foreach (var productOption in Model.ProductOption)
+                                            {
+                                                <option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
+                                            }
 
-										</select>
-										<div class="input-group-append">
-											<a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<table class="table">
-									<thead>
-									<tr>
-										<th scope="col">Option</th>
-										<th scope="col">Value</th>
-										<th scope="col">Actions</th>
-									</tr>
-									</thead>
-									<tbody id="appendTableOption">
-									</tbody>
-								</table>
-							</div>
-							<div class="row mb-2 col-12 ">
-								<div class="col-4"><label class="col-md-12">Price variation</label></div>
-								<div class="col-4">
-									<input type='text' id="PriceVariation" class='form-control' value=''/>
-								</div>
-							</div>
-							<div class="row button-group">
-								<div class="col-lg-2 col-md-3">
-									<a href="javascript:void(0)" class="btn btn-block btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
-									@*<button type="button" class="btn btn-primary" id="saveOptionBtn">@Localizer["save"]</button>*@
-								</div>
-								<div class="col-lg-2 col-md-3">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</button>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Option</th>
+                                            <th scope="col">Value</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="appendTableOption">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row mb-2 col-12 ">
+                                <div class="col-4"><label class="col-md-12">Price variation</label></div>
+                                <div class="col-4">
+                                    <input type='text' id="PriceVariation" class='form-control' value='' />
+                                </div>
+                            </div>
+                            <div class="row button-group">
+                                <div class="col-lg-2 col-md-3">
+                                    <a href="javascript:void(0)" class="btn btn-block btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
+                                    @*<button type="button" class="btn btn-primary" id="saveOptionBtn">@Localizer["save"]</button>*@
+                                </div>
+                                <div class="col-lg-2 col-md-3">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-
-<script type="text/javascript">
+@using (Html.BeginPartialViewScripts())
+{
+    <script type="text/javascript">
 	$(document).ready(function () {
 
 		GetProductVariation();
@@ -128,12 +128,12 @@
             });
 
         function appendTableOption(element) {
-           
+
             $("#appendTableOption").append(`<tr id='tr_${element.optionId}'>
                 <td>${element.label}</td>
                 <td>
                     <input type='text' id="attr_val_${element.optionId}" class='form-control' value='${element.value}'/>
-                </td>   
+                </td>
                 <td>
                     <a href='#' data-targetAttribute='${element.optionId
                 }' class='btn btn-secondary' onclick='RemoveOption("${element.optionId}")'>
@@ -154,13 +154,13 @@
 	        });
 
             const model = {
-	            ProductId: '@Model.Id', 
+	            ProductId: '@Model.Id',
                 Price: $("#PriceVariation").val(),
 	            VariationId: $("#VariationId").val(),
 	            ProductVariationDetails :variationDetails
 	        };
 
-           
+
 
 
 	        $.ajax({
@@ -234,7 +234,7 @@
 							edit
 						</button>
 					</div>
-					<table class="table  table-border m-2">	
+					<table class="table  table-border m-2">
 						<tr>
 							${a}
 						</tr>
@@ -316,7 +316,7 @@
                 <td>${element.option}</td>
                 <td>
                     <input type='text' id="attr_val_${element.optionId}" class='form-control' value='${element.value}'/>
-                </td>   
+                </td>
                 <td>
                     <a href='#' data-targetAttribute='${element.optionId
 			    }' class='btn btn-secondary' onclick='RemoveOption("${element.optionId}")'>
@@ -330,4 +330,5 @@
         console.log(data.variationId);
     }
 
-</script>
+    </script>
+}

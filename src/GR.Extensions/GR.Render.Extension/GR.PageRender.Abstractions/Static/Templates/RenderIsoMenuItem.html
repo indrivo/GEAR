@@ -1,0 +1,18 @@
+<li>
+
+    <a href="{{if href == ''}}#{{else}}{{:~host}}{{:href}}{{/if}}">
+        {{if parentMenuItemId !== null}}
+        <span class="icon-next-level"></span>
+        {{/if}}
+        <i class="nav-icon {{:icon}}"></i><span class="nav-item-text" translate="{{:translate}}">{{:name}}</span>
+        {{if children.length > 0 }}
+        <span class="toogle-sub-nav material-icons text-white">keyboard_arrow_right</span>
+        {{/if}}
+    </a>
+
+    {{if children.length > 0 }}
+    <ul class="sub-nav">
+        {{for children tmpl="template_RenderIsoMenuItem.html"/}}
+    </ul>
+    {{/if}}
+</li>

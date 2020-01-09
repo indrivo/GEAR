@@ -293,7 +293,7 @@ namespace GR.PageRender.Razor.Controllers
                     Title = model.Title,
                     TitleTranslateKey = model.TitleTranslateKey
                 },
-                IsLayout = model.PageTypeId == PageManager.PageTypes[0].Id
+                IsLayout = model.PageTypeId == PageSeeder.PageTypes[0].Id
             };
 
             await _pagesContext.Pages.AddAsync(page);
