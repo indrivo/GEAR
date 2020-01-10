@@ -135,26 +135,18 @@ $(window).on("load",
      On mouseleave collapse in menu items
 	 ************************************************/
     $body.find('.sidebar.collapsed .navigation').on('mouseleave', function () {
-
-
-        // activeMenuItem.removeClass('open');
-
-
         $('.sidebar .navigation li.active').parents('li').last().addClass('active');
 
-        $(".sidebar.collapsed .navigation li.open").each(function (index) {
-            $(this).find('.sub-nav').css({ "display": "none" });
-            // $('active')
-            // $(this).removeClass('open');
-            // .addClass('active');
+        $(".sidebar.collapsed .navigation > #left-nav-bar > li.open").each(function (index) {
+            $(this).find('.sub-nav').first().css({ "display": "none" });
         });
+
     });
     $body.find('.sidebar.collapsed .navigation').on('mouseover', function () { 
         activeMenuItem.addClass('open');
 
         $(".sidebar.collapsed .navigation li.open").each(function (index) {
-            $(this).find('.sub-nav').css({ "display": "block" });
-            // $(this).addClass('open');
+            $(this).find('.sub-nav').first().css({ "display": "block" });
         });
     });
 
@@ -453,8 +445,7 @@ function changeTextCellPosition() {
             console.log('wPercent > 70');
 
     }
-    // getOffset(element).left;
-    // console.log(left);
+
 }
 
 $(".table")
@@ -1901,7 +1892,7 @@ function makeMenuActive(target) {
         }
         last.addClass("active");
         $('.navigation').on('mouseover', function () { 
-            last.addClass("open");
+            //last.addClass("open");
         });
         if (target.closest("nav").length !== 0)
             makeMenuActive(last);
@@ -1977,8 +1968,12 @@ $(document).ready(function () {
         window.forceTranslate();
     });
 
-    //horizontal drag
-    if($('.dataTables_scrollBody').length) {
+   
+
+
+    //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
+});
+$('body').on('DOMNodeInserted', '.dataTables_scrollBody', function () {
     const slider = document.querySelector('.dataTables_scrollBody');
     let isDown = false;
     let startX;
@@ -2004,12 +1999,8 @@ $(document).ready(function () {
       const x = e.pageX - slider.offsetLeft;
       const walk = (x - startX) * 3; //scroll-fast
       slider.scrollLeft = scrollLeft - walk;
-      console.log(walk);
     });
-    }
-
-    //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
-});
+});   
 
 function openColorPicker(event) {
     if (event.preventDefault) {
