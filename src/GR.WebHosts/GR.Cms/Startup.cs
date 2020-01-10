@@ -132,6 +132,7 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using TreeIsoService = GR.Cms.Services.TreeIsoService;
+using GR.Documents.Razor.Extensions;
 
 #endregion Usings
 
@@ -422,7 +423,9 @@ namespace GR.Cms
 				})
 				.RegisterDocumentTypeServices<DocumentTypeService>()
 				.RegisterDocumentCategoryServices<DocumentCategoryService>()
-				.RegisterDocumentServices<DocumentWithWorkflowService>();
+				.RegisterDocumentServices<DocumentWithWorkflowService>()
+				.AddDocumentRazorUIModule();
+
 		});
 	}
 }

@@ -538,13 +538,13 @@
 
         function downloadFile(fileId) {
 
-            if (fileId != null && fileId != 'null')
-                window.location.href = '/api/File/' + "GetFile?id=" + fileId;
+            if (fileId != null && fileId !== 'null')
+                window.location.href = `/api/File/GetFile?id=${fileId}`;
         }
 
         $("#formAddDocumentVersion").submit(function (e) {
             var formData = new FormData();
-            var file = $('#NewVersionFileInput')[0].files[0];
+            const file = $('#NewVersionFileInput')[0].files[0];
             formData.append('file', file);
 
 
@@ -583,7 +583,7 @@
         $("#formAddDocument").submit(function (e) {
 
             var formData = new FormData();
-            var file = $('#fileinput')[0].files[0];
+            const file = $('#fileinput')[0].files[0];
             formData.append('file', file);
 
             $.each($(this).serializeArray(),
@@ -708,16 +708,15 @@
             if (listNextState.length > 0) {
                 $.each(listNextState,
                     function (key, value) {
-                        listNextStateHtml += `<a class="dropdown-item" href="#" onclick="SetNewState('${id}','${
-                            value.workFlowId}','${value.id}', '${value.name}')">${value.name}</a>`;
+                        listNextStateHtml += `<a class="dropdown-item" href="#" onclick="SetNewState('${id}',
+                        '${value.workFlowId}','${value.id}', '${value.name}')">${value.name}</a>`;
                     });
 
                 var html = `
                                                 <div class="dropdown">
                                                     <button type="button" class="btn btn-link text-black-50"  data-toggle="dropdown"
                                                         aria-haspopup="true" aria-expanded="false" id="Status_${id}">
-                                                        <span class="align-middle button-label" id="StateName_${id}">${
-                    currentStateName}</span>
+                                                        <span class="align-middle button-label" id="StateName_${id}">${currentStateName}</span>
                                                         <span class="material-icons mr-1 align-middle">arrow_drop_down</span>
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="Status_${id}">
@@ -729,9 +728,9 @@
             }
 
             var html = `
-                                                    <button type="button" class="btn btn-link text-black-50" aria-haspopup="true" aria-expanded="false">
-                                                        <span class="align-middle button-label">${currentStateName}</span>
-                                                    </button>`;
+                       <button type="button" class="btn btn-link text-black-50" aria-haspopup="true" aria-expanded="false">
+                           <span class="align-middle button-label">${currentStateName}</span>
+                       </button>`;
 
             return html;
         }
@@ -819,13 +818,11 @@
         }
 
         function ValidateSize(file) {
-            var fileSize = file.files[0].size / 1024 / 1024;
+            const fileSize = file.files[0].size / 1024 / 1024;
             if (fileSize > 25) {
                 alert('File size exceeds 25 MB');
                 $(file).val(''); //for clearing with Jquery
-            } else {
-
-            }
+            } 
         }
     </script>
 }
