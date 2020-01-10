@@ -91,5 +91,12 @@ namespace GR.Entities.Abstractions
         /// <param name="filter"></param>
         /// <returns></returns>
         Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null);
+
+        /// <summary>
+        /// Delete table by id
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteTableAsync(Guid? tableId);
     }
 }

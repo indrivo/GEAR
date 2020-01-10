@@ -47,9 +47,4 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="wwwroot\assets\EntityPlugins\" />
-  </ItemGroup>
 </Project>
