@@ -1,0 +1,131 @@
+<div class="loader-wrapper">
+    <div class="spinner">
+        <svg viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="length" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="28"></circle>
+        </svg>
+        <svg viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="28"></circle>
+        </svg>
+        <svg viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="28"></circle>
+        </svg>
+        <svg viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="28"></circle>
+        </svg>
+    </div>
+</div>
+
+<section class="wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar collapsed">
+        <nav class="navigation">
+            <ul id="left-nav-bar">
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Content area  -->
+    <div class="content-area">
+        <header class="header">
+            <nav class="navbar navbar-light bg-white">
+                <div class="menu-holder">
+                    <a class="menu-burger toggle-sidebar">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </a>
+                </div>
+
+                <div class="logo-holder">
+                    
+                </div>
+
+                <ul class="navbar-nav flex-row ml-auto">
+                    <li id="notificationAlarm" class="nav-item">
+                        <a href="#" id="notificationDropdown" class="nav-link">
+                            <span class="material-icons align-middle">mail_outline</span>
+                        </a>
+                        <div id="notificationList"
+                             class="dropdown-menu p-0 dropdown-lg notificationDropdown dropdown-menu-right"
+                             aria-labelledby="notificationDropdown">
+                            <div class="notifications" style="max-height:25em;overflow-y: scroll;">
+                                <p id="noNotifications" class="text-muted p-3 m-0" translate="system_notificator_no_notifications">No notifications!</p>
+                            </div>
+                            <div class="show-all-wrapper d-flex justify-content-between py-2 px-3">
+                                <div>
+                                    <a href="javascript:void(0)" class="show-more mr-3" translate="system_notifications_show_more">Show more</a>
+                                </div>
+                                <div>
+                                    <a href="/notifications" class="show-all mr-3" translate="system_notifications_show_all">Show all</a>
+                                    <a href="javascript:void(0)" class="clear-all" translate="system_notifications_clear_all">Clear all</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/TaskManager" class="nav-link">
+                            <span class="material-icons align-middle">local_activity</span>
+                        </a>
+
+                    </li>
+                    <li class="nav-item ml-sm-3 user-logedin dropdown">
+                        <a href="#" id="userLogedinDropdown" data-toggle="dropdown"
+                           class="nav-link weight-400 dropdown-toggle">
+                            <img src="{UserImagePath}" class="mr-2 rounded"
+                                 width="28" />{UserName}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userLogedinDropdown">
+                            <a class="dropdown-item" href="#"><span translate="organization">Organization</span>: <b>{Organization}</b></a>
+                            <a class="dropdown-item" translate="my_profile" href="/Users/Profile">My Profile</a>
+                            <a class="dropdown-item" href="/orders/myorders" translate="system_commerce_my_orders">My orders</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item sa-logout" href="#" translate="logout">Log Out</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" id="languageDropdown" data-toggle="dropdown" class="nav-link">
+                            <i id="currentlanguage"></i>
+                        </a>
+                        <div id="languageRegion"
+                             class="dropdown-menu p-0 dropdown-menu-right languageDropdown"
+                             aria-labelledby="languageDropdown">
+
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div class="sub-nav-container">
+            <div class="sub-nav">
+                <button id="history_back" style="display: none" type="button" class="btn btn-outline-primary" onclick="javascript:window.history.back()">
+                    <span class="material-icons align-middle">keyboard_arrow_left</span>
+                    <span class="align-middle button-label" translate="system_back">Back</span>
+                </button>
+                <h1>{PageTitle}</h1>
+            </div>
+            <ol class="breadcrumb">
+            </ol>
+        </div>
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+    </div>
+</section>
+
+
+<div class="modal leftright-slide right-align fade" id="hiddenColumnsModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" translate="column-list"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="material-icons ">close</span>
+                </button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto">
+
+            </div>
+        </div>
+    </div>
+</div>

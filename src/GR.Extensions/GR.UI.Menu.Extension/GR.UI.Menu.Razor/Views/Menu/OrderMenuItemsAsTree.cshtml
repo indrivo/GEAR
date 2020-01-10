@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Menu tree";
+}
+
+<div class="card">
+    <div class="card-head">
+        <h2>On progress ... [1/4] completion (Now only display way)</h2>
+    </div>
+    <div class="card-body">
+        <div id="menuTree">
+        </div>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/jqtree/jqtree.css" />
+    <style>
+        div.jqtree_common, #menuTree {
+            border: 1px solid black;
+            border-radius: 0.3em;
+            padding: 0.3em;
+            margin: 2px;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/lib/jqtree/tree.jquery.js"></script>
+    <script>
+        $(document).ready(function() {
+            const promise = new Promise((resolve, reject) => {
+                $.ajax({
+                    url: "@Url.Action("GetMenuTreeByMenuBlockId")",
+                    method: "post",
+                    data: {
+                        menuBlockId: "@ViewBag.menuBlockId"
+                    },
+                    success: function(data) {
+                        if (data.is_success) {
+                            resolve(data);
+                        }
+                    },
+                    error: function(error) {
+                        reject(error);
+                    }
+                });
+            });
+
+            promise.then(data => {
+                $('#menuTree').tree({
+                    data: data.result,
+                    autoOpen: false,
+                    dragAndDrop: true
+                });
+                $('#menuTree').on('tree.move',
+                    function(event) {
+                        //console.log('moved_node', event.move_info.moved_node);
+                        //console.log('target_node', event.move_info.target_node);
+                        //console.log('target_node level', event.move_info.target_node.parent.getLevel());
+                        //console.log('position', event.move_info.position);
+                        //console.log('previous_parent', event.move_info.previous_parent);
+                        console.log(event);
+                        console.log(this);
+                    }
+                );
+            });
+
+            promise.catch(err => {
+                console.log(err);
+            });
+        });
+    </script>
+}

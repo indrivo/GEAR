@@ -1,0 +1,12 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Localization;
+@using Microsoft.Extensions.Localization;
+@using Microsoft.Extensions.Options;
+@using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using GR.Core.Razor.TagHelpersStructures
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper GR.Core.Razor.TagHelpers.ListTagHelper, GR.Core.Razor
+@addTagHelper GR.Core.Razor.TagHelpers.TranslateLabelTagHelper, GR.Core.Razor
+
+@inject IStringLocalizer Localizer

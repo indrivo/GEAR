@@ -1,0 +1,10 @@
+﻿{
+  "EntityTypes": [
+    {
+      "Description": "Profile entities type",
+      "MachineName": "Profile",
+      "Name": "profile",
+      "IsSystem": true
+    }
+  ]
+}

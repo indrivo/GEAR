@@ -1,0 +1,54 @@
+﻿{
+  "SynchronizeTableViewModels": [
+    {
+      "Name": "InitialProfile",
+      "Schema": "profile",
+      "Description": "Initial Profile",
+      "Fields": [
+        {
+          "Name": "FirstName",
+          "Description": "Field for name",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "LastName",
+          "Description": "Field for name",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Idnp",
+          "Description": "Field for idno",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 13,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

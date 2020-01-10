@@ -1,0 +1,273 @@
+﻿{
+  "TableFieldGroups": [
+    {
+      "GroupName": "Numbers",
+      "Description": "*",
+      "TableFieldTypes": [
+        {
+          "Name": "Decimal",
+          "DataType": "decimal",
+          "Code": "00",
+          "TableFieldConfigs": [
+            {
+              "Name": "Precision",
+              "Type": "int",
+              "Description": "Precision is the number of digits in a number.",
+              "Code": "0000"
+            },
+            {
+              "Name": "Scale",
+              "Type": "int",
+              "Description": "Scale is the number of digits to the right of the decimal point in a number. ",
+              "Code": "0001"
+            },
+            {
+              "Name": "DefaultValue",
+              "Type": "decimal",
+              "Description": "The default value of the field.",
+              "Code": "0002"
+            }
+          ]
+        },
+        {
+          "Name": "Integer",
+          "DataType": "int32",
+          "Code": "01",
+          "TableFieldConfigs": [
+            {
+              "Name": "MaxValue",
+              "Type": "int",
+              "Description": "Maximal integer value of the field.",
+              "Code": "0100"
+            },
+            {
+              "Name": "DefaultValue",
+              "Type": "decimal",
+              "Description": "The default value of the field.",
+              "Code": "0101"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "GroupName": "Text",
+      "Description": "*",
+      "TableFieldTypes": [
+        {
+          "Name": "Text",
+          "DataType": "nvarchar",
+          "Code": "10",
+          "TableFieldConfigs": [
+            {
+              "Name": "ContentLen",
+              "Type": "int",
+              "Description": "Max length of the string.",
+              "Code": "1000"
+            },
+            {
+              "Name": "DefaultValue",
+              "Type": "string",
+              "Description": "The default value of the field.",
+              "Code": "1001"
+            }
+          ]
+        },
+        {
+          "Name": "Character",
+          "DataType": "char",
+          "Code": "11",
+          "TableFieldConfigs": [
+            {
+              "Name": "DefaultValue",
+              "Type": "char",
+              "Description": "The default value of the field.",
+              "Code": "1100"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "GroupName": "Time",
+      "Description": "*",
+      "TableFieldTypes": [
+        {
+          "Name": "Date",
+          "DataType": "date",
+          "Code": "20",
+          "TableFieldConfigs": [
+            {
+              "Name": "DefaultValue",
+              "Type": "bool",
+              "Description": "Default value is current date.",
+              "Code": "2000"
+            }
+          ]
+        },
+        {
+          "Name": "Time",
+          "DataType": "time",
+          "Code": "21",
+          "TableFieldConfigs": [
+            {
+              "Name": "DefaultValue",
+              "Type": "bool",
+              "Description": "Default value is current time.",
+              "Code": "2100"
+            }
+          ]
+        },
+        {
+          "Name": "DateTime",
+          "DataType": "datetime",
+          "Code": "22",
+          "TableFieldConfigs": [
+            {
+              "Name": "DefaultValue",
+              "Type": "bool",
+              "Description": "Default value is current datetime.",
+              "Code": "2200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "GroupName": "Reference",
+      "Description": "*",
+      "TableFieldTypes": [
+        {
+          "Name": "EntityReference",
+          "Code": "30",
+          "DataType": "uniqueidentifier",
+          "TableFieldConfigs": [
+            {
+              "Name": "ForeingTable",
+              "Type": "string",
+              "Description": "Select the foreing table.",
+              "Code": "3000"
+            },
+            {
+              "Name": "ForeingSchemaTable",
+              "Type": "string",
+              "Description": "Select the foreing schema table.",
+              "Code": "9999"
+            },
+            {
+              "Name": "DisplayFormat",
+              "Type": "string",
+              "Description": "Display format",
+              "Code": "3001"
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "Code": "31",
+          "DataType": "uniqueidentifier",
+          "TableFieldConfigs": [
+            {
+              "Name": "Extensions",
+              "Type": "string",
+              "Code": "3100"
+            },
+            {
+              "Name": "Uri",
+              "Type": "string",
+              "Code": "3101"
+            },
+            {
+              "Name": "MaxWidth",
+              "Type": "int",
+              "Code": "3102"
+            },
+            {
+              "Name": "MinWidth",
+              "Type": "int",
+              "Code": "3103"
+            },
+            {
+              "Name": "MaxHeight",
+              "Type": "int",
+              "Code": "3104"
+            },
+            {
+              "Name": "MinHeight",
+              "Type": "int",
+              "Code": "3105"
+            },
+            {
+              "Name": "MaxSize",
+              "Type": "decimal",
+              "Code": "3106"
+            },
+            {
+              "Name": "MaxCount",
+              "Type": "int",
+              "Code": "3107"
+            },
+            {
+              "Name": "ForeingTable",
+              "Type": "string",
+              "Description": "Select the foreing table.",
+              "Code": "3108"
+            }
+          ]
+        },
+        {
+          "Name": "File",
+          "Code": "32",
+          "DataType": "uniqueidentifier",
+          "TableFieldConfigs": [
+            {
+              "Name": "Extensions",
+              "Type": "string",
+              "Code": "3200"
+            },
+            {
+              "Name": "Uri",
+              "Type": "string",
+              "Code": "3201"
+            },
+            {
+              "Name": "MaxSize",
+              "Type": "decimal",
+              "Code": "3202"
+            },
+            {
+              "Name": "MaxCount",
+              "Type": "int",
+              "Code": "3203"
+            },
+            {
+              "Name": "ForeingTable",
+              "Type": "string",
+              "Description": "Select the foreing table.",
+              "Code": "3204"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "GroupName": "General",
+      "Description": "*",
+      "TableFieldTypes": [
+        {
+          "Name": "Boolean",
+          "DataType": "bool",
+          "Code": "40",
+          "TableFieldConfigs": [
+            {
+              "Name": "DefaultValue",
+              "Type": "bool",
+              "Description": "Select the default value.",
+              "Code": "4000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
