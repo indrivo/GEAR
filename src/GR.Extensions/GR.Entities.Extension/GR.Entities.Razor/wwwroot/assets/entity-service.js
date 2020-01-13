@@ -1,5 +1,6 @@
 ﻿class EntityService {
     routes = {
+        index: "/Table",
         deleteTable: "/api/Table/DeleteTable",
         scaffoldPagesAndForms: "/Page/Scaffold"
     }
@@ -23,29 +24,33 @@
             confirmButtonText: "Yes, delete it!",
             cancelButtonText: window.translate("cancel"),
             closeOnConfirm: false
-        }).then(() => {
-            $.ajax({
-                url: self.routes.deleteTable,
-                method: "delete",
-                dataType: "json",
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                data: {
-                    id: tableId
-                },
-                success: function (respose) {
-                    if (respose.is_success) {
-                        swal("Deleted!", "Table has been deleted.", "success");
-                        window.location.href = '/Table';
-                    } else {
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: self.routes.deleteTable,
+                    method: "delete",
+                    dataType: "json",
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    data: {
+                        id: tableId
+                    },
+                    success: function (response) {
+                        if (response.is_success) {
+                            swal("Deleted!", "Table has been deleted.", "success");
+                            window.location.href = self.routes.index;
+                        } else {
+                            swal("Fail!", response.error_keys[0].message, "error");
+                        }
+
+                    },
+                    error: function (error) {
+                        console.warn(error);
                         swal("Fail!", "Api not respond or not have permissions.", "error");
                     }
-
-                },
-                error: function (error) {
-                    console.warn(error);
-                    swal("Fail!", "Api not respond or not have permissions.", "error");
-                }
-            });
+                });
+            } else {
+                swal("Info", "Canceled action", "info");
+            }
         });
     }
 
