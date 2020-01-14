@@ -54,7 +54,7 @@ namespace GR.MobilPay
         public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService,
             IPaymentService paymentService,
             IUserManager<GearUser> userManager,
-            IOptions<MobilPayConfiguration> options,
+            IOptionsSnapshot<MobilPayConfiguration> options,
             IUserAddressService userAddressService)
         {
             _orderProductService = orderProductService;
