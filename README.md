@@ -69,7 +69,7 @@ Structure of appssetings file:
   },
   "ConnectionStrings": {
     "Provider": "Npgsql.EntityFrameworkCore.PostgreSQL",
-    "ConnectionString": "Host=127.0.0.1;Port=5432;Username=postgres;Password=Gear2019;Persist Security Info=true;Database=ISODMS.PROD;MaxPoolSize=1000;"
+    "ConnectionString": "Host=127.0.0.1;Port=5432;Username=postgres;Password=Gear2019;Persist Security Info=true;Database=GEAR.PROD;MaxPoolSize=1000;"
   },
   "Logging": {
     "IncludeScopes": false,
@@ -289,7 +289,25 @@ To start the app, you need:
 
 ## Install steps
 `Note`: Be sure that in appsettings{Env}.json, the IsConfigured property is set to false
+1. Start the application
+You will be met by the following message describing the platform
+![Welcome board](https://i.ibb.co/5GWdW6N/welcome-gear.png)
+Click on `Go to installation`
 
+2. Configure admin profile
+![Profile tab](https://i.ibb.co/nQw9kHK/profile-gear.png)
+Settings:
+- `User Name` - adminstrator user name
+- `Email` - your email address to receive emails on system events
+- `Password` and `Confirm Password` - the administrator password
+- `First Name` - admin first name
+- `Last Name` - admin last name
+- `Organization Name` - represent the default organization name
+3. Set up database provider
+![Configuration of database provider](https://i.ibb.co/hMnP7y6/db-gear.png)
+`Note`: Use postgres default, because MsSql has not been tested for a long time, we plan support for other providers
+`Connection String example`: Host=127.0.0.1;Port=5432;Username=postgres;Password=Gear2020;Persist Security Info=true;Database=Gear.PROD;MaxPoolSize=1000;
+4. Press `Install` button and wait until the system is installed
 
 # Modules
 The framework has developed the following modules:
