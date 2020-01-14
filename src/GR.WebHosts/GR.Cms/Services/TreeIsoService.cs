@@ -14,10 +14,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Helpers.Responses;
+using GR.Identity.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 
-// ReSharper disable MemberCanBeMadeStatic.Local
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedParameter.Local
 #pragma warning disable 1998
 
 namespace GR.Cms.Services
@@ -35,12 +35,26 @@ namespace GR.Cms.Services
 		private readonly IDynamicService _service;
 
 		/// <summary>
+		/// Inject memory cache
+		/// </summary>
+		private readonly IMemoryCache _memoryCache;
+
+		/// <summary>
+		/// Inject user manager
+		/// </summary>
+		private readonly IUserManager<GearUser> _userManager;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="service"></param>
-		public TreeIsoService(IDynamicService service)
+		/// <param name="memoryCache"></param>
+		/// <param name="userManager"></param>
+		public TreeIsoService(IDynamicService service, IMemoryCache memoryCache, IUserManager<GearUser> userManager)
 		{
 			_service = service;
+			_memoryCache = memoryCache;
+			_userManager = userManager;
 		}
 
 		#region Standart Structure
@@ -54,6 +68,13 @@ namespace GR.Cms.Services
 		/// <returns></returns>
 		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
+			var key = $"iso_tree_{_userManager.CurrentUserTenantId}";
+			var cacheTree = _memoryCache.Get<Collection<TreeStandard>>(key);
+			if (cacheTree != null)
+			{
+				return new SuccessResultModel<IEnumerable<TreeStandard>>(cacheTree);
+			}
+
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
 			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>(filters: new Collection<Filter>
 			{
@@ -76,6 +97,7 @@ namespace GR.Cms.Services
 
 			res.IsSuccess = true;
 			res.Result = tree;
+			_memoryCache.Set(key, tree);
 			return res;
 		}
 
@@ -104,7 +126,7 @@ namespace GR.Cms.Services
 					Id = category.Id,
 					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
 					Requirements = await LoadRequirements(requirementEntity, category.Id, null),
-					CategoryActions = await GetCategoryActions(category.Id)
+					CategoryActions = new TreeCategoryAction()
 				}).Select(task => task.Result).ToList();
 
 			return result;
@@ -135,14 +157,14 @@ namespace GR.Cms.Services
 					Name = req.Name,
 					Id = req.Id,
 					Hint = req.Hint ?? string.Empty,
-					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id),
-					Documents = new List<TreeRequirementDocument>(),
+					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id)
 				};
 
 				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
 				{
 					new Filter("RequirementId", req.Id)
 				});
+
 				if (rq.IsSuccess)
 				{
 					var dueMode = rq.Result?.FirstOrDefault();
@@ -159,38 +181,6 @@ namespace GR.Cms.Services
 			}
 
 			return res;
-		}
-
-		private async Task<TreeCategoryAction> GetCategoryActions(Guid categoryId)
-		{
-			var result = new TreeCategoryAction();
-			//TODO: Attend response from business analyst
-			//var filters = new List<Filter>
-			//{
-			//	new Filter("ControlRecordId", categoryId)
-			//};
-
-			//try
-			//{
-			//	var dbResult = await _service.Table("ActionPlan").GetAllWithInclude<dynamic>(filters: filters);
-			//	if (!dbResult.IsSuccess) return result;
-			//	foreach (var item in dbResult.Result)
-			//	{
-			//		if (item.ActionStateReference.Code == (int)ActionState.Closed)
-			//		{
-			//			++result.ClosedActions;
-			//		}
-			//		else
-			//		{
-			//			++result.OpenActions;
-			//		}
-			//	}
-			//}
-			//catch (Exception e)
-			//{
-			//	Debug.WriteLine(e);
-			//}
-			return result;
 		}
 
 		/// <summary>
