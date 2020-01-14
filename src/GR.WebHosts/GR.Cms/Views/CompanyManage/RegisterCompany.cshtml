@@ -120,11 +120,17 @@
 					<div class="form-content px-2">
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 						<div class="tab">
+
 							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="Email"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="Email" required />
+								<span asp-validation-for="Email" class="text-danger"></span><br />
+							</div>
+							@*<div class="form-group mb-3">
 								<JTranslateLabel class="control-label" asp-for="UserName"></JTranslateLabel>
 								<input class="form-control" type="text" asp-for="UserName" required />
 								<span asp-validation-for="UserName" class="text-danger"></span><br />
-							</div>
+							</div>*@
 							<div class="form-group mb-0">
 								<JTranslateLabel asp-for="Password" class="control-label"></JTranslateLabel>
 								<div class="input-group position-relative">
@@ -137,7 +143,7 @@
 								</div>
 								<span asp-validation-for="Password" class="text-danger"></span><br />
 								@*<small>@Localizer["pass_info1"]</small><br />
-									<small>@Localizer["pass_info2"]</small>*@
+								<small>@Localizer["pass_info2"]</small>*@
 							</div>
 							<div class="form-group mb-3">
 								<JTranslateLabel asp-for="RepeatPassword" class="control-label"></JTranslateLabel>
@@ -151,12 +157,15 @@
 								</div>
 								<span asp-validation-for="RepeatPassword" class="text-danger"></span>
 							</div>
+
+
 							<div class="form-group mb-3">
-								<JTranslateLabel class="control-label" asp-for="Email"></JTranslateLabel>
-								<input class="form-control" type="text" asp-for="Email" required />
-								<span asp-validation-for="Email" class="text-danger"></span><br />
+								<JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="Name" required />
+								<span asp-validation-for="Name" class="text-danger"></span><br />
 							</div>
-							<div class="form-group mb-3">
+
+							@*<div class="form-group mb-3">
 								<JTranslateLabel class="control-label" asp-for="FirstName"></JTranslateLabel>
 								<input class="form-control" type="text" asp-for="FirstName" required />
 								<span asp-validation-for="FirstName" class="text-danger"></span><br />
@@ -165,22 +174,18 @@
 								<JTranslateLabel class="control-label" asp-for="LastName"></JTranslateLabel>
 								<input class="form-control" type="text" asp-for="LastName" required />
 								<span asp-validation-for="LastName" class="text-danger"></span><br />
-							</div>
+							</div>*@
 						</div>
-						<div class="tab">
-							<div class="form-group mb-3">
+						@*<div class="tab">*@
+							@*<div class="form-group mb-3">
 								<JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
 								<input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
 							</div>
 							<p class="mt-5">
 								@Localizer["system_tenant_logo_info"]
-							</p>
-							<div class="form-group mb-3">
-								<JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
-								<input class="form-control" type="text" asp-for="Name" required />
-								<span asp-validation-for="Name" class="text-danger"></span><br />
-							</div>
-							<div class="form-group mb-3">
+							</p>*@
+							
+							@*<div class="form-group mb-3">
 								<JTranslateLabel class="control-label" asp-for="Description"></JTranslateLabel>
 								<textarea class="form-control" type="text" asp-for="Description"></textarea>
 								<span asp-validation-for="Description" class="text-danger"></span><br />
@@ -189,8 +194,8 @@
 								<JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
 								<input class="form-control" type="text" asp-for="SiteWeb" />
 								<span asp-validation-for="SiteWeb" class="text-danger"></span><br />
-							</div>
-						</div>
+							</div>*@
+						@*</div>*@
 						@*<div class="tab">*@
 						@*<div class="form-group mb-3">
 								<JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
@@ -216,17 +221,17 @@
 						<div class="step-buttons">
 							<button class="btn btn-primary" type="button" id="prevBtn" onclick="nextPrev(-1)" translate="iso_previous">Previous</button>
 							<button class="btn btn-primary ml-0 ml-sm-2 mt-2 mt-sm-0" type="button" id="nextBtn" onclick="nextPrev(1)" translate="iso_next">Next</button>
+							@*<button class="btn btn-primary ml-0 ml-sm-2 mt-2 mt-sm-0" type="button" id="nextBtn" onclick="nextPrev(1)" >Register</button>*@
 						</div>
-						<div class="step-progress text-muted">
+						@*<div class="step-progress text-muted">
 							<span class="step"></span>
 							<span>/2 <span translate="iso_step">Step</span></span>
-						</div>
+						</div>*@
 					</div>
 				</form>
 			</div>
 		</div>
-		<div class="image-area col" style="background-image: url(../images/public/home-background.svg);
-    background-color: hsla(220, 92%, 41%, 0.1);"></div>
+		<div class="image-area col" style="background-image: url(../images/public/home-background.svg);background-color: hsla(220, 92%, 41%, 0.1);"></div>
 	</section>
 
 	<script src="~/lib/jquery/jquery.min.js"></script>

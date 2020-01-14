@@ -10,7 +10,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         /// <summary>
         /// First name
         /// </summary>
-        [Required]
+       // [Required]
         [MaxLength(50)]
         [DisplayTranslate(Key = "system_first_name")]
         public string FirstName { get; set; }
@@ -18,7 +18,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         /// <summary>
         /// Last name
         /// </summary>
-        [Required]
+       // [Required]
         [MaxLength(50)]
         [DisplayTranslate(Key = "system_last_name")]
         public string LastName { get; set; }
@@ -26,7 +26,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         /// <summary>
         /// User name
         /// </summary>
-        [Required]
+        //[Required]
         [MaxLength(30)]
         [RegularExpression(@"^\S*$", ErrorMessage = "No white space allowed")]
         [DisplayTranslate(Key = "system_auth_username")]
