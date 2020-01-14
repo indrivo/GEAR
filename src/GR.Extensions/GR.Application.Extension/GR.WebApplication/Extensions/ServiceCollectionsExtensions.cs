@@ -57,10 +57,14 @@ namespace GR.WebApplication.Extensions
             //Global settings
             services.AddMvc(options =>
                 {
+                    options.EnableEndpointRouting = false;
                     options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
+                .AddJsonOptions(x =>
+                {
+                    x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
+                });
 
             services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();

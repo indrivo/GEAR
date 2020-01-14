@@ -195,17 +195,15 @@ Form.prototype.pushTextarea = function (model) {
 
 
 Form.prototype.getReferenceTable = function (conf) {
-    const schema = conf.filter(x => {
+    const schema = conf.find(x => {
         return x.tableFieldConfig.name === "ForeingSchemaTable";
     });
-    const entity = conf.filter(x => {
+    const entity = conf.find(x => {
         return x.tableFieldConfig.name === "ForeingTable";
     });
 
-    if (!entity || !schema) {
-        alert("Error on identify reference table definition!");
-    }
-    const refFields = load(`/Form/GetEntityReferenceFields?entityName=${entity[0].value}&&entitySchema=${schema[0].value}`);
+    if (!entity || !schema) return [];
+    const refFields = load(`/Form/GetEntityReferenceFields?entityName=${entity.value}&&entitySchema=${schema.value}`);
     return refFields.map(field => {
         return {
             label: field.name,
@@ -638,8 +636,9 @@ Form.prototype.checkIfIsEditForm = function (formRef, formId) {
  */
 Form.prototype.extractOnlyReferenceFields = function (place, serialized) {
     const final = {};
+    console.log(serialized);
     for (let s in serialized) {
-        if (serialized.hasOwnProperty(s)) {
+        if (serialized.hasOwnProperty(s) && s) {
             const id = $(`#${place} #${s}`).attr("table-field-id");
             if (!this.isGuid(id)) continue;
             if (id) {
