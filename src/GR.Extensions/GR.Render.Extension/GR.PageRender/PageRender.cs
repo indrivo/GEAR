@@ -334,8 +334,8 @@ namespace GR.PageRender
                 Id = pageId,
                 Created = DateTime.Now,
                 Changed = DateTime.Now,
-                PageTypeId = PageManager.PageTypes[1].Id,
-                LayoutId = PageManager.Layouts[0],
+                PageTypeId = PageSeeder.PageTypes[1].Id,
+                LayoutId = PageSeeder.Layouts.DefaultCosmoLayout,
                 Path = $"/{path}",
                 Settings = new PageSettings
                 {
@@ -417,8 +417,8 @@ namespace GR.PageRender
             {
                 Created = DateTime.Now,
                 Changed = DateTime.Now,
-                PageTypeId = PageManager.PageTypes[1].Id,
-                LayoutId = PageManager.Layouts[0],
+                PageTypeId = PageSeeder.PageTypes[1].Id,
+                LayoutId = PageSeeder.Layouts.DefaultCosmoLayout,
                 Path = path,
                 Settings = new PageSettings
                 {

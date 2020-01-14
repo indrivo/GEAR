@@ -1,10 +1,5 @@
 ﻿@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
 
-@section Styles
-{
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
-}
-
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="card card-outline-info">
@@ -89,12 +84,6 @@
                                         <span asp-validation-for="Price" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label asp-for="ProductImagesList"></label>
-                                        <input type="file" asp-for="ProductImagesList" asp-items="Model.Brands" class="dropify" data-allowed-file-extensions="png jpg jpeg" />
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="row button-group">
@@ -115,11 +104,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts
-{
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
-    <script type="text/javascript" language="javascript">
-        $(".dropify").dropify();
-    </script>
-}

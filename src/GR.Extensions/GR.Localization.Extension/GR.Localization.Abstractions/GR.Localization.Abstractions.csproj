@@ -6,9 +6,9 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Gear localization abstractions</Description>
-    <Version>1.6.0</Version>
-    <FileVersion>1.6.0</FileVersion>
-    <AssemblyVersion>1.6.0</AssemblyVersion>
+    <Version>1.7.0</Version>
+    <FileVersion>1.7.0</FileVersion>
+    <AssemblyVersion>1.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

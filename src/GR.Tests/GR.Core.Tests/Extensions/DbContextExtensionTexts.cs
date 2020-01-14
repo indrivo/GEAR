@@ -19,7 +19,7 @@ namespace GR.Core.Tests.Extensions
         [SetUp]
         public void SetUp()
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
+            var optionsBuilder = new DbContextOptionsBuilder<MockDbContext>();
             optionsBuilder.UseNpgsql(ConString);
             _context = new MockDbContext(optionsBuilder.Options);
         }

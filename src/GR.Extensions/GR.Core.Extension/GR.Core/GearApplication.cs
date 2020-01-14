@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
@@ -11,6 +12,12 @@ namespace GR.Core
                                         "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
+        /// <summary>
+        /// Background task queue
+        /// </summary>
+        private static IBackgroundTaskQueue _internBackgroundTaskQueue;
+        public static IBackgroundTaskQueue BackgroundTaskQueue => _internBackgroundTaskQueue ?? (_internBackgroundTaskQueue = IoC.ResolveNonRequired<IBackgroundTaskQueue>());
+
         /// <summary>
         /// Services container
         /// </summary>
@@ -60,5 +67,11 @@ namespace GR.Core
         /// Running project path
         /// </summary>
         public static string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
+
+        public static class AppState
+        {
+            public static bool InstallOnProgress { get; set; } = false;
+            public static bool Installed { get; set; } = true;
+        }
     }
 }

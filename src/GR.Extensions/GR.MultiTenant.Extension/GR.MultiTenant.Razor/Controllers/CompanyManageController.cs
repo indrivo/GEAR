@@ -167,6 +167,12 @@ namespace GR.MultiTenant.Razor.Controllers
         [HttpPost("/register-company"), AllowAnonymous]
         public async Task<IActionResult> RegisterCompany(RegisterCompanyViewModel data)
         {
+            data.UserName = data.Email;
+            //if (data.Email.Contains("@") && data.Email.IndexOf("@", StringComparison.Ordinal) > -1)
+            //{
+            //    .Substring(0, data.Email.IndexOf("@", StringComparison.Ordinal));
+            //}
+
             if (User.IsAuthenticated()) return Redirect($"{HttpContext.GetAppBaseUrl()}/home");
 
             if (!ModelState.IsValid)

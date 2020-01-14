@@ -27,7 +27,6 @@ using GR.Documents;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Data;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
@@ -126,8 +125,14 @@ using System;
 using System.Collections.Generic;
 using GR.Forms;
 using GR.Identity.Data.Groups;
+using GR.Identity.Razor.Extensions;
+using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
+using GR.UI.Menu;
+using GR.UI.Menu.Abstractions.Extensions;
+using GR.UI.Menu.Data;
 using TreeIsoService = GR.Cms.Services.TreeIsoService;
+using GR.Documents.Razor.Extensions;
 
 #endregion Usings
 
@@ -181,7 +186,8 @@ namespace GR.Cms
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
-				.RegisterLocationService<LocationService>();
+				.RegisterLocationService<LocationService>()
+				.AddIdentityRazorModule();
 
 			config.GearServices.AddAuthentication(Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
@@ -243,11 +249,23 @@ namespace GR.Cms
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
-			config.GearServices.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(new TranslationModuleOptions
-			{
-				Configuration = Configuration,
-				LocalizationProvider = LocalizationProvider.Yandex
-			});
+			config.GearServices
+				.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
+					new TranslationModuleOptions
+					{
+						Configuration = Configuration,
+						LocalizationProvider = LocalizationProvider.Yandex
+					})
+				.AddLocalizationRazorModule();
+
+			//--------------------------------------Menu UI Module-------------------------------------
+			config.GearServices.AddMenuModule<MenuService>()
+				.AddMenuModuleStorage<MenuDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
 
 			//------------------------------Database backup Module-------------------------------------
 			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
@@ -328,7 +346,6 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddPageRenderUIModule<PageRender.PageRender>()
-				.AddMenuService<MenuService<IDynamicService>>()
 				.RegisterViewModelService<ViewModelService>()
 				.AddPageAclService<PageAclService>();
 
@@ -406,7 +423,9 @@ namespace GR.Cms
 				})
 				.RegisterDocumentTypeServices<DocumentTypeService>()
 				.RegisterDocumentCategoryServices<DocumentCategoryService>()
-				.RegisterDocumentServices<DocumentWithWorkflowService>();
+				.RegisterDocumentServices<DocumentWithWorkflowService>()
+				.AddDocumentRazorUIModule();
+
 		});
 	}
 }

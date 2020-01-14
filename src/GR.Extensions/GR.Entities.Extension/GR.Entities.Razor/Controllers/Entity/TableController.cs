@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -24,7 +22,6 @@ using GR.Entities.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.Table;
 using GR.Entities.Data;
-using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
@@ -42,21 +39,6 @@ namespace GR.Entities.Razor.Controllers.Entity
     /// </summary>
     public class TableController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
-        /// <summary>
-        /// Inject logger
-        /// </summary>
-        private readonly ILogger<TableController> _logger;
-
-        /// <summary>
-        /// Queue for run background tasks
-        /// </summary>
-        private IBackgroundTaskQueue Queue { get; }
-
-        /// <summary>
-        /// Inject form context
-        /// </summary>
-        private readonly IFormContext _formContext;
-
         /// <summary>
         /// Inject entity repository
         /// </summary>
@@ -77,17 +59,13 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public TableController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IConfiguration configuration, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
-            _logger = logger;
-            Queue = queue;
-            _formContext = formContext;
             _entityRepository = entityRepository;
             _tablesService = tablesService;
             _organizationService = organizationService;
             var (_, connection) = DbUtil.GetConnectionString(configuration);
             ConnectionString = connection;
-            formContext.ValidateNullAbstractionContext();
             Context.Validate();
         }
 
@@ -99,9 +77,13 @@ namespace GR.Entities.Razor.Controllers.Entity
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
         public IActionResult Create()
         {
+            var schemes = Context.EntityTypes.Where(x => !x.IsDeleted).ToList();
+            var defaultSchema = schemes.FirstOrDefault(x => x.MachineName.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA));
+            if (defaultSchema == null) return NotFound();
             var model = new CreateTableViewModel
             {
-                EntityTypes = Context.EntityTypes.Where(x => !x.IsDeleted).ToList()
+                EntityTypes = schemes,
+                SelectedTypeId = defaultSchema.Id
             };
             return View(model);
         }
@@ -116,7 +98,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         {
             if (!ModelState.IsValid) return View(model);
             var entityType =
-                await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == Guid.Parse(model.SelectedTypeId));
+                await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == model.SelectedTypeId);
             if (entityType == null) return View(model);
 
             var newTable = new CreateTableViewModel
@@ -375,9 +357,9 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// Refresh runtime types on entity change structure
         /// </summary>
         [NonAction]
-        private void RefreshRuntimeTypes()
+        private static void RefreshRuntimeTypes()
         {
-            Queue.PushBackgroundWorkItemInQueue(async token =>
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
             {
                 //TODO: Need to update only edited dynamic runtime type
                 TypeManager.Clear();
@@ -610,46 +592,21 @@ namespace GR.Entities.Razor.Controllers.Entity
             return Json(true);
         }
 
+
+
+        #region Api
+
         /// <summary>
         /// Delete table
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpDelete]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableDelete)]
-        public JsonResult DeleteTable(Guid? id)
-        {
-            if (!id.HasValue)
-            {
-                return Json(new { success = false, message = "Id not found" });
-            }
+        public async Task<JsonResult> DeleteTable([Required]Guid? id) => Json(await _entityRepository.DeleteTableAsync(id));
 
-            var table = Context.Table.First(x => x.Id == id);
-            var checkColumn = _tablesService.CheckTableValues(ConnectionString, table.Name, table.EntityType);
-            if (checkColumn.Result)
-            {
-                return Json(new { success = false, message = "Table has value" });
-            }
-
-            var isUsedForms = _formContext.Forms.Any(x => x.TableId == id);
-            var isUsedProfiles = ApplicationDbContext.Profiles.Any(x => x.EntityId == id);
-            if (isUsedForms || isUsedProfiles)
-            {
-                return Json(new { success = false, message = "Table is used" });
-            }
-
-            try
-            {
-                _tablesService.DropTable(ConnectionString, table.Name, table.EntityType);
-                Context.Table.Remove(table);
-                Context.SaveChanges();
-                return Json(new { success = true, message = "Delete success" });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                return Json(new { success = false, message = "Same error on delete!" });
-            }
-        }
+        #endregion
     }
 }

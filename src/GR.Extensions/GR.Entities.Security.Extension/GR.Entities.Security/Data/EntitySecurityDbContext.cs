@@ -65,13 +65,11 @@ namespace GR.Entities.Security.Data
                 .HasIndex(x => x.TableModelFieldId);
         }
 
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public virtual Task InvokeSeedAsync(IServiceProvider services)
+        public override  Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

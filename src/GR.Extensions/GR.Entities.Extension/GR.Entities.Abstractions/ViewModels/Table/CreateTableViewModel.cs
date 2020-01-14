@@ -17,7 +17,7 @@ namespace GR.Entities.Abstractions.ViewModels.Table
         [Required(AllowEmptyStrings = false, ErrorMessage = "Select a schema for this table model")]
         [Display(Name = "Schema")]
 
-        public string SelectedTypeId { get; set; }
+        public Guid SelectedTypeId { get; set; }
 
         public string EntityType { get; set; }
 

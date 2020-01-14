@@ -22,8 +22,8 @@ namespace GR.Core.Extensions
         public static IServiceCollection RegisterSystemConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SystemConfig>(configuration.GetSection(nameof(SystemConfig)));
+            services.AddGearSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             return services;
         }
 
@@ -66,7 +66,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IServiceCollection AddUrlHelper(this IServiceCollection services)
         {
-            services.AddScoped<IUrlHelper>(factory =>
+            services.AddSingleton<IUrlHelper>(factory =>
             {
                 var actionContext = factory.GetService<IActionContextAccessor>()
                     ?.ActionContext;

@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.TaskManager.Abstractions;
 using GR.TaskManager.Abstractions.Models;
 
@@ -74,19 +73,11 @@ namespace GR.TaskManager.Data
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel => Set<TEntity>();
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public System.Threading.Tasks.Task InvokeSeedAsync(IServiceProvider services)
+        public override System.Threading.Tasks.Task InvokeSeedAsync(IServiceProvider services)
         {
             return System.Threading.Tasks.Task.CompletedTask;
         }

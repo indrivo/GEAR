@@ -230,7 +230,7 @@ namespace GR.Forms.Razor.Controllers
         {
             var filtered = _formContext.FilterAbstractContext<Form>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount, x => (entityId != Guid.Empty && x.TableId == entityId) || entityId == Guid.Empty);
+                out var totalCount, x => entityId != Guid.Empty && x.TableId == entityId || entityId == Guid.Empty);
 
 
             var finalResult = new DTResult<FormListViewModel>
@@ -246,7 +246,7 @@ namespace GR.Forms.Razor.Controllers
                     TypeId = x.TypeId,
                     Type = x.Type,
                     Description = x.Description,
-                    Author = UserManager.Users.FirstOrDefault(y => y.Id.Equals(x.Author))?.UserName,
+                    Author = x.Author,
                     Changed = x.Changed,
                     ModifiedBy = x.ModifiedBy,
                     TableId = x.TableId

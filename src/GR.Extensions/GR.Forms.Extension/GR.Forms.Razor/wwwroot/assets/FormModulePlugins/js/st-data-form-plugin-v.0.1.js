@@ -3,7 +3,7 @@
  *
  * v1.0.0
  *
- * License: MIT Soft-Tehnica Srl
+ * License: MIT Indrivo
  * Author: Lupei Nicolae
  */
 
@@ -103,7 +103,7 @@ function renderForm(formId, place) {
                                     } else {
                                         isEdit = false;
                                     }
-                                    const serialized = GR.serializeToJson($($form));
+                                    const serialized = st.serializeToJson($($form));
 
                                     const obj = form.extractOnlyReferenceFields(place, serialized);
                                     const model = {

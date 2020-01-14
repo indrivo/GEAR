@@ -12,6 +12,11 @@ namespace GR.ECommerce.Abstractions
     public interface IProductService<TProduct> where TProduct : Product
     {
         /// <summary>
+        /// Context
+        /// </summary>
+        ICommerceContext Context { get; }
+
+        /// <summary>
         /// Get all products
         /// </summary>
         /// <param name="predicate"></param>

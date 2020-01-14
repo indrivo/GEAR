@@ -1,7 +1,7 @@
-@using GR.Core.Razor.Extensions
 @using GR.Forms.Razor.Extensions
 @using GR.Identity.Abstractions
 @using GR.Notifications.Razor.Extensions
+@using GR.PageRender.Abstractions.Helpers
 @inject IAppProvider AppProvider
 
 <!DOCTYPE html>
@@ -11,7 +11,7 @@
 
 @if (User.Identity.IsAuthenticated || isDynamicPage)
 {
-	var layoutId = (Guid?)ViewData["layoutId"] ?? Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c"); //PageManager.Layouts[0];
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageSeeder.Layouts.DefaultCosmoLayout;
 
 	<html>
 	<head>
@@ -25,6 +25,7 @@
 		@RenderSection("PreScripts", required: false)
 		<partial name="_BootstrapThemeScripts" />
 		@RenderSection("Styles", required: false)
+		@Html.PartialViewStyles()
 		@Html.IncludeCoreJavascriptPlugins()
 		@Html.IncludeNotificationJavascriptPlugins()
 	</head>
@@ -36,6 +37,7 @@
 			@Html.IncludeFormsJavascriptPlugins()
 			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 			@RenderSection("Scripts", false)
+			@Html.PartialViewScripts()
 			<application-scripts layout-id="@layoutId"></application-scripts>
 			<layout-js-code layout-id="@layoutId"></layout-js-code>
 			<partial name="_AssistanceChat" model="layoutId" />

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Helpers.Responses;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
@@ -17,12 +18,18 @@ using GR.Entities.Data;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace GR.Entities
 {
     public class EntityRepository : IEntityRepository
     {
         #region Injectable
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        private readonly ILogger<EntityRepository> _logger;
 
         /// <summary>
         /// Inject table context
@@ -39,13 +46,26 @@ namespace GR.Entities
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
+        /// <summary>
+        /// Inject table service builder
+        /// </summary>
+        private readonly ITablesService _tablesService;
+
+        /// <summary>
+        /// Inject configuration
+        /// </summary>
+        private readonly IConfiguration _configuration;
+
         #endregion
 
-        public EntityRepository(EntitiesDbContext context, IMemoryCache memoryCache, IUserManager<GearUser> userManager)
+        public EntityRepository(EntitiesDbContext context, IMemoryCache memoryCache, IUserManager<GearUser> userManager, ITablesService tablesService, IConfiguration configuration, ILogger<EntityRepository> logger)
         {
             _context = context;
             _memoryCache = memoryCache;
             _userManager = userManager;
+            _tablesService = tablesService;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -186,9 +206,9 @@ namespace GR.Entities
             Arg.NotNull(context, nameof(EntitiesDbContext));
             var entitiesList = new List<SeedEntity>
             {
-                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/SysEntities.json")),
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/CustomEntities.json")),
-                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/ProfileEntities.json"))
             };
 
             foreach (var item in entitiesList)
@@ -468,6 +488,39 @@ namespace GR.Entities
             tables.Add(dbTable);
             _memoryCache.Set(key, tables);
             return new SuccessResultModel<TableModel>(dbTable);
+        }
+
+        /// <summary>
+        /// Delete table by id
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DeleteTableAsync(Guid? tableId)
+        {
+            var result = new ResultModel();
+            if (!tableId.HasValue) return new InvalidParametersResultModel<object>().ToBase();
+
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
+            if (table == null) return new NotFoundResultModel();
+
+            var (_, connection) = DbUtil.GetConnectionString(_configuration);
+
+            var checkColumn = _tablesService.CheckTableValues(connection, table.Name, table.EntityType);
+            if (checkColumn.Result)
+            {
+                result.Errors.Add(new ErrorModel
+                {
+                    Message = "The table contains data and cannot be deleted"
+                });
+                return result;
+            }
+
+            var dropResult = _tablesService.DropTable(connection, table.Name, table.EntityType);
+            if (!dropResult.IsSuccess) return dropResult.ToBase();
+            _context.Table.Remove(table);
+            var dbResult = await _context.PushAsync();
+            if (dbResult.IsSuccess) _logger.LogInformation($"Table {table.Name} was deleted");
+            return dbResult;
         }
 
 

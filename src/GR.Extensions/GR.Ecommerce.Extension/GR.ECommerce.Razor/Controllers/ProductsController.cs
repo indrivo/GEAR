@@ -16,9 +16,14 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing.Imaging;
 using GR.Core;
+using GR.Core.Razor.Extensions;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
+using GR.ECommerce.Razor.Helpers;
+using GR.ECommerce.Razor.Models;
+using GR.ECommerce.Razor.ViewModels.ProductsGalleryViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GR.ECommerce.Razor.Controllers
@@ -32,11 +37,17 @@ namespace GR.ECommerce.Razor.Controllers
         /// Inject product service
         /// </summary>
         private readonly IProductService<Product> _productService;
+
+        /// <summary>
+        /// Inject gallery manager
+        /// </summary>
+        private readonly ProductGalleryManager _galleryManager;
         #endregion
 
-        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService) : base(context, dataFilter)
+        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService, ProductGalleryManager galleryManager) : base(context, dataFilter)
         {
             _productService = productService;
+            _galleryManager = galleryManager;
         }
 
 
@@ -117,20 +128,6 @@ namespace GR.ECommerce.Razor.Controllers
                 return View(model);
             }
 
-            if (model.ProductImagesList != null && model.ProductImagesList.Any())
-            {
-                model.ProductImages = model.ProductImagesList.Select(async x =>
-                {
-                    var stream = new MemoryStream();
-                    await x.CopyToAsync(stream);
-                    return stream;
-                }).Select(x => x.Result).Select(x => x.ToArray()).Select(x => new ProductImage
-                {
-                    Image = x,
-                    ProductId = model.Id
-                }).ToList();
-            }
-
             await Context.Products.AddAsync(model);
             await Context.ProductPrices.AddAsync(new ProductPrice
             {
@@ -141,6 +138,10 @@ namespace GR.ECommerce.Razor.Controllers
 
             if (dbResult.IsSuccess)
             {
+                if (model.ProductImagesList != null && model.ProductImagesList.Any())
+                {
+                    await _galleryManager.AddImagesOnCreateAsync(model.Id, model.ProductImagesList);
+                }
                 return RedirectToAction(nameof(Index));
             }
 
@@ -240,6 +241,97 @@ namespace GR.ECommerce.Razor.Controllers
             ModelState.AppendResultModelErrors(dbResult.Errors);
 
             return View(model);
+        }
+
+        /// <summary>
+        /// Get product images
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<JsonResult> GetProductImages(Guid? productId)
+        {
+            var imagesRequest = await _galleryManager.GetProductImagesOnEditModeAsync(productId);
+            return Json(!imagesRequest.IsSuccess ? new JsonFiles(null) : imagesRequest.Result);
+        }
+
+        /// <summary>
+        /// Upload images
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UploadImages(UploadImagesViewModel model)
+        {
+            var result = await _galleryManager.UploadProductImagesAsync(model);
+            return !result.IsSuccess ? Json("Error") : Json(result.Result);
+        }
+
+        /// <summary>
+        /// Delete image by id
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(Guid? imageId)
+        {
+            await _galleryManager.DeleteImageAsync(imageId);
+            return Json("OK");
+        }
+
+        /// <summary>
+        /// Get user image
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public IActionResult GetImage(Guid? imageId)
+        {
+            if (imageId == null) return NotFound();
+            try
+            {
+                var photo = _productService.Context.ProductImages.SingleOrDefault(x => x.Id == imageId);
+                if (photo?.Image != null) return File(photo.Image, photo.ContentType);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return NotFound();
+        }
+
+
+        /// <summary>
+        /// Get user image
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public IActionResult GetImageThumb(Guid? imageId)
+        {
+            if (imageId == null) return NotFound();
+            try
+            {
+                var photo = _productService.Context.ProductImages.SingleOrDefault(x => x.Id == imageId);
+                if (photo?.Image != null)
+                {
+                    var resizedImage = photo.Image
+                        .ToMemoryStream()
+                        .GetImageFromStream()
+                        .ResizeImage(80, 80)
+                        .ToBytes(ImageFormat.Png);
+
+                    return File(resizedImage, photo.ContentType);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return NotFound();
         }
 
         #endregion

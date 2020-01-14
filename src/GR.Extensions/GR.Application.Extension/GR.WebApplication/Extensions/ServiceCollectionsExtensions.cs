@@ -48,16 +48,23 @@ namespace GR.WebApplication.Extensions
             };
             configAction(configuration);
 
+            //Register system config
+            services.RegisterSystemConfig(configuration.Configuration);
+
             services.Configure<FormOptions>(x => x.ValueCountLimit =
                 configuration.ServerConfiguration.UploadMaximSize);
 
             //Global settings
             services.AddMvc(options =>
                 {
+                    options.EnableEndpointRouting = false;
                     options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
+                .AddJsonOptions(x =>
+                {
+                    x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
+                });
 
             services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -70,9 +77,6 @@ namespace GR.WebApplication.Extensions
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
 
             services.AddHttpClient();
-
-            //Register system config
-            services.RegisterSystemConfig(configuration.Configuration);
 
             services.Configure<SecurityStampValidatorOptions>(options =>
             {
