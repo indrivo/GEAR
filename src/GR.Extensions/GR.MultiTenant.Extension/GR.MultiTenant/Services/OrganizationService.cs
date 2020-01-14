@@ -596,7 +596,7 @@ namespace GR.MultiTenant.Services
         {
             if (tenantId == null) return new InvalidParametersResultModel<GearUser>();
             var companyAdminRequest = await GetUsersInRoleAsync(tenantId, MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
-            if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<GearUser>(null);
+            if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<GearUser>();
             var admin = companyAdminRequest.Result.FirstOrDefault();
             if (admin != null) return new SuccessResultModel<GearUser>(admin);
             return new NotFoundResultModel<GearUser>();
