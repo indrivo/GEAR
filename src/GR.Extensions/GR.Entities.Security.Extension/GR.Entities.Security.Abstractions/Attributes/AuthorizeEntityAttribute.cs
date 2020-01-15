@@ -16,6 +16,7 @@ using GR.Core.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Helpers;
+using GR.Entities.Abstractions;
 
 namespace GR.Entities.Security.Abstractions.Attributes
 {
@@ -43,15 +44,21 @@ namespace GR.Entities.Security.Abstractions.Attributes
         private readonly IEntityRoleAccessManager _entityRoleAccessManager;
 
         /// <summary>
+        /// Inject entity repository
+        /// </summary>
+        private readonly IEntityRepository _entityRepository;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="entityRoleAccessManager"></param>
         /// <param name="authorizationRequirement"></param>
         public AuthorizeEntityPermissionAttributeExecutor(IEntityRoleAccessManager entityRoleAccessManager,
-            EntityPermissionAuthorizationRequirement authorizationRequirement)
+            EntityPermissionAuthorizationRequirement authorizationRequirement, IEntityRepository entityRepository)
         {
             _entityRoleAccessManager = entityRoleAccessManager;
             _authorizationRequirement = authorizationRequirement;
+            _entityRepository = entityRepository;
         }
 
         //public override bool CompileTimeValidate(System.Reflection.MethodBase method)
@@ -84,7 +91,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
             {
                 var data = JsonConvert.DeserializeObject<RequestData>(body);
 
-                var isValid = await IsValid(data.EntityName);
+                var isValid = await _entityRepository.FindTableByNameAsync(data.EntityName); //await IsValid(data.EntityName);
                 if (!isValid.IsSuccess)
                 {
                     await responseBody.WriteAsync(isValid.SerializeAsJson());

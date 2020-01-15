@@ -15,6 +15,7 @@ using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Models;
 using GR.Entities.Security.Data;
 using GR.Identity.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Entities.Security
 {
@@ -42,6 +43,12 @@ namespace GR.Entities.Security
         /// Inject entity context
         /// </summary>
         private readonly IEntityContext _entityContext;
+
+        /// <summary>
+        /// Inject memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
         #endregion
 
         /// <summary>
@@ -51,12 +58,13 @@ namespace GR.Entities.Security
         /// <param name="identityContext"></param>
         /// <param name="userManager"></param>
         /// <param name="entityContext"></param>
-        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext)
+        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache)
         {
             _context = context;
             _identityContext = identityContext;
             _userManager = userManager;
             _entityContext = entityContext;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -209,8 +217,10 @@ namespace GR.Entities.Security
         {
             var defResult = new Collection<EntityAccessType>();
             if (string.IsNullOrEmpty(entityName)) return defResult;
+
             var table = await Tables.FirstOrDefaultAsync(x =>
                 x.Name.Equals(entityName));
+
             if (table == null) return defResult;
             var user = await _userManager.GetCurrentUserAsync();
             IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
@@ -248,8 +258,10 @@ namespace GR.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(IEnumerable<string> userRoles, Guid entityId)
         {
+            var key = $"entity_permissions_async";
             var result = new List<EntityAccessType>();
             var roles = _identityContext.Set<GearRole>().Where(x => userRoles.Contains(x.Name)).ToList();
+           
             if (roles.Select(x => x.Name).Contains(GlobalResources.Roles.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);
@@ -258,7 +270,9 @@ namespace GR.Entities.Security
 
             var toCheck = new List<Guid> { entityId };
 
-            var table = await _entityContext.Table.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
+            var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
+            var table = tables.FirstOrDefault(x => x.Id.Equals(entityId)) ?? await _entityContext.Table.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
+
             if (table != null)
             {
                 if (!table.IsCommon)
@@ -270,6 +284,12 @@ namespace GR.Entities.Security
                     {
                         toCheck.AddRange(tenantTables);
                     }
+                }
+
+                if (tables.FirstOrDefault(x => x.Id.Equals(entityId)) == null)
+                {
+                    tables.Add(table);
+                    _memoryCache.Set(key, tables);
                 }
             }
 
