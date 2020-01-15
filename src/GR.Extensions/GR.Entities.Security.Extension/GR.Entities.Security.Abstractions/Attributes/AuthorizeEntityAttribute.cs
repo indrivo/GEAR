@@ -61,17 +61,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
             _entityRepository = entityRepository;
         }
 
-        //public override bool CompileTimeValidate(System.Reflection.MethodBase method)
-        //{
-        //    var type = method.DeclaringType;
-        //    if (type != typeof(Task<JsonResult>) && type != typeof(JsonResult))
-        //    {
-        //        throw new Exception(
-        //            $"{nameof(AuthorizeEntityAttribute)} can only be used with {nameof(JsonResult)} methods");
-        //    }
-
-        //    return true;
-        //}
+       
 
         /// <summary>
         /// On executing context
@@ -123,36 +113,6 @@ namespace GR.Entities.Security.Abstractions.Attributes
                     }
                 }.SerializeAsJson());
             }
-        }
-
-        /// <summary>
-        /// Is valid entity
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        [NonAction]
-        private async Task<ResultModel<TableModel>> IsValid(string tableName)
-        {
-            var badParams = new ErrorModel(string.Empty, "Entity not identified!");
-            var entityNotFound = new ErrorModel(string.Empty, "Entity not found!");
-            var result = new ResultModel<TableModel>();
-            if (string.IsNullOrEmpty(tableName))
-            {
-                result.Errors.Add(badParams);
-                return result;
-            }
-
-            var entity = await _entityRoleAccessManager.Tables.FirstOrDefaultAsync(x => x.Name == tableName);
-
-            if (entity == null)
-            {
-                result.Errors.Add(entityNotFound);
-                return result;
-            }
-
-            result.IsSuccess = true;
-            result.Result = entity;
-            return result;
         }
     }
 
