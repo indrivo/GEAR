@@ -14,9 +14,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using GR.Core.Helpers.Responses;
-using GR.Identity.Abstractions;
-using Microsoft.Extensions.Caching.Memory;
 
 #pragma warning disable 1998
 
@@ -34,27 +31,16 @@ namespace GR.Cms.Services
 		/// </summary>
 		private readonly IDynamicService _service;
 
-		/// <summary>
-		/// Inject memory cache
-		/// </summary>
-		private readonly IMemoryCache _memoryCache;
-
-		/// <summary>
-		/// Inject user manager
-		/// </summary>
-		private readonly IUserManager<GearUser> _userManager;
+		private string _categoryEntity;
+		private string _requirementEntity;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="service"></param>
-		/// <param name="memoryCache"></param>
-		/// <param name="userManager"></param>
-		public TreeIsoService(IDynamicService service, IMemoryCache memoryCache, IUserManager<GearUser> userManager)
+		public TreeIsoService(IDynamicService service)
 		{
 			_service = service;
-			_memoryCache = memoryCache;
-			_userManager = userManager;
 		}
 
 		#region Standart Structure
@@ -68,13 +54,6 @@ namespace GR.Cms.Services
 		/// <returns></returns>
 		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
-			var key = $"iso_tree_{_userManager.CurrentUserTenantId}";
-			var cacheTree = _memoryCache.Get<Collection<TreeStandard>>(key);
-			if (cacheTree != null)
-			{
-				return new SuccessResultModel<IEnumerable<TreeStandard>>(cacheTree);
-			}
-
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
 			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>(filters: new Collection<Filter>
 			{
@@ -83,10 +62,14 @@ namespace GR.Cms.Services
 
 			var tree = new Collection<TreeStandard>();
 			if (!standards.IsSuccess) return res;
+
+			_categoryEntity = categoryEntity.Name;
+			_requirementEntity = requirementEntity.Name;
+
 			foreach (var standard in standards.Result.ToList())
 			{
 				Guid standardId = standard.Id;
-				var categories = await LoadCategories(categoryEntity.Name, requirementEntity.Name, standardId, null);
+				var categories = await LoadCategories(standardId);
 				tree.Add(new TreeStandard
 				{
 					Name = standard.Name,
@@ -97,35 +80,64 @@ namespace GR.Cms.Services
 
 			res.IsSuccess = true;
 			res.Result = tree;
-			_memoryCache.Set(key, tree);
 			return res;
 		}
 
 		/// <summary>
 		/// Load categories
 		/// </summary>
-		/// <param name="categoryEntity"></param>
-		/// <param name="requirementEntity"></param>
 		/// <param name="standardId"></param>
 		/// <param name="parentCategoryId"></param>
+		/// <param name="collection"></param>
+		/// <param name="requirementCollection"></param>
+		/// <param name="requirementFillMethodCollection"></param>
 		/// <returns></returns>
-		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid? parentCategoryId)
+		private async Task<IEnumerable<TreeCategory>> LoadCategories(Guid standardId, Guid? parentCategoryId = null,
+			List<dynamic> collection = null, List<dynamic> requirementCollection = null,
+			List<dynamic> requirementFillMethodCollection = null)
 		{
-			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(null, new List<Filter>
+			if (collection == null)
 			{
-				new Filter("ParentCategoryId", parentCategoryId),
-				new Filter("StandardId", standardId),
-				new Filter(nameof(BaseModel.IsDeleted), false)
-			});
+				var dataRequest = await _service.Table(_categoryEntity).GetAll<dynamic>(null, new List<Filter>
+				{
+					new Filter(nameof(BaseModel.IsDeleted), false)
+				});
+				if (!dataRequest.IsSuccess) return new List<TreeCategory>();
+				collection = dataRequest.Result.ToList();
 
-			var result = categories.Result?.OrderBy(x => (string)x.Number, new StringNumberComparer())
+				if (requirementCollection == null)
+				{
+					var requirementsRequest = await _service.Table(_requirementEntity).GetAll<dynamic>(null,
+						new List<Filter>
+						{
+							new Filter(nameof(BaseModel.IsDeleted), false)
+						});
+					requirementCollection = requirementsRequest.IsSuccess ? requirementsRequest.Result.ToList() : new List<dynamic>();
+				}
+
+				if (requirementFillMethodCollection == null)
+				{
+					var dueModeCtx = _service.Table(ReqFillEntityName);
+					var rqFillMethodRequest = await dueModeCtx.GetAll<dynamic>();
+					requirementFillMethodCollection = rqFillMethodRequest.IsSuccess
+						? rqFillMethodRequest.Result.ToList()
+						: new List<dynamic>();
+				}
+			}
+
+			if (parentCategoryId == null) parentCategoryId = Guid.Empty;
+
+			var categories = collection.Where(x =>
+				x.StandardId.Equals(standardId) && x.ParentCategoryId.Equals(parentCategoryId)).ToList();
+
+			var result = categories.OrderBy(x => (string)x.Number, new StringNumberComparer())
 				.Select(async category => new TreeCategory
 				{
 					Number = category.Number,
 					Name = category.Name,
 					Id = category.Id,
-					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
-					Requirements = await LoadRequirements(requirementEntity, category.Id, null),
+					SubCategories = await LoadCategories(standardId, category.Id, collection, requirementCollection, requirementFillMethodCollection),
+					Requirements = await LoadRequirements(category.Id, null, requirementCollection, requirementFillMethodCollection),
 					CategoryActions = new TreeCategoryAction()
 				}).Select(task => task.Result).ToList();
 
@@ -135,47 +147,38 @@ namespace GR.Cms.Services
 		/// <summary>
 		/// Load requirements
 		/// </summary>
-		/// <param name="requirementEntity"></param>
 		/// <param name="categoryId"></param>
 		/// <param name="parentRequirementId"></param>
+		/// <param name="collection"></param>
+		/// <param name="requirementFillMethodCollection"></param>
 		/// <returns></returns>
-		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid? parentRequirementId)
+		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(Guid categoryId, Guid? parentRequirementId, List<dynamic> collection = null,
+			List<dynamic> requirementFillMethodCollection = null)
 		{
 			var res = new List<TreeRequirement>();
-			var requirements = await _service.Table(requirementEntity).GetAllWithInclude<dynamic>(null,
-				new List<Filter>
-				{
-					new Filter("CategoryId", categoryId),
-					new Filter("ParentRequirementId", parentRequirementId),
-					new Filter(nameof(BaseModel.IsDeleted), false)
-				});
-			var dueModeCtx = _service.Table(ReqFillEntityName);
-			foreach (var req in requirements.Result.OrderBy(x => x.Name))
+			if (parentRequirementId == null) parentRequirementId = Guid.Empty;
+			var requirements = collection.Where(x =>
+				x.CategoryId.Equals(categoryId) && x.ParentRequirementId.Equals(parentRequirementId))
+				.ToList();
+
+			foreach (var req in requirements.OrderBy(x => x.Name))
 			{
 				var requirement = new TreeRequirement
 				{
 					Name = req.Name,
 					Id = req.Id,
 					Hint = req.Hint ?? string.Empty,
-					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id)
+					Requirements = await LoadRequirements(categoryId, req.Id, collection, requirementFillMethodCollection)
 				};
 
-				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
-				{
-					new Filter("RequirementId", req.Id)
-				});
-
-				if (rq.IsSuccess)
-				{
-					var dueMode = rq.Result?.FirstOrDefault();
-					requirement.RequirementDueMode = dueMode == null
-						? new RequirementDueMode()
-						: new RequirementDueMode
-						{
-							DueModeId = dueMode.Id,
-							DueModeValue = dueMode.Value
-						};
-				}
+				var dueMode = requirementFillMethodCollection.FirstOrDefault(x => x.RequirementId.Equals(req.Id));
+				requirement.RequirementDueMode = dueMode == null
+					? new RequirementDueMode()
+					: new RequirementDueMode
+					{
+						DueModeId = dueMode.Id,
+						DueModeValue = dueMode.Value
+					};
 
 				res.Add(requirement);
 			}
@@ -279,7 +282,7 @@ namespace GR.Cms.Services
 		{
 			const string controlStructureEntity = "ControlStructure";
 			var result = new ResultModel<IEnumerable<ControlRootTree>>();
-			var controlStructures = await _service.Table(controlStructureEntity).GetAllWithInclude<dynamic>(filters: new List<Filter>
+			var controlStructures = await _service.Table(controlStructureEntity).GetAll<dynamic>(filters: new List<Filter>
 			{
 				new Filter( nameof(BaseModel.IsDeleted), false)
 			});
@@ -456,7 +459,11 @@ namespace GR.Cms.Services
 			var data = source.Where(x => x.ParentId == parentId).Select(async x =>
 			{
 				var (_, content) = await GetControlContentAndGoalAsync((Guid)x.Id);
-				var documentCount = await _service.Table("ControlDocuments").Count(new Dictionary<string, object> { { "ControlStructureId", x.Id } });
+				var documentCount = await _service.Table("ControlDocuments")
+					.Count(new Dictionary<string, object>
+					{
+						{ "ControlStructureId", x.Id }
+					});
 				return new ControlThirdLevel
 				{
 					ParentId = parentId,
