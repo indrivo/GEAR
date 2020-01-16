@@ -75,4 +75,5 @@
   <ItemGroup>
     <ProjectReference Include="..\GR.Core\GR.Core.csproj" />
   </ItemGroup>
+
 </Project>
