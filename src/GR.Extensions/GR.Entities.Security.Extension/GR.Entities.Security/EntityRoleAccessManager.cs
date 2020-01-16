@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,18 @@ namespace GR.Entities.Security
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
+        /// <summary>
+        /// Inject entity repository
+        /// </summary>
+        private readonly IEntityRepository _entityRepository;
+
         #endregion
+
+        /// <summary>
+        /// Table search predicate
+        /// </summary>
+        private readonly Expression<Func<TableModel, bool>> _tableSearchPredicate =
+            x => x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA) || x.IsPartOfDbContext;
 
         /// <summary>
         /// Constructor
@@ -58,13 +70,16 @@ namespace GR.Entities.Security
         /// <param name="identityContext"></param>
         /// <param name="userManager"></param>
         /// <param name="entityContext"></param>
-        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache)
+        /// <param name="memoryCache"></param>
+        /// <param name="entityRepository"></param>
+        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache, IEntityRepository entityRepository)
         {
             _context = context;
             _identityContext = identityContext;
             _userManager = userManager;
             _entityContext = entityContext;
             _memoryCache = memoryCache;
+            _entityRepository = entityRepository;
         }
 
         /// <summary>
@@ -76,8 +91,7 @@ namespace GR.Entities.Security
         /// <summary>
         /// Tables
         /// </summary>
-        public IQueryable<TableModel> Tables => _entityContext.Table
-            .Where(x => x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA) || x.IsPartOfDbContext);
+        public IQueryable<TableModel> Tables => _entityContext.Table.Where(_tableSearchPredicate);
 
         /// <summary>
         /// 
@@ -166,7 +180,10 @@ namespace GR.Entities.Security
                 }
             }
 
-            return await _context.PushAsync();
+            var dbResult = await _context.PushAsync();
+            if (!dbResult.IsSuccess) return dbResult;
+            _memoryCache.Remove(GetEntityKey(entityId.Value));
+            return dbResult;
         }
 
         /// <summary>
@@ -200,10 +217,7 @@ namespace GR.Entities.Security
             };
             var user = await _userManager.GetCurrentUserAsync();
             IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
-            if (user.IsSuccess)
-            {
-                roles = _userManager.GetRolesFromClaims();
-            }
+            if (user.IsSuccess) roles = _userManager.GetRolesFromClaims();
 
             return await GetPermissionsAsync(roles, entityId);
         }
@@ -218,16 +232,13 @@ namespace GR.Entities.Security
             var defResult = new Collection<EntityAccessType>();
             if (string.IsNullOrEmpty(entityName)) return defResult;
 
-            var table = await Tables.FirstOrDefaultAsync(x =>
-                x.Name.Equals(entityName));
-
-            if (table == null) return defResult;
+            var tableRequest = await _entityRepository.FindTableByNameAsync(entityName,
+                x => x.Name.Equals(entityName) && x.TenantId.Equals(GearSettings.TenantId));
+            if (!tableRequest.IsSuccess) return defResult;
+            var table = tableRequest.Result;
             var user = await _userManager.GetCurrentUserAsync();
             IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
-            if (user.IsSuccess)
-            {
-                roles = _userManager.GetRolesFromClaims();
-            }
+            if (user.IsSuccess) roles = _userManager.GetRolesFromClaims();
 
             return await GetPermissionsAsync(roles, table.Id);
         }
@@ -258,49 +269,40 @@ namespace GR.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(IEnumerable<string> userRoles, Guid entityId)
         {
-            var key = $"entity_permissions_async";
             var result = new List<EntityAccessType>();
             var roles = _identityContext.Set<GearRole>().Where(x => userRoles.Contains(x.Name)).ToList();
-           
             if (roles.Select(x => x.Name).Contains(GlobalResources.Roles.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);
                 return result;
             }
 
-            var toCheck = new List<Guid> { entityId };
+            Guid? systemEntityId = entityId;
 
-            var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
-            var table = tables.FirstOrDefault(x => x.Id.Equals(entityId)) ?? await _entityContext.Table.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
-
+            var table = await _entityContext.Table.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
             if (table != null)
             {
-                if (!table.IsCommon)
+                if (!table.IsCommon && !table.IsPartOfDbContext)
                 {
-                    var tenantTables =
-                        _entityContext.Table.Where(x => x.Name.Equals(table.Name) && !x.Id.Equals(table.Id))
-                            .Select(x => x.Id).ToList();
-                    if (tenantTables.Any())
-                    {
-                        toCheck.AddRange(tenantTables);
-                    }
-                }
+                    var baseEntityRequest = await _entityRepository.FindTableByNameAsync(table.Name,
+                        x => x.Name.Equals(table.Name) && x.TenantId.Equals(GearSettings.TenantId));
 
-                if (tables.FirstOrDefault(x => x.Id.Equals(entityId)) == null)
-                {
-                    tables.Add(table);
-                    _memoryCache.Set(key, tables);
+                    systemEntityId = baseEntityRequest.IsSuccess ? baseEntityRequest.Result?.Id : null;
                 }
             }
 
-            if (table == null) return result;
+            if (systemEntityId == null) return result;
+
+            var key = GetEntityKey(systemEntityId.Value);
+            var entityPermissionsFromCache = _memoryCache.Get<IEnumerable<EntityAccessType>>(key);
+            if (entityPermissionsFromCache != null) return entityPermissionsFromCache.ToList();
 
             var permissionGroup = await _context.EntityPermissions
                 .Include(x => x.EntityPermissionAccesses)
                 .Where(x => roles.Select(b => b.Id.ToGuid())
-                                .Contains(x.ApplicationRoleId) && toCheck
-                                .Any(v => v
-                                    .Equals(x.TableModelId)))
+                                .Contains(x.ApplicationRoleId) && x.TableModelId
+                                .Equals(systemEntityId))
+
                 .Select(j => j.EntityPermissionAccesses
                     .Select(p => p.AccessType))
                 .ToListAsync();
@@ -310,8 +312,9 @@ namespace GR.Entities.Security
                 result.AddRange(permissions);
             }
 
-            return result;
+            _memoryCache.Set(key, result);
 
+            return result;
         }
 
         /// <summary>
@@ -462,5 +465,16 @@ namespace GR.Entities.Security
                         || accesses.All(accessTypes.Contains);
             return grant;
         }
+
+        #region Helpers
+
+        /// <summary>
+        /// Generate entity key
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        private static string GetEntityKey(Guid entityId) => $"entity_permissions_{entityId}";
+
+        #endregion
     }
 }

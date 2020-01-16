@@ -56,5 +56,8 @@ namespace GR.Core.Helpers
             Result = result,
             Errors = Errors
         };
+
+        private static ResultModel<T> _instance;
+        public static ResultModel<T> Instance => _instance ?? (_instance = new ResultModel<T>());
     }
 }
