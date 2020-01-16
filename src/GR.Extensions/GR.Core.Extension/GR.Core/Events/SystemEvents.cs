@@ -159,7 +159,6 @@ namespace GR.Core.Events
         {
             Application.OnApplicationStarted += EventHandlers.OnApplicationStartedHandler;
             Application.OnApplicationStopped += EventHandlers.OnApplicationStoppedHandler;
-            Application.OnEvent += EventHandlers.OnEventHandler;
             Database.OnMigrateComplete += EventHandlers.OnMigrationCompleteHandler;
 
             //register event group
