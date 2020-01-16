@@ -14,6 +14,8 @@ using GR.Core;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
+using GR.Entities.Abstractions.Models.Tables;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.DynamicEntityStorage
 {
@@ -23,6 +25,7 @@ namespace GR.DynamicEntityStorage
         /// Assembly name
         /// </summary>
         private readonly AssemblyName _assemblyName;
+       
 
         /// <summary>
         /// Constructor
@@ -31,6 +34,7 @@ namespace GR.DynamicEntityStorage
         public ObjectService(string className)
         {
             _assemblyName = new AssemblyName(className);
+            
         }
 
         /// <summary>
@@ -42,10 +46,14 @@ namespace GR.DynamicEntityStorage
         public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context,
             IHttpContextAccessor httpContextAccessor)
         {
+          
             Arg.NotNull(context, nameof(EntitiesDbContext));
             Arg.NotNull(httpContextAccessor, nameof(IHttpContextAccessor));
             var entity = _assemblyName.Name;
+            var key = $"entity_{entity}";
+            
             var table = await context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity));
+
             if (table == null) throw new DynamicTableOperationException($"Table {entity} not found in database!");
             var schema = table.EntityType;
             var stored = TypeManager.TryGet(entity, schema);
