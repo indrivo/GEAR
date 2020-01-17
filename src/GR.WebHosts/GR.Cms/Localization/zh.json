@@ -883,5 +883,9 @@
   "system_october": "十月",
   "system_november": "十一月",
   "system_december": "十二月",
-  "system_standard_requirement": "标准的要求"
+  "system_standard_requirement": "标准的要求",
+  "page_modal_controls_checklist_list_documents": "列表的文件",
+  "page_modal_controls_checklist_smsi_document": "文件中，它应",
+  "page_modal_controls_checklist_external_document": "外部文件",
+  "add_documents": "添加文件"
 }

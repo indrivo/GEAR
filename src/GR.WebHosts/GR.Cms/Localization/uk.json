@@ -883,5 +883,9 @@
   "system_october": "Жовтня",
   "system_november": "Листопада",
   "system_december": "Грудня",
-  "system_standard_requirement": "Стандартна вимога"
+  "system_standard_requirement": "Стандартна вимога",
+  "page_modal_controls_checklist_list_documents": "Список документів",
+  "page_modal_controls_checklist_smsi_document": "Документів СУІБ",
+  "page_modal_controls_checklist_external_document": "Зовнішній документ",
+  "add_documents": "Додати документи"
 }

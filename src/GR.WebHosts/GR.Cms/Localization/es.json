@@ -883,5 +883,9 @@
   "system_october": "Octubre",
   "system_november": "Noviembre",
   "system_december": "De diciembre de",
-  "system_standard_requirement": "Requisito estándar"
+  "system_standard_requirement": "Requisito estándar",
+  "page_modal_controls_checklist_list_documents": "Lista de documentos",
+  "page_modal_controls_checklist_smsi_document": "El documento, deberá",
+  "page_modal_controls_checklist_external_document": "Documento externo",
+  "add_documents": "Agregar documentos"
 }

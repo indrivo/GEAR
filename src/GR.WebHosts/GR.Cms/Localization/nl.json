@@ -883,5 +883,9 @@
   "system_october": "Oktober",
   "system_november": "November",
   "system_december": "December",
-  "system_standard_requirement": "Standaardeis"
+  "system_standard_requirement": "Standaardeis",
+  "page_modal_controls_checklist_list_documents": "Lijst documenten",
+  "page_modal_controls_checklist_smsi_document": "Document, het zal",
+  "page_modal_controls_checklist_external_document": "Extern document",
+  "add_documents": "Documenten toevoegen"
 }
