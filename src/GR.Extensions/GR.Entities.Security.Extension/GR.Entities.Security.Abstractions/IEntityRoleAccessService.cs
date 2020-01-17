@@ -9,7 +9,7 @@ using GR.Identity.Abstractions;
 
 namespace GR.Entities.Security.Abstractions
 {
-    public interface IEntityRoleAccessManager
+    public interface IEntityRoleAccessService
     {
         /// <summary>
         /// Get all active roles
@@ -130,5 +130,11 @@ namespace GR.Entities.Security.Abstractions
         /// <param name="accessTypes"></param>
         /// <returns></returns>
         Task<bool> HaveAccessAsync(string entityName, IEnumerable<EntityAccessType> accessTypes);
+
+        /// <summary>
+        /// Clear entity permissions from cache
+        /// </summary>
+        /// <param name="entityId"></param>
+        void ClearEntityPermissionsFromCache(Guid entityId);
     }
 }

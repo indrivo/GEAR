@@ -26,7 +26,7 @@ namespace GR.Entities.Security.Razor.Controllers
         /// <summary>
         /// Inject role access manager
         /// </summary>
-        private readonly IEntityRoleAccessManager _accessManager;
+        private readonly IEntityRoleAccessService _accessService;
 
         /// <summary>
         /// Inject user manager
@@ -35,9 +35,9 @@ namespace GR.Entities.Security.Razor.Controllers
 
         #endregion
 
-        public EntitySecurityController(IEntityRoleAccessManager accessManager, IUserManager<GearUser> userManager)
+        public EntitySecurityController(IEntityRoleAccessService accessService, IUserManager<GearUser> userManager)
         {
-            _accessManager = accessManager;
+            _accessService = accessService;
             _userManager = userManager;
         }
 
@@ -61,7 +61,7 @@ namespace GR.Entities.Security.Razor.Controllers
             var result = new ResultModel();
             if (!ModelState.IsValid) return Json(result);
             var serviceResult =
-                await _accessManager.SetPermissionsForRoleOnEntityAsync(model.EntityId, model.RoleId,
+                await _accessService.SetPermissionsForRoleOnEntityAsync(model.EntityId, model.RoleId,
                     model.Permissions);
             return Json(serviceResult);
         }
@@ -83,7 +83,7 @@ namespace GR.Entities.Security.Razor.Controllers
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return Json(new AccessDeniedResult<object>());
             var user = userRequest.Result;
-            var permissions = (await _accessManager.GetPermissionsAsync(user, entityId)).Select(x => x.ToString());
+            var permissions = (await _accessService.GetPermissionsAsync(user, entityId)).Select(x => x.ToString());
             return Json(new SuccessResultModel<IEnumerable<string>>(permissions));
         }
 

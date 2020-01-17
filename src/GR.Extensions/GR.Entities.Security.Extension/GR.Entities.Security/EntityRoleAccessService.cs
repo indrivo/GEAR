@@ -20,7 +20,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Entities.Security
 {
-    public class EntityRoleAccessManager<TAclContext, TIdentityContext> : IEntityRoleAccessManager
+    public class EntityRoleAccessService<TAclContext, TIdentityContext> : IEntityRoleAccessService
         where TAclContext : EntitySecurityDbContext
         where TIdentityContext : IdentityDbContext<GearUser, GearRole, string>
     {
@@ -53,7 +53,7 @@ namespace GR.Entities.Security
         /// <summary>
         /// Inject entity repository
         /// </summary>
-        private readonly IEntityRepository _entityRepository;
+        private readonly IEntityService _entityService;
 
         #endregion
 
@@ -71,15 +71,15 @@ namespace GR.Entities.Security
         /// <param name="userManager"></param>
         /// <param name="entityContext"></param>
         /// <param name="memoryCache"></param>
-        /// <param name="entityRepository"></param>
-        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache, IEntityRepository entityRepository)
+        /// <param name="entityService"></param>
+        public EntityRoleAccessService(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache, IEntityService entityService)
         {
             _context = context;
             _identityContext = identityContext;
             _userManager = userManager;
             _entityContext = entityContext;
             _memoryCache = memoryCache;
-            _entityRepository = entityRepository;
+            _entityService = entityService;
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace GR.Entities.Security
             var defResult = new Collection<EntityAccessType>();
             if (string.IsNullOrEmpty(entityName)) return defResult;
 
-            var tableRequest = await _entityRepository.FindTableByNameAsync(entityName,
+            var tableRequest = await _entityService.FindTableByNameAsync(entityName,
                 x => x.Name.Equals(entityName) && x.TenantId.Equals(GearSettings.TenantId));
             if (!tableRequest.IsSuccess) return defResult;
             var table = tableRequest.Result;
@@ -284,7 +284,7 @@ namespace GR.Entities.Security
             {
                 if (!table.IsCommon && !table.IsPartOfDbContext)
                 {
-                    var baseEntityRequest = await _entityRepository.FindTableByNameAsync(table.Name,
+                    var baseEntityRequest = await _entityService.FindTableByNameAsync(table.Name,
                         x => x.Name.Equals(table.Name) && x.TenantId.Equals(GearSettings.TenantId));
 
                     systemEntityId = baseEntityRequest.IsSuccess ? baseEntityRequest.Result?.Id : null;
@@ -464,6 +464,15 @@ namespace GR.Entities.Security
             var grant = accesses.Contains(EntityAccessType.FullControl)
                         || accesses.All(accessTypes.Contains);
             return grant;
+        }
+
+        /// <summary>
+        /// Clear permissions from cache to specific entity
+        /// </summary>
+        /// <param name="entityId"></param>
+        public void ClearEntityPermissionsFromCache(Guid entityId)
+        {
+            _memoryCache.Remove(GetEntityKey(entityId));
         }
 
         #region Helpers

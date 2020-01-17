@@ -26,7 +26,7 @@ namespace GR.Entities.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddEntityModule<TEntityContext, TEntityRepository>(this IServiceCollection services)
             where TEntityContext : DbContext, IEntityContext
-            where TEntityRepository : class, IEntityRepository
+            where TEntityRepository : class, IEntityService
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IEntityContext, TEntityContext>();
@@ -34,7 +34,7 @@ namespace GR.Entities.Abstractions.Extensions
 
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {
-                { typeof(IEntityRepository), typeof(TEntityRepository) }
+                { typeof(IEntityService), typeof(TEntityRepository) }
             });
 
             return services;

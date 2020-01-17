@@ -19,9 +19,9 @@ namespace GR.Entities.Security.Extensions
         /// <returns></returns>
         public static async Task<IEnumerable<EntityAccessType>> GetUserRolesEntityAccesses(this TableModel table, IEnumerable<string> roles)
         {
-            var accessService = IoC.Resolve<IEntityRoleAccessManager>();
+            var accessService = IoC.Resolve<IEntityRoleAccessService>();
             if (accessService == null) throw
-                new EntitySecurityNotRegisteredServiceException($"{nameof(IEntityRoleAccessManager)} is not registered!");
+                new EntitySecurityNotRegisteredServiceException($"{nameof(IEntityRoleAccessService)} is not registered!");
             if (table == null) throw
                 new NullReferenceException($"Table is null on {nameof(EntityAclExtensions)} for {nameof(GetUserRolesEntityAccesses)} method body");
             return await accessService.GetPermissionsAsync(roles, table.Id);
