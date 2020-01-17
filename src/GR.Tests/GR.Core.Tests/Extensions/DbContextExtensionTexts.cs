@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Tests.Helpers;
@@ -42,12 +41,11 @@ namespace GR.Core.Tests.Extensions
         public void SaveSynchronouslyTest()
         {
             var saveResult = _context.Save();
-            Console.WriteLine(saveResult);
-            Assert.IsFalse(saveResult.IsSuccess);
+            Assert.IsTrue(saveResult.IsSuccess);
 
             var iContext = (IDbContext)_context;
             var iSaveResult = iContext.Push();
-            Assert.IsFalse(iSaveResult.IsSuccess);
+            Assert.IsTrue(iSaveResult.IsSuccess);
         }
 
         /// <summary>
@@ -57,11 +55,11 @@ namespace GR.Core.Tests.Extensions
         public async Task SaveAsyncTest()
         {
             var saveResult = await _context.SaveAsync();
-            Assert.IsFalse(saveResult.IsSuccess);
+            Assert.IsTrue(saveResult.IsSuccess);
 
             var iContext = (IDbContext)_context;
             var iSaveResult = await iContext.PushAsync();
-            Assert.IsFalse(iSaveResult.IsSuccess);
+            Assert.IsTrue(iSaveResult.IsSuccess);
         }
     }
 }
