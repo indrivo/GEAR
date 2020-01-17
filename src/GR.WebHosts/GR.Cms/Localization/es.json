@@ -883,5 +883,6 @@
   "system_october": "Octubre",
   "system_november": "Noviembre",
   "system_december": "De diciembre de",
-  "system_standard_requirement": "Requisito estándar"
+  "system_standard_requirement": "Requisito estándar",
+  "forgot_password": "¿Olvidó la contraseña?"
 }

@@ -883,5 +883,6 @@
   "system_october": "Октября",
   "system_november": "Ноября",
   "system_december": "Декабря",
-  "system_standard_requirement": "Стандартное требование"
+  "system_standard_requirement": "Стандартное требование",
+  "forgot_password": "Забыли пароль?"
 }
