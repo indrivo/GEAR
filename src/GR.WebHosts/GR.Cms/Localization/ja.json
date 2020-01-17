@@ -883,5 +883,6 @@
   "system_october": "月",
   "system_november": "月",
   "system_december": "月",
-  "system_standard_requirement": "標準の要件"
+  "system_standard_requirement": "標準の要件",
+  "forgot_password": "パスワードをお忘れの方はこちら?"
 }

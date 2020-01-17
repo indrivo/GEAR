@@ -883,5 +883,6 @@
   "system_october": "Οκτωβρίου",
   "system_november": "Νοεμβρίου",
   "system_december": "Δεκεμβρίου",
-  "system_standard_requirement": "Τυποποιημένη απαίτηση"
+  "system_standard_requirement": "Τυποποιημένη απαίτηση",
+  "forgot_password": "Ξεχάσατε τον κωδικό πρόσβασης;"
 }
