@@ -884,5 +884,9 @@
   "system_november": "Ноября",
   "system_december": "Декабря",
   "system_standard_requirement": "Стандартное требование",
+  "page_modal_controls_checklist_list_documents": "Список документов",
+  "page_modal_controls_checklist_smsi_document": "Документов СУИБ",
+  "page_modal_controls_checklist_external_document": "Внешний документ",
+  "add_documents": "Добавить документы",
   "forgot_password": "Забыли пароль?"
 }

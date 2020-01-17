@@ -16,6 +16,11 @@
             this.$calendarObj = null
     };
 
+    //popover.prototype.documentMousedown = function (ev) {
+    //    // only hide the popover if the click happened outside the popover
+    //    // rewrite fullcalendar to do nothing on click outside 
+    //};
+
     /* on drop */
     CalendarApp.prototype.onDrop = function (eventObj, date) {
         let calendarEvent = Object.assign({}, eventObj.data('eventObject'));
@@ -186,7 +191,7 @@
                 allDaySlot: false,
                 editable: true,
                 droppable: true, // this allows things to be dropped onto the calendar !!!
-                eventLimit: true, // allow "more" link when too many events
+                eventLimit: 5, // allow "more" link when too many events
                 selectable: true,
                 drop: function (date) { $this.onDrop($(this), date); },
                 eventDrop: function (event, delta, revertFunc) {

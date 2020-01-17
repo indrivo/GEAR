@@ -884,5 +884,9 @@
   "system_november": "Novembre",
   "system_december": "Décembre",
   "system_standard_requirement": "Exigence Standard",
+  "page_modal_controls_checklist_list_documents": "Liste des documents",
+  "page_modal_controls_checklist_smsi_document": "Le Document, il est",
+  "page_modal_controls_checklist_external_document": "Document externe",
+  "add_documents": "Ajouter des documents",
   "forgot_password": "Mot de passe oublié?"
 }

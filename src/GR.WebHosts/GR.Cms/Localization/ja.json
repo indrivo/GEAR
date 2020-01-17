@@ -884,5 +884,9 @@
   "system_november": "月",
   "system_december": "月",
   "system_standard_requirement": "標準の要件",
+  "page_modal_controls_checklist_list_documents": "書類一覧",
+  "page_modal_controls_checklist_smsi_document": "文書では、",
+  "page_modal_controls_checklist_external_document": "外部文書",
+  "add_documents": "追加書類",
   "forgot_password": "パスワードをお忘れの方はこちら?"
 }
