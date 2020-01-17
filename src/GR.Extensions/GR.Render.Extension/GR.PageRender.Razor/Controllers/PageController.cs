@@ -5,6 +5,7 @@ using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Data;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
@@ -22,6 +23,7 @@ using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -44,18 +46,24 @@ namespace GR.PageRender.Razor.Controllers
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
+        /// Inject memory cache
+        /// </summary>
+        private readonly IMemoryCache _memoryCache;
+
+        /// <summary>
         /// Inject cache service
         /// </summary>
         private readonly ICacheService _cacheService;
 
         #endregion Injectable
 
-        public PageController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public PageController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext, IMemoryCache memoryCache) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _cacheService = cacheService;
             _pageRender = pageRender;
             _formService = formService;
             _pagesContext = pagesContext;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -617,7 +625,17 @@ namespace GR.PageRender.Razor.Controllers
         {
             if (tableId == null) return NotFound();
 
-            var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
+            var key = $"entity_Scaffold";
+
+            var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
+            var table = tables.FirstOrDefault(x => x.Id == tableId) ?? await Context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
+
+            if (tables.FirstOrDefault(x => x.Id == tableId) == null)
+            {
+                tables.Add(table);
+                _memoryCache.Set(key, tables);
+            }
+
             if (table == null) return NotFound();
             var viewModel = await _pageRender.GenerateViewModel(tableId.Value);
             var listPath = $"{table.Name}-{Guid.NewGuid()}-page";

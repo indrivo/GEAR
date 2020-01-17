@@ -28,6 +28,7 @@ namespace GR.Core
         public struct Date
         {
             public const string DateFormat = "dd'.'MM'.'yyyy";
+            public const string DateFormatWithTime = "dd'.'MM'.'yyyy hh:mm:ss tt";
         }
     }
 
