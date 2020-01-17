@@ -2,6 +2,7 @@ var PreLoader;
 
 $(window).on("load",
     function () {
+        moment.locale(settings.localization.current.identifier);
         $(".loader-wrapper").not(".incomponent").fadeOut(400,
             function () {
                 PreLoader = $(this).detach();
@@ -1777,7 +1778,7 @@ if (typeof Notificator !== "undefined") {
 				<div class="notification-body py-1">
 					<p class="mb-0"><small>${n.subject}</small></p>
 					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
-					<p class="text-muted mb-0"><small>${moment(new Date(n.created)).from(new Date())}</small></p>
+					<p class="text-muted mb-0"><small>${moment(n.created, "DD.MM.YYYY").from(new Date())}</small></p>
 					<span class="delete-notification">
 						<i class="material-icons">close</i>
 					</span>
