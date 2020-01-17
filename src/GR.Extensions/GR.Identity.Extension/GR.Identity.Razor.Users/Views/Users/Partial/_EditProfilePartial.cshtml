@@ -42,40 +42,43 @@
 </form>
 
 <script type="text/javascript">
-    $(function () {
-        const notifier = new ToastNotifier();
-        const validator = new Validator();
-        validator.reAttachValidationsRulesToForm("#EditProfile");
-	$("form[name='EditProfile']").submit(function(e) {
+   $(function () {
+    const notifier = new ToastNotifier();
+    const validator = new Validator();
+    validator.reAttachValidationsRulesToForm("#EditProfile");
+    $("form[name='EditProfile']").submit(function (e) {
         e.preventDefault();
         if (!$("#EditProfile").valid()) return;
         const form = $(this);
         const serialData = form.serialize();
         $.ajax({
-			type: form.attr('method'),
-			url: form.attr('action'),
-			data: serialData
-		}).done((data) => {
-			if (data.is_success) {
-				notifier.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
-				$('#modal-container').modal('hide');
-				setTimeout(location.reload(), 5000);
-			} else {
-				notifier.notifyErrorList(data.error_keys);
-			}
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: serialData
+        }).done((data) => {
+            if (data.is_success) {
+                notifier.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
+                $('#modal-container').modal('hide');
+                setTimeout(location.reload(), 5000);
+            } else {
+                notifier.notifyErrorList(data.error_keys);
+            }
 
-		}).fail(() => {
-			notifier.notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
-		});
+        }).fail(() => {
+            notifier.notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
+        });
     });
+
+    const date = $("#Birthday").val();
+    if (date === "1/1/0001") $("#Birthday").val(null);
 
     $("#Birthday").datepicker({
-      format: "dd/mm/yyyy",
-    startDate: "01-01-2015",
-    autoclose: true,
-    todayHighlight: true,
-    container: '#modal-container .modal-content',
-    orientation: "bottom"
+        format: "dd/mm/yyyy",
+        autoclose: true,
+        todayHighlight: true,
+        todayBtn: true,
+        container: '#modal-container .modal-content',
+        orientation: "bottom"
     });
-    });
+});
 </script>
