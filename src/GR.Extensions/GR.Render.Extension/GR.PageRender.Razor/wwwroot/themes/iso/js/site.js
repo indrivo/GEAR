@@ -1778,7 +1778,7 @@ if (typeof Notificator !== "undefined") {
 				<div class="notification-body py-1">
 					<p class="mb-0"><small>${n.subject}</small></p>
 					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
-					<p class="text-muted mb-0"><small>${moment(n.created, "DD.MM.YYYY").from(new Date())}</small></p>
+					<p class="text-muted mb-0"><small>${moment(n.created, "DD.MM.YYYY hh:mm:ss A").from(new Date())}</small></p>
 					<span class="delete-notification">
 						<i class="material-icons">close</i>
 					</span>
