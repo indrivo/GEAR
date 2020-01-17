@@ -19,6 +19,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels
 
         [MaxLength(20)]
         [Display(Name = "Phone number", Description = "phone number ", Prompt = "0123456789")]
+        [RegularExpression(@"^\+[0-9]?()[0-9](\s|\S)(\d[0-9]{6,9})$", ErrorMessage = "This is not a valid phone number, ex: +373069999999")]
         [DataType(DataType.PhoneNumber)]
         public virtual string UserPhoneNumber { get; set; }
 

@@ -887,5 +887,6 @@
   "page_modal_controls_checklist_list_documents": "Elenco documenti",
   "page_modal_controls_checklist_smsi_document": "Documento, deve",
   "page_modal_controls_checklist_external_document": "Documento esterno",
-  "add_documents": "Aggiungere documenti"
+  "add_documents": "Aggiungere documenti",
+  "forgot_password": "Hai dimenticato la password?"
 }

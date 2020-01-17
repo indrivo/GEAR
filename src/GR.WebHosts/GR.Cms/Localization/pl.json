@@ -887,5 +887,6 @@
   "page_modal_controls_checklist_list_documents": "Lista dokumentów",
   "page_modal_controls_checklist_smsi_document": "Dokumentów ISMS",
   "page_modal_controls_checklist_external_document": "Dokument zewnętrzny",
-  "add_documents": "Dodać dokumenty"
+  "add_documents": "Dodać dokumenty",
+  "forgot_password": "Nie pamiętasz hasła?"
 }

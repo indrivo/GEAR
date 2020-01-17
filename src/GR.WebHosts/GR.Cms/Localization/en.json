@@ -887,5 +887,6 @@
   "page_modal_controls_checklist_list_documents": "List documents",
   "page_modal_controls_checklist_smsi_document": "SMSI document",
   "page_modal_controls_checklist_external_document": "External document",
-  "add_documents": "Add documents"
+  "add_documents": "Add documents",
+  "forgot_password": "Forgot password?"
 }
