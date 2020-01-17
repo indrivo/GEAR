@@ -458,6 +458,13 @@ namespace GR.Entities
         }
 
         /// <summary>
+        /// Generate entity cache key
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string GenerateEntityCacheKey(string name) => $"gear_dynamic_entity_{name}_cache_key";
+
+        /// <summary>
         /// Find table by name
         /// </summary>
         /// <param name="name"></param>
@@ -465,7 +472,7 @@ namespace GR.Entities
         /// <returns></returns>
         public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null)
         {
-            var key = $"entity_{name}";
+            var key = GenerateEntityCacheKey(name);
 
             if (filter == null)
                 filter = x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
