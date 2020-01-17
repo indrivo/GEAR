@@ -143,7 +143,7 @@ $(window).on("load",
         });
 
     });
-    $body.find('.sidebar.collapsed .navigation').on('mouseover', function () { 
+    $body.find('.sidebar.collapsed .navigation').on('mouseover', function () {
         activeMenuItem.addClass('open');
 
         $(".sidebar.collapsed .navigation li.open").each(function (index) {
@@ -367,10 +367,10 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 function getOffset(el) {
     const rect = el.getBoundingClientRect();
     return {
-      left: rect.left + window.scrollX,
-      top: rect.top + window.scrollY
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY
     };
-  }
+}
 
 // function changeTextCellPosition() {
 //     $(this).parent().focusout(function () {
@@ -443,7 +443,7 @@ function changeTextCellPosition() {
     if (wPercent > 70) {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
             }px`);
-            console.log('wPercent > 70');
+        console.log('wPercent > 70');
 
     }
 
@@ -1698,7 +1698,7 @@ if (typeof Notificator !== "undefined") {
         return notifications;
     }
 
-    let notificationsPage = 1;
+    let notificationsPage = 2;
     let stopGetNotifications = false;
 
     addLoader($('#notificationList'));
@@ -1737,7 +1737,8 @@ if (typeof Notificator !== "undefined") {
                         stopGetNotifications = true;
                     }
                     $.each(data.result.notifications, (i, notification) => {
-                        notificator.appendNotificationToContainer(notification);
+                        console.log('each notification', notification);
+                        Notificator.prototype.addNewNotificationToContainer(notification);
                     });
                 }
                 $('#noNotifications').remove();
@@ -1756,8 +1757,11 @@ if (typeof Notificator !== "undefined") {
         const template = this.createNotificationBodyContainer(notification);
         const target = $("#notificationList .notifications");
         $("#noNotifications").hide();
-        target.prepend(template);
+        console.log('before append');
+        target.append(template);
+        console.log('after append');
         this.registerOpenNotificationEvent();
+        console.log('after register opne notif');
         $(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
             $(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
             setTimeout(function () {
@@ -1892,7 +1896,7 @@ function makeMenuActive(target) {
             $(".breadcrumb").prepend(`<li class="breadcrumb-item">${a.text()}</li>`);
         }
         last.addClass("active");
-        $('.navigation').on('mouseover', function () { 
+        $('.navigation').on('mouseover', function () {
             //last.addClass("open");
         });
         if (target.closest("nav").length !== 0)
@@ -1969,7 +1973,7 @@ $(document).ready(function () {
         window.forceTranslate();
     });
 
-   
+
 
 
     //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
@@ -1979,29 +1983,29 @@ $('body').on('DOMNodeInserted', '.dataTables_scrollBody', function () {
     let isDown = false;
     let startX;
     let scrollLeft;
-    
+
     slider.addEventListener('mousedown', (e) => {
-      isDown = true;
-      slider.classList.add('active');
-      startX = e.pageX - slider.offsetLeft;
-      scrollLeft = slider.scrollLeft;
+        isDown = true;
+        slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
     });
     slider.addEventListener('mouseleave', () => {
-      isDown = false;
-      slider.classList.remove('active');
+        isDown = false;
+        slider.classList.remove('active');
     });
     slider.addEventListener('mouseup', () => {
-      isDown = false;
-      slider.classList.remove('active');
+        isDown = false;
+        slider.classList.remove('active');
     });
     slider.addEventListener('mousemove', (e) => {
-      if(!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 3; //scroll-fast
-      slider.scrollLeft = scrollLeft - walk;
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 3; //scroll-fast
+        slider.scrollLeft = scrollLeft - walk;
     });
-});   
+});
 
 function openColorPicker(event) {
     if (event.preventDefault) {
