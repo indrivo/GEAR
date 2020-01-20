@@ -1737,7 +1737,6 @@ if (typeof Notificator !== "undefined") {
                         stopGetNotifications = true;
                     }
                     $.each(data.result.notifications, (i, notification) => {
-                        console.log('each notification', notification);
                         Notificator.prototype.addNewNotificationToContainer(notification);
                     });
                 }
@@ -1757,11 +1756,17 @@ if (typeof Notificator !== "undefined") {
         const template = this.createNotificationBodyContainer(notification);
         const target = $("#notificationList .notifications");
         $("#noNotifications").hide();
-        console.log('before append');
         target.append(template);
-        console.log('after append');
+        $(`.notification-item[data-notification-id="${notification.id}"]`).click(function () {
+            if (!$(this).find('.notification-content').hasClass('slide-open')) {
+                $(this).find('.notification-content').slideDown().addClass('slide-open');
+            }
+            else {
+                $(this).find('.notification-content').slideUp().removeClass('slide-open');
+            }
+            $(this).siblings('.notification-item').find('.notification-content').slideUp().removeClass('slide-open');
+        });
         this.registerOpenNotificationEvent();
-        console.log('after register opne notif');
         $(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
             $(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
             setTimeout(function () {
@@ -1777,11 +1782,11 @@ if (typeof Notificator !== "undefined") {
 
     Notificator.prototype.createNotificationBodyContainer = function (n) {
         const block = `
-			<div data-notification-id="${n.id
-            }" class="notification-item dropdown-item border-bottom position-relative">
+			<div data-notification-id="${n.id}" 
+                class="notification-item dropdown-item border-bottom position-relative" style="cursor: pointer;">
 				<div class="notification-body py-1">
 					<p class="mb-0"><small>${n.subject}</small></p>
-					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
+					<div class="mb-0 notification-content" style="display:none">${n.content}</div>
 					<p class="text-muted mb-0"><small>${moment(n.created, "DD.MM.YYYY hh:mm:ss A").from(new Date())}</small></p>
 					<span class="delete-notification">
 						<i class="material-icons">close</i>
