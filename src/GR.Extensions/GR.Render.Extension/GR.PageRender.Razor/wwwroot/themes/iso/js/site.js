@@ -427,7 +427,6 @@ function changeTextCellPosition() {
     const diffH = docHeight - pos.top;
     const textareaWidth = $(expandCell).innerWidth();
 
-    console.log('textareaWidth:  ' + textareaWidth);
 
     const navBarWidth = $(".navigation").width();
     pos.left -= navBarWidth;
@@ -443,7 +442,6 @@ function changeTextCellPosition() {
     if (wPercent > 70) {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
             }px`);
-        console.log('wPercent > 70');
 
     }
 
