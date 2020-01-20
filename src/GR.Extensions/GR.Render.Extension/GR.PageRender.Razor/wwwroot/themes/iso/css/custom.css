@@ -186,3 +186,22 @@ table.dataTable {
 .swal2-select {
     width: 100%;
 }
+
+.common-control .control-area {
+    height: auto !important;
+    flex-wrap: wrap;
+}
+
+    .common-control .control-area > * {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+
+@media screen and (max-width: 2080px) {
+
+    .d-customwidth-none {
+        height: 100% !important;
+        display: none !important;
+    }
+}
