@@ -889,7 +889,7 @@ namespace GR.Identity.Razor.Controllers
                     .Where(x => x.ApplicationRoleId == applicationRole.Id);
                 ApplicationDbContext.RemoveRange(roleProfilesId);
                 await ApplicationDbContext.SaveChangesAsync();
-                await _permissionService.RefreshCacheByRole(applicationRole.Name, true);
+                await _permissionService.RefreshCacheByRoleAsync(applicationRole.Name, true);
                 return Json(new { success = true, message = "Delete success" });
             }
             catch (Exception e)

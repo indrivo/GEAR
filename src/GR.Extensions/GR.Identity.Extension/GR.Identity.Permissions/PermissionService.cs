@@ -17,6 +17,7 @@ namespace GR.Identity.Permissions
 {
     public class PermissionService<TContext> : IPermissionService where TContext : IIdentityContext
     {
+        #region Injectable
         /// <summary>
         /// Inject sign in manager
         /// </summary>
@@ -36,6 +37,16 @@ namespace GR.Identity.Permissions
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
+        #endregion
+
+        #region Constants
+
+        /// <summary>
+        /// Name of stored role permission in cache
+        /// </summary>
+        protected const string CacheKeyName = "RolePermissions";
+
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -60,9 +71,9 @@ namespace GR.Identity.Permissions
         /// <param name="userId"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public async Task<bool> HasClaim(Guid userId, string permission)
+        public virtual async Task<bool> HasClaimAsync(Guid userId, string permission)
         {
-            var claims = await GetUserClaims(userId);
+            var claims = await GetUserClaimsAsync(userId);
             return claims.Select(x => x.Type).Contains(permission);
         }
 
@@ -73,7 +84,7 @@ namespace GR.Identity.Permissions
         /// <param name="user"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public async Task<bool> HasClaim(GearUser user, string permission)
+        public virtual async Task<bool> HasClaimAsync(GearUser user, string permission)
         {
             if (user == null) return false;
             var claims = await _signInManager.UserManager.GetClaimsAsync(user);
@@ -87,7 +98,7 @@ namespace GR.Identity.Permissions
         /// <param name="user"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public bool HasClaim(ClaimsPrincipal user, string permission)
+        public virtual bool HasClaim(ClaimsPrincipal user, string permission)
         {
             return user != null && user.Claims.Select(x => x.Type).Contains(permission);
         }
@@ -98,7 +109,7 @@ namespace GR.Identity.Permissions
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Claim>> GetUserClaims(Guid userId)
+        public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(Guid userId)
         {
             if (userId == Guid.Empty) return default;
             var user = await _signInManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
@@ -111,7 +122,7 @@ namespace GR.Identity.Permissions
         /// Get roles permissions
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<RolePermissionViewModel>> RolesPermissionsAsync()
+        public virtual async Task<IEnumerable<RolePermissionViewModel>> RolesPermissionsAsync()
         {
             var result = new List<RolePermissionViewModel>();
             var roles = await _context.Roles.ToListAsync();
@@ -133,7 +144,7 @@ namespace GR.Identity.Permissions
         /// Refresh Permission for roles
         /// </summary>
         /// <returns></returns>
-        public async Task<Dictionary<string, IEnumerable<string>>> SetOrResetPermissionsOnCacheAsync()
+        public virtual async Task<Dictionary<string, IEnumerable<string>>> SetOrResetPermissionsOnCacheAsync()
         {
             var roles = await RolesPermissionsAsync();
             var store = roles.ToDictionary(role => role.Name, role => role.Permissions.Select(x => x.PermissionKey));
@@ -148,7 +159,7 @@ namespace GR.Identity.Permissions
         /// <param name="roleName"></param>
         /// <param name="delete"></param>
         /// <returns></returns>
-        public async Task RefreshCacheByRole(string roleName, bool delete = false)
+        public virtual async Task RefreshCacheByRoleAsync(string roleName, bool delete = false)
         {
             var storeDictionary = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
             if (delete)
@@ -194,7 +205,7 @@ namespace GR.Identity.Permissions
         /// <param name="roles"></param>
         /// <param name="userPermissions"></param>
         /// <returns></returns>
-        public async Task<bool> HasPermissionAsync(IList<string> roles, IList<string> userPermissions)
+        public virtual async Task<bool> HasPermissionAsync(IList<string> roles, IList<string> userPermissions)
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
@@ -210,13 +221,11 @@ namespace GR.Identity.Permissions
                         if (!match.Contains(perm)) match.Add(perm);
                     }
 
-                    if (match.Count.Equals(userPermissions.Count))
-                    {
-                        var userRequest = await _userManager.GetCurrentUserAsync();
-                        if (!userRequest.IsSuccess) return true;
-                        var user = userRequest.Result;
-                        return PermissionCustomRules.ExecuteRulesAndCheckAccess(userPermissions, roles, user.TenantId, user.Id.ToGuid());
-                    }
+                    if (!match.Count.Equals(userPermissions.Count)) continue;
+                    var userRequest = await _userManager.GetCurrentUserAsync();
+                    if (!userRequest.IsSuccess) return true;
+                    var user = userRequest.Result;
+                    return PermissionCustomRules.ExecuteRulesAndCheckAccess(userPermissions, roles, user.TenantId, user.Id.ToGuid());
                 }
             }
             catch (Exception e)
@@ -232,7 +241,7 @@ namespace GR.Identity.Permissions
         /// </summary>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public async Task<bool> HasPermissionAsync(IList<string> permissions)
+        public virtual async Task<bool> HasPermissionAsync(IList<string> permissions)
         {
             if (!permissions.Any()) return false;
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
@@ -240,10 +249,5 @@ namespace GR.Identity.Permissions
             var roles = await _userManager.UserManager.GetRolesAsync(currentUserRequest.Result);
             return await HasPermissionAsync(roles, permissions);
         }
-
-        /// <summary>
-        /// Name of stored role permission in cache
-        /// </summary>
-        private const string CacheKeyName = "PermissionRole";
     }
 }

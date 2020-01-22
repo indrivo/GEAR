@@ -24,6 +24,8 @@ namespace GR.Notifications.Services
 {
     public class Notify<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, string> where TRole : IdentityRole<string> where TUser : IdentityUser
     {
+        #region Injectable
+
         /// <summary>
         /// Inject data service
         /// </summary>
@@ -50,6 +52,8 @@ namespace GR.Notifications.Services
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -82,7 +86,7 @@ namespace GR.Notifications.Services
         {
             var usersRequest = await _userManager.GetUsersInRolesAsync((IEnumerable<GearRole>)roles, tenantId);
             if (!usersRequest.IsSuccess) return;
-            var usersUniques = usersRequest.Result.Select(x => Guid.Parse(x.Id)).ToList();
+            var usersUniques = usersRequest.Result.Select(x => x.Id.ToGuid()).ToList();
             await SendNotificationAsync(usersUniques, notification);
         }
 
@@ -113,7 +117,7 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task SendNotificationAsync(Notification notification)
         {
-            var users = _context.Users.Select(x => Guid.Parse(x.Id)).ToList();
+            var users = _context.Users.Select(x => x.Id.ToGuid()).ToList();
             await SendNotificationAsync(users, notification);
         }
 
@@ -164,22 +168,11 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task SendNotificationToSystemAdminsAsync(Notification notification)
         {
-            var users = new List<Guid>();
-            var roles = await _context.Roles.AsNoTracking().ToListAsync();
-            foreach (var role in roles)
-            {
-                var userRoles = await _context.UserRoles.AsNoTracking().Where(x => x.RoleId.Equals(role.Id)).ToListAsync();
-                foreach (var userRole in userRoles)
-                {
-                    var receivers = await _context.Users.Where(x => x.Id.Equals(userRole.UserId))
-                        .Select(x => Guid.Parse(x.Id)).ToListAsync();
-                    receivers.ForEach(x =>
-                    {
-                        if (!users.Contains(x)) users.Add(x);
-                    });
-                }
-            }
-
+            if (!(await _context.Roles.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Name.Equals(GlobalResources.Roles.ADMINISTRATOR)) is GearRole role)) return;
+            var usersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { role });
+            if (!usersRequest.IsSuccess) return;
+            var users = usersRequest.Result.Select(x => x.Id.ToGuid()).ToList();
             await SendNotificationAsync(users, notification);
         }
 

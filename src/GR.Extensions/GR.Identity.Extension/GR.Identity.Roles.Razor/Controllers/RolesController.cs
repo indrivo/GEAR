@@ -205,7 +205,7 @@ namespace GR.Identity.Roles.Razor.Controllers
                 try
                 {
                     await ApplicationDbContext.SaveChangesAsync();
-                    await _permissionService.RefreshCacheByRole(applicationRole.Name);
+                    await _permissionService.RefreshCacheByRoleAsync(applicationRole.Name);
                 }
                 catch (Exception e)
                 {
@@ -298,7 +298,7 @@ namespace GR.Identity.Roles.Razor.Controllers
                 Subject = "Info",
                 NotificationTypeId = NotificationType.Info
             });
-            await _permissionService.RefreshCacheByRole(applicationRole.Name, true);
+            await _permissionService.RefreshCacheByRoleAsync(applicationRole.Name, true);
             return Json(new { message = "Role was delete with success!", success = true });
         }
 
@@ -462,7 +462,7 @@ namespace GR.Identity.Roles.Razor.Controllers
                 {
                     await ApplicationDbContext.RolePermissions.AddRangeAsync(rolePermissionList);
                     await ApplicationDbContext.SaveChangesAsync();
-                    await _permissionService.RefreshCacheByRole(applicationRole.Name);
+                    await _permissionService.RefreshCacheByRoleAsync(applicationRole.Name);
                 }
                 catch (Exception e)
                 {

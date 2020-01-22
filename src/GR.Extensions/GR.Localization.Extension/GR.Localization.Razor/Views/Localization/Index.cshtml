@@ -1,12 +1,9 @@
-@using GR.Localization.Abstractions
 @using GR.Localization.Abstractions.Models
 @inject IStringLocalizer Localizer
 @inject IOptionsSnapshot<LocalizationConfig> LocalizationConfig
 
 @{
 	ViewData["Title"] = Localizer["localization_index_title"];
-	var languages = LocalizationConfig.Value.Languages;
-	var sel = new SelectList(languages, "Identifier", "Name");
 }
 
 <div class="card">
