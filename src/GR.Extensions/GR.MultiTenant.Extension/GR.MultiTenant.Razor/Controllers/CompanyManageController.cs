@@ -53,7 +53,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <summary>
         /// Inject dynamic service
         /// </summary>
-        private readonly IEntityRepository _service;
+        private readonly IEntityService _service;
 
         /// <summary>
         /// Inject user manager
@@ -75,7 +75,7 @@ namespace GR.MultiTenant.Razor.Controllers
         public CompanyManageController(UserManager<GearUser> userManager,
             RoleManager<GearRole> roleManager,
             ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<GearUser> userManager1, SignInManager<GearUser> signInManager, IPermissionService permissionService) :
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityService service, IUserManager<GearUser> userManager1, SignInManager<GearUser> signInManager, IPermissionService permissionService) :
             base(userManager, roleManager, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;

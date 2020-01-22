@@ -12,6 +12,8 @@ using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Helpers.Responses;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
+using GR.Entities.Abstractions.Events;
+using GR.Entities.Abstractions.Events.EventArgs;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.Table;
 using GR.Entities.Data;
@@ -23,13 +25,13 @@ using Microsoft.Extensions.Logging;
 
 namespace GR.Entities
 {
-    public class EntityRepository : IEntityRepository
+    public class EntityService : IEntityService
     {
         #region Injectable
         /// <summary>
         /// Inject logger
         /// </summary>
-        private readonly ILogger<EntityRepository> _logger;
+        private readonly ILogger<EntityService> _logger;
 
         /// <summary>
         /// Inject table context
@@ -58,7 +60,7 @@ namespace GR.Entities
 
         #endregion
 
-        public EntityRepository(EntitiesDbContext context, IMemoryCache memoryCache, IUserManager<GearUser> userManager, ITablesService tablesService, IConfiguration configuration, ILogger<EntityRepository> logger)
+        public EntityService(EntitiesDbContext context, IMemoryCache memoryCache, IUserManager<GearUser> userManager, ITablesService tablesService, IConfiguration configuration, ILogger<EntityService> logger)
         {
             _context = context;
             _memoryCache = memoryCache;
@@ -456,6 +458,13 @@ namespace GR.Entities
         }
 
         /// <summary>
+        /// Generate entity cache key
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string GenerateEntityCacheKey(string name) => $"gear_dynamic_entity_{name}_cache_key";
+
+        /// <summary>
         /// Find table by name
         /// </summary>
         /// <param name="name"></param>
@@ -463,7 +472,7 @@ namespace GR.Entities
         /// <returns></returns>
         public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null)
         {
-            var key = $"entity_{name}";
+            var key = GenerateEntityCacheKey(name);
 
             if (filter == null)
                 filter = x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
@@ -519,7 +528,13 @@ namespace GR.Entities
             if (!dropResult.IsSuccess) return dropResult.ToBase();
             _context.Table.Remove(table);
             var dbResult = await _context.PushAsync();
-            if (dbResult.IsSuccess) _logger.LogInformation($"Table {table.Name} was deleted");
+            if (!dbResult.IsSuccess) return dbResult;
+            _logger.LogInformation($"Table {table.Name} was deleted");
+            EntityEvents.Entities.EntityDeleted(new EntityDeleteEventArgs
+            {
+                EntityId = tableId.Value,
+                EntityName = table.Name
+            });
             return dbResult;
         }
 

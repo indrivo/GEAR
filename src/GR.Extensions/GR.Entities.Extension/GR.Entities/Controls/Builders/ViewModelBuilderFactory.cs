@@ -22,7 +22,7 @@ namespace GR.Entities.Controls.Builders
         /// <returns></returns>
         public static async Task<List<EntityFieldsViewModel>> InjectNonBaseMetaDataAsync(this EntitiesDbContext dbContext, string entityName)
         {
-            var service = IoC.Resolve<IEntityRepository>();
+            var service = IoC.Resolve<IEntityService>();
 
             var model = new List<EntityFieldsViewModel>();
             if (entityName.IsNullOrEmpty()) return model;

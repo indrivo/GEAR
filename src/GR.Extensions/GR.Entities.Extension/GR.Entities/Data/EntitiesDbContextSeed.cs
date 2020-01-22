@@ -77,7 +77,7 @@ namespace GR.Entities.Data
                 {
                     GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
                     {
-                        var entityRepository = x.InjectService<IEntityRepository>();
+                        var entityRepository = x.InjectService<IEntityService>();
 
                         //Create dynamic tables for configured tenant
                         await entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(GearSettings.TenantId, GearSettings.DEFAULT_ENTITY_SCHEMA);

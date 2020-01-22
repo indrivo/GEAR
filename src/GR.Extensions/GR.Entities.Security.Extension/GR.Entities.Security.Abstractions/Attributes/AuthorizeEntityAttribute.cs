@@ -35,17 +35,17 @@ namespace GR.Entities.Security.Abstractions.Attributes
         /// <summary>
         /// Inject service
         /// </summary>
-        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
+        private readonly IEntityRoleAccessService _entityRoleAccessService;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="entityRoleAccessManager"></param>
+        /// <param name="entityRoleAccessService"></param>
         /// <param name="authorizationRequirement"></param>
-        public AuthorizeEntityPermissionAttributeExecutor(IEntityRoleAccessManager entityRoleAccessManager,
+        public AuthorizeEntityPermissionAttributeExecutor(IEntityRoleAccessService entityRoleAccessService,
             EntityPermissionAuthorizationRequirement authorizationRequirement)
         {
-            _entityRoleAccessManager = entityRoleAccessManager;
+            _entityRoleAccessService = entityRoleAccessService;
             _authorizationRequirement = authorizationRequirement;
         }
 
@@ -75,7 +75,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
                         }
                 }.SerializeAsJson());
             }
-            else if (!await _entityRoleAccessManager.HaveAccessAsync(data.EntityName,
+            else if (!await _entityRoleAccessService.HaveAccessAsync(data.EntityName,
              _authorizationRequirement.RequiredPermissions))
             {
                 await responseBody.WriteAsync(AccessDeniedResult<object>.Instance.SerializeAsJson());

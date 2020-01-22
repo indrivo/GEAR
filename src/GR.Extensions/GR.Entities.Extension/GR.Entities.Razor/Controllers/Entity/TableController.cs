@@ -42,7 +42,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// <summary>
         /// Inject entity repository
         /// </summary>
-        private readonly IEntityRepository _entityRepository;
+        private readonly IEntityService _entityService;
 
         /// <summary>
         /// Inject table service builder
@@ -59,9 +59,9 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IConfiguration configuration, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public TableController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IConfiguration configuration, IEntityService entityService, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
-            _entityRepository = entityRepository;
+            _entityService = entityService;
             _tablesService = tablesService;
             _organizationService = organizationService;
             var (_, connection) = DbUtil.GetConnectionString(configuration);
@@ -236,7 +236,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [HttpGet]
         public async Task<IActionResult> AddField(Guid id, string type)
         {
-            var data = await _entityRepository.GetAddFieldCreateViewModel(id, type);
+            var data = await _entityService.GetAddFieldCreateViewModel(id, type);
             if (!data.IsSuccess) return NotFound();
             return View(data.Result);
         }
@@ -248,7 +248,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [HttpPost]
         public async Task<IActionResult> AddField(CreateTableFieldViewModel field)
         {
-            var entitiesList = _entityRepository.Tables;
+            var entitiesList = _entityService.Tables;
             var table = entitiesList.FirstOrDefault(x => x.Id == field.TableId);
             var tableName = table?.Name;
             var schema = table?.EntityType;
@@ -266,7 +266,7 @@ namespace GR.Entities.Razor.Controllers.Entity
                 return View(field);
             }
 
-            var configurationsRq = await _entityRepository.RetrieveConfigurationsOnAddNewTableFieldAsyncTask(field);
+            var configurationsRq = await _entityService.RetrieveConfigurationsOnAddNewTableFieldAsyncTask(field);
             if (configurationsRq.IsSuccess)
             {
                 field.Configurations = configurationsRq.Result.ToList();
@@ -509,7 +509,7 @@ namespace GR.Entities.Razor.Controllers.Entity
             {
                 Context.TableFields.Update(model);
                 Context.SaveChanges();
-                _entityRepository.UpdateTableFieldConfigurations(model.Id, newConfigs, dbFieldConfigs);
+                _entityService.UpdateTableFieldConfigurations(model.Id, newConfigs, dbFieldConfigs);
                 return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
             }
             catch (Exception ex)
@@ -605,7 +605,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableDelete)]
-        public async Task<JsonResult> DeleteTable([Required]Guid? id) => Json(await _entityRepository.DeleteTableAsync(id));
+        public async Task<JsonResult> DeleteTable([Required]Guid? id) => Json(await _entityService.DeleteTableAsync(id));
 
         #endregion
     }
