@@ -38,7 +38,7 @@ namespace GR.Paypal.Abstractions.Extensions
                     IsEnabled = false
                 };
                 await context.PaymentMethods.AddAsync(paymentMethod);
-                await context.PushAsync();
+                context.PushAsync().Wait();
             };
 
             return services;

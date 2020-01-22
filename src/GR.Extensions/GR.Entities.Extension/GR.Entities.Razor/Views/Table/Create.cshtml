@@ -9,6 +9,7 @@
     </div>
     <div class="card-body">
         <form asp-action="Create" role="form">
+            @Html.HiddenFor(x => x.SelectedTypeId) @*Remove if you use select of schemes*@
             <div class="form-body">
                 <h3 class="card-title">Table info</h3>
                 <hr>
@@ -21,15 +22,15 @@
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group" id="role_profile">
-                            <label asp-for="SelectedTypeId" class="control-label"></label>
-                            <select asp-for="SelectedTypeId" asp-items="@(new SelectList(Model.EntityTypes, "Id", "Name", null))" class="form-control">
-                                <option value="" selected="">--Select--</option>
-                            </select>
-                            <span asp-validation-for="SelectedTypeId" class="text-danger"></span>
-                        </div>
-                    </div>
+                    @*<div class="col-md-6">
+                            <div class="form-group" id="role_profile">
+                                <label asp-for="SelectedTypeId" class="control-label"></label>
+                                <select asp-for="SelectedTypeId" asp-items="@(new SelectList(Model.EntityTypes, "Id", "Name", null))" class="form-control">
+                                    <option value="" selected="">--Select--</option>
+                                </select>
+                                <span asp-validation-for="SelectedTypeId" class="text-danger"></span>
+                            </div>
+                        </div>*@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group checkbox checkbox-primary pull-left p-t-0 ml-3">

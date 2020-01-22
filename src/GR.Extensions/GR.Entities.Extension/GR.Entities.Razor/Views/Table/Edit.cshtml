@@ -1,455 +1,392 @@
 @model GR.Entities.Abstractions.ViewModels.Table.UpdateTableViewModel
 
 @{
-	ViewData["Title"] = Localizer["edit"];
-	var formListConfig = new ListTagHelperModel
-	{
-		Title = Localizer["forms"],
-		SubTitle = "List of forms",
-		ListIdentifier = "formTable",
-		Api = new ListApiConfigurationViewModel
-		{
-			Url = Url.Action("LoadForms", "Form"),
-			Parameters = new Dictionary<string, string>
-			{
-				{ "entityId", Model.Id.ToString() }
-			}
-		},
-		RenderColumns = new List<ListRenderColumn> {
-			new ListRenderColumn(Localizer["name"], "name"),
-			new ListRenderColumn(Localizer["entity_name"], "tableName"),
-			new ListRenderColumn(Localizer["description"], "description"),
-			new ListRenderColumn(Localizer["created"], "created"),
-			new ListRenderColumn(Localizer["changed"], "changed"),
-			new ListRenderColumn(Localizer["author"], "author"),
-			new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
-		},
-		HeadButtons = new List<UrlTagHelperViewModel> {
-			new UrlTagHelperViewModel
-			{
-				AspAction = "Create",
-				AspController = "Form",
-				ButtonName = Localizer["add_forms"],
-				Description = "New form will be added."
-			}
-		},
-		HasActions = true,
-		ListActions = new List<ListActionViewModel>{
-			 new ListActionViewModel
-			 {
-				 HasIcon = false,
-				 Name = Localizer["edit"],
-				 Url = Url.Action("Edit", "Form"),
-				 ButtonType = BootstrapButton.Info,
-				 ActionParameters = new List<ActionParameter>
-		 {
-					 new ActionParameter("formId", "id")
-				 }
-			 },
-			new ListActionViewModel
-			{
-				HasIcon = false,
-				Name = "Preview",
-				Url = Url.Action("Preview", "Form"),
-				ButtonType = BootstrapButton.Warning,
-				ActionParameters = new List<ActionParameter>
-		{
-					new ActionParameter("formId", "id")
-				}
-			},
-			new ListActionViewModel
-			{
-				HasIcon = false,
-				Name = Localizer["delete"],
-				IsJsEvent = true,
-				ButtonEvent = new JsActionButtonEvent
-				{
-					JsEvent = JsEvent.OnClick,
-					JsEventHandler = "createAlert('${row.id}');"
-				},
-				ButtonType = BootstrapButton.Danger
-			},
-		 },
-		Documentation = "This tan allow to manage entity forms"
-	};
-	var viewModelListConfig = new ListTagHelperModel
-	{
-		Title = "View Models",
-		SubTitle = "List of view models",
-		ListIdentifier = "viewModelTable",
-		StyleAttributes = new List<InlineStyleAttribute>
-		{
-			new InlineStyleAttribute("margin", "0"),
-			new InlineStyleAttribute("width", "100%"),
-		},
-		Api = new ListApiConfigurationViewModel
-		{
-			Url = Url.Action("LoadViewModels", "ViewModel"),
-			Parameters = new Dictionary<string, string>
-			{
-				{ "entityId", Model.Id.ToString() }
-			}
-		},
-		RenderColumns = new List<ListRenderColumn> {
-			new ListRenderColumn(Localizer["name"], "name"),
-			new ListRenderColumn(Localizer["table"], "table"),
-			new ListRenderColumn(Localizer["created"], "created"),
-			new ListRenderColumn(Localizer["changed"], "changed"),
-			new ListRenderColumn(Localizer["author"], "author"),
-			new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
-		},
-		HeadButtons = new List<UrlTagHelperViewModel> {
-			new UrlTagHelperViewModel
-			{
-				ButtonName = "Add view model",
+    ViewData["Title"] = Localizer["edit"];
+    var formListConfig = new ListTagHelperModel
+    {
+        Title = Localizer["forms"],
+        SubTitle = "List of forms",
+        ListIdentifier = "formTable",
+        StyleAttributes = new List<InlineStyleAttribute>
+{
+            new InlineStyleAttribute("margin", "0"),
+            new InlineStyleAttribute("width", "100%"),
+        },
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("LoadForms", "Form"),
+            Parameters = new Dictionary<string, string>
+{
+                { "entityId", Model.Id.ToString() }
+            }
+        },
+        RenderColumns = new List<ListRenderColumn> {
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["entity_name"], "tableName"),
+            new ListRenderColumn(Localizer["description"], "description"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel> {
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Form",
+                ButtonName = Localizer["add_forms"],
+                Description = "New form will be added."
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>{
+             new ListActionViewModel
+             {
+                 HasIcon = false,
+                 Name = Localizer["edit"],
+                 Url = Url.Action("Edit", "Form"),
+                 ButtonType = BootstrapButton.Info,
+                 ActionParameters = new List<ActionParameter>
+{
+                     new ActionParameter("formId", "id")
+                 }
+             },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Preview",
+                Url = Url.Action("Preview", "Form"),
+                ButtonType = BootstrapButton.Warning,
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("formId", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "createAlert('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger
+            },
+         },
+        Documentation = "This tan allow to manage entity forms"
+    };
+    var viewModelListConfig = new ListTagHelperModel
+    {
+        Title = "View Models",
+        SubTitle = "List of view models",
+        ListIdentifier = "viewModelTable",
+        StyleAttributes = new List<InlineStyleAttribute>
+{
+            new InlineStyleAttribute("margin", "0"),
+            new InlineStyleAttribute("width", "100%"),
+        },
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("LoadViewModels", "ViewModel"),
+            Parameters = new Dictionary<string, string>
+{
+                { "entityId", Model.Id.ToString() }
+            }
+        },
+        RenderColumns = new List<ListRenderColumn> {
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["table"], "table"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel> {
+            new UrlTagHelperViewModel
+            {
+                ButtonName = "Add view model",
                 AspAction = null,
-				Description = "New view model will be added.",
-				HtmlAttributes = new List<HtmlAttribute>
-				{
-					new HtmlAttribute("Id", "addViewModel")
-				},
+                Description = "New view model will be added.",
+                HtmlAttributes = new List<HtmlAttribute>
+{
+                    new HtmlAttribute("Id", "addViewModel")
+                },
                 AspController = null
-			}
-		},
-		HasActions = true,
-		ListActions = new List<ListActionViewModel>{
-			 new ListActionViewModel
-			 {
-				 HasIcon = false,
-				 Name = Localizer["edit"],
-				 Url = Url.Action("Edit", "ViewModel"),
-				 ButtonType = BootstrapButton.Info,
-				 ActionParameters = new List<ActionParameter>
-				 {
-					 new ActionParameter("id", "id")
-				 }
-			 },
-			new ListActionViewModel
-			{
-				HasIcon = false,
-				Name = Localizer["system_field_mapping"],
-				Url = Url.Action("FieldsMapping", "ViewModel"),
-				ButtonType = BootstrapButton.Danger,
-				ActionParameters = new List<ActionParameter>
-				{
-					new ActionParameter("viewModelId", "id")
-				}
-			},
-			new ListActionViewModel
-			{
-				HasIcon = false,
-				Name = Localizer["order_viewmodel_fields"],
-				Url = Url.Action("OrderFields", "ViewModel"),
-				ButtonType = BootstrapButton.Primary,
-				ActionParameters = new List<ActionParameter>
-				{
-					new ActionParameter("id", "id")
-				}
-			},
-			new ListActionViewModel
-			{
-				HasIcon = false,
-				Name = Localizer["delete"],
-				IsJsEvent = true,
-				ButtonEvent = new JsActionButtonEvent
-				{
-					JsEvent = JsEvent.OnClick,
-					JsEventHandler = "deleteViewModel('${row.id}');"
-				},
-				ButtonType = BootstrapButton.Danger
-			},
-		 },
-		Documentation = "This tab allow to manage entity view models"
-	};
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>{
+             new ListActionViewModel
+             {
+                 HasIcon = false,
+                 Name = Localizer["edit"],
+                 Url = Url.Action("Edit", "ViewModel"),
+                 ButtonType = BootstrapButton.Info,
+                 ActionParameters = new List<ActionParameter>
+ {
+                     new ActionParameter("id", "id")
+                 }
+             },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["system_field_mapping"],
+                Url = Url.Action("FieldsMapping", "ViewModel"),
+                ButtonType = BootstrapButton.Danger,
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("viewModelId", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["order_viewmodel_fields"],
+                Url = Url.Action("OrderFields", "ViewModel"),
+                ButtonType = BootstrapButton.Primary,
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("id", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "deleteViewModel('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger
+            },
+         },
+        Documentation = "This tab allow to manage entity view models"
+    };
 }
 
 <form asp-action="Edit" role="form" class="ui form">
-	<input type="hidden" asp-for="Id" />
-	<input type="hidden" asp-for="Name" />
-	<input type="hidden" asp-for="EntityType" />
-	<input type="hidden" asp-for="ModifiedBy" />
-	<input type="hidden" asp-for="Created" />
-	<input type="hidden" asp-for="TenantId" />
-	<input type="hidden" id="tabValue" value="@Model.TabName" />
-	<div class="card">
-		<div class="card-body pb-0">
-			<h4 class="card-title">@Localizer["system_table_edit"] <code>@Model.Name</code></h4>
-			<a style="float: right" asp-action="Index" asp-controller="Table">@Localizer["tables"]</a>
-		</div>
-		<div id="menuTab">
-			<!-- Nav tabs -->
-			<ul class="nav nav-tabs customtab" role="tablist">
-				<li class="nav-item">
-					<a class="nav-link active" data-toggle="tab" href="#itemOne" role="tab">
-						<span class="hidden-sm-up">
-							<i class="ti-home"></i>
-						</span> <span class="hidden-xs-down">@Localizer["system_entity_info"]</span>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" data-toggle="tab" href="#itemTwo" role="tab">
-						<span class="hidden-sm-up">
-							<i class="ti-user"></i>
-						</span> <span class="hidden-xs-down">@Localizer["system_table_fields"]</span>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" data-toggle="tab" href="#itemThree" role="tab">
-						<span class="hidden-sm-up">
-							<i class="ti-email"></i>
-						</span> <span class="hidden-xs-down">@Localizer["forms"]</span>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" data-toggle="tab" href="#view_model_tab" role="tab">
-						<span class="hidden-sm-up">
-						</span> <span class="hidden-xs-down">@Localizer["view_models"]</span>
-					</a>
-				</li>
-			</ul>
-			<!-- Tab panes -->
-			<div class="tab-content">
-				<!--Tab_1-->
-				<div class="tab-pane active" id="itemOne" role="tabpanel">
-					<div class="p-20">
-						<blockquote>
-							<div class="font-weight-bold">@Localizer["system_entity_general_info"]</div>
-							<ul class="list-icons">
-								<li>
-									<strong>@Localizer["entity_name"]: </strong> <i class="ti-angle-right mr-2"></i>@Model.Name
-								</li>
-								<li>
-									<strong>@Localizer["entity_type"]: </strong><i class="ti-angle-right mr-2"></i> @Model.EntityType
-								</li>
-								<li>
-									<strong>@Localizer["created"]: </strong><i class="ti-angle-right mr-2"></i>@Model.Created
-								</li>
-							</ul>
-						</blockquote>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="EntityType" />
+    <input type="hidden" asp-for="ModifiedBy" />
+    <input type="hidden" asp-for="Created" />
+    <input type="hidden" asp-for="TenantId" />
+    <input type="hidden" id="tabValue" value="@Model.TabName" />
+    <div class="card">
+        <div class="card-body pb-0">
+            <h4 class="card-title">@Localizer["system_table_edit"] <code>@Model.Name</code></h4>
+            <a style="float: right" asp-action="Index" asp-controller="Table">@Localizer["tables"]</a>
+        </div>
+        <div id="menuTab">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs customtab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#itemOne" role="tab">
+                        <span class="hidden-sm-up">
+                            <i class="ti-home"></i>
+                        </span> <span class="hidden-xs-down">@Localizer["system_entity_info"]</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#itemTwo" role="tab">
+                        <span class="hidden-sm-up">
+                            <i class="ti-user"></i>
+                        </span> <span class="hidden-xs-down">@Localizer["system_table_fields"]</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#itemThree" role="tab">
+                        <span class="hidden-sm-up">
+                            <i class="ti-email"></i>
+                        </span> <span class="hidden-xs-down">@Localizer["forms"]</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#view_model_tab" role="tab">
+                        <span class="hidden-sm-up">
+                        </span> <span class="hidden-xs-down">@Localizer["view_models"]</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!--Tab_1-->
+                <div class="tab-pane active" id="itemOne" role="tabpanel">
+                    <div class="p-20">
+                        <blockquote>
+                            <div class="font-weight-bold">@Localizer["system_entity_general_info"]</div>
+                            <ul class="list-icons">
+                                <li>
+                                    <strong>@Localizer["entity_name"]: </strong> <i class="ti-angle-right mr-2"></i>@Model.Name
+                                </li>
+                                <li>
+                                    <strong>@Localizer["entity_type"]: </strong><i class="ti-angle-right mr-2"></i> @Model.EntityType
+                                </li>
+                                <li>
+                                    <strong>@Localizer["created"]: </strong><i class="ti-angle-right mr-2"></i>@Model.Created
+                                </li>
+                            </ul>
+                        </blockquote>
 
-						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-							<label asp-for="Description" class="control-label"></label>
-							<textarea rows="3" asp-for="Description" class="form-control"></textarea>
-							<span asp-validation-for="Description" class="text-danger"></span>
-						</div>
-					</div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea rows="3" asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
 
-					<div class="row p-3 button-group">
-						<div class="col-lg-2 col-md-3">
-							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i>@Localizer["save"]</button>
-						</div>
-						@if (!Model.IsSystem)
-						{
-							<div class="col-lg-2 col-md-3">
-								<a href="javascript:void(0)" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>@Localizer["delete"]</a>
-							</div>
-						}
+                    <div class="row p-3 button-group">
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i>@Localizer["save"]</button>
+                        </div>
+                        @if (!Model.IsSystem)
+                        {
+                            <div class="col-lg-2 col-md-3">
+                                <a href="javascript:void(0)" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>@Localizer["delete"]</a>
+                            </div>
+                        }
 
-						<div class="col-lg-2 col-md-3">
-							<a asp-action="Index" class="btn btn-block btn-link">@Localizer["back"]</a>
-						</div>
-					</div>
-				</div>
-				<!--End_Tab_1-->
-				<!--Tab_2-->
-				<div class="tab-pane p-20" id="itemTwo" role="tabpanel">
-					<div class="row">
-						@if (!Model.IsPartOfDbContext)
-						{
-							<div class="col-md-12">
-								<div class="btn-group mb-4">
-									<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										@Localizer["system_add_new_entity_field"]
-									</button>
-									<div class="dropdown-menu " style="overflow-y: auto;">
-										@foreach (var item in Model.Groups)
-										{
-											<a class="dropdown-item" style="font-weight: bold;" href="javascript:void(0)">@item.GroupName</a>
-											foreach (var type in item.TableFieldTypes)
-											{
-												<a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
-											}
-											<div class="dropdown-divider"></div>
-										}
-									</div>
-								</div>
-							</div>
-						}
-						<div class="col-md-12">
-							@if (Model.TableFields.Any())
-							{
-								<table class="table table-hover contact-list color-table purple-table">
-									<thead class="full-width">
-										<tr>
-											<th>@Localizer["system_field_name"]</th>
-											<th>@Localizer["system_data_type"]</th>
-											<th>@Localizer["system_allow_null"]</th>
-											<th>@Localizer["created"]</th>
-											<th>@Localizer["list_actions"]</th>
-										</tr>
-									</thead>
-									<tbody>
-										@foreach (var item in Model.TableFields)
-										{
-											<tr>
-												<td>
-													@Html.DisplayFor(modelItem => item.Name)
-												</td>
-												<td>
-													@Html.DisplayFor(modelItem => item.DataType)
-												</td>
-												<td style="text-align: center">
-													@if (item.AllowNull)
-													{
-														<i class="fa fa-check"></i>
-													}
-													else
-													{
-														<i class="fa fa-minus"></i>
-													}
-												</td>
-												<td>
-													@Html.DisplayFor(modelItem => item.Created)
-												</td>
-												<td>
-													@if (!item.IsSystem)
-													{
-														if (!Model.IsPartOfDbContext)
-														{
-															<a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
-																<i class="ti-pencil" aria-hidden="true"></i> @Localizer["edit"]
-															</a>
-															<a href="javascript:void(0)" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
-																<i class="ti-close" aria-hidden="true"></i> @Localizer["delete"]
-															</a>
-														}
-														else
-														{
-															<a class="" style="width: 155px">@Localizer["system_system_field"]</a>
-														}
-													}
-													else
-													{
-														<a class="" style="width: 155px">@Localizer["system_system_field"]</a>
-													}
-												</td>
-											</tr>
-										}
-									</tbody>
-								</table>
-							}
-							else
-							{
-							    @Localizer["system_no_entity_fields"]
-							}
-						</div>
-					</div>
-				</div>
-				<!--End_Tab_2-->
-				<!--Tab_3-->
-				<div class="tab-pane p-20" id="itemThree" role="tabpanel">
-
-					<div class="row">
-						<JList asp-for="@formListConfig"></JList>
-					</div>
-				</div>
-				<!--End_Tab_3-->
-				<!--Tab 4-->
-				<div class="tab-pane p-20" id="view_model_tab" role="tabpanel">
-					<JList asp-for="@viewModelListConfig"></JList>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="col-lg-2 col-md-3">
+                            <a asp-action="Index" class="btn btn-block btn-link">@Localizer["back"]</a>
+                        </div>
+                    </div>
+                </div>
+                <!--End_Tab_1-->
+                <!--Tab_2-->
+                <div class="tab-pane p-20" id="itemTwo" role="tabpanel">
+                    <div class="row">
+                        @if (!Model.IsPartOfDbContext)
+                        {
+                            <div class="col-md-12">
+                                <div class="btn-group mb-4">
+                                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @Localizer["system_add_new_entity_field"]
+                                    </button>
+                                    <div class="dropdown-menu " style="overflow-y: auto;">
+                                        @foreach (var item in Model.Groups)
+                                        {
+                                            <a class="dropdown-item" style="font-weight: bold;" href="javascript:void(0)">@item.GroupName</a>
+                                            foreach (var type in item.TableFieldTypes)
+                                            {
+                                                <a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
+                                            }
+                                            <div class="dropdown-divider"></div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-12">
+                            @if (Model.TableFields.Any())
+                            {
+                                <table class="table table-hover contact-list color-table purple-table">
+                                    <thead class="full-width">
+                                        <tr>
+                                            <th>@Localizer["system_field_name"]</th>
+                                            <th>@Localizer["system_data_type"]</th>
+                                            <th>@Localizer["system_allow_null"]</th>
+                                            <th>@Localizer["created"]</th>
+                                            <th>@Localizer["list_actions"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.TableFields)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.DataType)
+                                                </td>
+                                                <td style="text-align: center">
+                                                    @if (item.AllowNull)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa fa-minus"></i>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Created)
+                                                </td>
+                                                <td>
+                                                    @if (!item.IsSystem)
+                                                    {
+                                                        if (!Model.IsPartOfDbContext)
+                                                        {
+                                                            <a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
+                                                                <i class="ti-pencil" aria-hidden="true"></i> @Localizer["edit"]
+                                                            </a>
+                                                            <a href="javascript:void(0)" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
+                                                                <i class="ti-close" aria-hidden="true"></i> @Localizer["delete"]
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="" style="width: 155px">@Localizer["system_system_field"]</a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="" style="width: 155px">@Localizer["system_system_field"]</a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                @Localizer["system_no_entity_fields"]
+                            }
+                        </div>
+                    </div>
+                </div>
+                <!--End_Tab_2-->
+                <!--Tab_3-->
+                <div class="tab-pane p-20" id="itemThree" role="tabpanel">
+                    <JList asp-for="@formListConfig"></JList>
+                </div>
+                <!--End_Tab_3-->
+                <!--Tab 4-->
+                <div class="tab-pane p-20" id="view_model_tab" role="tabpanel">
+                    <JList asp-for="@viewModelListConfig"></JList>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
 
 @section Scripts {
-	<script language="javascript" type="text/javascript">
-		$(document).ready(function() {
-			$('.sa-delete').click(function() {
-				const id = $(this).attr("data-id");
-				swal({
-					title: "Are you sure?",
-					text: "You will not be able to recover this field!",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonColor: "#DD6B55",
-					confirmButtonText: "Yes, delete it!",
-					cancelButtonText: window.translate("cancel"),
-					closeOnConfirm: false
-				}).then(() => {
-						$.ajax({
-							url: '@Url.Action("DeleteField", "Table")',
-							method: "get",
-							dataType: "json",
-							contentType: "application/x-www-form-urlencoded; charset=utf-8",
-							data: {
-								id: id
-							},
-							success: function(data) {
-								if (data) {
-									swal("Deleted!", "Field has been deleted.", "success");
-									location.reload();
-								} else {
-									swal("Fail!", "Api not respond or not have permissions.", "error");
-								}
-							},
-							error: function (error) {
-								console.log(error);
-								swal("Fail!", "Api not respond or not have permissions.", "error");
-							}
-						});
-					});
-			});
+    <script src="~/assets/entity-service.js" asp-append-version="true"></script>
+    <script language="javascript" type="text/javascript">
+        $(document).ready(function () {
+            const service = new EntityService();
+            $('.sa-delete-table').click(function () {
+                service.deleteTableByIdWithPrompt("@Model.Id");
+            });
+        });
+    </script>
 
-			$('.sa-delete-table').click(function() {
-				swal({
-					title: "Are you sure?",
-					text: "You will not be able to recover this table!",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonColor: "#DD6B55",
-					confirmButtonText: "Yes, delete it!",
-					cancelButtonText: window.translate("cancel"),
-					closeOnConfirm: false
-				}).then(() => {
-						$.ajax({
-							url: '@Url.Action("DeleteTable", "Table")',
-							method: "get",
-							dataType: "json",
-							contentType: "application/x-www-form-urlencoded; charset=utf-8",
-							data: {
-								id: "@Model.Id"
-							},
-							success: function(data) {
-								if (data === 0) {
-									swal("Deleted!", "Table has been deleted.", "success");
-									window.location.href = '@Url.Action("Index", "Table")';
-								} else {
-									swal("Fail!", "Api not respond or not have permissions.", "error");
-								}
-							},
-							error: function (error) {
-								console.log(error);
-								swal("Fail!", "Api not respond or not have permissions.", "error");
-							}
-						});
-					});
-			});
-		});
-	</script>
+    <script type="text/javascript" language="javascript">
 
-	<script type="text/javascript" language="javascript">
-		function getTokenAntiForgery() {
+        function getTokenAntiForgery() {
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
-		}
-	</script>
-	<script type="text/javascript" language="javascript">
+        }
+
 		function createAlert(rowId) {
 			const object = {
 				alertTitle: "Delete this form?",
@@ -465,9 +402,10 @@
 			};
 			DeleteData(object);
 		}
-	</script>
 
-	<script type="text/javascript" language="javascript">
+    </script>
+
+    <script type="text/javascript" language="javascript">
 		$(document).ready(function ($) {
 			const ent = load("/PageRender/GetEntities");
 			const model = { };
@@ -524,5 +462,5 @@
 			};
 			DeleteData(object);
 		}
-	</script>
+    </script>
 }

@@ -18,7 +18,7 @@
     <div class="col-md-3">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Drag and Drop Your Event</h4>
+                <h4 class="card-title">@Localizer["system_drag_and_drop_event"]</h4>
                 <div class="row">
                     <div class="col">
                         <div id="calendar-events" class="m-t-20">
@@ -30,6 +30,7 @@
                 </div>
                 <div class="add-event-region">
                     <form id="add-event">
+                        <h4 class="card-title">@Localizer["system_calendar_add_new_event"]</h4>
                         <div class="form-group">
                             <label for="add-event-title">@Localizer["system_calendar_event_title"]</label>
                             <input type="text" id="add-event-title" name="title" class="form-control event-title" required>
@@ -54,7 +55,9 @@
                             @Localizer["save"]
                         </button>
                     </form>
-                    <form id="edit-event">
+                    <form id="edit-event" style="display: none;">
+                        <h4 class="card-title">@Localizer["system_calendar_update_event"]</h4>
+                        <div class="form-content"></div>
                     </form>
                 </div>
             </div>
@@ -141,10 +144,10 @@
             </div>
             <div class="details-popup-section details-popup-date">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col">
                         <div class="details-popup-date">{{:~startDate}}</div>
                     </div>
-                    <div class="col-6">
+                    <div class="col ml-auto">
                         <div class="d-flex">
                             <div class="details-popup-time mr-2">{{:~startTime}}</div>
                             <span>@Localizer["system_calendar_time_tosystem_casystem_ca"]</span>
@@ -314,7 +317,8 @@
     </script>
 
     <script src="~/lib/moment.js/moment.min.js"></script>
-    <script src="~/lib/fullcalendar/fullcalendar.js"></script>
+    <script src="~/lib/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/lib/fullcalendar/locale/ro.js"></script>
     <script src="~/lib/clockpicker/bootstrap-clockpicker.min.js"></script>
     <script src="~/calendar/js/internal-calendar-plugin-v1.js"></script>
     <script src="~/calendar/js/calendar.js"></script>

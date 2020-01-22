@@ -1,34 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using GR.Calendar.Abstractions.Models;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Services;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 
 namespace GR.Calendar.Abstractions.BackGroundServices
 {
-    public class EventReminderBackgroundService : IHostedService
+    public class EventReminderBackgroundService : BaseBackgroundService<EventReminderBackgroundService>
     {
-        /// <summary>
-        /// Timer
-        /// </summary>
-        private Timer _timer;
-
         #region Injectable
-        /// <summary>
-        /// Logger
-        /// </summary>
-        private readonly ILogger _logger;
-
         /// <summary>
         /// Inject calendar manager
         /// </summary>
@@ -40,39 +29,20 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         private readonly INotify<GearRole> _notify;
         #endregion
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="notify"></param>
-        /// <param name="calendarDbContext"></param>
-        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, INotify<GearRole> notify, ICalendarDbContext calendarDbContext)
+
+        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, ICalendarDbContext calendarDbContext, INotify<GearRole> notify)
+            : base("CalendarEvents", logger)
         {
-            _logger = logger;
-            _notify = notify;
             _calendarDbContext = calendarDbContext;
-        }
-
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Start async
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Calendar Event reminder Background Service is starting.");
-            _timer = new Timer(Execute, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(15));
-            return Task.CompletedTask;
+            _notify = notify;
+            Interval = TimeSpan.FromMinutes(15);
         }
 
         /// <summary>
         /// Send logs
         /// </summary>
         /// <param name="state"></param>
-        private async void Execute(object state)
+        public override async Task Execute(object state)
         {
             if (!GearApplication.Configured) return;
             var events = await GetEventsForAllUsersWhatStartInAsync(59);
@@ -107,21 +77,6 @@ namespace GR.Calendar.Abstractions.BackGroundServices
             response.IsSuccess = true;
             response.Result = events;
             return response;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Stop async
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Calendar Event reminder Background Service is stopping.");
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
         }
     }
 }

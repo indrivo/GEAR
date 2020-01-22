@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using GR.Core.Attributes.Documentation;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -58,7 +58,6 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
         public string RepeatPassword { get; set; }
 
         [Required, EmailAddress] public string Email { get; set; }
-
 
         /// <summary>
         /// Authentication Type

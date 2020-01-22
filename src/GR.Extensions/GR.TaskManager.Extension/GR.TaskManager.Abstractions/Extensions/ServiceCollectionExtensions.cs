@@ -1,4 +1,5 @@
 ﻿using System;
+using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,8 @@ namespace GR.TaskManager.Abstractions.Extensions
         public static IServiceCollection AddTaskModule<TTaskService, TTaskManagerNotificationService>(this IServiceCollection services)
             where TTaskService : class, ITaskManager where TTaskManagerNotificationService : class, ITaskManagerNotificationService
         {
-            services.AddTransient<ITaskManager, TTaskService>();
-            IoC.RegisterTransientService<ITaskManager, TTaskService>();
-            services.AddTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
+            services.AddGearTransient<ITaskManager, TTaskService>();
+            services.AddGearTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
             services.RegisterBackgroundService<TaskManagerBackgroundService>();
             return services;
         }
@@ -41,6 +41,7 @@ namespace GR.TaskManager.Abstractions.Extensions
         {
             services.AddScopedContextFactory<ITaskManagerContext, TTaskManagerContext>();
             services.AddDbContext<TTaskManagerContext>(options, ServiceLifetime.Transient);
+            services.RegisterAuditFor<ITaskManagerContext>($"{nameof(TaskManager)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TTaskManagerContext>();

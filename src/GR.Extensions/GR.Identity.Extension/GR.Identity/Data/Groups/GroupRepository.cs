@@ -1,8 +1,10 @@
+using GR.Identity.Abstractions;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using System.Security.Claims;
-using GR.Identity.Abstractions;
-using Microsoft.AspNetCore.Identity;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions.Models.GroupModels;
 using UserGroup = GR.Identity.Abstractions.UserGroup;
 
 namespace GR.Identity.Data.Groups
@@ -21,6 +23,7 @@ namespace GR.Identity.Data.Groups
         };
 
         private readonly GroupResult _emptyGroupNameResult;
+
         private readonly GroupActionError _emptyUserError = new GroupActionError
         {
             Code = "InvalidUser",
@@ -28,6 +31,7 @@ namespace GR.Identity.Data.Groups
         };
 
         private readonly GroupResult _emptyUserResult;
+
         #endregion Predefined GroupResults and Errros
 
         public GroupRepository(UserManager<GearUser> userManager, TContext context)
@@ -128,6 +132,7 @@ namespace GR.Identity.Data.Groups
 
         private GroupResult ValidateUserAndGroupInput(GearUser user, string groupName, bool isValidatedAlready = false)
         {
+            Arg.NotNull(user, nameof(ValidateUserAndGroupInput));
             if (isValidatedAlready) return GroupResult.Success;
             var userProvided = user != null || !string.IsNullOrEmpty(user.Id);
             var groupNameProvided = !string.IsNullOrEmpty(groupName);

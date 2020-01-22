@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using GR.Audit.Contexts;
+using GR.Identity.Profile.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using GR.Audit.Contexts;
-using GR.Core.Abstractions;
-using GR.Identity.Profile.Abstractions;
+using System;
+using System.Threading.Tasks;
 using ProfileModels = GR.Identity.Profile.Abstractions.Models;
 
 namespace GR.Identity.Profile.Data
@@ -25,20 +25,16 @@ namespace GR.Identity.Profile.Data
         public DbSet<ProfileModels.RoleProfile> RoleProfiles { get; set; }
 
 
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
-        {
-            return Set<T>();
-        }
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }
     }
+
     public class ProfileDbContextContextFactory : IDesignTimeDbContextFactory<ProfileDbContext>
     {
         /// <inheritdoc />

@@ -35,7 +35,7 @@ $(function () {
 			$("#serializeform").on("click",
 				function () {
 					const st = new ST();
-					const serialized = GR.serializeToJson($("#serForm"));
+					const serialized = st.serializeToJson($("#serForm"));
 					const final = {};
 					for (let s in serialized) {
 						if (serialized.hasOwnProperty(s)) {

@@ -1,0 +1,357 @@
+@{
+	ViewData["Title"] = Localizer["system_countries"];
+}
+@section Styles
+{
+	<style>
+		.editable-input {
+			position: relative;
+		}
+
+			.editable-input input[type="text"] {
+				background-color: transparent;
+				border: none;
+				width: 100%;
+				padding-left: 5px;
+				padding-right: 30px;
+			}
+
+			.editable-input .input-edit-line {
+				display: block;
+				width: 100%;
+				height: 1px;
+				background-color: black;
+				transition: 0.5s ease-in-out;
+			}
+
+			.editable-input .country-save {
+				position: absolute;
+				right: 0;
+				top: 0;
+				opacity: 1;
+				transition: 0.5s ease-in-out;
+			}
+
+			.editable-input input[type="text"]:read-only {
+				cursor: pointer;
+			}
+
+				.editable-input input[type="text"]:read-only ~ .input-edit-line .country-save {
+					transition: 0.5s ease-in-out;
+					opacity: 0;
+				}
+
+				.editable-input input[type="text"]:read-only ~ .input-edit-line {
+					transition: 0.5s ease-in-out;
+					width: 0;
+				}
+
+		#countries .country:nth-child(even) {
+			background-color: #f4f6f8;
+		}
+
+		.country-delete,
+		.country-save {
+			cursor: pointer;
+		}
+
+		.country-code,
+		.country-id {
+			text-transform: uppercase;
+		}
+
+		.country-save {
+			color: #009010;
+		}
+
+		.country-delete {
+			color: #FF0000;
+		}
+
+		.new-country {
+			border-bottom: 1px solid #cecece;
+		}
+
+		.save-new-country {
+			padding: 2px 40px;
+		}
+	</style>
+}
+
+<div class="row">
+	<div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+		<div class="card p-4">
+			<div class="new-country pb-3 mb-3">
+				<form id="add-new-country">
+					<div class="row">
+						<div class="col-2">
+							<div class="form-group">
+								<label for="country-id">ID</label>
+								<input type="text" id="country-id" name="title" class="form-control country-id" required maxlength="3" />
+							</div>
+						</div>
+						<div class="col-2">
+							<div class="form-group">
+								<label for="country-code">@Localizer["system_country_code"]</label>
+								<input type="text" id="country-code" name="title" class="form-control country-code" required maxlength="3" />
+							</div>
+						</div>
+						<div class="col-5">
+							<div class="form-group">
+								<label for="country-name">@Localizer["system_country_name"]</label>
+								<input type="text" id="country-name" name="title" class="form-control country-name" required />
+							</div>
+						</div>
+						<div class="col">
+							<label class="w-100">&nbsp;</label>
+							<button type="submit" class="btn btn-primary save-new-country">@Localizer["save"]</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="countries"></div>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+{
+
+	<script id="countryTemplate" type="text/x-jsrender">
+		<div id="{{:id}}" class="country p-2" data-country-name="{{:name}}">
+			<div class="row">
+				<div class="col-2">
+					<div class="editable-input">
+						<input type="text" class="country-code" readonly maxlength="3" value="{{:code3}}">
+						<div class="input-edit-line">
+							<span class="country-save country-code-save">
+								<i class="material-icons">done</i>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-3">
+					<div class="editable-input">
+						<input type="text" class="country-name" readonly value="{{:name}}">
+						<div class="input-edit-line">
+							<span class="country-save country-name-save">
+								<i class="material-icons">done</i>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-2 ml-auto country-actions">
+					<div class="d-flex justify-content-end">
+						<div class="country-delete">
+							<i class="material-icons">close</i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script>
+		class Location {
+
+			ajaxRequest(requestUrl, requestType, requestData) {
+				const baseUrl = '/api/Location';
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: baseUrl + requestUrl,
+						type: requestType,
+						data: requestData,
+						success: (data) => {
+							if (Array.isArray(data)) {
+								resolve(data);
+							}
+							else {
+								if (data.is_success) {
+									resolve(data.result);
+								} else if (!data.is_success) {
+									reject(data.error_keys);
+								} else {
+									resolve(data);
+								}
+							}
+						},
+						error: (e) => {
+							reject(e);
+						}
+					});
+				});
+			}
+
+			getAllCountries() {
+				const requestUrl = '/GetAllCountries';
+				return this.ajaxRequest(requestUrl, 'get', null);
+			}
+
+			addNewCountry(country = {
+				id: '',
+				name: '',
+				code3: '',
+				IsBillingEnabled: false,
+				IsShippingEnabled: false,
+				IsCityEnabled: false,
+				IsZipCodeEnabled: false,
+				IsDistrictEnabled: false
+			}) {
+				const requestUrl = '/AddNewCountry';
+				return this.ajaxRequest(requestUrl, 'post', country);
+			}
+
+			updateCountry(country = {
+				id: '',
+				name: '',
+				code3: ''
+			}) {
+				const requestUrl = '/UpdateCountry';
+				return this.ajaxRequest(requestUrl, 'post', country);
+			}
+
+			deleteCountry(countryId) {
+				const requestUrl = '/DeleteCountry';
+				return this.ajaxRequest(requestUrl, 'delete', { countryId });
+			}
+		}
+	</script>
+	<script>
+		!function ($) {
+			const locationManager = new Location();
+			const toast = new ToastNotifier();
+			const countriesWrapper = $('#countries');
+			const countryTemplate = $.templates("#countryTemplate");
+			let countriesList = [];
+			const addForm = $('#add-new-country');
+
+			addForm.submit(e => {
+				e.preventDefault();
+				const formData = {
+					id: addForm.find('#country-id').val().toUpperCase(),
+					name: addForm.find('#country-name').val(),
+					code3: addForm.find('#country-code').val().toUpperCase()
+				}
+				countriesList.push(formData);
+				if (checkForDuplicates(formData.code3)) {
+					toast.notify({ text: window.translate('system_countries_code_duplicates_error'), icon: 'error' });
+				} else {
+					appendToAlphabeticalPosition(formData);
+					locationManager.addNewCountry(formData).then(() => {
+						toast.notify({ text: window.translate('system_countries_added_success'), icon: 'success' });
+					}).catch(e => {
+						toast.notifyErrorList(e);
+					});
+					addForm[0].reset();
+				}
+			});
+
+			const appendToAlphabeticalPosition = country => {
+				const htmlOutput = countryTemplate.render(country);
+				countriesWrapper.append(htmlOutput);
+				$(countriesWrapper).find('.country').sort(function (a, b) {
+					return $(a).data('country-name').toLowerCase().localeCompare($(b).data('country-name').toLowerCase());
+				}).each(function () {
+					$(countriesWrapper).append(this);
+				});
+
+				addClickEventsOnItem(country.id);
+			}
+
+			const findObjectsByProperty = (array, property, propertyValue) => {
+				return array.filter(obj => { return obj[property] === propertyValue });
+			}
+
+			const checkForDuplicates = code => {
+				const matchedElements = findObjectsByProperty(countriesList, 'code3', code.toUpperCase());
+				if (matchedElements.length > 1) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			const addClickEventsOnItem = itemId => {
+				const item = `.country#${itemId}`;
+				const country = findObjectsByProperty(countriesList, 'id', itemId)[0];
+				const originalCountryCode = country.code3;
+				let newValues = {
+					name: '',
+					code: ''
+				}
+				$.each($(`${item} input[type="text"]`), function () {
+					const input = $(this);
+					const originalValue = $(this).val();
+					input.focus(() => {
+						input.attr('readonly', false);
+					}).focusout(() => {
+						input.attr('readonly', true);
+						if (input.hasClass('country-code')) {
+							newValues.code = input.val();
+						} else if (input.hasClass('country-name')) {
+							newValues.name = input.val();
+						}
+						input.val(originalValue);
+					});
+					input.siblings('.input-edit-line').find('.country-save').click(() => {
+						if (input.hasClass('country-code')) {
+							country.code3 = newValues.code;
+							input.val(newValues.code);
+						} else if (input.hasClass('country-name')) {
+							country.name = newValues.name;
+							input.val(newValues.name);
+						} else {
+							console.warn('Something went wrong when trying to get field name');
+						}
+						if (checkForDuplicates(country.code3)) {
+							toast.notify({ text: window.translate('system_countries_code_duplicates_error'), icon: 'error' });
+							$(`${item} .country-code`).val(originalCountryCode);
+
+						} else {
+							locationManager.updateCountry(country).then(() => {
+								toast.notify({ text: window.translate('system_countries_added_success'), icon: 'success' });
+							}).catch(e => {
+								toast.notifyErrorList(e);
+							});
+						}
+					});
+				});
+				$(`${item} .country-delete`).click(() => {
+					$(`${item}`).remove();
+					locationManager.deleteCountry(itemId).then(() => {
+						toast.notify({ text: window.translate('system_countries_deleted_success'), icon: 'success' });
+					}).catch(e => {
+						toast.notifyErrorList(e);
+					});
+					countriesList = countriesList.filter(function (obj) {
+						return obj.id !== country.id;
+					});
+				});
+			}
+
+			const appendCountrytoList = country => {
+				const htmlOutput = countryTemplate.render(country);
+				countriesWrapper.append(htmlOutput);
+				addClickEventsOnItem(country.id);
+			}
+
+			const loadCountries = () => {
+				countriesWrapper.html(null);
+				return locationManager.getAllCountries().then(countries => {
+					countries = countries.sort(function (a, b) {
+						return a.name.localeCompare(b.name);
+					});
+					countriesList = countries;
+					$.each(countries, function (i, country) {
+						appendCountrytoList(country);
+					});
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
+			}
+
+			loadCountries();
+
+		}(window.jQuery);
+	</script>
+}

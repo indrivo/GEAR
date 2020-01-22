@@ -2,6 +2,13 @@
   "version": "1.0",
   "defaultProvider": "cdnjs",
   "libraries": [
-
+    {
+      "provider": "jsdelivr",
+      "library": "formeo@0.7.17",
+      "destination": "wwwroot/lib/formeo/",
+      "files": [
+        "dist/formeo.min.js"
+      ]
+    }
   ]
 }

@@ -27,16 +27,6 @@ namespace GR.Core.Events
         }
 
         /// <summary>
-        /// On event 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        public static void OnEventHandler(object sender, ApplicationEventEventArgs args)
-        {
-            //Do something
-        }
-
-        /// <summary>
         /// On migration complete event
         /// </summary>
         /// <param name="sender"></param>
@@ -44,6 +34,7 @@ namespace GR.Core.Events
         public static void OnMigrationCompleteHandler(object sender, DatabaseMigrateEventArgs args)
         {
             //Trigger seed data
+            Console.WriteLine($"Context {args.ContextName}");
             SystemEvents.Database.Seed(new DatabaseSeedEventArgs
             {
                 DbContext = args.DbContext,

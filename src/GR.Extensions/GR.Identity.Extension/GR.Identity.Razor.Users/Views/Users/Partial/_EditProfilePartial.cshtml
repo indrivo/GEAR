@@ -1,6 +1,5 @@
 @model GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileEditViewModel
 
-
 <form asp-controller="Users" asp-action="EditProfile" name="EditProfile" id="EditProfile" autocomplete="off" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="modal-header px-4">
@@ -27,7 +26,7 @@
         </div>
         <div class="form-group">
             <label asp-for="UserPhoneNumber">@Localizer["system_phone"]</label>
-            <input class="form-control" asp-for="UserPhoneNumber" type="number">
+            <input class="form-control" asp-for="UserPhoneNumber">
             <span asp-validation-for="UserPhoneNumber" class="text-danger"></span>
         </div>
 
@@ -43,29 +42,43 @@
 </form>
 
 <script type="text/javascript">
-	$("form[name='EditProfile']").submit(function(e) {
-		e.preventDefault();
+   $(function () {
+    const notifier = new ToastNotifier();
+    const validator = new Validator();
+    validator.reAttachValidationsRulesToForm("#EditProfile");
+    $("form[name='EditProfile']").submit(function (e) {
+        e.preventDefault();
+        if (!$("#EditProfile").valid()) return;
         const form = $(this);
         const serialData = form.serialize();
         $.ajax({
-			type: form.attr('method'),
-			url: form.attr('action'),
-			data: serialData
-		}).done((data) => {
-			if (data.is_success) {
-				new ToastNotifier().notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
-				$('#modal-container').modal('hide');
-				setTimeout(location.reload(), 5000);
-			} else {
-				new ToastNotifier().notifyErrorList(data.error_keys);
-			}
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: serialData
+        }).done((data) => {
+            if (data.is_success) {
+                notifier.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
+                $('#modal-container').modal('hide');
+                setTimeout(location.reload(), 5000);
+            } else {
+                notifier.notifyErrorList(data.error_keys);
+            }
 
-		}).fail(() => {
-			notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
-		});
+        }).fail(() => {
+            notifier.notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
+        });
     });
+
+    const date = $("#Birthday").val();
+    if (date === "1/1/0001") $("#Birthday").val(null);
 
     $("#Birthday").datepicker({
-        autoclose: true
+        format: "dd/mm/yyyy",
+        autoclose: true,
+        todayHighlight: true,
+        todayBtn: true,
+        container: '#modal-container .modal-content',
+        orientation: "bottom"
     });
+});
 </script>

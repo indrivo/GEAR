@@ -2,13 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.0.5</Version>
+    <Version>1.8.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Web app for run gear product</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>c# gear app .net core web webapp framework</PackageTags>
-    <PackageReleaseNotes>-Fix libs restore</PackageReleaseNotes>
+    <PackageReleaseNotes>-Move app extensions</PackageReleaseNotes>
+    <FileVersion>1.8.0</FileVersion>
+    <AssemblyVersion>1.8.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,22 +20,21 @@
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
-    <PackageReference Include="NLog" Version="4.6.7" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.5" />
-    <PackageReference Include="Sentry.AspNetCore" Version="1.2.0" />
-    <PackageReference Include="Sentry.NLog" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Backup.Extension\GR.Backup.Abstractions\GR.Backup.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
-    <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Forms.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.Application.Middleware\GR.Application.Middleware.csproj" />
+    <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
+    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
+    <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
   </ItemGroup>
 
 </Project>

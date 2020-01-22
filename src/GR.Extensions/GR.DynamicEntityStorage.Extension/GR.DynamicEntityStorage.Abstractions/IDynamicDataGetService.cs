@@ -83,10 +83,11 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="queryString"></param>
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
+        /// <param name="loadIncludes"></param>
         /// <returns></returns>
         Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync<TEntity>(uint page = 1,
             uint perPage = 10, string queryString = null,
-            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null, bool loadIncludes = true)
             where TEntity : BaseModel;
 
         /// <summary>
@@ -98,10 +99,11 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="queryString"></param>
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
+        /// <param name="loadIncludes"></param>
         /// <returns></returns>
         Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync(string entity, uint page = 1,
             uint perPage = 10, string queryString = null,
-            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null);
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null, bool loadIncludes = true);
 
         /// <summary>
         /// Get by id

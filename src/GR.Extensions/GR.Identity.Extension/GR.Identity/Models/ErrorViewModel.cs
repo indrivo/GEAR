@@ -1,9 +1,9 @@
 namespace GR.Identity.Models
 {
-	public class ErrorViewModel
-	{
-	    private string RequestId { get; set; }
+    public class ErrorViewModel
+    {
+        private string RequestId { get; set; }
 
-		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-	}
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
 }

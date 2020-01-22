@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using GR.Entities.Abstractions.ViewModels.BaseModel;
+﻿using GR.Entities.Abstractions.ViewModels.BaseModel;
+using System.Collections.Generic;
 
 namespace GR.Entities.Controls.Builders
 {

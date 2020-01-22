@@ -1,0 +1,306 @@
+﻿@{
+    ViewData["Title"] = "Notifications";
+}
+
+@section Styles
+{
+    <style>
+        .spinner-loader {
+            display: none;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            z-index: 99;
+        }
+
+        .spinner-loader-body {
+            background-color: white;
+            border: 1px solid rgba(0,0,0,0.125);
+            display: flex;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        .minh-100 {
+            min-height: 100%;
+        }
+
+        .notification-list-item {
+            cursor: pointer;
+        }
+
+        .notification-list-item:not(:last-child) {
+            border-bottom: 1px solid #dfdfdf;
+        }
+
+        .notification-list-item:not(.was-read) {
+            background-color: rgba(42, 75, 101, 0.08);
+        }
+
+        .notification-list-item:hover {
+            background-color: rgba(42, 75, 101, 0.12);
+        }
+
+        .notification-list-item .delete-notification {
+            position: absolute;
+            right: .5rem;
+            top: .5rem;
+            display: flex;
+            cursor: pointer;
+        }
+
+            .notification-list-item .delete-notification i {
+                font-size: 20px;
+            }
+    </style>
+}
+<div class="notifications-page h-100">
+    <div class="notifications-actions">
+        <button id="delete-all-notifications" type="button" class="btn btn-outline-primary mb-3 d-flex align-items-center" data-toggle="modal" data-target="#confirmModal">
+            <i class="material-icons mr-2">delete</i>
+            @Localizer["system_notifications_delete_all"]
+        </button>
+    </div>
+    <div id="notificationsList" class="minh-100 w-100 position-relative bg-white px-3 py-2"></div>
+    <div class="px-3 py-2 mb-4">
+        <a class="show-more-notifications" href="javascript:void(0)">@Localizer["system_notifications_show_more"]</a>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script id="notification-template" type="text/x-jsrender">
+        <div class="notification-list-item{{if isDeleted}} was-read{{/if}}" data-notification-id="{{:id}}" id="{{:id}}">
+            <div class="position-relative p-2">
+                <div>
+                    <div class="notification-subject h6 m-0">
+                        {{:subject}}
+                    </div>
+                    <div class="notification-content" style="display: none">
+                        {{:content}}
+                    </div>
+                </div>
+                <p class="text-muted mb-0 mt-2"><small>{{:~timeFromNow}}</small></p>
+                <div class="delete-notification">
+                    <i class="material-icons text-danger">delete</i>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script>
+        class NotificationsPage {
+            ajaxRequest(requestUrl, requestType, requestData) {
+                const baseUrl = '/api/Notifications';
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: baseUrl + requestUrl,
+                        type: requestType,
+                        data: requestData,
+                        success: (data) => {
+                            if (Array.isArray(data)) {
+                                resolve(data);
+                            }
+                            else {
+                                if (data.is_success) {
+                                    resolve(data.result);
+                                } else if (!data.is_success) {
+                                    reject(data.error_keys);
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        },
+                        error: (e) => {
+                            reject(e);
+                        }
+                    });
+                });
+            }
+
+            getNotificationsByUserId(userId, onlyUnread) {
+                const requestUrl = '/GetNotificationsByUserId';
+                return this.ajaxRequest(requestUrl, 'get', { userId, onlyUnread });
+            }
+
+            getNotificationById(notificationId) {
+                const requestUrl = '/GetNotificationById';
+                return this.ajaxRequest(requestUrl, 'get', { notificationId });
+            }
+
+            getUserNotificationsWithPagination(config) {
+                const requestUrl = '/GetUserNotificationsWithPagination';
+                return this.ajaxRequest(requestUrl, 'get', config);
+            }
+
+            markAsRead(notificationId) {
+                const requestUrl = '/MarkAsRead';
+                return this.ajaxRequest(requestUrl, 'post', { notificationId });
+            }
+
+            clearAllByUserId(userId) {
+                const requestUrl = '/ClearAllByUserId';
+                return this.ajaxRequest(requestUrl, 'post', { userId });
+            }
+
+            permanentlyDeleteNotification(notificationId) {
+                const requestUrl = '/PermanentlyDeleteNotification';
+                return this.ajaxRequest(requestUrl, 'delete', { notificationId });
+            }
+        }
+    </script>
+
+    <script>
+        !function ($) {
+            const notificationsManager = new NotificationsPage();
+            const toast = new ToastNotifier();
+            const notificationContainer = $('#notificationsList');
+            const notificationTemplate = $.templates('#notification-template');
+            const loaderClassString = 'spinner-loader';
+            const loaderClass = `.${loaderClassString}`;
+            let notificationPage = 1;
+            let noMoreNotifications = false;
+
+            const addLoader = elementDOM => {
+                const loadermarkup = `<div class="${loaderClassString}">
+                                                                            <div class="${loaderClassString}-body justify-content-center align-items-center">
+                                                                                <div class="lds-dual-ring"></div>
+                                                                            </div>
+                                                                        </div>`;
+                elementDOM.append(loadermarkup);
+                elementDOM.find(loaderClass).fadeIn();
+            }
+
+            const removeLoader = elementDOM => {
+                elementDOM.find(loaderClass).fadeOut();
+                setTimeout(function () { elementDOM.find(loaderClass).remove(); }, 400);
+            }
+
+            const deleteNotification = id => {
+                $(`.notification-list-item#${id}`).slideUp(500);
+                setTimeout(function () {
+                    notificationsManager.permanentlyDeleteNotification(id).then(() => {
+                        $(`.notification-list-item#${id}`).remove();
+                    }).catch(e => {
+                        $(`.notification-list-item#${id}`).slideDown();
+                        toast.notifyErrorList(e);
+                    });
+                }, 500);
+            }
+
+            const attachNotificationActions = id => {
+                const notification = $(`.notification-list-item#${id}`);
+                notification.find('.delete-notification').click(() => {
+                    deleteNotification(id);
+                });
+                notification.click(function () {
+                    if (!$(this).hasClass('was-read')) {
+                        notificationsManager.markAsRead(id);
+                        $(this).addClass('was-read');
+                    }
+                    if (!$(this).find('.notification-content').hasClass('slide-open')) {
+                        $(this).find('.notification-content').slideDown().addClass('slide-open');
+                    }
+                    else {
+                        $(this).find('.notification-content').slideUp().removeClass('slide-open');
+                    }
+                    $(this).siblings('.notification-list-item').find('.notification-content').slideUp().removeClass('slide-open');
+                });
+            }
+
+            const loadUserNotifications = (config, isFirst) => {
+                return notificationsManager.getUserNotificationsWithPagination(config).then(res => {
+                    if (isFirst && res.notifications.length < 1) {
+                        notificationContainer.html(window.translate('system_notificator_no_notifications'));
+                    } else {
+                        $.each(res.notifications, function (i, notification) {
+                            const timeFromNow = moment(notification.created, "DD.MM.YYYY hh:mm:ss A").from(new Date());
+                            const htmlOutput = notificationTemplate.render(notification, { timeFromNow });
+                            notificationContainer.append(htmlOutput);
+                            attachNotificationActions(notification.id);
+                        });
+                    }
+                    if (!isFirst && res.notifications.length < 1) {
+                        noMoreNotifications = true;
+                        $('.show-more-notifications').hide();
+                    }
+                }).catch(e => {
+                    toast.notifyErrorList(e);
+                });
+            }
+
+            const getNotificationsFromDropdown = () => {
+                let notifications = [];
+                $('#notificationsList .notification-list-item').each(function () {
+                    notifications.push($(this).data('notification-id'));
+                });
+                return notifications;
+            }
+
+            (() => {
+                addLoader(notificationContainer);
+                config = {
+                    page: notificationPage++,
+                    perPage: 20,
+                    onlyUnread: false
+                }
+                loadUserNotifications(config, true).then(() => {
+                    removeLoader(notificationContainer);
+                });
+            })();
+
+            $('#delete-all-notifications').click(() => {
+                Swal.fire({
+                    icon: 'warning',
+                    title: window.translate('system_notifications_you_sure_delete_all'),
+                    text: window.translate('system_notifications_will_delete_all'),
+                    showCancelButton: true,
+                    confirmButtonText: window.translate('system_notifications_confirm_delete'),
+                    cancelButtonText: window.translate('cancel'),
+                }).then((result) => {
+                    if (result.value) {
+                        setTimeout(() => {
+                            const allNotif = getNotificationsFromDropdown();
+                            $.each(allNotif, function (i, value) {
+                                notificationsManager.permanentlyDeleteNotification(value).then(() => {
+                                }).catch(e => {
+                                    toast.notifyErrorList(e);
+                                });
+                            });
+                            addLoader(notificationContainer);
+                            config = {
+                                page: 1,
+                                perPage: 10,
+                                onlyUnread: false
+                            }
+                            loadUserNotifications(config, true).then(() => {
+                                removeLoader(notificationContainer);
+                            });
+                        }, 500);
+                    }
+                });
+            });
+
+            $('.show-more-notifications').click(() => {
+                if (!noMoreNotifications) {
+                    addLoader(notificationContainer);
+                    config = {
+                        page: notificationPage++,
+                        perPage: 10,
+                        onlyUnread: false
+                    }
+                    loadUserNotifications(config, false).then(() => {
+                        removeLoader(notificationContainer);
+                    });
+                }
+            });
+
+        }(window.jQuery);
+    </script>
+
+}

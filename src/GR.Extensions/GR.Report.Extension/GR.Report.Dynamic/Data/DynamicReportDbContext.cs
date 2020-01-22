@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
+using GR.Core.Helpers;
 using GR.Report.Abstractions;
 using GR.Report.Abstractions.Models;
 
@@ -49,9 +51,19 @@ namespace GR.Report.Dynamic.Data
         /// Seed data 
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
+        }
+
+        public Task<ResultModel> RemoveByIdAsync<TEntity, TIdType>(TIdType id) where TEntity : class, IBaseModel, IBase<TIdType>
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResultModel<TEntity>> FindByIdAsync<TEntity, TIdType>(TIdType id) where TEntity : class, IBaseModel, IBase<TIdType>
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -65,15 +65,6 @@ namespace GR.Dashboard.Abstractions.Extensions
         /// <returns></returns>
         public static IDashboardServiceCollection RegisterDashboardEvents(this IDashboardServiceCollection configuration)
         {
-            //on application start seed widgets
-            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
-            {
-                var service = IoC.Resolve<IDashboardService>();
-                if (service != null)
-                {
-                    await service.SeedWidgetsAsync();
-                }
-            };
             return configuration;
         }
 

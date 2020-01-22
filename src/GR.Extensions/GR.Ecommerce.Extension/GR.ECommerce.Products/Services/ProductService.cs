@@ -30,7 +30,7 @@ namespace GR.ECommerce.Products.Services
         /// <summary>
         /// Inject commerce context
         /// </summary>
-        private readonly ICommerceContext _commerceContext;
+        public ICommerceContext Context { get; }
 
         /// <summary>
         /// Inject payment context
@@ -49,7 +49,7 @@ namespace GR.ECommerce.Products.Services
 
         public ProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext)
         {
-            _commerceContext = commerceContext;
+            Context = commerceContext;
             _userManager = userManager;
             _paymentContext = paymentContext;
             _orderDbContext = orderDbContext;
@@ -63,7 +63,7 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<IEnumerable<Product>>> GetAllProducts(Func<Product, bool> predicate = null)
         {
             var result = new ResultModel<IEnumerable<Product>>();
-            var data = await _commerceContext.Products.ToListAsync();
+            var data = await Context.Products.ToListAsync();
             if (predicate != null)
             {
                 data = data.Where(predicate).ToList();
@@ -82,7 +82,7 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<Product>> GetProductByIdAsync(Guid? productId)
         {
             if (productId == null) return new NotFoundResultModel<Product>();
-            var product = await _commerceContext.Products
+            var product = await Context.Products
                 .Include(x => x.Brand)
                 .Include(x => x.ProductAttributes)
                 .ThenInclude(x => x.ProductAttribute)
@@ -109,7 +109,7 @@ namespace GR.ECommerce.Products.Services
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync()
         {
-            var products = await _commerceContext.Products
+            var products = await Context.Products
                 .Include(x => x.ProductAttributes)
                 .ThenInclude(x => x.ProductAttribute)
                 .Include(x => x.ProductPrices)
@@ -136,13 +136,13 @@ namespace GR.ECommerce.Products.Services
         /// <returns></returns>
         public async Task<ResultModel<Currency>> GetGlobalCurrencyAsync()
         {
-            var settings = await _commerceContext.CommerceSettings
+            var settings = await Context.CommerceSettings
                 .FirstOrDefaultAsync(x => x.Key.Equals(CommerceResources.SettingsParameters.CURRENCY));
 
             if (settings == null) return await SetGlobalCurrencyAsync(CommerceResources.SystemCurrencies.USD);
             {
                 var currency =
-                    await _commerceContext.Currencies.FirstOrDefaultAsync(x => x.Code.Equals(settings.Value));
+                    await Context.Currencies.FirstOrDefaultAsync(x => x.Code.Equals(settings.Value));
                 return new SuccessResultModel<Currency>(currency);
             }
 
@@ -155,7 +155,7 @@ namespace GR.ECommerce.Products.Services
         /// <returns></returns>
         public async Task<ResultModel<Currency>> SetGlobalCurrencyAsync(string code)
         {
-            var currency = await _commerceContext.Currencies
+            var currency = await Context.Currencies
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                 x.Code.Equals(code));
@@ -170,7 +170,7 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync() =>
-            new SuccessResultModel<IEnumerable<Currency>>(await _commerceContext.Currencies.ToListAsync());
+            new SuccessResultModel<IEnumerable<Currency>>(await Context.Currencies.ToListAsync());
 
         /// <summary>
         /// Get setting
@@ -181,7 +181,7 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<TOutput>> GetSettingAsync<TOutput>(string key)
             where TOutput : class
         {
-            var setting = await _commerceContext.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
+            var setting = await Context.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
             if (setting == null) return new InvalidParametersResultModel<TOutput>();
             return new SuccessResultModel<TOutput>(setting.Value.Deserialize<TOutput>());
         }
@@ -195,10 +195,10 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute)
         {
             int valueInt = 0;
-            var listAttribute = _commerceContext.ProductAttributes
+            var listAttribute = Context.ProductAttributes
                 .Include(i => i.ProductAttribute)
-                .Include(i=> i.Product)
-                .ThenInclude(i=> i.ProductAttributes)
+                .Include(i => i.Product)
+                .ThenInclude(i => i.ProductAttributes)
                 .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
 
             if (!listAttribute.Any())
@@ -226,10 +226,10 @@ namespace GR.ECommerce.Products.Services
         /// <returns></returns>
         public async Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text)
         {
-            var setting = await _commerceContext.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
+            var setting = await Context.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
             if (setting == null)
             {
-                await _commerceContext.CommerceSettings.AddAsync(new CommerceSetting
+                await Context.CommerceSettings.AddAsync(new CommerceSetting
                 {
                     Key = key,
                     Value = ParseSettingValue(value, type)
@@ -238,10 +238,10 @@ namespace GR.ECommerce.Products.Services
             else
             {
                 setting.Value = ParseSettingValue(value, type);
-                _commerceContext.CommerceSettings.Update(setting);
+                Context.CommerceSettings.Update(setting);
             }
 
-            return await _commerceContext.PushAsync();
+            return await Context.PushAsync();
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace GR.ECommerce.Products.Services
         {
             var resultModel = new ResultModel();
 
-            var prod = await _commerceContext.Products.Include(i => i.ProductPrices).FirstOrDefaultAsync(x => x.Id == model.ProductId);
+            var prod = await Context.Products.Include(i => i.ProductPrices).FirstOrDefaultAsync(x => x.Id == model.ProductId);
 
             if (prod != null)
             {
@@ -264,7 +264,7 @@ namespace GR.ECommerce.Products.Services
                     return resultModel;
                 }
 
-                var productVariation = _commerceContext.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
+                var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
 
                 if (productVariation is null)
                 {
@@ -294,13 +294,13 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel> RemoveAttributeAsync(Guid? productId, Guid? attributeId)
         {
             if (productId == null || attributeId == null) return new InvalidParametersResultModel();
-            var result = await _commerceContext.ProductAttributes
+            var result = await Context.ProductAttributes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.ProductAttributeId == attributeId && x.ProductId == productId);
 
             if (result == null) return new NotFoundResultModel();
-            _commerceContext.ProductAttributes.Remove(result);
-            var dbResult = await _commerceContext.PushAsync();
+            Context.ProductAttributes.Remove(result);
+            var dbResult = await Context.PushAsync();
             return dbResult;
         }
 

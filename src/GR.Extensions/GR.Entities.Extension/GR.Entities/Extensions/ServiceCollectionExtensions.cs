@@ -1,5 +1,8 @@
-﻿using GR.Entities.Abstractions.Events;
-using GR.Entities.Controls.Builders;
+﻿using Castle.MicroKernel.Registration;
+using GR.Core.Helpers;
+using GR.Entities.Abstractions.Events;
+using GR.Entities.Data;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Entities.Extensions
@@ -13,35 +16,39 @@ namespace GR.Entities.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterEntityBuilderJob(this IServiceCollection services)
         {
-            //TODO: On entity change change only the updated section not remove entire entity 
+            IoC.Container.Register(Component.For<EntitySynchronizer>());
+
             EntityEvents.Entities.OnEntityAddNewField += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+
             };
 
             EntityEvents.Entities.OnEntityCreated += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+
             };
 
             EntityEvents.Entities.OnEntityDeleteField += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+
             };
 
             EntityEvents.Entities.OnEntityDeleted += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+                //Remove entity from cache
+                var memoryCacheService = IoC.Resolve<IMemoryCache>();
+                var entityKey = EntityService.GenerateEntityCacheKey(args.EntityName);
+                memoryCacheService.Remove(entityKey);
             };
 
             EntityEvents.Entities.OnEntityUpdateField += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+
             };
 
             EntityEvents.Entities.OnEntityUpdated += (sender, args) =>
             {
-                ViewModelBuilderFactory.ResetBuildEntity(args?.EntityName);
+
             };
 
             return services;

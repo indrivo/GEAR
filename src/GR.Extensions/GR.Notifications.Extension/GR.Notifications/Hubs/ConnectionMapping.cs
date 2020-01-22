@@ -87,4 +87,3 @@ namespace GR.Notifications.Hubs
         public long Count() => _connections.Count;
     }
 }
-

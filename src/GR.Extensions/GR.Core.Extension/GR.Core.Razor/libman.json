@@ -1,0 +1,178 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "flag-icon-css@3.3.0",
+      "destination": "wwwroot/lib/flag-icon-css/"
+    },
+    {
+      "library": "animate.css@3.7.0",
+      "destination": "wwwroot/lib/animate.css/"
+    },
+    {
+      "library": "ckeditor@4.11.4",
+      "destination": "wwwroot/lib/ckeditor/"
+    },
+    {
+      "library": "tether@1.4.4",
+      "destination": "wwwroot/lib/tether/"
+    },
+    {
+      "library": "sticky-kit@1.1.3",
+      "destination": "wwwroot/lib/sticky-kit/"
+    },
+    {
+      "library": "jQuery-slimScroll@1.3.8",
+      "destination": "wwwroot/lib/jQuery-slimScroll/"
+    },
+    {
+      "library": "font-awesome@4.7.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "chartist@0.11.0",
+      "destination": "wwwroot/lib/chartist/"
+    },
+    {
+      "library": "codemirror@5.46.0",
+      "destination": "wwwroot/lib/codemirror/"
+    },
+    {
+      "library": "simple-line-icons@2.4.1",
+      "destination": "wwwroot/lib/simple-line-icons/"
+    },
+    {
+      "library": "weather-icons@2.0.9",
+      "destination": "wwwroot/lib/weather-icons/"
+    },
+    {
+      "library": "MaterialDesign-Webfont@3.6.95",
+      "destination": "wwwroot/lib/MaterialDesign-Webfont/"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "chartist-plugin-tooltip@0.0.11",
+      "destination": "wwwroot/lib/chartist-plugin-tooltip/"
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "themify-icons@1.0.0",
+      "destination": "wwwroot/lib/themify-icons/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "chosen-jquery@0.1.1",
+      "destination": "wwwroot/lib/chosen-jquery/",
+      "files": [
+        "lib/chosen.jquery.min.js",
+        "lib/chosen.css"
+      ]
+    },
+    {
+      "library": "popper.js@1.12.3",
+      "destination": "wwwroot/lib/popper.js/",
+      "files": [
+        "popper.min.js",
+        "popper.js"
+      ]
+    },
+    {
+      "library": "select2-bootstrap-theme@0.1.0-beta.10",
+      "destination": "wwwroot/lib/select2-bootstrap-theme/"
+    },
+    {
+      "library": "select2@4.0.10",
+      "destination": "wwwroot/lib/select2/",
+      "files": [
+        "js/select2.min.js",
+        "js/select2.full.min.js",
+        "css/select2.min.css"
+      ]
+    },
+    {
+      "library": "limonte-sweetalert2@7.33.1",
+      "destination": "wwwroot/lib/limonte-sweetalert2/",
+      "files": [
+        "sweetalert2.min.js",
+        "sweetalert2.min.css"
+      ]
+    },
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "jquery.min.js"
+      ]
+    },
+    {
+      "library": "twitter-bootstrap@4.1.0",
+      "destination": "wwwroot/lib/twitter-bootstrap/",
+      "files": [
+        "js/bootstrap.bundle.min.js",
+        "css/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "jsrender@1.0.5",
+      "destination": "wwwroot/lib/jsrender/",
+      "files": [
+        "jsrender.min.js"
+      ]
+    },
+    {
+      "library": "jsviews@1.0.5",
+      "destination": "wwwroot/lib/jsviews/",
+      "files": [
+        "jsviews.min.js"
+      ]
+    },
+    {
+      "library": "spectrum@1.8.0",
+      "destination": "wwwroot/lib/spectrum/",
+      "files": [
+        "spectrum.min.js",
+        "spectrum.min.css"
+      ]
+    },
+    {
+      "library": "jquery-validate@1.19.0",
+      "destination": "wwwroot/lib/jquery-validate/",
+      "files": [
+        "jquery.validate.min.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@aspnet/signalr@1.0.3",
+      "destination": "wwwroot/lib/signalr/",
+      "files": [
+        "dist/browser/signalr.min.js"
+      ]
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/lib/jqueryui/",
+      "files": [
+        "jquery-ui.min.js",
+        "jquery-ui.min.css"
+      ]
+    },
+    {
+      "library": "jquery-toast-plugin@1.3.2",
+      "destination": "wwwroot/lib/jquery-toast-plugin/",
+      "files": [
+        "jquery.toast.min.js",
+        "jquery.toast.min.css"
+      ]
+    },
+    {
+      "library": "datatables@1.10.19",
+      "destination": "wwwroot/lib/datatables/"
+    }
+  ]
+}

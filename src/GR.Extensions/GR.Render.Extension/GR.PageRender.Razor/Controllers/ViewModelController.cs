@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.BaseControllers;
@@ -12,7 +5,14 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -30,7 +30,8 @@ namespace GR.PageRender.Razor.Controllers
         /// Inject page render
         /// </summary>
         private readonly IPageRender _pageRender;
-        #endregion
+
+        #endregion Injectable
 
         /// <summary>
         /// Constructor
@@ -90,7 +91,6 @@ namespace GR.PageRender.Razor.Controllers
             return View(model);
         }
 
-
         /// <summary>
         /// Update view model name
         /// </summary>
@@ -105,7 +105,6 @@ namespace GR.PageRender.Razor.Controllers
             ModelState.AppendResultModelErrors(saveResult.Errors);
             return View(model);
         }
-
 
         /// <summary>
         /// Create view model
@@ -145,7 +144,6 @@ namespace GR.PageRender.Razor.Controllers
                 .OrderBy(x => x.Order).ToList();
             return View(model);
         }
-
 
         /// <summary>
         /// Load page types with ajax

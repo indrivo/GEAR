@@ -1,10 +1,10 @@
-﻿using System;
-using GR.Cache.Abstractions;
+﻿using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 using GR.Identity.Permissions.Abstractions.Configurators;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace GR.Identity.Permissions.Abstractions.Extensions
 {
@@ -26,7 +26,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
                 cacheService.FlushAll();
 
                 var permissionService = IoC.Resolve<IPermissionService>();
-                await permissionService.RefreshCache();
+                await permissionService.SetOrResetPermissionsOnCacheAsync();
             };
 
             return services;

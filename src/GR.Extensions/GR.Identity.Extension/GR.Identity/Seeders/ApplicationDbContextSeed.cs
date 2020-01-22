@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -15,6 +6,17 @@ using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Data;
 using GR.Identity.Models.RolesViewModels;
 using GR.Identity.Models.UserViewModels;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Abstractions.Models.MultiTenants;
 
 namespace GR.Identity.Seeders
 {
@@ -32,12 +34,23 @@ namespace GR.Identity.Seeders
             var roleManager = services.GetRequiredService<RoleManager<GearRole>>();
             var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ApplicationDbContextSeed));
             var baseDirectory = AppContext.BaseDirectory;
-            var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "IdentityConfiguration.json"));
+            var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
 
-            if (entity == null)
+            var tenant = new Tenant
             {
-                return;
-            }
+                Id = GearSettings.TenantId,
+                Name = "Default tenant",
+                MachineName = GearSettings.DEFAULT_ENTITY_SCHEMA,
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                Author = GlobalResources.Roles.ANONIMOUS_USER
+            };
+
+            await context.Tenants.AddAsync(tenant);
+            await context.PushAsync();
+
+            if (entity == null) return;
+
             // Check and seed system roles
             if (entity.ApplicationRoles.Any())
             {
@@ -124,14 +137,17 @@ namespace GR.Identity.Seeders
             /// List of system roles
             /// </summary>
             public List<RolesViewModel> ApplicationRoles { get; set; }
+
             /// <summary>
             /// List of system users
             /// </summary>
             public List<UserSeedViewModel> ApplicationUsers { get; set; }
+
             /// <summary>
             /// List of profiles
             /// </summary>
             public List<Profile> Profiles { get; set; }
+
             /// <summary>s
             /// List of groups
             /// </summary>

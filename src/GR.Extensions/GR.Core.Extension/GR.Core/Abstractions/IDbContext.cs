@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using GR.Core.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -39,6 +41,26 @@ namespace GR.Core.Abstractions
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        Task InvokeSeedAsync();
+        Task InvokeSeedAsync(IServiceProvider services);
+
+        /// <summary>
+        /// Remove by id
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TIdType"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveByIdAsync<TEntity, TIdType>(TIdType id)
+            where TEntity : class, IBaseModel, IBase<TIdType>;
+
+        /// <summary>
+        /// Find by id
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TIdType"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ResultModel<TEntity>> FindByIdAsync<TEntity, TIdType>(TIdType id)
+            where TEntity : class, IBaseModel, IBase<TIdType>;
     }
 }

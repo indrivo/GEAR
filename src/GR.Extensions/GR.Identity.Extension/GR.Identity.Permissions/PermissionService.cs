@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using GR.Cache.Abstractions;
+﻿using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.Permissions.Abstractions.Models;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Permissions
 {
@@ -114,7 +114,7 @@ namespace GR.Identity.Permissions
         public async Task<IEnumerable<RolePermissionViewModel>> RolesPermissionsAsync()
         {
             var result = new List<RolePermissionViewModel>();
-            var roles = await _context.SetEntity<GearRole>().ToListAsync();
+            var roles = await _context.Roles.ToListAsync();
             foreach (var role in roles)
             {
                 var data = role.Adapt<RolePermissionViewModel>();
@@ -133,7 +133,7 @@ namespace GR.Identity.Permissions
         /// Refresh Permission for roles
         /// </summary>
         /// <returns></returns>
-        public async Task<Dictionary<string, IEnumerable<string>>> RefreshCache()
+        public async Task<Dictionary<string, IEnumerable<string>>> SetOrResetPermissionsOnCacheAsync()
         {
             var roles = await RolesPermissionsAsync();
             var store = roles.ToDictionary(role => role.Name, role => role.Permissions.Select(x => x.PermissionKey));
@@ -141,10 +141,9 @@ namespace GR.Identity.Permissions
             return store;
         }
 
-
         /// <inheritdoc />
         /// <summary>
-        /// Refresh cache by role 
+        /// Refresh cache by role
         /// </summary>
         /// <param name="roleName"></param>
         /// <param name="delete"></param>
@@ -176,7 +175,6 @@ namespace GR.Identity.Permissions
 
             data.Permissions = permissions;
 
-
             if (storeDictionary.ContainsKey(data.Name))
             {
                 storeDictionary[data.Name] = data.Permissions.Select(x => x.PermissionKey);
@@ -200,7 +198,7 @@ namespace GR.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
-            var data = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await RefreshCache();
+            var data = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await SetOrResetPermissionsOnCacheAsync();
             try
             {
                 foreach (var role in data)

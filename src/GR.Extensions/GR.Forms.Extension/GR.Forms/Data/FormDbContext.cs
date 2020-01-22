@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core;
@@ -26,7 +27,7 @@ namespace GR.Forms.Data
         public FormDbContext(DbContextOptions<FormDbContext> options)
             : base(options)
         {
-            //TODO: Do some actions on context instance
+
         }
 
         /// <summary>
@@ -126,24 +127,14 @@ namespace GR.Forms.Data
             builder.Entity<Field>().Ignore(x => x.TableField);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
-        }
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public async Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
-            await FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId);
+            FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId).Wait();
+            return Task.CompletedTask;
         }
     }
 }

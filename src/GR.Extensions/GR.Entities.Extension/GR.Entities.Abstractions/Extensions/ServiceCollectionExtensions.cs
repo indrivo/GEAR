@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
-using GR.Core;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Events;
 using GR.Entities.Abstractions.Helpers;
 using GR.Entities.Abstractions.Query;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Entities.Abstractions.Extensions
 {
@@ -26,15 +23,15 @@ namespace GR.Entities.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddEntityModule<TEntityContext, TEntityRepository>(this IServiceCollection services)
             where TEntityContext : DbContext, IEntityContext
-            where TEntityRepository : class, IEntityRepository
+            where TEntityRepository : class, IEntityService
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IEntityContext, TEntityContext>();
+            IoC.RegisterTransientService<IEntityContext, TEntityContext>();
 
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {
-                { typeof(IEntityContext), typeof(TEntityContext) },
-                { typeof(IEntityRepository), typeof(TEntityRepository) }
+                { typeof(IEntityService), typeof(TEntityRepository) }
             });
 
             return services;
@@ -100,10 +97,6 @@ namespace GR.Entities.Abstractions.Extensions
         {
             services.RegisterAuditFor<IEntityContext>("Entity module");
             services.AddDbContext<TEntityContext>(options, ServiceLifetime.Transient);
-            SystemEvents.Database.OnMigrate += (sender, args) =>
-            {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TEntityContext>();
-            };
             return services;
         }
     }

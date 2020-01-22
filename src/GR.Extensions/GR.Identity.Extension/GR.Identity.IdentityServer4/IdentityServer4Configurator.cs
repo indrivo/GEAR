@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+using GR.Identity.Data.Permissions;
 using IdentityServer4;
 using IdentityServer4.Models;
-using GR.Identity.Data.Permissions;
+using System.Collections.Generic;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using IdentityResource = IdentityServer4.Models.IdentityResource;
@@ -18,6 +18,7 @@ namespace GR.Identity.IdentityServer4
                 new ApiResource(BPMNServerConstants.StandarScopes.CORE, "Core web application")
             };
         }
+
         /// <summary>
         /// Get client
         /// </summary>

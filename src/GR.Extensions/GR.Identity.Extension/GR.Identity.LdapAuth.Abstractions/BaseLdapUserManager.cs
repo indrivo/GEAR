@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using GR.Identity.LdapAuth.Abstractions.Models;
 using Microsoft.AspNetCore.Identity;
-using GR.Identity.LdapAuth.Abstractions.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.LdapAuth.Abstractions
 {

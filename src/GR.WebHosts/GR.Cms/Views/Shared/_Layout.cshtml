@@ -1,47 +1,52 @@
+@using GR.Forms.Razor.Extensions
 @using GR.Identity.Abstractions
+@using GR.Notifications.Razor.Extensions
+@using GR.PageRender.Abstractions.Helpers
 @inject IAppProvider AppProvider
 
 <!DOCTYPE html>
 @{
-	var isDynamicPage = ((bool?) ViewData["IsDynamicPage"]).GetValueOrDefault(false);
+	var isDynamicPage = ((bool?)ViewData["IsDynamicPage"]).GetValueOrDefault(false);
 }
 
 @if (User.Identity.IsAuthenticated || isDynamicPage)
 {
-	var layoutId = (Guid?) ViewData["layoutId"] ?? Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c"); //PageManager.Layouts[0];
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageSeeder.Layouts.DefaultCosmoLayout;
 
 	<html>
 	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<partial name="_BootstrapThemeStyles"/>
-		<partial name="_FormModuleLayoutStyles"/>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>@ViewData["Title"] - @(await AppProvider.GetAppName("core"))</title>
+		<partial name="_BootstrapThemeStyles" />
+		@Html.IncludeFormsStylePlugins()
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
 		@RenderSection("PreScripts", required: false)
-		<partial name="_BootstrapThemeScripts"/>
+		<partial name="_BootstrapThemeScripts" />
 		@RenderSection("Styles", required: false)
-		<script src="~/assets/js/core.js" asp-append-version="true"></script>
+		@Html.PartialViewStyles()
+		@Html.IncludeCoreJavascriptPlugins()
+		@Html.IncludeNotificationJavascriptPlugins()
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
-		<application layout-id="@layoutId">
+		<App layout-id="@layoutId">
 			@RenderBody()
 			<script src="~/assets/EntityPlugins/st-data-data-injector-v.0.1.js" asp-append-version="true"></script>
 			<partial name="_LayoutScriptPartial" model="layoutId" />
-			<partial name="_FormModuleLayoutScripts" />
-			<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
+			@Html.IncludeFormsJavascriptPlugins()
 			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 			@RenderSection("Scripts", false)
+			@Html.PartialViewScripts()
 			<application-scripts layout-id="@layoutId"></application-scripts>
 			<layout-js-code layout-id="@layoutId"></layout-js-code>
 			<partial name="_AssistanceChat" model="layoutId" />
-		</application>
+		</App>
 	</body>
-	</html>
+</html>
 }
 else
 {
-	@RenderBody()
-	@RenderSection("Scripts", false)
+@RenderBody()
+@RenderSection("Scripts", false)
 }

@@ -1,23 +1,22 @@
-﻿using System.Threading.Tasks;
-using GR.Core.Abstractions;
+﻿using System;
+using System.Threading.Tasks;
+using GR.Audit.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Core.Tests.Helpers
 {
-    public class MockDbContext : DbContext, IDbContext
+    public class MockDbContext : TrackerDbContext
     {
-        public MockDbContext(DbContextOptions options)
+        public MockDbContext(DbContextOptions<MockDbContext> options) : base(options)
         {
 
         }
-
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
 
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public virtual Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

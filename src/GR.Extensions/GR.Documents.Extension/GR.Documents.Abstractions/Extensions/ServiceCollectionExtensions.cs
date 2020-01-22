@@ -28,7 +28,7 @@ namespace GR.Documents.Abstractions.Extensions
         /// <summary>
         /// Register Document category service
         /// </summary>
-        /// <typeparam name="TDocumentTypeService"></typeparam>
+        /// <typeparam name="TDocumentCategoryService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection RegisterDocumentCategoryServices<TDocumentCategoryService>(this IServiceCollection services)

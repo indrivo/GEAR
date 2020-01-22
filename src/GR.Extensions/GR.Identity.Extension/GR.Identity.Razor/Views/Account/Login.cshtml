@@ -1,8 +1,6 @@
 @using GR.Identity.Abstractions
-@using ST.MPass.Gov;
 
 @inject SignInManager<GearUser> SignInManager
-@inject IMPassService _mpassService
 @inject IAppProvider AppProvider
 
 @model GR.Identity.Razor.ViewModels.AccountViewModels.LoginViewModel
@@ -17,7 +15,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>@Localizer["system_log_in"]</title>
 
-    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
@@ -52,7 +50,6 @@
                         <div class="col-xs-12">
                             <input class="form-control" asp-for="Password" placeholder="@Localizer["system_auth_password"]">
                             <span asp-validation-for="Password" class="text-danger"></span>
-
                         </div>
                     </div>
                     <div class="form-group">
@@ -140,7 +137,6 @@
         </div>
     </section>
 
-
     <div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog " role="document">
             <form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
@@ -197,7 +193,6 @@
         });
     </script>
 
-
     <script type="text/javascript">
         const notification = new ToastNotifier();
         $("form[name='forgotPasswordForm']").submit(function (e) {
@@ -220,7 +215,6 @@
                 notify({ heading: "Error", text: window.translate("system_internal_error") });
             });
         });
-
     </script>
     <partial name="_ValidationScriptsPartial" />
 </body>

@@ -1,0 +1,207 @@
+.icon-next-level {
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+    border-color: white;
+    width: 8px;
+    padding: 0;
+    height: 8px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.sidebar .navigation ul li ul li a {
+    color: #818999;
+}
+
+.sidebar ~ .content-area {
+    margin-top: 140px;
+    height: calc(100vh - 140px);
+}
+
+    .sidebar ~ .content-area .sub-nav-container {
+        position: fixed;
+        width: -moz-available;
+        width: -webkit-fill-available;
+        width: fill-available;
+        top: 60px;
+        background-color: #f4f6f8;
+        z-index: 20;
+    }
+
+.content-wrapper {
+    margin-top: 0 !important;
+}
+
+.list-group-item-header {
+    background-color: #254258;
+    color: white;
+}
+
+    .list-group-item-header .custom-control-label {
+        border-left: 1px solid white;
+    }
+
+        .list-group-item-header .custom-control-label:before {
+            background-color: #818999;
+        }
+
+    .list-group-item-header .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #818999;
+    }
+
+#hiddenColumnsModal .custom-checkbox .custom-control-label {
+    margin-left: 15px;
+    padding-left: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.pagination .page-item .page-link {
+    color: #818999;
+    border-color: #E4E4E4;
+    font-weight: 500;
+    padding: 0;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .pagination .page-item .page-link i {
+        color: #818999;
+    }
+
+.pagination .page-item.active .page-link {
+    background-color: #E4E4E4;
+}
+
+
+#notificationList .notification-item .delete-notification {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+}
+
+    #notificationList .notification-item .delete-notification i {
+        font-size: 15px;
+    }
+
+#notificationList .notifications {
+    padding-right: 2px;
+}
+
+#notificationList:hover .notifications {
+    padding-right: 0;
+}
+
+#notificationList .notifications::-webkit-scrollbar {
+    width: 0px;
+}
+
+#notificationList:hover .notifications::-webkit-scrollbar {
+    width: 2px;
+}
+
+#notificationList .notifications::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+#notificationList:hover .notifications::-webkit-scrollbar-track {
+    background-color: #f4f6f8;
+}
+
+#notificationList .notifications::-webkit-scrollbar-thumb {
+    cursor: pointer;
+}
+
+.show-all-wrapper {
+    border-top: 1px solid #dbdbdb;
+}
+
+.notification-loader {
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 99;
+}
+
+.notification-loader-body {
+    background-color: white;
+    border: 1px solid rgba(0,0,0,0.125);
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+
+.dataTables_paginate .pagination .paginate_button.previous,
+.dataTables_paginate .pagination .paginate_button.next {
+    font-size: 0;
+    position: relative;
+}
+
+    .dataTables_paginate .pagination .paginate_button.previous:hover,
+    .dataTables_paginate .pagination .paginate_button.next:hover {
+        background-color: #f8f8f8;
+    }
+
+    .dataTables_paginate .pagination .paginate_button.previous:before,
+    .dataTables_paginate .pagination .paginate_button.next:before {
+        content: '';
+        background-size: 8px;
+        background-repeat: no-repeat;
+        background-image: url(../../../images/arrow.svg);
+        background-position: center;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        z-index: 1;
+        top: 0;
+    }
+
+    .dataTables_paginate .pagination .paginate_button.next:before {
+        transform: rotate(180deg);
+    }
+
+table.dataTable {
+    width: 100% !important;
+}
+
+.color-input {
+    text-indent: -9999999px;
+}
+
+.swal2-select {
+    width: 100%;
+}
+
+.common-control .control-area {
+    height: auto !important;
+    flex-wrap: wrap;
+}
+
+    .common-control .control-area > * {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+
+@media screen and (max-width: 2080px) {
+
+    .d-customwidth-none {
+        height: 100% !important;
+        display: none !important;
+    }
+}

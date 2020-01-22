@@ -56,7 +56,7 @@ namespace GR.Subscriptions.Abstractions.Helpers
                         if (maxUsers > 0)
                         {
                             var totalExistentUsers = organizationService.GetAllowedUsersByOrganizationId(tenant.Value).Count();
-                            grant = totalExistentUsers <= maxUsers;
+                            grant = totalExistentUsers < maxUsers;
                         }
                     }
                 }

@@ -45,5 +45,19 @@ namespace GR.Core.Extensions
             var request = context?.Request;
             return $"{request?.Scheme}://{request?.Host}{request?.PathBase}";
         }
+
+
+        /// <summary>
+        /// Delete cookies
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        public static void DeleteCookies(this HttpContext ctx)
+        {
+            foreach (var cookie in ctx.Request.Cookies.Keys)
+            {
+                ctx.Response.Cookies.Delete(cookie);
+            }
+        }
     }
 }

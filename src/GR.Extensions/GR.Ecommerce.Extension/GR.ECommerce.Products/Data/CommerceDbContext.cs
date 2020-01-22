@@ -96,19 +96,11 @@ namespace GR.ECommerce.BaseImplementations.Data
             builder.Entity<PaymentMethod>().HasKey(x => x.Name);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel => Set<TEntity>();
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

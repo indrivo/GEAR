@@ -135,7 +135,7 @@
                                         <input type="date" id="add-task-end-date" class="form-control task-end-date" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="add-task-users">@Localizer["user"]</label>
+                                        <label for="add-task-users">@Localizer["system_taskmanager_assigne"]</label>
                                         <select id="add-task-users" class="form-control task-users" required>
                                         </select>
                                     </div>
@@ -183,7 +183,7 @@
                     </div>
                 </div>
                 <div class="align-self-end pb-4 pr-4">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_taskmanager_close"]</button>
                     <button type="submit" class="submit-add-task btn btn-success text-white" form="add-task">@Localizer["system_taskmanager_save_task"]</button>
                 </div>
             </div>
@@ -284,7 +284,7 @@
                 <span>{{:startDate}}</span>
             </td>
             <td class="end-date">
-                <span>{{:startDate}}</span>
+                <span>{{:endDate}}</span>
             </td>
             <td>
                 <div class="status status-{{:~statusesList[status].text}}">
@@ -383,7 +383,7 @@
             <input type="date" id="edit-task-end-date" class="form-control task-end-date" required value="{{:~endDateF}}">
         </div>
         <div class="form-group">
-            <label for="edit-task-users">@Localizer["user"]</label>
+            <label for="edit-task-users">@Localizer["system_taskmanager_assigne"]</label>
             <select id="edit-task-users" class="form-control task-users" required>
             </select>
         </div>

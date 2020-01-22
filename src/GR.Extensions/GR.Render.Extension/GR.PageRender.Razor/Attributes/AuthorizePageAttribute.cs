@@ -1,13 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GR.Core.Extensions;
+using GR.Identity.Abstractions;
+using GR.PageRender.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using GR.Core.Extensions;
-using GR.Identity.Abstractions;
-using GR.PageRender.Abstractions;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Attributes
 {

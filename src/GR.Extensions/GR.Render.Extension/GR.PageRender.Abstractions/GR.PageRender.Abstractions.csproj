@@ -4,32 +4,37 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.8.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <FileVersion>1.8.0</FileVersion>
+    <AssemblyVersion>1.8.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="menus.json" />
-    <None Remove="Static\Pages\index\index.css" />
-    <None Remove="Static\Pages\index\index.html" />
-    <None Remove="Static\Pages\index\index.js" />
-    <None Remove="Static\Pages\index\settings.json" />
-    <None Remove="Static\Pages\iso-theme-layout\iso-theme-layout.css" />
-    <None Remove="Static\Pages\iso-theme-layout\iso-theme-layout.html" />
-    <None Remove="Static\Pages\iso-theme-layout\iso-theme-layout.js" />
-    <None Remove="Static\Pages\iso-theme-layout\settings.json" />
-    <None Remove="Static\Pages\layout\layout.css" />
-    <None Remove="Static\Pages\layout\layout.html" />
-    <None Remove="Static\Pages\layout\layout.js" />
-    <None Remove="Static\Pages\layout\settings.json" />
-    <None Remove="ViewModelFieldConfigCodes.json" />
+
+    <EmbeddedResource Include="Configuration\ViewModelFieldConfigCodes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+
+    <Content Include="Configuration\ViewModelFieldConfigCodes.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="menus.json">
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\default-theme-layout.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\default-theme-layout\settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -37,26 +42,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\iso-theme-layout.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\iso-theme-layout\settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\settings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Static\Pages\index\index.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -66,16 +51,30 @@
     <EmbeddedResource Include="Static\Pages\index\index.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.css">
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\settings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.html">
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Static\Pages\layout\layout.js">
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="ViewModelFieldConfigCodes.json">
+    <EmbeddedResource Include="Static\Pages\monster-admin-layout\monster-admin-layout.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Static\Templates\RenderIsoMenuItem.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\renderMenu.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

@@ -9,7 +9,10 @@ namespace GR.Core.BaseControllers
     {
         #region Helpers
 
-        protected readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        /// <summary>
+        /// Serialization settings
+        /// </summary>
+        protected virtual JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -17,11 +20,6 @@ namespace GR.Core.BaseControllers
         };
 
         #endregion
-
-        protected BaseGearController()
-        {
-
-        }
 
         /// <summary>
         /// Return json async

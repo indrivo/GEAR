@@ -1,48 +1,36 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GR.Core;
-using GR.Core.Extensions;
-using Mapster;
+﻿using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Entities.Data;
-using Microsoft.EntityFrameworkCore;
+using Mapster;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GR.Core;
+using GR.Entities.Abstractions;
 
 namespace GR.Entities.Controls.Builders
 {
     public static class ViewModelBuilderFactory
     {
         /// <summary>
-        /// Build entity models
-        /// </summary>
-        private static readonly ConcurrentDictionary<string, EntityViewModel> EntityModels = new ConcurrentDictionary<string, EntityViewModel>();
-
-        /// <summary>
-        /// Reset build entity
-        /// </summary>
-        /// <param name="entityName"></param>
-        public static void ResetBuildEntity(string entityName) => EntityModels.TryRemove(entityName, out _);
-
-
-        /// <summary>
         ///     Create Entity viewmodel Configuration structure by entity name
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="entityName"></param>
         /// <returns></returns>
-        public static List<EntityFieldsViewModel> ViewModelConfig(this EntitiesDbContext dbContext, string entityName)
+        public static async Task<List<EntityFieldsViewModel>> InjectNonBaseMetaDataAsync(this EntitiesDbContext dbContext, string entityName)
         {
+            var service = IoC.Resolve<IEntityService>();
+
             var model = new List<EntityFieldsViewModel>();
             if (entityName.IsNullOrEmpty()) return model;
-            var entity = dbContext.Table
-                .Include(x => x.TableFields)
-                .FirstOrDefault(d => d.Name == entityName.Trim() && d.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
-                || d.Name == entityName.Trim() && d.IsPartOfDbContext);
-
-            if (entity == null) return model;
+            var entityRequest = await service.FindTableByNameAsync(entityName, d => d.Name == entityName.Trim()
+                                                                                    && d.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
+                                                                                    || d.Name == entityName.Trim() && d.IsPartOfDbContext);
+            if (!entityRequest.IsSuccess) return model;
+            var entity = entityRequest.Result;
             foreach (var item in entity.TableFields)
             {
                 var field = new EntityFieldsViewModel
@@ -83,28 +71,10 @@ namespace GR.Entities.Controls.Builders
         /// <param name="dbContext"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Task<EntityViewModel> ResolveAsync(EntitiesDbContext dbContext, EntityViewModel model)
-        {
-            return Task.Run(() => Resolve(dbContext, model));
-        }
-
-        /// <summary>
-        /// Populate fields of table
-        /// </summary>
-        /// <param name="dbContext"></param>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public static EntityViewModel Resolve(EntitiesDbContext dbContext, EntityViewModel model)
+        public static async Task<EntityViewModel> ResolveAsync(EntitiesDbContext dbContext, EntityViewModel model)
         {
             Arg.NotNull(dbContext, nameof(EntitiesDbContext));
             Arg.NotNull(model, nameof(EntityViewModel));
-            if (EntityModels.ContainsKey(model.TableName))
-            {
-                var storageObject = EntityModels[model.TableName];
-                storageObject.TableSchema = model.TableSchema;
-                storageObject.Values = model.Values;
-                return storageObject;
-            }
 
             var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
@@ -117,8 +87,7 @@ namespace GR.Entities.Controls.Builders
                     IsSystem = item.IsSystem
                 });
 
-            model.Fields.AddRange(dbContext.ViewModelConfig(model.TableName));
-            EntityModels.TryAdd(model.TableName, model);
+            model.Fields.AddRange(await dbContext.InjectNonBaseMetaDataAsync(model.TableName));
             return model;
         }
     }

@@ -2,7 +2,7 @@
 ::---------------------------------------------Configuration-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
 
-SET pushKey="oy2cdyotfbd5rk7thnias2paqkriagtuxahd5t2n3woexy"
+SET pushKey="oy2dgmytu5l4qpxessaa3fif4dipsmuudacaolypjnq6em"
 SET pushHost="https://www.nuget.org"
 
 
@@ -19,12 +19,16 @@ dotnet pack ./GR.Extensions/GR.Core.Extension/GR.Core.Razor/GR.Core.Razor.csproj
 
 ::Pack application modules
 dotnet pack ./GR.Extensions/GR.Application.Extension/GR.WebApplication/GR.WebApplication.csproj -o ../../../nupkgs
-dotnet pack ./GR.Extensions/GR.Application.Extension/GR.Application.Middleware/GR.Application.Middleware.csproj -o ../../../nupkgs
 
 ::Pack cache modules
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Abstractions/GR.Cache.Abstractions.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache/GR.Cache.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Razor/GR.Cache.Razor.csproj -o ../../../nupkgs
+
+::Pack logger modules
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger.Abstractions/GR.Logger.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger/GR.Logger.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger.Razor/GR.Logger.Razor.csproj -o ../../../nupkgs
 
 ::Pack calendar modules
 dotnet pack ./GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Abstraction/GR.Calendar.Abstractions.csproj -o ../../../nupkgs
@@ -148,6 +152,11 @@ dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Abstractions/GR.Pa
 dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender/GR.PageRender.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Razor/GR.PageRender.Razor.csproj -o ../../../nupkgs
 
+:: Pack menu modules
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu.Abstractions/GR.UI.Menu.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu.Razor/GR.UI.Menu.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu/GR.UI.Menu.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -160,13 +169,16 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Core.Razor*
 
 ::Push application modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WebApplication*
-dotnet nuget push -k %pushKey% -s %pushHost% GR.Application.Middleware*
 
 :: Push cache modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Razor*
 
+:: Push logger modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger.Razor*
 
 :: Push calendar modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Calendar.Abstraction*
@@ -284,6 +296,11 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Process.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Razor*
+
+::Push menu modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

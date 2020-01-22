@@ -1,0 +1,115 @@
+﻿{
+  "SynchronizeTableViewModels": [
+    //NotificationTypes
+    {
+      "Name": "NotificationTypes",
+      "Schema": "systemcore", //override by installer
+      "Description": "Entity for notification types",
+      "Fields": [
+        {
+          "Name": "Name",
+          "DisplayName": "Name",
+          "Description": "notification type field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "DisplayName": "Description",
+          "Description": "notification description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    //SystemNotifications
+    {
+      "Name": "SystemNotifications",
+      "Schema": "systemcore", //override by installer
+      "Description": "Entity for notifications",
+      "Fields": [
+        {
+          "Name": "Subject",
+          "DisplayName": "Subject",
+          "Description": "notification subject field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Content",
+          "DisplayName": "Content",
+          "Description": "notification content field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "NotificationTypeId",
+          "DisplayName": "NotificationTypeId",
+          "Description": "Id of the notification type reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NotificationTypes",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "UserId",
+          "DisplayName": "UserId",
+          "Description": "User id",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

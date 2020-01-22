@@ -5,15 +5,14 @@
 @using GR.PageRender.Abstractions.Models.Pages;
 @using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 @using GR.Core.Razor.TagHelpersStructures
+@using GR.Core.Razor.Extensions
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@addTagHelper GR.Cms.TagHelpers.ApplicationTagHelper, GR.Cms
-@addTagHelper GR.Cms.TagHelpers.LayoutCssCodeTagHelper, GR.Cms
-@addTagHelper GR.Cms.TagHelpers.LayoutJsCodeTagHelper, GR.Cms
-@addTagHelper GR.Cms.TagHelpers.LayoutJsScriptsTagHelper, GR.Cms
-@addTagHelper GR.Cms.TagHelpers.LayoutCssScriptsTagHelper, GR.Cms
-@addTagHelper GR.Cms.TagHelpers.ListTagHelper, GR.WebHost
-@addTagHelper GR.Cms.TagHelpers.FormTagHelper, GR.WebHost
+@addTagHelper GR.WebApplication.TagHelpers.ApplicationTagHelper, GR.WebApplication
+@addTagHelper GR.WebApplication.TagHelpers.LayoutCssCodeTagHelper, GR.WebApplication
+@addTagHelper GR.WebApplication.TagHelpers.LayoutJsCodeTagHelper, GR.WebApplication
+@addTagHelper GR.WebApplication.TagHelpers.LayoutJsScriptsTagHelper, GR.WebApplication
+@addTagHelper GR.WebApplication.TagHelpers.LayoutCssScriptsTagHelper, GR.WebApplication
 @addTagHelper GR.Core.Razor.TagHelpers.ListTagHelper, GR.Core.Razor
 @addTagHelper GR.Core.Razor.TagHelpers.TranslateLabelTagHelper, GR.Core.Razor
 

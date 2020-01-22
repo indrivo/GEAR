@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
+﻿using GR.Core;
+using GR.Core.Extensions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Razor.Helpers;
+using GR.UI.Menu.Abstractions;
+using GR.UI.Menu.Abstractions.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.PageRender.Razor.Extensions
 {
@@ -16,21 +19,14 @@ namespace GR.PageRender.Razor.Extensions
             where TPageRenderService : class, IPageRender
         {
             services.AddTransient<IPageRender, TPageRenderService>();
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
-            return services;
-        }
-
-        /// <summary>
-        /// Menu service
-        /// </summary>
-        /// <typeparam name="TMenuService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddMenuService<TMenuService>(this IServiceCollection services)
-            where TMenuService : class, IMenuService
-        {
-            services.AddTransient<IMenuService, TMenuService>();
+            MenuEvents.Menu.OnMenuSeed += (sender, args) =>
+            {
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                    {
+                        await args.InjectService<IMenuService>().AppendMenuItemsAsync(new PagesMenuInitializer());
+                    });
+            };
             return services;
         }
 

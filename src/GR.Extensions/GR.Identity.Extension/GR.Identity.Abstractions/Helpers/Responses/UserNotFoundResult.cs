@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using GR.Core.Helpers;
+﻿using GR.Core.Helpers;
+using System.Collections.Generic;
 
 namespace GR.Identity.Abstractions.Helpers.Responses
 {

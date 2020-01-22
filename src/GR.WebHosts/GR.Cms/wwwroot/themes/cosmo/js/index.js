@@ -3,7 +3,7 @@ const localizer = new Localizer();
 $("#headerContainer").replaceWith($(".headContainer"));
 
 const menuBlock = $("#navbarNavAltMarkup .main-nav");
-loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").then(menus => {
+loadAsync("/Menu/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").then(menus => {
 	if (menus.is_success) {
 		//<span class="sr-only">(current)</span>
 		$.each(menus.result, (i, item) => {
@@ -19,9 +19,18 @@ loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").th
 const userSection = $("#userSection");
 new Notificator().getCurrentUser().then(user => {
 	if (user.is_success) {
-		userSection.replaceWith($(`<div class="navbar-nav user-nav">
-        <a class="nav-item nav-link py-1 px-3" href="/home">${window.translate("iso_hello").toUpperFirstLetter()}, ${user.result.userName}</a>
-        <a href="#" class="logoff btn btn-outline-primary py-2 ml-2 sa-logout">${window.translate("logout")}</a>
+		userSection.replaceWith($(`<div class="navbar-nav user-nav align-items-center">
+		<div class="nav-item user-logedin dropdown show">
+            <a href="#" id="userLogedinDropdown" data-toggle="dropdown" class="nav-link weight-400 dropdown-toggle p-0 d-flex align-items-center" aria-expanded="true">
+				<img src="/Users/GetImage?id=${user.result.id}" class="mr-2 rounded" width="28">${user.result.userName}
+			</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userLogedinDropdown">
+                <a class="dropdown-item" href="/Home">${window.translate("dashboard")}</a>
+                <a class="dropdown-item" href="/Users/Profile">${window.translate("my_profile")}</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item sa-logout" href="#">${window.translate("logout")}</a>
+            </div>
+        </div>
     </div>`));
 
 		//Log Out
@@ -58,7 +67,6 @@ $(document).ready(function () {
 		});
 	});
 });
-
 
 //Include chat
 (function (w, d) {
@@ -198,5 +206,4 @@ $(function () {
 			resolve();
 		});
 	};
-
 });

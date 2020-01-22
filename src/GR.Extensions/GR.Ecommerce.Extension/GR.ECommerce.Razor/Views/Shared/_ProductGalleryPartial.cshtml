@@ -1,0 +1,82 @@
+﻿@using GR.ECommerce.Razor.Helpers
+@inject ProductGalleryManager GalleryManager
+
+@model Guid?
+
+@{
+    var request = await GalleryManager.GetProductImagesAsync(Model);
+}
+
+
+@if (request.IsSuccess)
+{
+    var data = request.Result;
+
+    <!-- blueimp Gallery styles -->
+    <link href="~/lib/blueimp-gallery/css/blueimp-gallery.min.css" rel="stylesheet" asp-append-version="true" />
+
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link href="~/lib/blueimp-file-upload/css/jquery.fileupload.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/lib/blueimp-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" asp-append-version="true" />
+
+
+    <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+    <div id="links">
+
+        @if (data.Files != null && data.Files.Length != 0)
+        {
+            foreach (var file in data.Files)
+            {
+
+                if (file.Type.Equals("video/mp4"))
+                {
+
+                    <a href="@file.Url" title="@file.Name" type="video/mp4" data-description="This is a movie."><img src="@file.Url" alt="@file.Name"></a>
+
+
+                }
+                else
+                {
+                    <a href="@file.Url" title="@file.Name" data-description="This is a image."><img src="@file.ThumbnailUrl" alt="@file.Name"></a>
+                }
+
+            }
+        }
+        else
+        {
+            <p>No files</p>
+        }
+        <!--Your files goes here-->
+    </div>
+
+
+    <script src="~/lib/blueimp-gallery/js/blueimp-gallery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/blueimp-gallery/js/blueimp-gallery-video.js" asp-append-version="true"></script>
+    <script src="~/lib/blueimp-gallery/js/blueimp-gallery-indicator.js" asp-append-version="true"></script>
+    <script src="~/lib/blueimp-gallery/js/jquery.blueimp-gallery.min.js" asp-append-version="true"></script>
+
+    @* Main application script *@
+    <script>
+        document.getElementById('links').onclick = function (event) {
+            event = event || window.event;
+            var target = event.target || event.srcElement,
+                link = target.src ? target.parentNode : target,
+                options = { index: link, event: event },
+                links = this.getElementsByTagName('a');
+            blueimp.Gallery(links, options);
+
+        };
+    </script>
+}
+else
+{
+    <h1 class="danger">Something went wrong!</h1>
+}

@@ -1,13 +1,14 @@
+using GR.Cms.Services.Abstractions;
+using GR.Core.Helpers;
+using GR.Entities.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GR.Core.Helpers;
-using GR.Entities.Data;
-using GR.Cms.Services.Abstractions;
+using GR.Core.Extensions;
 
 namespace GR.Cms.Controllers.Custom
 {
@@ -56,9 +57,10 @@ namespace GR.Cms.Controllers.Custom
 				return Json(result);
 			}
 
-			var standardEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standardEntityId);
-			var categoryEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == categoryEntityId);
-			var requirementEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == requirementEntityId);
+			var standardEntity = await _context.Table.FindByIdOnCacheAsync(standardEntityId);
+			var categoryEntity = await _context.Table.FindByIdOnCacheAsync(categoryEntityId);
+			var requirementEntity = await _context.Table.FindByIdOnCacheAsync(requirementEntityId);
+
 			if (standardEntity != null && categoryEntity != null && requirementEntity != null)
 				return Json(await _isoService.LoadTreeStandard(standardEntity, categoryEntity, requirementEntity));
 			result.Errors = new List<IErrorModel>

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using GR.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using GR.Core.Helpers;
+using System.Collections.Generic;
+using System.Net;
 
 namespace GR.Identity.Filters
 {
@@ -43,7 +43,7 @@ namespace GR.Identity.Filters
             var exception = context.Exception;
 
             result.Errors = !string.IsNullOrEmpty(exception.Message)
-                ? new List<IErrorModel> {new ErrorModel(ExceptionCodes.UnhandledException, exception.Message)}
+                ? new List<IErrorModel> { new ErrorModel(ExceptionCodes.UnhandledException, exception.Message) }
                 : new List<IErrorModel>
                 {
                     new ErrorModel(ExceptionCodes.UnhandledException, "An unhandled exception has occurred.")
@@ -52,7 +52,7 @@ namespace GR.Identity.Filters
             var serializeObject = JsonConvert.SerializeObject(result);
 
             context.Result = new BadRequestObjectResult(serializeObject);
-            context.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.ExceptionHandled = true;
         }
     }

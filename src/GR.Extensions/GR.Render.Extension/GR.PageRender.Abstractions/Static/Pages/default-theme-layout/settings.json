@@ -1,0 +1,52 @@
+{
+  "Id": "587592ed-cd11-432e-b689-a5fce2a9859c",
+  "IsLayout": true,
+  "Settings": {
+    "Name": "Cosmo admin Layout",
+    "Description": "Cosmo admin layout",
+    "Title": "",
+    "Identifier": "default-theme-layout"
+  },
+  "Path": "",
+  "IsSystem": true,
+  "PageStyles": [
+    {
+      "Order": 1,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/iso/css/style.css\" />"
+    },
+    {
+      "Order": 2,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://fonts.googleapis.com/icon?family=Material+Icons\" />"
+    },
+    {
+      "Order": 3,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/font-awesome/css/font-awesome.min.css\" />"
+    },
+    {
+      "Order": 4,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/MaterialDesign-Webfont/css/materialdesignicons.min.css\" />"
+    },
+    {
+      "Order": 5,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/flag-icon-css/css/flag-icon.min.css\" />"
+    },
+    {
+      "Order": 6,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/iso/css/custom.css\" />"
+    }
+  ],
+  "PageScripts": [
+    {
+      "Order": 1,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/chosen-jquery/lib/chosen.jquery.min.js\"></script>"
+    },
+    {
+      "Order": 2,
+      "Script": "<script type=\"text/javascript\" src=\"/themes/iso/js/site.js\"></script>"
+    },
+    {
+      "Order": 3,
+      "Script": "<script type=\"text/javascript\" src=\"/themes/iso/js/bundle.js\"></script>"
+    }
+  ]
+}

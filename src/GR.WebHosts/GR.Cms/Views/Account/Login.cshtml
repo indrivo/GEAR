@@ -42,13 +42,13 @@
 			<form class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
 				<div class="form-content px-2">
 					<div class="form-group mt-5">
-						<label for="username">@Localizer["system_auth_username"]</label>
+						<label for="username">@Localizer["email"]</label>
 						<input id="username" class="form-control" asp-for="Email" placeholder="Ex: John">
 						<span asp-validation-for="Email" class="text-danger"></span>
 					</div>
 					<div class="form-group mb-2">
 						<label for="username">@Localizer["system_auth_password"]</label>
-						<input class="form-control" asp-for="Password" placeholder="@Localizer["system_auth_pass_here"]">
+						<input class="form-control" asp-for="Password">
 						<span asp-validation-for="Password" class="text-danger"></span>
 					</div>
 					<div class="d-flex justify-content-between align-items-center">
@@ -59,7 +59,7 @@
 							</div>
 						</div>
 						<div class="form-group mb-0">
-							<button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">Forgot password ?</button>
+							<button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">@Localizer["forgot_password"]</button>
 						</div>
 					</div>
 					<div class="form-group">
@@ -118,7 +118,6 @@
     background-color: hsla(220, 92%, 41%, 0.1);"></div>
 	</section>
 
-
 	<div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog " role="document">
 			<form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
@@ -149,7 +148,7 @@
 	<script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
 	<script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
 	<script src="~/assets/js/core.js" asp-append-version="true"></script>
-
+	
 	<script type="text/javascript">
 		const notification = new ToastNotifier();
 		$("form[name='forgotPasswordForm']").submit(function (e) {
@@ -172,7 +171,6 @@
 				notify({ heading: "Error", text: window.translate("system_internal_error") });
 			});
 		});
-
 	</script>
 	<partial name="_ValidationScriptsPartial" />
 </body>

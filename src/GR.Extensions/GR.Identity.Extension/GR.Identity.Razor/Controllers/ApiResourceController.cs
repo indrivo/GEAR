@@ -1,17 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using GR.Core;
+using GR.Identity.Data.Permissions;
+using GR.Identity.Permissions.Abstractions.Attributes;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using GR.Identity.Data.Permissions;
-using GR.Core;
-using GR.Identity.Permissions.Abstractions.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -78,30 +78,39 @@ namespace GR.Identity.Razor.Controllers
                 case "id":
                     result = result.OrderBy(a => a.Id).ToList();
                     break;
+
                 case "name":
                     result = result.OrderBy(a => a.Name).ToList();
                     break;
+
                 case "description":
                     result = result.OrderBy(a => a.Description).ToList();
                     break;
+
                 case "created":
                     result = result.OrderBy(a => a.Created).ToList();
                     break;
+
                 case "enabled":
                     result = result.OrderBy(a => a.Enabled).ToList();
                     break;
+
                 case "id DESC":
                     result = result.OrderByDescending(a => a.Id).ToList();
                     break;
+
                 case "name DESC":
                     result = result.OrderByDescending(a => a.Name).ToList();
                     break;
+
                 case "description DESC":
                     result = result.OrderByDescending(a => a.Description).ToList();
                     break;
+
                 case "created DESC":
                     result = result.OrderByDescending(a => a.Created).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -222,7 +231,6 @@ namespace GR.Identity.Razor.Controllers
 
             return View(model);
         }
-
 
         /// <summary>
         /// Delete role

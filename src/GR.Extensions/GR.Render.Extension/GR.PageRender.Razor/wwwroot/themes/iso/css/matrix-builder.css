@@ -1,0 +1,111 @@
+.risk-matrix {
+	border-collapse: collapse;
+	display: table;
+}
+
+	.risk-matrix tr td {
+		padding: 2em;
+		border: 1px solid black;
+		vertical-align: middle;
+		text-align: center;
+		display: table-cell;
+		align-items: center;
+		padding: 1em;
+	}
+
+	.risk-matrix tr .empty-cell {
+		border: none;
+	}
+
+	.risk-matrix tr td.x-cell-size {
+		width: 8em;
+		max-width: 8em;
+	}
+
+	.risk-matrix tr td.value-cell {
+		width: 8em;
+		max-width: 8em;
+		max-height: 30em;
+	}
+
+	.risk-matrix tr td.y-cell-size {
+		height: 8em;
+		max-height: 8em;
+		max-width: 30em;
+	}
+
+.round {
+	border-radius: 2em;
+	width: 4em;
+	height: 4em;
+	max-width: 4em;
+	max-height: 4em;
+	background-color: white;
+	color: black;
+	display: flex;
+	align-items: center;
+}
+
+	.round * {
+		text-align: center;
+	}
+
+/*matrix legend*/
+.risk-matrix-template {
+	display: flex;
+}
+
+	.risk-matrix-template h2 {
+		text-align: center;
+		font-weight: bold;
+		color: gray;
+		font-size: 16px;
+		padding: 15px;
+		margin: 0;
+	}
+
+	.risk-matrix-template .matrix-group {
+		display: flex;
+		flex-direction: row;
+	}
+
+		.risk-matrix-template .matrix-group > h2 {
+			order: 1;
+			justify-content: center;
+			align-items: center;
+			display: flex;
+			transform: rotate(-90deg);
+		}
+
+		.risk-matrix-template .matrix-group .risk-matrix {
+			order: 2;
+		}
+
+/*matrix table*/
+table.risk-matrix tr td {
+	border: 1px solid #ccc;
+	font-size: 15px;
+	color: #808080;
+}
+
+table.risk-matrix td.x-cell-size, table.risk-matrix td.y-cell-size {
+	background: #eff0f5;
+}
+
+table.risk-matrix .value-cell span.cell-points {
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 100%;
+	color: #807777;
+	display: flex;
+	margin: auto;
+	width: auto;
+	display: -webkit-inline-box;
+	padding: 5px;
+}
+
+table.risk-matrix .value-cell h2.cell-name {
+	font-size: 14px;
+	font-weight: normal;
+	color: #969ba5;
+	margin-top: 0.4rem;
+}

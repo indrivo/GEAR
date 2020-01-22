@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Calendar.Abstractions;
 using GR.Calendar.Abstractions.Models;
-using GR.Core.Abstractions;
 
 namespace GR.Calendar.Data
 {
@@ -78,21 +78,10 @@ namespace GR.Calendar.Data
             builder.Entity<EventAttribute>().HasKey(x => new { x.EventId, x.AttributeName });
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
-        {
-            return Task.CompletedTask;
-        }
+        public override Task InvokeSeedAsync(IServiceProvider services) => Task.CompletedTask;
     }
 }

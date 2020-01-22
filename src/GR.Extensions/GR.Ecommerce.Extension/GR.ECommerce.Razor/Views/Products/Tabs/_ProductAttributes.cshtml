@@ -58,7 +58,9 @@
     </div>
 </div>
 
-<script type="text/javascript">
+@using (Html.BeginPartialViewScripts())
+{
+    <script type="text/javascript">
     const toast = new ToastNotifier();
     $(document).ready(function () {
         $.ajax({
@@ -182,4 +184,5 @@
         };
     }
 
-</script>
+    </script>
+}

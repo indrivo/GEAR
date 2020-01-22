@@ -4,6 +4,9 @@ using Microsoft.Extensions.Options;
 using GR.Core.Abstractions;
 using GR.Core.Helpers.Options;
 using GR.Core.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace GR.Core.Extensions
@@ -19,8 +22,8 @@ namespace GR.Core.Extensions
         public static IServiceCollection RegisterSystemConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SystemConfig>(configuration.GetSection(nameof(SystemConfig)));
+            services.AddGearSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             return services;
         }
 
@@ -53,6 +56,22 @@ namespace GR.Core.Extensions
             where TBackgroundService : BaseBackgroundService<TBackgroundService>
         {
             services.AddHostedService<TBackgroundService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Add url helper
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddUrlHelper(this IServiceCollection services)
+        {
+            services.AddSingleton<IUrlHelper>(factory =>
+            {
+                var actionContext = factory.GetService<IActionContextAccessor>()
+                    ?.ActionContext;
+                return actionContext != null ? new UrlHelper(actionContext) : null;
+            });
             return services;
         }
     }

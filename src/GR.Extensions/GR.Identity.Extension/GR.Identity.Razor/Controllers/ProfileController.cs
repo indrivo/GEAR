@@ -1,16 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using GR.Core;
+using GR.Entities.Data;
+using GR.Identity.Abstractions.Models.UserProfiles;
+using GR.Identity.Data;
+using GR.Identity.Razor.ViewModels.UserProfileViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using GR.Entities.Data;
-using GR.Identity.Data;
-using GR.Identity.Razor.ViewModels.UserProfileViewModels;
-using GR.Core;
-using GR.Identity.Abstractions.Models.UserProfiles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -74,52 +74,65 @@ namespace GR.Identity.Razor.Controllers
                 case "id":
                     result = result.OrderBy(a => a.Id).ToList();
                     break;
+
                 case "profileName":
                     result = result.OrderBy(a => a.ProfileName).ToList();
                     break;
+
                 case "author":
                     result = result.OrderBy(a => a.Author).ToList();
                     break;
+
                 case "modifiedBy":
                     result = result.OrderBy(a => a.ModifiedBy).ToList();
                     break;
+
                 case "changed":
                     result = result.OrderBy(a => a.Changed).ToList();
                     break;
+
                 case "created":
                     result = result.OrderBy(a => a.Created).ToList();
                     break;
+
                 case "isDeleted":
                     result = result.OrderBy(a => a.IsDeleted).ToList();
                     break;
+
                 case "id DESC":
                     result = result.OrderByDescending(a => a.Id).ToList();
                     break;
+
                 case "profileName DESC":
                     result = result.OrderByDescending(a => a.ProfileName).ToList();
                     break;
+
                 case "author DESC":
                     result = result.OrderByDescending(a => a.Author).ToList();
                     break;
+
                 case "modifiedBy DESC":
                     result = result.OrderByDescending(a => a.ModifiedBy).ToList();
                     break;
+
                 case "changed DESC":
                     result = result.OrderByDescending(a => a.Changed).ToList();
                     break;
+
                 case "created DESC":
                     result = result.OrderByDescending(a => a.Created).ToList();
                     break;
+
                 case "isDeleted DESC":
                     result = result.OrderByDescending(a => a.IsDeleted).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
             }
             return result.ToList();
         }
-
 
         /// <summary>
         /// Get view for Create a profiles

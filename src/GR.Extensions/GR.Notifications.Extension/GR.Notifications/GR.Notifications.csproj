@@ -7,8 +7,10 @@
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Company>Indrivo</Company>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>- Send local or email configuration</PackageReleaseNotes>
+    <Version>1.8.0</Version>
+    <PackageReleaseNotes>- Add new api</PackageReleaseNotes>
+    <FileVersion>1.8.0</FileVersion>
+    <AssemblyVersion>1.8.0</AssemblyVersion>
 
   </PropertyGroup>
 

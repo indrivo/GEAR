@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Entities.Abstractions.Models.Tables;
@@ -187,12 +188,12 @@ namespace GR.PageRender.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public override async Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
-            await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(this);
-            await MenuManager.SyncMenuItemsAsync();
-            await PageManager.SyncWebPagesAsync();
-            await TemplateManager.SeedAsync();
+            DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(this).Wait();
+            PageSeeder.SyncWebPagesAsync().Wait();
+            TemplateManager.SeedAsync().Wait();
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,45 +1,45 @@
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = Localizer["role_index_title"];
+    ViewData["Title"] = Localizer["role_index_title"];
 }
 
 <input type="hidden" id="hiddenID" />
-	<div class="card">
-		<div class="card-body">
-			<h4 class="card-title">@Localizer["roles"]</h4>
-			<h6 class="card-subtitle">@Localizer["role_index_title"]</h6>
-			<div class="table-responsive">
-				<div class="mt-2">
-					<div class="d-flex">
-						<div class="mr-auto">
-							<div class="form-group">
-								<a asp-action="Create" class="btn btn-primary btn-sm">
-									<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_role"]
-								</a>
-								<small>@Localizer["roles_add_info"]</small>
-							</div>
-						</div>
-					</div>
-				</div>
-				<table class="table table-striped table-bordered" width="100%" id="roleTable">
-					<thead>
-						<tr>
-							<th>@Localizer["client_name"]</th>
-							<th>@Localizer["name"]</th>
-							<th>@Localizer["created"]</th>
-                            <th>@Localizer["author"]</th>
-                            <th>@Localizer["modified_by"]</th>
-                            <th>@Localizer["changed"]</th>
-                            <th>@Localizer["is_deleted"]</th>
-                            <th>@Localizer["list_actions"]</th>
-						</tr>
-					</thead>
-					<tbody></tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Localizer["roles"]</h4>
+        <h6 class="card-subtitle">@Localizer["role_index_title"]</h6>
+        <div class="table-responsive">
+            <div class="mt-2">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="form-group">
+                            <a asp-action="Create" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_role"]
+                            </a>
+                            <small>@Localizer["roles_add_info"]</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-bordered" width="100%" id="roleTable">
+                <thead>
+                    <tr>
+                        <th>@Localizer["client_name"]</th>
+                        <th>@Localizer["name"]</th>
+                        <th>@Localizer["created"]</th>
+                        <th>@Localizer["author"]</th>
+                        <th>@Localizer["modified_by"]</th>
+                        <th>@Localizer["changed"]</th>
+                        <th>@Localizer["is_deleted"]</th>
+                        <th>@Localizer["list_actions"]</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @section Scripts{
 
@@ -48,7 +48,7 @@
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
 		}
-	</script>
+    </script>
     <script language="javascript" type="text/javascript">
 		$(document).ready(function($) {
 			const tableId = '#roleTable';
@@ -86,7 +86,7 @@
 						"data": "isDeleted",
 						"render": function(data) {
 							return `<div class="checkbox checkbox-success form-group">
-									<input ${data ? 'checked':''} id="isSystem" type="checkbox" class="check"  disabled/>
+									<input ${data ? 'checked':''} id="isSystem" type="checkbox" class="check"  disabled />
 									<label asp-for="isSystem"></label>
 								</div>`;
 						}
@@ -119,5 +119,5 @@
 			};
 			DeleteData(object);
 		}
-	</script>
+    </script>
 }

@@ -1,13 +1,13 @@
-﻿using GR.Audit.Contexts;
+﻿using System;
+using GR.Audit.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using GR.Core.Abstractions;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
 
 namespace GR.Documents.Data
 {
-    public class DocumentsDbContext: TrackerDbContext, IDocumentContext
+    public class DocumentsDbContext : TrackerDbContext, IDocumentContext
     {
         /// <summary>
         /// Schema
@@ -17,28 +17,28 @@ namespace GR.Documents.Data
         public const string Schema = "Documents";
         public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options) : base(options)
         {
-            
+
         }
 
         /// <summary>
         /// Documents
         /// </summary>
-        public DbSet<Document> Documents { get; set; }
+        public virtual DbSet<Document> Documents { get; set; }
 
         /// <summary>
         /// Document types
         /// </summary>
-        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public virtual DbSet<DocumentType> DocumentTypes { get; set; }
 
         /// <summary>
         /// Document types
         /// </summary>
-        public DbSet<DocumentCategory> DocumentCategories { get; set; }
+        public virtual DbSet<DocumentCategory> DocumentCategories { get; set; }
 
         /// <summary>
         /// Document versions
         /// </summary>
-        public DbSet<DocumentVersion> DocumentVersions { get; set; }
+        public virtual DbSet<DocumentVersion> DocumentVersions { get; set; }
 
 
         /// <summary>
@@ -51,23 +51,11 @@ namespace GR.Documents.Data
             builder.HasDefaultSchema(Schema);
         }
 
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
-        }
-
         /// <summary>
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public virtual Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }
