@@ -25,6 +25,16 @@
                         </tr>
                     </thead>
                     <tbody>
+
+                        @if (!subscriptions.Any())
+                        {
+                            <tr>
+                                <td colspan="7">
+                                   @Localizer["not_data"]
+                                </td>
+                            </tr>
+                        }
+
                         @foreach (var subscription in subscriptions)
                         {
                             <tr>
