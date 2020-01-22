@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Geldig van datum",
   "subscriptions_period": "Periode",
   "subscriptions_remaining_days": "Overige Dagen",
-  "subscriptions_is_valid": "Geldig"
+  "subscriptions_is_valid": "Geldig",
+  "no_data": "Geen gegevens beschikbaar"
 }

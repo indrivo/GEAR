@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "有効な日付から",
   "subscriptions_period": "期間",
   "subscriptions_remaining_days": "残りの日",
-  "subscriptions_is_valid": "の有効性"
+  "subscriptions_is_valid": "の有効性",
+  "no_data": "データはありません。"
 }

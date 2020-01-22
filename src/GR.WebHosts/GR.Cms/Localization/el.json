@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Ισχύει από την ημερομηνία",
   "subscriptions_period": "Περίοδο",
   "subscriptions_remaining_days": "Υπόλοιπες Ημέρες",
-  "subscriptions_is_valid": "Είναι έγκυρη"
+  "subscriptions_is_valid": "Είναι έγκυρη",
+  "no_data": "Δεν υπάρχουν διαθέσιμα δεδομένα"
 }
