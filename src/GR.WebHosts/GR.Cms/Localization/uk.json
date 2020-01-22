@@ -888,5 +888,10 @@
   "page_modal_controls_checklist_smsi_document": "Документів СУІБ",
   "page_modal_controls_checklist_external_document": "Зовнішній документ",
   "add_documents": "Додати документи",
-  "forgot_password": "Забули пароль?"
+  "forgot_password": "Забули пароль?",
+  "subscriptions_plan_name": "Назва план ",
+  "subscriptions_valid_from_date": "Дата",
+  "subscriptions_period": "Період",
+  "subscriptions_remaining_days": "Дні, Що Залишилися",
+  "subscriptions_is_valid": "Дійсний"
 }

@@ -888,5 +888,10 @@
   "page_modal_controls_checklist_smsi_document": "Το έγγραφο, πρέπει να",
   "page_modal_controls_checklist_external_document": "Εξωτερική έγγραφο",
   "add_documents": "Προσθέστε τα έγγραφα",
-  "forgot_password": "Ξεχάσατε τον κωδικό πρόσβασης;"
+  "forgot_password": "Ξεχάσατε τον κωδικό πρόσβασης;",
+  "subscriptions_plan_name": "Όνομα του προγράμματος",
+  "subscriptions_valid_from_date": "Ισχύει από την ημερομηνία",
+  "subscriptions_period": "Περίοδο",
+  "subscriptions_remaining_days": "Υπόλοιπες Ημέρες",
+  "subscriptions_is_valid": "Είναι έγκυρη"
 }

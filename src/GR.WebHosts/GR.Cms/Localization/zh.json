@@ -888,5 +888,10 @@
   "page_modal_controls_checklist_smsi_document": "文件中，它应",
   "page_modal_controls_checklist_external_document": "外部文件",
   "add_documents": "添加文件",
-  "forgot_password": "忘了密码?"
+  "forgot_password": "忘了密码?",
+  "subscriptions_plan_name": "计划的名字",
+  "subscriptions_valid_from_date": "有效期",
+  "subscriptions_period": "周期",
+  "subscriptions_remaining_days": "剩下的日子",
+  "subscriptions_is_valid": "是有效的"
 }

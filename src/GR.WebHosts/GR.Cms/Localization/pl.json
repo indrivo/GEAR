@@ -888,5 +888,10 @@
   "page_modal_controls_checklist_smsi_document": "Dokumentów ISMS",
   "page_modal_controls_checklist_external_document": "Dokument zewnętrzny",
   "add_documents": "Dodać dokumenty",
-  "forgot_password": "Nie pamiętasz hasła?"
+  "forgot_password": "Nie pamiętasz hasła?",
+  "subscriptions_plan_name": "Nazwa plan ",
+  "subscriptions_valid_from_date": "Data",
+  "subscriptions_period": "Okres",
+  "subscriptions_remaining_days": "Pozostałe Dni",
+  "subscriptions_is_valid": "Jest ważny"
 }
