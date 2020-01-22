@@ -14,48 +14,51 @@
             <div class="col-md-12">
                 <table class="table">
                     <thead>
-                    <tr>
-                        <th>@Localizer["subscriptions_plan_name"]</th>
-                        <th>@Localizer["subscriptions_valid_from_date"]</th>
-                        <th>@Localizer["subscriptions_period"]</th>
-                        <th>@Localizer["subscriptions_remaining_days"]</th>
-                        <th>@Localizer["subscriptions_is_valid"]</th>
-                        <th>@Localizer["permissions"]</th>
-                        <th>@Localizer["list_actions"]</th>
-                    </tr>
+                        <tr>
+                            <th>@Localizer["subscriptions_plan_name"]</th>
+                            <th>@Localizer["subscriptions_valid_from_date"]</th>
+                            <th>@Localizer["subscriptions_period"]</th>
+                            <th>@Localizer["subscriptions_remaining_days"]</th>
+                            <th>@Localizer["subscriptions_is_valid"]</th>
+                            <th>@Localizer["permissions"]</th>
+                            <th>@Localizer["list_actions"]</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach (var subscription in subscriptions)
-                    {
-                        <tr>
-                            <td>
-                                @subscription.Name
-                            </td>
-                            <td>
-                                @subscription.StartDate
-                            </td>
-                            <td>
-                                @subscription.Availability days
-                            </td>
-                            <td>
-                                @subscription.RemainingDays days
-                            </td>
-                            <td>
-                                @subscription.IsValid
-                            </td>
-                            <td>
-                                <ul style="list-style: none;" class="m-0 p-0">
-                                    @foreach (var permission in subscription.SubscriptionPermissions)
+                        @foreach (var subscription in subscriptions)
+                        {
+                            <tr>
+                                <td>
+                                    @subscription.Name
+                                </td>
+                                <td>
+                                    @subscription.StartDate
+                                </td>
+                                <td>
+                                    @subscription.Availability days
+                                </td>
+                                <td>
+                                    @subscription.RemainingDays days
+                                </td>
+                                <td>
+                                    @subscription.IsValid
+                                </td>
+                                <td>
+                                    <ul style="list-style: none;" class="m-0 p-0">
+                                        @foreach (var permission in subscription.SubscriptionPermissions)
+                                        {
+                                            <li><b>@permission.Name</b> - @permission.Value</li>
+                                        }
+                                    </ul>
+                                </td>
+                                <td>
+                                    @if (!subscription.IsFree)
                                     {
-                                        <li><b>@permission.Name</b> - @permission.Value</li>
+                                        <a class="btn btn-primary m-0 p-0" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId">@Localizer["system_order_details"]</a>
                                     }
-                                </ul>
-                            </td>
-                            <td>
-                                <a class="btn btn-primary m-0 p-0" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId">@Localizer["system_order_details"]</a>
-                            </td>
-                        </tr>
-                    }
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
