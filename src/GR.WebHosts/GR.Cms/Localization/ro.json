@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Valabil de la data",
   "subscriptions_period": "Perioada",
   "subscriptions_remaining_days": "Zile rămase",
-  "subscriptions_is_valid": "Este valabil"
+  "subscriptions_is_valid": "Este valabil",
+  "no_data": "Nu există date disponibile"
 }

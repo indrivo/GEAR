@@ -76,7 +76,8 @@ namespace GR.Subscriptions.Abstractions.Events
                 var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
 
 
-                var userSubscription = await subscriptionService.GetLastSubscriptionForUserAsync();
+                var userSubscriptionRequest = await subscriptionService.GetLastSubscriptionForUserAsync(args.UserId);
+
 
                 var newSubscription = new SubscriptionViewModel
                 {
@@ -88,10 +89,11 @@ namespace GR.Subscriptions.Abstractions.Events
                     SubscriptionPermissions = permissions,
                 };
 
-                if (userSubscription.IsSuccess)
+                if (userSubscriptionRequest.IsSuccess)
                 {
-                    newSubscription.Id = userSubscription.Result.Id;
-                    newSubscription.Availability += userSubscription.Result.Availability;
+                    var userSubscription = userSubscriptionRequest.Result;
+                    newSubscription.Id = userSubscription.Id;
+                    newSubscription.Availability += userSubscription.Availability;
                     newSubscription.IsFree = false;
                 }
 

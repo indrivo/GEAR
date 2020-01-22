@@ -352,7 +352,8 @@ namespace GR.Orders
                 case OrderState.PaymentReceived:
                     OrderEvents.Orders.PaymentReceived(new PaymentReceivedEventArgs
                     {
-                        OrderId = order.Id
+                        OrderId = order.Id,
+                        UserId = order.UserId
                     });
                     break;
                 case OrderState.PaymentFailed:

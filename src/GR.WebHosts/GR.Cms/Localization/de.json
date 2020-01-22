@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Gültig-ab-Datum",
   "subscriptions_period": "Zeit",
   "subscriptions_remaining_days": "Für Die Verbleibenden Tage",
-  "subscriptions_is_valid": "Gültig ist"
+  "subscriptions_is_valid": "Gültig ist",
+  "no_data": "Keine Daten verfügbar"
 }

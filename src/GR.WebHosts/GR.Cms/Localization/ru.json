@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Дата",
   "subscriptions_period": "Период",
   "subscriptions_remaining_days": "Оставшиеся Дни",
-  "subscriptions_is_valid": "Действителен"
+  "subscriptions_is_valid": "Действителен",
+  "no_data": "Нет данных"
 }
