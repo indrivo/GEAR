@@ -34,18 +34,18 @@
                     <label class="weight-400">@Localizer["email"]</label> : <span class="text-muted">@Model.Email</span>
                 </p>
                 <p>
-                    <div class="row">
-                        <div class="col-md">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
                             <span class="weight-400">@Localizer["system_email_confirm_state"]</span> :
                         </div>
                         <div class="col-md">
                             @if (user.EmailConfirmed)
                             {
-                                <div class="alert alert-success" role="alert">@Localizer["system_email_confirmed"]</div>
+                                <div class="alert alert-success m-0" role="alert">@Localizer["system_email_confirmed"]</div>
                             }
                             else
                             {
-                                <div class="alert alert-danger" role="alert">@Localizer["system_email_not_confirmed"]</div>
+                                <div class="alert alert-danger m-0" role="alert">@Localizer["system_email_not_confirmed"]</div>
                             }
                         </div>
                     </div>
