@@ -19,6 +19,15 @@ iframe[name="helpcrunch-iframe"] {
 	display: none;
 }
 
+
+@media screen and (max-device-width:768px), screen and (max-width:768px) {
+	iframe[name="helpcrunch-iframe"] {
+		bottom: 10px !important;
+		max-height: calc(100% - 20px) !important;
+		max-width: calc(100% - 20px) !important;
+	}
+}
+
 @import url(../../../../lib/font-awesome/css/font-awesome.min.css);
 
 :root {

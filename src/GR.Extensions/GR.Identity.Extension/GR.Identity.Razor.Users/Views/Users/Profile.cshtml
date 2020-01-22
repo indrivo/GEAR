@@ -81,7 +81,10 @@
                             <span class="weight-400">@Localizer["system_last_name"] : </span><span class="text-muted">@Model.UserLastName</span>
                         </p>
                         <p>
-                            <span class="weight-400">@Localizer["system_birthday"] : </span><span class="text-muted">@Model.Birthday.ToShortDateString()</span>
+                            @{
+                                var birthDate = Model.Birthday != DateTime.MinValue ? Model.Birthday.ToShortDateString() : "";
+                            }
+                            <span class="weight-400">@Localizer["system_birthday"] : </span><span class="text-muted">@birthDate</span>
                         </p>
                         <p>
                             <span class="weight-400">@Localizer["system_phone"] : </span><span class="text-muted">@Model.UserPhoneNumber</span>
@@ -255,51 +258,51 @@
 			});
     </script>
     <script type="text/javascript">
-		$(function () {
-			const modalContainer = $("#modal-container");
-			$(modalContainer).on("show.bs.modal",
-				function (event) {
-					const button = $(event.relatedTarget);
-					const url = button.attr("href");
-					const modal = $(this);
-					modal.find(".modal-content").load(url);
-				});
-			$(modalContainer).on("hidden.bs.modal",
-				function () {
-					$(this).removeData("bs.modal");
-					$("#modal-container .modal-content").empty();
-				});
-		});
+        $(function () {
+            const modalContainer = $("#modal-container");
+            $(modalContainer).on("show.bs.modal",
+                function (event) {
+                    const button = $(event.relatedTarget);
+                    const url = button.attr("href");
+                    const modal = $(this);
+                    modal.find(".modal-content").load(url);
+                });
+            $(modalContainer).on("hidden.bs.modal",
+                function () {
+                    $(this).removeData("bs.modal");
+                    $("#modal-container .modal-content").empty();
+                });
+        });
     </script>
     <script type="text/javascript">
-		(function ($) {
-			var contentResult;
-			$("#jq").text($.fn.jquery);
-			$("a[data-toggle='tab']").on("show.bs.tab",
-				function (e) {
-					if (e.relatedTarget) {
-						$($(e.relatedTarget).data("target")).empty();
-					}
-					const url = $(e.target).attr("href");
-					var $tabTarget = $($(e.target).data("target"));
-					$.ajax({
-						method: 'GET',
-						url: url,
-						beforeSend: () => {
-							$tabTarget.html(
-								`<div class="lds-ring"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`);
-						},
-						success: (result) => {
-							$tabTarget.html(result);
-						},
-						error: () => {
-							$tabTarget.html(`<h2 class='text-danger'>${window.translate("system_server_not_respond")}</h2>`);
-						}
-					});
-					$($(e.relatedTarget).data("target")).removeClass('active');
-				});
+        (function ($) {
+            var contentResult;
+            $("#jq").text($.fn.jquery);
+            $("a[data-toggle='tab']").on("show.bs.tab",
+                function (e) {
+                    if (e.relatedTarget) {
+                        $($(e.relatedTarget).data("target")).empty();
+                    }
+                    const url = $(e.target).attr("href");
+                    var $tabTarget = $($(e.target).data("target"));
+                    $.ajax({
+                        method: 'GET',
+                        url: url,
+                        beforeSend: () => {
+                            $tabTarget.html(
+                                `<div class="lds-ring"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`);
+                        },
+                        success: (result) => {
+                            $tabTarget.html(result);
+                        },
+                        error: () => {
+                            $tabTarget.html(`<h2 class='text-danger'>${window.translate("system_server_not_respond")}</h2>`);
+                        }
+                    });
+                    $($(e.relatedTarget).data("target")).removeClass('active');
+                });
 
-		})(jQuery);
+        })(jQuery);
     </script>
     <partial name="_ValidationScriptsPartial" />
 }

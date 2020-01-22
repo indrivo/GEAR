@@ -27,16 +27,6 @@ namespace GR.Core.Events
         }
 
         /// <summary>
-        /// On event 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        public static void OnEventHandler(object sender, ApplicationEventEventArgs args)
-        {
-            //Do something
-        }
-
-        /// <summary>
         /// On migration complete event
         /// </summary>
         /// <param name="sender"></param>

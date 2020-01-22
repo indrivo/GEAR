@@ -2,6 +2,7 @@
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Events;
 using GR.Entities.Data;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Entities.Extensions
@@ -19,32 +20,35 @@ namespace GR.Entities.Extensions
 
             EntityEvents.Entities.OnEntityAddNewField += (sender, args) =>
             {
-               
+
             };
 
             EntityEvents.Entities.OnEntityCreated += (sender, args) =>
             {
-                
+
             };
 
             EntityEvents.Entities.OnEntityDeleteField += (sender, args) =>
             {
-                
+
             };
 
             EntityEvents.Entities.OnEntityDeleted += (sender, args) =>
             {
-               
+                //Remove entity from cache
+                var memoryCacheService = IoC.Resolve<IMemoryCache>();
+                var entityKey = EntityService.GenerateEntityCacheKey(args.EntityName);
+                memoryCacheService.Remove(entityKey);
             };
 
             EntityEvents.Entities.OnEntityUpdateField += (sender, args) =>
             {
-                
+
             };
 
             EntityEvents.Entities.OnEntityUpdated += (sender, args) =>
             {
-               
+
             };
 
             return services;

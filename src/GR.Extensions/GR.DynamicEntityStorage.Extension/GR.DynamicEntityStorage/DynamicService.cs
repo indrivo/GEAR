@@ -55,29 +55,29 @@ namespace GR.DynamicEntityStorage
         /// <summary>
         /// Inject entity access manager
         /// </summary>
-        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
+        private readonly IEntityRoleAccessService _entityRoleAccessService;
 
         /// <summary>
         /// Inject entity repository
         /// </summary>
-        private readonly IEntityRepository _entityRepository;
+        private readonly IEntityService _entityService;
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="entityRoleAccessManager"></param>
+        /// <param name="entityRoleAccessService"></param>
         /// <param name="userManager"></param>
         /// <param name="httpContextAccessor"></param>
-        /// <param name="entityRepository"></param>
-        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityRepository entityRepository)
+        /// <param name="entityService"></param>
+        public DynamicService(TContext context, IEntityRoleAccessService entityRoleAccessService, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityService entityService)
         {
             _context = context;
-            _entityRoleAccessManager = entityRoleAccessManager;
+            _entityRoleAccessService = entityRoleAccessService;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
-            _entityRepository = entityRepository;
+            _entityService = entityService;
         }
 
         /// <inheritdoc />
@@ -260,7 +260,7 @@ namespace GR.DynamicEntityStorage
                 return result;
             }
 
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
 
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
@@ -290,7 +290,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             var enumeratedFilters = filters?.ToList() ?? new List<Filter>();
@@ -315,7 +315,7 @@ namespace GR.DynamicEntityStorage
         {
             var listWithoutInclude = await GetAll(entity, expression, filters);
             if (!listWithoutInclude.IsSuccess) return listWithoutInclude;
-            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            var tableRequest = await _entityService.FindTableByNameAsync(entity);
             if (!tableRequest.IsSuccess) return listWithoutInclude;
             var table = tableRequest.Result;
             var fieldReferences = table.TableFields
@@ -412,7 +412,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<Dictionary<string, object>>();
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<Dictionary<string, object>>();
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model.Values = new List<Dictionary<string, object>>
             {
@@ -434,7 +434,7 @@ namespace GR.DynamicEntityStorage
         {
             var obj = await GetById(entity, id);
             if (!obj.IsSuccess) return obj;
-            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            var tableRequest = await _entityService.FindTableByNameAsync(entity);
             if (!tableRequest.IsSuccess) return obj;
             var table = tableRequest.Result;
             var fieldReferences = table.TableFields
@@ -564,7 +564,7 @@ namespace GR.DynamicEntityStorage
                 return result;
             }
 
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<int>();
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<int>();
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             var count = _context.GetCount(model, filters);
             if (!count.IsSuccess) return result;
@@ -612,7 +612,7 @@ namespace GR.DynamicEntityStorage
                 return response;
             }
 
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(table.Id))
                 return new AccessDeniedResult<PaginationResponseViewModel>();
 
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
@@ -626,7 +626,7 @@ namespace GR.DynamicEntityStorage
             {
                 foreach (var field in referenceFields)
                 {
-                    var fieldConfigurations = await _entityRepository.GetTableFieldConfigurations(field, schema);
+                    var fieldConfigurations = await _entityService.GetTableFieldConfigurations(field, schema);
                     var tableName = fieldConfigurations?.FirstOrDefault(x => x.ConfigCode.Equals(TableFieldConfigCode.Reference.ForeingTable));
                     if (tableName == null) continue;
                     foreach (var entry in responseData)
@@ -662,7 +662,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Write)) return new AccessDeniedResult<Guid>();
+            if (!await _entityRoleAccessService.HaveAccessAsync(dto.Id, EntityAccessType.Write)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
             var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
@@ -778,7 +778,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Update)) return new AccessDeniedResult<Guid>();
+            if (!await _entityRoleAccessService.HaveAccessAsync(dto.Id, EntityAccessType.Update)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model["Changed"] = DateTime.Now;
             model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
@@ -833,7 +833,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent)) return new AccessDeniedResult<Guid>();
+            if (!await _entityRoleAccessService.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             table.Values = new List<Dictionary<string, object>>
             {
@@ -1185,7 +1185,7 @@ namespace GR.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
         {
-            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            var tableRequest = await _entityService.FindTableByNameAsync(entity);
             if (!tableRequest.IsSuccess)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 

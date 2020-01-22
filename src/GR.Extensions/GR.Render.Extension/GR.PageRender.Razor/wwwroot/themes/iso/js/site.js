@@ -2,6 +2,7 @@ var PreLoader;
 
 $(window).on("load",
     function () {
+        moment.locale(settings.localization.current.identifier);
         $(".loader-wrapper").not(".incomponent").fadeOut(400,
             function () {
                 PreLoader = $(this).detach();
@@ -142,7 +143,7 @@ $(window).on("load",
         });
 
     });
-    $body.find('.sidebar.collapsed .navigation').on('mouseover', function () { 
+    $body.find('.sidebar.collapsed .navigation').on('mouseover', function () {
         activeMenuItem.addClass('open');
 
         $(".sidebar.collapsed .navigation li.open").each(function (index) {
@@ -366,10 +367,10 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 function getOffset(el) {
     const rect = el.getBoundingClientRect();
     return {
-      left: rect.left + window.scrollX,
-      top: rect.top + window.scrollY
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY
     };
-  }
+}
 
 // function changeTextCellPosition() {
 //     $(this).parent().focusout(function () {
@@ -426,7 +427,6 @@ function changeTextCellPosition() {
     const diffH = docHeight - pos.top;
     const textareaWidth = $(expandCell).innerWidth();
 
-    console.log('textareaWidth:  ' + textareaWidth);
 
     const navBarWidth = $(".navigation").width();
     pos.left -= navBarWidth;
@@ -442,7 +442,6 @@ function changeTextCellPosition() {
     if (wPercent > 70) {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
             }px`);
-            console.log('wPercent > 70');
 
     }
 
@@ -1697,7 +1696,7 @@ if (typeof Notificator !== "undefined") {
         return notifications;
     }
 
-    let notificationsPage = 1;
+    let notificationsPage = 2;
     let stopGetNotifications = false;
 
     addLoader($('#notificationList'));
@@ -1736,7 +1735,7 @@ if (typeof Notificator !== "undefined") {
                         stopGetNotifications = true;
                     }
                     $.each(data.result.notifications, (i, notification) => {
-                        notificator.appendNotificationToContainer(notification);
+                        Notificator.prototype.addNewNotificationToContainer(notification);
                     });
                 }
                 $('#noNotifications').remove();
@@ -1755,7 +1754,16 @@ if (typeof Notificator !== "undefined") {
         const template = this.createNotificationBodyContainer(notification);
         const target = $("#notificationList .notifications");
         $("#noNotifications").hide();
-        target.prepend(template);
+        target.append(template);
+        $(`.notification-item[data-notification-id="${notification.id}"]`).click(function () {
+            if (!$(this).find('.notification-content').hasClass('slide-open')) {
+                $(this).find('.notification-content').slideDown().addClass('slide-open');
+            }
+            else {
+                $(this).find('.notification-content').slideUp().removeClass('slide-open');
+            }
+            $(this).siblings('.notification-item').find('.notification-content').slideUp().removeClass('slide-open');
+        });
         this.registerOpenNotificationEvent();
         $(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
             $(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
@@ -1772,12 +1780,12 @@ if (typeof Notificator !== "undefined") {
 
     Notificator.prototype.createNotificationBodyContainer = function (n) {
         const block = `
-			<div data-notification-id="${n.id
-            }" class="notification-item dropdown-item border-bottom position-relative">
+			<div data-notification-id="${n.id}" 
+                class="notification-item dropdown-item border-bottom position-relative" style="cursor: pointer;">
 				<div class="notification-body py-1">
 					<p class="mb-0"><small>${n.subject}</small></p>
-					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
-					<p class="text-muted mb-0"><small>${moment(new Date(n.created)).from(new Date())}</small></p>
+					<div class="mb-0 notification-content" style="display:none">${n.content}</div>
+					<p class="text-muted mb-0"><small>${moment(n.created, "DD.MM.YYYY hh:mm:ss A").from(new Date())}</small></p>
 					<span class="delete-notification">
 						<i class="material-icons">close</i>
 					</span>
@@ -1891,7 +1899,7 @@ function makeMenuActive(target) {
             $(".breadcrumb").prepend(`<li class="breadcrumb-item">${a.text()}</li>`);
         }
         last.addClass("active");
-        $('.navigation').on('mouseover', function () { 
+        $('.navigation').on('mouseover', function () {
             //last.addClass("open");
         });
         if (target.closest("nav").length !== 0)
@@ -1968,7 +1976,7 @@ $(document).ready(function () {
         window.forceTranslate();
     });
 
-   
+
 
 
     //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
@@ -1978,29 +1986,29 @@ $('body').on('DOMNodeInserted', '.dataTables_scrollBody', function () {
     let isDown = false;
     let startX;
     let scrollLeft;
-    
+
     slider.addEventListener('mousedown', (e) => {
-      isDown = true;
-      slider.classList.add('active');
-      startX = e.pageX - slider.offsetLeft;
-      scrollLeft = slider.scrollLeft;
+        isDown = true;
+        slider.classList.add('active');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
     });
     slider.addEventListener('mouseleave', () => {
-      isDown = false;
-      slider.classList.remove('active');
+        isDown = false;
+        slider.classList.remove('active');
     });
     slider.addEventListener('mouseup', () => {
-      isDown = false;
-      slider.classList.remove('active');
+        isDown = false;
+        slider.classList.remove('active');
     });
     slider.addEventListener('mousemove', (e) => {
-      if(!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 3; //scroll-fast
-      slider.scrollLeft = scrollLeft - walk;
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 3; //scroll-fast
+        slider.scrollLeft = scrollLeft - walk;
     });
-});   
+});
 
 function openColorPicker(event) {
     if (event.preventDefault) {

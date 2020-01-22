@@ -2,7 +2,7 @@
 ::---------------------------------------------Configuration-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
 
-SET pushKey="oy2nr54v2bavfwvqjc4qrivsua7gl62ubbwrtmd22tpcta"
+SET pushKey="oy2dgmytu5l4qpxessaa3fif4dipsmuudacaolypjnq6em"
 SET pushHost="https://www.nuget.org"
 
 
@@ -152,6 +152,11 @@ dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Abstractions/GR.Pa
 dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender/GR.PageRender.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Razor/GR.PageRender.Razor.csproj -o ../../../nupkgs
 
+:: Pack menu modules
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu.Abstractions/GR.UI.Menu.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu.Razor/GR.UI.Menu.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.UI.Menu.Extension/GR.UI.Menu/GR.UI.Menu.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -291,6 +296,11 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Process.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Razor*
+
+::Push menu modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.UI.Menu*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

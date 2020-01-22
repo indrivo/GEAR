@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
+using GR.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Entities.Abstractions.Events;
 using GR.Entities.Security.Abstractions.ServiceBuilder;
 
 namespace GR.Entities.Security.Abstractions.Extensions
@@ -16,11 +19,18 @@ namespace GR.Entities.Security.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IEntitySecurityServiceCollection AddEntityRoleAccessModule<TRepository>(this IServiceCollection services)
-            where TRepository : class, IEntityRoleAccessManager
+            where TRepository : class, IEntityRoleAccessService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IEntityRoleAccessManager, TRepository>();
-            IoC.RegisterTransientService<IEntityRoleAccessManager, TRepository>();
+            services.AddTransient<IEntityRoleAccessService, TRepository>();
+            IoC.RegisterTransientService<IEntityRoleAccessService, TRepository>();
+
+            EntityEvents.Entities.OnEntityDeleted += (sender, args) =>
+            {
+                var service = IoC.Resolve<IEntityRoleAccessService>();
+                service.ClearEntityPermissionsFromCache(args.EntityId);
+            };
+
             return new EntitySecurityServiceCollection(services);
         }
 

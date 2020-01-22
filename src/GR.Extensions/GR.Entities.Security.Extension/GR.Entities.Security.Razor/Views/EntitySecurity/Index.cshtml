@@ -1,13 +1,13 @@
 ﻿@using GR.Core.Extensions
 @using GR.Entities.Security.Abstractions
 @using GR.Entities.Security.Abstractions.Enums
-@inject IEntityRoleAccessManager AccessManager
+@inject IEntityRoleAccessService AccessService
 
 @{
     ViewData["Title"] = "Entity Role access management";
-    var roles = AccessManager.Roles.ToList();
-    var tables = AccessManager.Tables.OrderBy(x => x.Name).ToList();
-    var configuration = AccessManager.GetAllForView();
+    var roles = AccessService.Roles.ToList();
+    var tables = AccessService.Tables.OrderBy(x => x.Name).ToList();
+    var configuration = AccessService.GetAllForView();
 }
 
 <div class="card">

@@ -15,10 +15,6 @@
       "destination": "wwwroot/lib/animate.css/"
     },
     {
-      "library": "jquery-toast-plugin@1.3.2",
-      "destination": "wwwroot/lib/jquery-toast-plugin/"
-    },
-    {
       "library": "ckeditor@4.11.4",
       "destination": "wwwroot/lib/ckeditor/"
     },
@@ -55,22 +51,6 @@
       "destination": "wwwroot/lib/weather-icons/"
     },
     {
-      "library": "datatables@1.10.19",
-      "destination": "wwwroot/lib/datatables/"
-    },
-    {
-      "library": "echarts@4.2.1",
-      "destination": "wwwroot/lib/echarts/"
-    },
-    {
-      "library": "jqueryui@1.12.1",
-      "destination": "wwwroot/lib/jqueryui/"
-    },
-    {
-      "library": "jquery-validate@1.19.0",
-      "destination": "wwwroot/lib/jquery-validate/"
-    },
-    {
       "library": "MaterialDesign-Webfont@3.6.95",
       "destination": "wwwroot/lib/MaterialDesign-Webfont/"
     },
@@ -83,16 +63,6 @@
       "provider": "jsdelivr",
       "library": "themify-icons@1.0.0",
       "destination": "wwwroot/lib/themify-icons/"
-    },
-    {
-      "provider": "unpkg",
-      "library": "sidebar-menu-accgit@1.3.1",
-      "destination": "wwwroot/lib/sidebar-menu-accgit/"
-    },
-    {
-      "provider": "unpkg",
-      "library": "@aspnet/signalr@1.0.3",
-      "destination": "wwwroot/lib/signalr/"
     },
     {
       "provider": "unpkg",
@@ -168,6 +138,41 @@
         "spectrum.min.js",
         "spectrum.min.css"
       ]
+    },
+    {
+      "library": "jquery-validate@1.19.0",
+      "destination": "wwwroot/lib/jquery-validate/",
+      "files": [
+        "jquery.validate.min.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@aspnet/signalr@1.0.3",
+      "destination": "wwwroot/lib/signalr/",
+      "files": [
+        "dist/browser/signalr.min.js"
+      ]
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/lib/jqueryui/",
+      "files": [
+        "jquery-ui.min.js",
+        "jquery-ui.min.css"
+      ]
+    },
+    {
+      "library": "jquery-toast-plugin@1.3.2",
+      "destination": "wwwroot/lib/jquery-toast-plugin/",
+      "files": [
+        "jquery.toast.min.js",
+        "jquery.toast.min.css"
+      ]
+    },
+    {
+      "library": "datatables@1.10.19",
+      "destination": "wwwroot/lib/datatables/"
     }
   ]
 }

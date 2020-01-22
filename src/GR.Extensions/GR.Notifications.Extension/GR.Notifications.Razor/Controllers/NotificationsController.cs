@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -10,6 +11,8 @@ using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GR.Notifications.Razor.Controllers
 {
@@ -24,6 +27,13 @@ namespace GR.Notifications.Razor.Controllers
         private readonly INotify<GearRole> _notify;
 
         #endregion
+
+        protected override JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            DateFormatString = GearSettings.Date.DateFormatWithTime
+        };
 
         /// <summary>
         /// Constructor

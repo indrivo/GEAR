@@ -195,7 +195,7 @@ namespace GR.Cms
 				.AddIdentityServer(Configuration, MigrationsAssembly);
 
 			//---------------------------------------Entity Module-------------------------------------
-			config.GearServices.AddEntityModule<EntitiesDbContext, EntityRepository>()
+			config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
 				.AddEntityModuleStorage<EntitiesDbContext>(options =>
 				{
@@ -207,7 +207,7 @@ namespace GR.Cms
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
-			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
+			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
 				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

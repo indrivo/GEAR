@@ -1,6 +1,8 @@
 ﻿@using Newtonsoft.Json
 @using GR.Cache.Abstractions
 @using GR.Cache.Services
+@using GR.Core
+@using GR.Core.Extensions
 @model IEnumerable<GR.Cache.Abstractions.Models.CacheEntry>
 @inject ICacheService CacheService
 
@@ -44,9 +46,8 @@
                                     var pre = await CacheService.GetAsync
                                         <dynamic>
                                         (key);
-                                    var value = (pre != null) ? JsonConvert.SerializeObject(pre)
-                                        : JsonConvert.SerializeObject(await CacheService.GetAsync<string>
-                                            (key));
+                                    var value = (pre != null) ? ((object)pre).SerializeAsJson()
+                                        : await CacheService.GetAsync<string>(key);
                                     <tr>
                                         <td>@key</td>
                                         <td>

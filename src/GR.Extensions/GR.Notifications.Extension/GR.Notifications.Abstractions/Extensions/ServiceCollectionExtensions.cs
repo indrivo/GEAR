@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
-using GR.Core.Events.EventArgs;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -73,39 +72,42 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <returns></returns>
         public static INotificationSubscriptionServiceCollection AddNotificationModuleEvents(this INotificationSubscriptionServiceCollection services)
         {
-            SystemEvents.Application.OnEvent += async delegate (object sender, ApplicationEventEventArgs ev)
-            {
-                if (!GearApplication.Configured) return;
-                try
-                {
-                    if (string.IsNullOrEmpty(ev.EventName)) return;
-                    var service = IoC.Resolve<INotificationSubscriptionRepository>();
-                    var notifier = IoC.Resolve<INotify<GearRole>>();
-                    var subscribedRoles = await service.GetRolesSubscribedToEventAsync(ev.EventName);
-                    if (!subscribedRoles.IsSuccess) return;
-                    var template = await service.GetEventTemplateAsync(ev.EventName);
-                    if (!template.IsSuccess) return;
-                    var templateWithParams = template.Result.Value?.Inject(ev.EventArgs);
-                    //var engine = new RazorLightEngineBuilder()
-                    //    .UseMemoryCachingProvider()
-                    //    .Build();
+            SystemEvents.Application.OnEvent += (obj, args) =>
+           {
+               if (!GearApplication.Configured) return;
+               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+               {
+                   try
+                   {
+                       if (string.IsNullOrEmpty(args.EventName)) return;
+                       var service = IoC.Resolve<INotificationSubscriptionRepository>();
+                       var notifier = IoC.Resolve<INotify<GearRole>>();
+                       var subscribedRoles = await service.GetRolesSubscribedToEventAsync(args.EventName);
+                       if (!subscribedRoles.IsSuccess) return;
+                       var template = await service.GetEventTemplateAsync(args.EventName);
+                       if (!template.IsSuccess) return;
+                       var templateWithParams = template.Result.Value?.Inject(args.EventArgs);
+                       //var engine = new RazorLightEngineBuilder()
+                       //    .UseMemoryCachingProvider()
+                       //    .Build();
 
-                    //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
+                       //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
 
-                    var notification = new Notification
-                    {
-                        Subject = template.Result.Subject,
-                        Content = templateWithParams,
-                        NotificationTypeId = NotificationType.Info
-                    };
+                       var notification = new Notification
+                       {
+                           Subject = template.Result.Subject,
+                           Content = templateWithParams,
+                           NotificationTypeId = NotificationType.Info
+                       };
 
-                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification, null);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            };
+                       await notifier.SendNotificationAsync(subscribedRoles.Result, notification, null);
+                   }
+                   catch (Exception e)
+                   {
+                       Console.WriteLine(e);
+                   }
+               });
+           };
 
             SystemEvents.Database.OnSeed += async (obj, args) =>
             {

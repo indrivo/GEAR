@@ -7,13 +7,13 @@
     <Company>Indrivo SRL</Company>
     <Description>UI representation of internal calendar</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
     <PackageReleaseNotes>- Add remind notification before event minutes to remind set
     - Remove organizer parameter from</PackageReleaseNotes>
     <PackageTags>calendar .net core c# ui full calendar</PackageTags>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Razor</RepositoryUrl>
-    <FileVersion>1.7.0</FileVersion>
-    <AssemblyVersion>1.7.0</AssemblyVersion>
+    <FileVersion>1.8.0</FileVersion>
+    <AssemblyVersion>1.8.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

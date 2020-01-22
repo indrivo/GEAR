@@ -76,10 +76,10 @@ namespace GR.PageRender
         /// <summary>
         /// Inject role access manager
         /// </summary>
-        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
+        private readonly IEntityRoleAccessService _entityRoleAccessService;
         #endregion
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessManager entityRoleAccessManager)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessService entityRoleAccessService)
         {
             _context = context;
             _cacheService = cacheService;
@@ -88,7 +88,7 @@ namespace GR.PageRender
             _pagesContext = pagesContext;
             _organizationService = organizationService;
             _appProvider = appProvider;
-            _entityRoleAccessManager = entityRoleAccessManager;
+            _entityRoleAccessService = entityRoleAccessService;
         }
 
         private async Task<GearUser> GetCurrentUserAsync()
@@ -565,7 +565,7 @@ namespace GR.PageRender
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return defaultResult;
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return defaultResult;
+            if (!await _entityRoleAccessService.HaveReadAccessAsync(viewModel.TableModelId)) return defaultResult;
 
             filters?.ToList().ForEach(x =>
             {

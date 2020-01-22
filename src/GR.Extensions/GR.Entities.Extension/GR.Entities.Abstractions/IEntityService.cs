@@ -9,7 +9,7 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 
 namespace GR.Entities.Abstractions
 {
-    public interface IEntityRepository
+    public interface IEntityService
     {
         /// <summary>
         /// Tables

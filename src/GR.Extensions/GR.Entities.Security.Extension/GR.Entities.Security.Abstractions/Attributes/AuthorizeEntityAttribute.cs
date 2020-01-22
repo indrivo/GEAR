@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,12 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Helpers;
 
@@ -30,7 +25,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
     }
 
     [Serializable]
-    public class AuthorizeEntityPermissionAttributeExecutor : IAsyncResourceFilter //OnMethodBoundaryAspect
+    public class AuthorizeEntityPermissionAttributeExecutor : IAsyncResourceFilter
     {
         /// <summary>
         /// Permissions
@@ -40,31 +35,19 @@ namespace GR.Entities.Security.Abstractions.Attributes
         /// <summary>
         /// Inject service
         /// </summary>
-        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
+        private readonly IEntityRoleAccessService _entityRoleAccessService;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="entityRoleAccessManager"></param>
+        /// <param name="entityRoleAccessService"></param>
         /// <param name="authorizationRequirement"></param>
-        public AuthorizeEntityPermissionAttributeExecutor(IEntityRoleAccessManager entityRoleAccessManager,
+        public AuthorizeEntityPermissionAttributeExecutor(IEntityRoleAccessService entityRoleAccessService,
             EntityPermissionAuthorizationRequirement authorizationRequirement)
         {
-            _entityRoleAccessManager = entityRoleAccessManager;
+            _entityRoleAccessService = entityRoleAccessService;
             _authorizationRequirement = authorizationRequirement;
         }
-
-        //public override bool CompileTimeValidate(System.Reflection.MethodBase method)
-        //{
-        //    var type = method.DeclaringType;
-        //    if (type != typeof(Task<JsonResult>) && type != typeof(JsonResult))
-        //    {
-        //        throw new Exception(
-        //            $"{nameof(AuthorizeEntityAttribute)} can only be used with {nameof(JsonResult)} methods");
-        //    }
-
-        //    return true;
-        //}
 
         /// <summary>
         /// On executing context
@@ -80,72 +63,24 @@ namespace GR.Entities.Security.Abstractions.Attributes
             var body = await reader.ReadToEndAsync();
             req.Body.Position = 0;
             var responseBody = context.HttpContext.Response;
-            try
-            {
-                var data = JsonConvert.DeserializeObject<RequestData>(body);
 
-                var isValid = await IsValid(data.EntityName);
-                if (!isValid.IsSuccess)
-                {
-                    await responseBody.WriteAsync(isValid.SerializeAsJson());
-                }
-                else if (!await _entityRoleAccessManager.HaveAccessAsync(data.EntityName,
-                    _authorizationRequirement.RequiredPermissions))
-                {
-                    await responseBody.WriteAsync(new ResultModel
-                    {
-                        Errors = new List<IErrorModel>
-                        {
-                            new ErrorModel(nameof(GearSettings.ACCESS_DENIED_MESSAGE), GearSettings.ACCESS_DENIED_MESSAGE)
-                        }
-                    }.SerializeAsJson());
-                }
-                else
-                {
-                    await next();
-                }
-            }
-            catch (Exception e)
+            var data = body.Deserialize<RequestData>();
+            if (data == null)
             {
-                Debug.WriteLine(e);
                 await responseBody.WriteAsync(new ResultModel
                 {
                     Errors = new List<IErrorModel>
-                    {
-                        new ErrorModel(nameof(BadRequestResult), nameof(BadRequestResult))
-                    }
+                        {
+                            new ErrorModel(nameof(BadRequestResult), nameof(BadRequestResult))
+                        }
                 }.SerializeAsJson());
             }
-        }
-
-        /// <summary>
-        /// Is valid entity
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        [NonAction]
-        private async Task<ResultModel<TableModel>> IsValid(string tableName)
-        {
-            var badParams = new ErrorModel(string.Empty, "Entity not identified!");
-            var entityNotFound = new ErrorModel(string.Empty, "Entity not found!");
-            var result = new ResultModel<TableModel>();
-            if (string.IsNullOrEmpty(tableName))
+            else if (!await _entityRoleAccessService.HaveAccessAsync(data.EntityName,
+             _authorizationRequirement.RequiredPermissions))
             {
-                result.Errors.Add(badParams);
-                return result;
+                await responseBody.WriteAsync(AccessDeniedResult<object>.Instance.SerializeAsJson());
             }
-
-            var entity = await _entityRoleAccessManager.Tables.FirstOrDefaultAsync(x => x.Name == tableName);
-
-            if (entity == null)
-            {
-                result.Errors.Add(entityNotFound);
-                return result;
-            }
-
-            result.IsSuccess = true;
-            result.Result = entity;
-            return result;
+            else await next();
         }
     }
 

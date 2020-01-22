@@ -46,8 +46,8 @@ namespace GR.Cms.ViewModels.TreeISOViewModels
 	public sealed class TreeCategoryAction
 	{
 		public int TotalActions => ClosedActions + OpenActions;
-		public int OpenActions { get; set; } = 0;
-		public int ClosedActions { get; set; } = 0;
+		public int OpenActions { get; set; }
+		public int ClosedActions { get; set; }
 
 		/// <summary>
 		/// Get percentage of completion
@@ -69,7 +69,6 @@ namespace GR.Cms.ViewModels.TreeISOViewModels
 		public string Name { get; set; }
 		public string Hint { get; set; }
 		public RequirementDueMode RequirementDueMode { get; set; }
-		public IEnumerable<TreeRequirementDocument> Documents { get; set; }
 		public IEnumerable<TreeRequirement> Requirements { get; set; }
 	}
 
@@ -77,14 +76,5 @@ namespace GR.Cms.ViewModels.TreeISOViewModels
 	{
 		public Guid? DueModeId { get; set; }
 		public string DueModeValue { get; set; }
-	}
-
-	//TODO: Integrate with document library after develop document lib
-	public sealed class TreeRequirementDocument
-	{
-		public Guid Id { get; set; }
-		public string FileName { get; set; }
-		public string FileLink { get; set; }
-		public string DocumentCategory { get; set; }
 	}
 }

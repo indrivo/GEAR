@@ -35,7 +35,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <summary>
         /// Inject dynamic service
         /// </summary>
-        private readonly IEntityRepository _service;
+        private readonly IEntityService _service;
 
         /// <summary>
         /// Inject organization service
@@ -51,7 +51,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="service"></param>
         /// <param name="organizationService"></param>
         public TenantController(
-            ApplicationDbContext context, IEntityRepository service, IOrganizationService<Tenant> organizationService)
+            ApplicationDbContext context, IEntityService service, IOrganizationService<Tenant> organizationService)
         {
             Context = context;
             _service = service;
