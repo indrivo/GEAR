@@ -15,13 +15,13 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Plan name</th>
-                        <th>Valid from date</th>
-                        <th>Period</th>
-                        <th>Remaining Days</th>
-                        <th>Is valid</th>
-                        <th>Permissions</th>
-                        <th>Actions</th>
+                        <th>@Localizer["subscriptions_plan_name"]</th>
+                        <th>@Localizer["subscriptions_valid_from_date"]</th>
+                        <th>@Localizer["subscriptions_period"]</th>
+                        <th>@Localizer["subscriptions_remaining_days"]</th>
+                        <th>@Localizer["subscriptions_is_valid"]</th>
+                        <th>@Localizer["permissions"]</th>
+                        <th>@Localizer["list_actions"]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -44,7 +44,7 @@
                                 @subscription.IsValid
                             </td>
                             <td>
-                                <ul>
+                                <ul style="list-style: none;" class="m-0 p-0">
                                     @foreach (var permission in subscription.SubscriptionPermissions)
                                     {
                                         <li><b>@permission.Name</b> - @permission.Value</li>
@@ -52,7 +52,7 @@
                                 </ul>
                             </td>
                             <td>
-                                <a class="btn btn-primary" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId">Order details</a>
+                                <a class="btn btn-primary m-0 p-0" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId">@Localizer["system_order_details"]</a>
                             </td>
                         </tr>
                     }

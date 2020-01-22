@@ -888,5 +888,10 @@
   "page_modal_controls_checklist_smsi_document": "Documento, deve",
   "page_modal_controls_checklist_external_document": "Documento esterno",
   "add_documents": "Aggiungere documenti",
-  "forgot_password": "Hai dimenticato la password?"
+  "forgot_password": "Hai dimenticato la password?",
+  "subscriptions_plan_name": "Nome del piano di",
+  "subscriptions_valid_from_date": "Valido a partire dalla data",
+  "subscriptions_period": "Periodo",
+  "subscriptions_remaining_days": "Restanti Giorni",
+  "subscriptions_is_valid": "È valido"
 }
