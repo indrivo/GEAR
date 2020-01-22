@@ -64,6 +64,15 @@ namespace GR.Orders
 
         #endregion
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="commerceContext"></param>
+        /// <param name="dataFilter"></param>
+        /// <param name="userManager"></param>
+        /// <param name="cartService"></param>
+        /// <param name="orderDbContext"></param>
+        /// <param name="productService"></param>
         public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
         {
             _commerceContext = commerceContext;
@@ -79,7 +88,7 @@ namespace GR.Orders
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Order>> GetOrderByIdAsync(Guid? orderId)
+        public virtual async Task<ResultModel<Order>> GetOrderByIdAsync(Guid? orderId)
         {
             var response = new ResultModel<Order>();
             if (orderId == null) return new InvalidParametersResultModel<Order>();
@@ -99,7 +108,7 @@ namespace GR.Orders
         /// Get my orders
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Order>>> GetMyOrdersAsync()
+        public virtual async Task<ResultModel<IEnumerable<Order>>> GetMyOrdersAsync()
         {
             var response = new ResultModel<IEnumerable<Order>>();
             var userRequest = await _userManager.GetCurrentUserAsync();
@@ -120,7 +129,7 @@ namespace GR.Orders
         /// Get orders count
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<Dictionary<string, int>>> GetOrdersCountForOrderStatesAsync()
+        public virtual async Task<ResultModel<Dictionary<string, int>>> GetOrdersCountForOrderStatesAsync()
         {
             var response = new Dictionary<string, int>();
             var statuses = Enum.GetNames(typeof(OrderState)).ToList();
@@ -136,7 +145,7 @@ namespace GR.Orders
         /// Get all orders
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Order>>> GetAllOrdersAsync()
+        public virtual async Task<ResultModel<IEnumerable<Order>>> GetAllOrdersAsync()
         {
             var response = new ResultModel<IEnumerable<Order>>();
             var userRequest = await _userManager.GetCurrentUserAsync();
@@ -156,7 +165,7 @@ namespace GR.Orders
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateOrderAsync(OrderCartViewModel model)
+        public virtual async Task<ResultModel<Guid>> CreateOrderAsync(OrderCartViewModel model)
         {
             if (model == null) throw new NullReferenceException();
             if (model.CartId == null) return new NotFoundResultModel<Guid>();
@@ -188,7 +197,7 @@ namespace GR.Orders
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId)
+        public virtual async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
@@ -221,7 +230,7 @@ namespace GR.Orders
         /// <param name="productId"></param>
         /// <param name="variationId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId)
+        public virtual async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId)
         {
             if (productId == null || variationId == null) return new InvalidParametersResultModel<Guid>();
             var userRequest = await _userManager.GetCurrentUserAsync();
@@ -385,6 +394,7 @@ namespace GR.Orders
         /// <returns></returns>
         public virtual async Task<ResultModel> SetOrderBillingAddressAndShipmentAsync(Guid? orderId, Guid shipmentAddress, Guid billingAddress)
         {
+            if (shipmentAddress == Guid.Empty || billingAddress == Guid.Empty) return new InvalidParametersResultModel("The address was not specified");
             var orderRequest = await GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return new NotFoundResultModel<object>().ToBase();
             var order = orderRequest.Result;
@@ -402,7 +412,7 @@ namespace GR.Orders
         /// <param name="orderId"></param>
         /// <param name="orderState"></param>
         /// <returns></returns>
-        public async Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState)
+        public virtual async Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState)
         {
             if (orderId == null) return new InvalidParametersResultModel<bool>();
             var check = await _orderDbContext.OrderHistories
@@ -417,7 +427,7 @@ namespace GR.Orders
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<OrderHistory>>> GetOrderHistoryAsync(Guid? orderId)
+        public virtual async Task<ResultModel<IEnumerable<OrderHistory>>> GetOrderHistoryAsync(Guid? orderId)
         {
             var history = await _orderDbContext.OrderHistories.Where(x => x.OrderId.Equals(orderId)).ToListAsync();
             return new SuccessResultModel<IEnumerable<OrderHistory>>(history);
