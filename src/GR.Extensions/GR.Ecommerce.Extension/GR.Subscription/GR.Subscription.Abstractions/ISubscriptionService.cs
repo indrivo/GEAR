@@ -91,6 +91,6 @@ namespace GR.Subscriptions.Abstractions
         /// Get last subscription for user
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync();
+        Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync(Guid? userId = null);
     }
 }
