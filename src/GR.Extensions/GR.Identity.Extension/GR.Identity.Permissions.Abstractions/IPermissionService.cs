@@ -15,7 +15,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="userId"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        Task<bool> HasClaim(Guid userId, string permission);
+        Task<bool> HasClaimAsync(Guid userId, string permission);
 
         /// <summary>
         /// Has permission
@@ -23,7 +23,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="user"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        Task<bool> HasClaim(GearUser user, string permission);
+        Task<bool> HasClaimAsync(GearUser user, string permission);
 
         /// <summary>
         /// Has permission
@@ -38,7 +38,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<IEnumerable<Claim>> GetUserClaims(Guid userId);
+        Task<IEnumerable<Claim>> GetUserClaimsAsync(Guid userId);
 
         /// <summary>
         /// Get roles permissions
@@ -66,7 +66,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="roleName"></param>
         /// <param name="delete"></param>
         /// <returns></returns>
-        Task RefreshCacheByRole(string roleName, bool delete = false);
+        Task RefreshCacheByRoleAsync(string roleName, bool delete = false);
 
         /// <summary>
         /// Check for permissions
