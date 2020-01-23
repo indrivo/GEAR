@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Models;
@@ -66,14 +65,6 @@ namespace GR.Dashboard.Data
             builder.Entity<RowCustomWidget>().HasKey(x => new { x.CustomWidgetId, x.RowId });
             builder.Entity<RowWidgetAcl>().HasKey(x => new { x.RowId, x.WidgetId, x.RoleId });
         }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
 
         /// <summary>
         /// Seed data

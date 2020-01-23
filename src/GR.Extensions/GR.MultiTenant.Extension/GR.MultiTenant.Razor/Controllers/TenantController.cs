@@ -84,7 +84,7 @@ namespace GR.MultiTenant.Razor.Controllers
         {
             var model = new CreateTenantViewModel
             {
-                CountrySelectListItems = await _organizationService.GetCountrySelectList()
+                CountrySelectListItems = await _organizationService.GetCountrySelectListAsync()
             };
             return View(model);
         }
@@ -100,7 +100,7 @@ namespace GR.MultiTenant.Razor.Controllers
         {
             if (!ModelState.IsValid)
             {
-                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectListAsync();
                 return View(data);
             }
             var reqTenant = await _organizationService.CreateOrganizationAsync(data);
@@ -132,7 +132,7 @@ namespace GR.MultiTenant.Razor.Controllers
             if (response == null) return RedirectToAction(nameof(Index), "Tenant");
             var model = new EditTenantViewModel(response)
             {
-                CountrySelectListItems = await _organizationService.GetCountrySelectList()
+                CountrySelectListItems = await _organizationService.GetCountrySelectListAsync()
             };
             return View(model);
         }
