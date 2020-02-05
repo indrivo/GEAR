@@ -8528,6 +8528,12 @@ Table variables
    .swal2-modal.swal2-popup #swal2-content {
      text-align: left;
      font-size: 0.9em; }
+   .swal2-modal.swal2-popup button.swal2-cancel.swal2-styled {
+     background: transparent !important;
+     transition: all 0.5s ease-in-out; }
+     .swal2-modal.swal2-popup button.swal2-cancel.swal2-styled:hover {
+       background-color: #a9adb2 !important;
+       color: white; }
    .swal2-modal.swal2-popup .swal2-actions {
      flex-wrap: wrap;
      align-items: flex-start;
@@ -8544,13 +8550,13 @@ Table variables
        order: 1;
        border-radius: .25em;
        background: initial;
-       background-color: transparent;
+       background-color: transparent !important;
        color: #929292;
        font-size: 1.0625em;
        font-weight: 100;
        border: 1px solid #bbbbbf; }
        .swal2-modal.swal2-popup .swal2-actions button.swal2-styled.swal2-cancel:hover {
-         background-color: #a9adb2;
+         background-color: #a9adb2 !important;
          color: white; }
          .swal2-modal.swal2-popup .swal2-actions button.swal2-styled.swal2-cancel:hover:before {
            color: white; }
