@@ -57,6 +57,10 @@ namespace GR.PageRender
             if (cacheGet != null) return new SuccessResultModel<ViewModel>(cacheGet);
             var viewModel = await PagesContext.ViewModels
                 .AsNoTracking()
+                .Include(x => x.TableModel)
+                .ThenInclude(x => x.TableFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.TableModelFields)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.Configurations)
                 .FirstOrDefaultAsync(x => x.Id.Equals(id));

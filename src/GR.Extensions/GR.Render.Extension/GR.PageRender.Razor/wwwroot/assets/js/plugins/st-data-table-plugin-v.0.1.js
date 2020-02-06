@@ -482,7 +482,8 @@ class TableBuilder {
                     targets: "no-sort"
                 }
             ],
-            "order": [[1, "desc"]],
+            //"order": [[1, "desc"]],
+            "order": [],
             colReorder: true,
             select: renderTableSelect.settings.select,
             columnSorting: false,
