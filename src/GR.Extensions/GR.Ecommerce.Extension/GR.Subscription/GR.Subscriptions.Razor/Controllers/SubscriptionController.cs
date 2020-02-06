@@ -96,9 +96,6 @@ namespace GR.Subscriptions.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public async Task<IActionResult> CreateOrderForPlanSubscription([Required]Guid? productId, [Required]Guid? variationId)
         {
-            //TODO: Muta la subscriptions si anunta-l pe Girbu sa schimbe la el in ui, plus aici verificari la subscriptions
-            //TODO: Sa adaugi mesaje la errors in ResultModel<Guid> de ce nu poate crea o noua subscriere ca sa stie si NIcu ce sa afiseze in pagina
-
             var productRequest = await _productService.GetProductByIdAsync(productId);
             var lastSubscriptionForUser = await _subscriptionService.GetLastSubscriptionForUserAsync();
 

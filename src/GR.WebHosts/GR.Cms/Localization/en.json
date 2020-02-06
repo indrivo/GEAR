@@ -893,5 +893,6 @@
   "subscriptions_valid_from_date": "Valid from date",
   "subscriptions_period": "Period",
   "subscriptions_remaining_days": "Remaining days",
-  "subscriptions_is_valid": "Is valid"
+  "subscriptions_is_valid": "Is valid",
+  "no_data": "No data available"
 }

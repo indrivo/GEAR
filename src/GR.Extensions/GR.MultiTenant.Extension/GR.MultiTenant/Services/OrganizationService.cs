@@ -290,9 +290,9 @@ namespace GR.MultiTenant.Services
         /// Send confirm email
         /// </summary>
         /// <returns></returns>
-        public virtual async Task SendConfirmEmailRequest(GearUser user)
+        public virtual async Task SendConfirmEmailRequestAsync(GearUser user)
         {
-            Arg.NotNull(user, nameof(SendConfirmEmailRequest));
+            Arg.NotNull(user, nameof(SendConfirmEmailRequestAsync));
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = _urlHelper.Action("ConfirmEmail", "Company", new { userId = user.Id, confirmToken = code },
                 _httpContextAccessor.HttpContext.Request.Scheme);
@@ -332,7 +332,7 @@ namespace GR.MultiTenant.Services
         /// Return list of available roles
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<GearRole>> GetRoles()
+        public virtual async Task<IEnumerable<GearRole>> GetRolesAsync()
         {
             var rolesToExclude = new HashSet<string>
             {
@@ -439,7 +439,7 @@ namespace GR.MultiTenant.Services
         /// Get countries
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        public virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectListAsync()
         {
             var countrySelectList = await _context.Countries
                 .AsNoTracking()
@@ -468,7 +468,7 @@ namespace GR.MultiTenant.Services
             if (string.IsNullOrEmpty(tenantMachineName))
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "Invalid name for tenant"));
-                data.CountrySelectListItems = await GetCountrySelectList();
+                data.CountrySelectListItems = await GetCountrySelectListAsync();
                 response.Result = data;
                 return response;
             }
@@ -478,7 +478,7 @@ namespace GR.MultiTenant.Services
             var check = _context.Tenants.FirstOrDefault(x => x.MachineName == tenantMachineName);
             if (check != null)
             {
-                data.CountrySelectListItems = await GetCountrySelectList();
+                data.CountrySelectListItems = await GetCountrySelectListAsync();
                 response.Errors.Add(new ErrorModel(string.Empty, "Tenant exists"));
                 response.Result = data;
                 return response;
@@ -502,7 +502,7 @@ namespace GR.MultiTenant.Services
             data.Id = model.Id;
             data.MachineName = model.MachineName;
             response.Result = data;
-            data.CountrySelectListItems = await GetCountrySelectList();
+            data.CountrySelectListItems = await GetCountrySelectListAsync();
             return response;
         }
 
@@ -600,6 +600,23 @@ namespace GR.MultiTenant.Services
             var admin = companyAdminRequest.Result.FirstOrDefault();
             if (admin != null) return new SuccessResultModel<GearUser>(admin);
             return new NotFoundResultModel<GearUser>();
+        }
+
+        /// <summary>
+        /// Delete permanent
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DeleteUserPermanentAsync(Guid? userId)
+        {
+            if (userId == null) return NotFoundResultModel<object>.Instance.ToBase();
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var tenantId = _userManager.CurrentUserTenantId;
+            if (user == null) return NotFoundResultModel<object>.Instance.ToBase();
+            if (tenantId != user.TenantId) return NotFoundResultModel<object>.Instance.ToBase();
+
+            var serviceResult = await _userManager.UserManager.DeleteAsync(user);
+            return serviceResult.Succeeded ? SuccessResultModel<object>.Instance.ToBase() : ResultModel<object>.Instance.ToBase();
         }
 
         #region Validation

@@ -110,7 +110,7 @@ namespace GR.MultiTenant.Abstractions
         /// Return list of available roles
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<GearRole>> GetRoles();
+        Task<IEnumerable<GearRole>> GetRolesAsync();
 
         /// <summary>
         /// Get default image
@@ -129,7 +129,7 @@ namespace GR.MultiTenant.Abstractions
         /// Get country list for VM states
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<SelectListItem>> GetCountrySelectList();
+        Task<IEnumerable<SelectListItem>> GetCountrySelectListAsync();
 
         /// <summary>
         /// Invite new user by email
@@ -157,7 +157,7 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task SendConfirmEmailRequest(GearUser user);
+        Task SendConfirmEmailRequestAsync(GearUser user);
 
         /// <summary>
         /// Check if tenant name is used
@@ -181,6 +181,11 @@ namespace GR.MultiTenant.Abstractions
         /// <returns></returns>
         Task<ResultModel<GearUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId);
 
-
+        /// <summary>
+        /// Delete user permanent from organization
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteUserPermanentAsync(Guid? userId);
     }
 }

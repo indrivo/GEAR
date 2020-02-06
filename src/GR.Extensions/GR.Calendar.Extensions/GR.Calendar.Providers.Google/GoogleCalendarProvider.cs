@@ -15,7 +15,6 @@ using GR.Calendar.Providers.Google.Mappers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using Google.Apis.People.v1;
-using Microsoft.EntityFrameworkCore.Internal;
 using GR.Calendar.Abstractions.ExternalProviders.Helpers;
 
 namespace GR.Calendar.Providers.Google

@@ -327,11 +327,27 @@ namespace GR.Subscriptions
         /// Get las subscription for user
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync()
+        public async Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync(Guid? userId = null)
         {
-            var userSubscription = await GetSubscriptionsByUserAsync();
 
-            if (!userSubscription.IsSuccess)
+            var user = (await _userManager.GetCurrentUserAsync()).Result;
+
+            if (user == null && userId.HasValue)
+                 user = await _userManager.UserManager.FindByIdAsync(userId.ToString());
+
+            if (user is null)
+            {
+                return new NotFoundResultModel<Subscription>();
+            }
+
+            var userSubscription = await _subscriptionDbContext.Subscription
+                .Include(i => i.Order)
+                .ThenInclude(i => i.ProductOrders)
+                .Include(x => x.SubscriptionPermissions)
+                .Where(x => x.TenantId == user.TenantId)
+                .ToListAsync();
+
+            if (!userSubscription.Any())
             {
                 return new ResultModel<Subscription>
                 {
@@ -343,7 +359,7 @@ namespace GR.Subscriptions
             return new ResultModel<Subscription>
             {
                 IsSuccess = true,
-                Result = userSubscription.Result.OrderByDescending(o => o.Created).FirstOrDefault()
+                Result = userSubscription.OrderByDescending(o => o.Created).FirstOrDefault()
             };
         }
     }
