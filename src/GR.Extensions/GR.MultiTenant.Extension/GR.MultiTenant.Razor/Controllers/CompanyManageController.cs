@@ -6,7 +6,6 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions;
@@ -97,7 +96,7 @@ namespace GR.MultiTenant.Razor.Controllers
             if (!hasAccess) listSettings.HeadButtons = new List<UrlTagHelperViewModel>();
             ViewBag.UsersListSettings = listSettings;
             ViewBag.Organization = _organizationService.GetUserOrganization(user);
-            ViewBag.Countries = _organizationService.GetCountrySelectList().GetAwaiter().GetResult();
+            ViewBag.Countries = _organizationService.GetCountrySelectListAsync().GetAwaiter().GetResult();
             return View();
         }
 
@@ -121,7 +120,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetRoles() => Json(await _organizationService.GetRoles());
+        public async Task<JsonResult> GetRoles() => Json(await _organizationService.GetRolesAsync());
 
         /// <summary>
         /// Invite new user
@@ -154,7 +153,7 @@ namespace GR.MultiTenant.Razor.Controllers
 
             var model = new RegisterCompanyViewModel
             {
-                CountrySelectListItems = await _organizationService.GetCountrySelectList()
+                CountrySelectListItems = await _organizationService.GetCountrySelectListAsync()
             };
             return View(model);
         }
@@ -177,7 +176,7 @@ namespace GR.MultiTenant.Razor.Controllers
 
             if (!ModelState.IsValid)
             {
-                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectListAsync();
                 return View(data);
             }
 
@@ -186,14 +185,14 @@ namespace GR.MultiTenant.Razor.Controllers
 
             if (userEmailExist != null)
             {
-                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectListAsync();
                 ModelState.AddModelError(string.Empty, "Email address is used!");
                 return View(data);
             }
 
             if (userNameExist != null)
             {
-                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectListAsync();
                 ModelState.AddModelError(string.Empty, "UserName is used!");
                 return View(data);
             }
@@ -213,7 +212,7 @@ namespace GR.MultiTenant.Razor.Controllers
             if (!usrReq.Succeeded)
             {
                 ModelState.AppendIdentityResult(usrReq);
-                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectListAsync();
                 return View(data);
             }
 
@@ -243,7 +242,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 });
 
                 //send confirm email request
-                await _organizationService.SendConfirmEmailRequest(newCompanyOwner);
+                await _organizationService.SendConfirmEmailRequestAsync(newCompanyOwner);
 
                 var roleReq = await _userManager.AddToRolesAsync(newCompanyOwner, new List<string> { MultiTenantResources.Roles.COMPANY_ADMINISTRATOR });
 
@@ -319,14 +318,8 @@ namespace GR.MultiTenant.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteUser(Guid? userId)
         {
-            if (userId == null) return NotFound();
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
-            var tenantId = _userManager.CurrentUserTenantId;
-            if (user == null) return NotFound();
-            if (tenantId != user.TenantId) return BadRequest();
-
-            var serviceResult = await _userManager.UserManager.DeleteAsync(user);
-            if (serviceResult.Succeeded)
+            var deleteResult = await _organizationService.DeleteUserPermanentAsync(userId);
+            if (deleteResult.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }

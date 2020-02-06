@@ -60,6 +60,11 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         private readonly IFormContext _formContext;
 
+        /// <summary>
+        /// Inject view model service
+        /// </summary>
+        private readonly IViewModelService _viewModelService;
+
         #endregion InjectRegion
 
         /// <summary>
@@ -70,15 +75,17 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="pageRender"></param>
         /// <param name="formContext"></param>
         /// <param name="pagesContext"></param>
+        /// <param name="viewModelService"></param>
         public PageRenderController(ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IFormContext formContext, IDynamicPagesContext pagesContext)
+            IFormContext formContext, IDynamicPagesContext pagesContext, IViewModelService viewModelService)
         {
             _appContext = appContext;
             _service = service;
             _formContext = formContext;
             _pagesContext = pagesContext;
+            _viewModelService = viewModelService;
             _pageRender = pageRender;
         }
 
@@ -377,18 +384,12 @@ namespace GR.PageRender.Razor.Controllers
             };
 
             if (viewModelId == Guid.Empty) return Json(response);
-            var viewModel = await _pagesContext.ViewModels
-                .Include(x => x.TableModel)
-                .ThenInclude(x => x.TableFields)
-                .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelFields)
-                .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.Configurations)
-                .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
-
+            var viewModelRequest = await _viewModelService.GetViewModelByIdAsync(viewModelId);
+            if (!viewModelRequest.IsSuccess) return Json(response);
+            var viewModel = viewModelRequest.Result;
             if (viewModel == null) return Json(response);
             var orderConf = new Dictionary<string, EntityOrderDirection>();
-            if (param.Order.Any())
+            if (param.Order?.Any() ?? false)
             {
                 foreach (var order in param.Order)
                 {
@@ -397,6 +398,7 @@ namespace GR.PageRender.Razor.Controllers
                         orderConf.Add(field.TableModelFields?.Name ?? field.Name, (EntityOrderDirection)order.Dir);
                 }
             }
+            else orderConf.Add(nameof(BaseModel.Created), EntityOrderDirection.Desc);
 
             var page = param.Start / param.Length + 1;
             var pageDataRequest = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page,
