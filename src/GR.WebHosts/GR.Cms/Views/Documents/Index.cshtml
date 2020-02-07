@@ -641,13 +641,16 @@
         });
 
         function deleteDocuments(documentId) {
+			console.log(documentId);
+
+			var listDocumetId = [];
+			listDocumetId.push(documentId);
 
             $.ajax({
-                type: "GET",
-                processData: false,
-                contentType: false,
-                url: "/api/Documents/DeleteDocumnentsByIdAsync",
-                data: { documentId: documentId },
+	            url: '/api/Documents/DeleteDocumnentsByIdAsync',
+	            method: 'get',
+	            contentType: "application/json; charset=utf-8",
+	            data: { documentId: documentId },
                 success: function(data) {
                     if (data.is_success) {
                         $("#render_document_Categories").DataTable().draw();
