@@ -215,6 +215,17 @@ namespace GR.Documents.Razor.Controllers
         }
 
         [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<DocumentViewModel>))]
+        public async Task<JsonResult> DeleteDocumnentsByIdAsync(Guid documentId)
+        {
+            var listDocumentId = new List<Guid>();
+            listDocumentId.Add(documentId);
+            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumentId);
+            return Json(result, SerializerSettings);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var documentAddModel = new AddDocumentViewModel();
