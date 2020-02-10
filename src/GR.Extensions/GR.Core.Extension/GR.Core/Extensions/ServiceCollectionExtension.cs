@@ -66,7 +66,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IServiceCollection AddUrlHelper(this IServiceCollection services)
         {
-            services.AddSingleton<IUrlHelper>(factory =>
+            services.AddScoped<IUrlHelper>(factory =>
             {
                 var actionContext = factory.GetService<IActionContextAccessor>()
                     ?.ActionContext;
