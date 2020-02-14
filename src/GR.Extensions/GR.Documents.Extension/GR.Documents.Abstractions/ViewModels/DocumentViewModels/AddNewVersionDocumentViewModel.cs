@@ -13,5 +13,6 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
         public IFormFile File { get; set; }
 
         public bool IsMajorVersion { get; set; }
+        public string Url { get; set; }
     }
 }
