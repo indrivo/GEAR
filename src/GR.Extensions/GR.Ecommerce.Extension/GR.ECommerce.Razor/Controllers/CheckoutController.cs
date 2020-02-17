@@ -88,6 +88,7 @@ namespace GR.ECommerce.Razor.Controllers
             if (!orderRequest.IsSuccess) return NotFound();
             if (orderRequest.Result.OrderState != OrderState.New) return NotFound();
             var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
+            model.Order = orderRequest.Result;
             model.Addresses = addressesRequest.Result;
             return View(model);
         }

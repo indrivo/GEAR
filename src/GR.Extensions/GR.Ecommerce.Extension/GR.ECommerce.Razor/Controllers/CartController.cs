@@ -8,10 +8,12 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.ECommerce.Razor.Controllers
 {
+    [Authorize]
     public class CartController  : CommerceBaseController<Cart, AddToCartViewModel>
     {
         #region Injectable

@@ -4,10 +4,12 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Paypal.Razor.Controllers
 {
+    [Authorize]
     public class PaypalController : Controller
     {
         #region Injectable

@@ -325,7 +325,9 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(new { success = false, message = "You can't delete current user" });
             }
 
-            var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
+            var applicationUser = await ApplicationDbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
                 return Json(new { success = false, message = "User not found" });
@@ -336,10 +338,9 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(new { succsess = false, message = "Is system user!!!" });
             }
 
-            try
+            var deleteResult = await UserManager.DeleteAsync(applicationUser);
+            if (deleteResult.Succeeded)
             {
-                await UserManager.UpdateSecurityStampAsync(applicationUser);
-                await UserManager.DeleteAsync(applicationUser);
                 IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
                 {
                     Email = applicationUser.Email,
@@ -348,10 +349,9 @@ namespace GR.Identity.Razor.Users.Controllers
                 });
                 return Json(new { success = true, message = "Delete success" });
             }
-            catch (Exception e)
+            else
             {
-                Logger.LogError(e.Message);
-                return Json(new { success = false, message = "Error on delete!!!" });
+                return Json(new { success = false, message = deleteResult.Errors.FirstOrDefault()?.Description });
             }
         }
 

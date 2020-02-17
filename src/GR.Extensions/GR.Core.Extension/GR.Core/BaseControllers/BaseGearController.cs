@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -8,6 +10,11 @@ namespace GR.Core.BaseControllers
     public abstract class BaseGearController : Controller
     {
         #region Helpers
+
+        /// <summary>
+        /// Default template
+        /// </summary>
+        public const string DefaultApiRouteTemplate = "api/[controller]/[action]";
 
         /// <summary>
         /// Serialization settings
@@ -32,5 +39,23 @@ namespace GR.Core.BaseControllers
         {
             return Json(await task, serializerSettings ?? SerializerSettings);
         }
+
+        /// <summary>
+        /// Return Json with invalid validations as ResultModel errors
+        /// </summary>
+        /// <returns></returns>
+        protected virtual JsonResult JsonModelStateErrors()
+        {
+            return Json(new ResultModel().AttachModelState(ModelState));
+        }
+
+        #region Helpers
+
+        public struct ContentType
+        {
+            public const string ApplicationJson = "application/json";
+        }
+
+        #endregion
     }
 }
