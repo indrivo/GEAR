@@ -77,7 +77,7 @@ namespace GR.Documents
                     x.DocumentCategory = _documentContext.DocumentCategories.FirstOrDefault(i => i.Id == x.DocumentCategoryId);
                     var listModel = x.Adapt<DocumentViewModel>();
                     return listModel;
-                }).Where(x=> !x.IsDeleted).ToList();
+                }).Where(x=> !x.IsDeleted && x.DocumentCategory?.Code == 1).ToList();
 
             var result = new DTResult<DocumentViewModel>
             {
@@ -374,6 +374,7 @@ namespace GR.Documents
                     DocumentId = newDocument.Id,
                     File = model.File,
                     IsMajorVersion = true,
+                    Url = model.Url,
                 });
             }
 
@@ -459,7 +460,8 @@ namespace GR.Documents
                 Comments = model.Comments,
                 OwnerId = user.Id.ToGuid(),
                 IsMajorVersion = model.IsMajorVersion,
-                FileName = model.File?.FileName ?? ""
+                FileName = model.File?.FileName ?? "",
+                Url = model.Url,
             };
 
             var lastVersion = await GetLastDocVersion(model.DocumentId);
