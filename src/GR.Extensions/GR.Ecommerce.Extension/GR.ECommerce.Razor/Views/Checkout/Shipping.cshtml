@@ -52,7 +52,7 @@
 			border-bottom: 1px solid #D8DCE0;
 		}
 
-        .sidebar + .content-area .payment-actions {
+		.sidebar + .content-area .payment-actions {
 			width: calc(100vw - 300px);
 			margin-left: 300px;
 			bottom: 0;
@@ -140,7 +140,7 @@
 					<li class="adress-item">
 						<label for="a_@address.Id" class="w-100 m-0 pt-4 pb-4">
 							<div class="custom-control custom-radio d-flex align-items-center weight-600">
-								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id"/>
+								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id" />
 								<div class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>@address.ContactName</div>
 							</div>
 
@@ -369,6 +369,7 @@
 					isDefault: true
 				}
 				addressManager.addNewAddress(address).then(addressId => {
+					forceSetAdresses(addressId, addressId);
 					address.id = addressId;
 					prependAddress(address, $('#address-list'));
 					scope[0].reset();
@@ -377,10 +378,17 @@
 
 			});
 
-            $(".billing-address").on("change", function () {
-                $("#BillingAddressId").val($(this).val());
-                $("#ShipmentAddress").val($(this).val());
+			function attachEvents() {
+			$(".billing-address").off("change").on("change", function () {
+				const addressId = $(this).val();
+				forceSetAdresses(addressId, addressId);
 			});
+			}
+
+			function forceSetAdresses(billingId, shipmentId) {
+				$("#BillingAddressId").val(billingId);
+                $("#ShipmentAddress").val(shipmentId);
+			}
 
 			function prependAddress(address, target) {
 				const htmlMarkup = `
@@ -412,7 +420,11 @@
 						</label>
 					</li>`;
 				target.prepend(htmlMarkup);
+				attachEvents();
 			}
+
+
+			attachEvents();
 		});
 	</script>
 }

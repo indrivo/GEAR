@@ -105,6 +105,7 @@ namespace GR.Identity.Services
                 .Include(x => x.ApplicationUser)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(addressId));
 
             if (address == null) return new NotFoundResultModel<Address>();
