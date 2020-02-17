@@ -154,7 +154,7 @@
                     <div class="form-body">
                         <div class="row p-t-20">
 
-                            <div class="col-md-12">
+                            @*<div class="col-md-12">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>@Localizer["document_category"]</label>
@@ -163,9 +163,9 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
+                            </div>*@
 
-                            <div id="blockAddDocuments" class="col-md-12" style="display: none">
+                            <div id="blockAddDocuments" class="col-md-12">
                                 <div class="col-md-12" id="DocumentTypeBlock">
                                     <div class="form-group">
                                         <label>@Localizer["system_document_type"]</label>
@@ -199,12 +199,12 @@
                                         <input name="Group" class="form-control" value="" />
                                     </div>
                                 </div>
-                                <div class="col-md-12" id="UrlDocument">
+                                @*<div class="col-md-12" id="UrlDocument">
                                     <div class="form-group">
                                         <label>@Localizer["url"]</label>
                                         <input id="UrlDocumentInput" name="Url" class="form-control" value="" />
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>@Localizer["iso_active_comments"]</label>
@@ -453,47 +453,47 @@
 
         }
 
-        $('#AddDocumentSelectCategoryId').change(function() {
+        //$('#AddDocumentSelectCategoryId').change(function() {
 
-            const categoryId = $(this).val().split('_')[0];
-            const categoryCode = $(this).val().split("_").pop();
-            $("#DocumentCategoryId").val(categoryId);
-
-
-            switch (categoryCode) {
-            case '1':
-                $("#UrlDocument").hide();
-                $("#DocumentTypeBlock").show();
-                $("#FileInputDocument").show();
-                $("#blockAddDocuments").show();
-
-                $('#UrlDocumentInput').removeAttr('required');
-                $('#fileinput').attr('required', 'required');
-                break;
-            case '2':
-                $("#UrlDocument").hide();
-                $("#DocumentTypeBlock").hide();
-                $("#FileInputDocument").show();
-                $("#blockAddDocuments").show();
-
-                $('#UrlDocumentInput').removeAttr('required');
-                $('#fileinput').attr('required', 'required');
-                break;
-            case '3':
-                $("#UrlDocument").show();
-                $("#DocumentTypeBlock").hide();
-                $("#FileInputDocument").hide();
-                $("#blockAddDocuments").show();
-
-                $('#fileinput').removeAttr('required');
-                $('#UrlDocumentInput').attr('required', 'required');
-                break;
-            default:
-                $("#blockAddDocuments").hide();
-            }
+        //    const categoryId = $(this).val().split('_')[0];
+        //    const categoryCode = $(this).val().split("_").pop();
+        //    $("#DocumentCategoryId").val(categoryId);
 
 
-        });
+        //    switch (categoryCode) {
+        //    case '1':
+        //        $("#UrlDocument").hide();
+        //        $("#DocumentTypeBlock").show();
+        //        $("#FileInputDocument").show();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#UrlDocumentInput').removeAttr('required');
+        //        $('#fileinput').attr('required', 'required');
+        //        break;
+        //    case '2':
+        //        $("#UrlDocument").hide();
+        //        $("#DocumentTypeBlock").hide();
+        //        $("#FileInputDocument").show();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#UrlDocumentInput').removeAttr('required');
+        //        $('#fileinput').attr('required', 'required');
+        //        break;
+        //    case '3':
+        //        $("#UrlDocument").show();
+        //        $("#DocumentTypeBlock").hide();
+        //        $("#FileInputDocument").hide();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#fileinput').removeAttr('required');
+        //        $('#UrlDocumentInput').attr('required', 'required');
+        //        break;
+        //    default:
+        //        $("#blockAddDocuments").hide();
+        //    }
+
+
+        //});
 
         function AddNewDocumentVersions(documentId) {
             $('#AddNewVersionModal').modal('show');
@@ -641,13 +641,16 @@
         });
 
         function deleteDocuments(documentId) {
+			console.log(documentId);
+
+			var listDocumetId = [];
+			listDocumetId.push(documentId);
 
             $.ajax({
-                type: "GET",
-                processData: false,
-                contentType: false,
-                url: "/api/Documents/DeleteDocumnentsByIdAsync",
-                data: { documentId: documentId },
+	            url: '/api/Documents/DeleteDocumnentsByIdAsync',
+	            method: 'get',
+	            contentType: "application/json; charset=utf-8",
+	            data: { documentId: documentId },
                 success: function(data) {
                     if (data.is_success) {
                         $("#render_document_Categories").DataTable().draw();

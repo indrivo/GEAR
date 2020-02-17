@@ -154,7 +154,7 @@
                     <div class="form-body">
                         <div class="row p-t-20">
 
-                            <div class="col-md-12">
+                            @*<div class="col-md-12">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>@Localizer["document_category"]</label>
@@ -163,9 +163,10 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
+                            </div>*@
 
-                            <div id="blockAddDocuments" class="col-md-12" style="display: none">
+                            
+                            <div id="blockAddDocuments" class="col-md-12">
                                 <div class="col-md-12" id="DocumentTypeBlock">
                                     <div class="form-group">
                                         <label>@Localizer["system_document_type"]</label>
@@ -199,12 +200,12 @@
                                         <input name="Group" class="form-control" value="" />
                                     </div>
                                 </div>
-                                <div class="col-md-12" id="UrlDocument">
+                                @*<div class="col-md-12" id="UrlDocument">
                                     <div class="form-group">
                                         <label>@Localizer["url"]</label>
                                         <input id="UrlDocumentInput" name="Url" class="form-control" value="" />
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>@Localizer["iso_active_comments"]</label>
@@ -442,58 +443,63 @@
     <script type="text/javascript">
 
         const toast = new ToastNotifier();
-        var newState = new FormData();
+		var newState = new FormData();
+        const listDocumentCategory= '@ViewBag.ListDocumentCategory';
 
-        $(document).ready(function() {
+		$(document).ready(function () {
+
+            console.log(listDocumentCategory);
+            
+             //const categoryId = $(this).val().split('_')[0];
+             //const categoryCode = $(this).val().split("_").pop();
+             $("#DocumentCategoryId").val(listDocumentCategory);
         });
 
         function AddNewDocument() {
-
             $('#AddDocumentModal').modal('show');
-
         }
 
-        $('#AddDocumentSelectCategoryId').change(function() {
+        //$('#AddDocumentSelectCategoryId').change(function() {
 
-            const categoryId = $(this).val().split('_')[0];
-            const categoryCode = $(this).val().split("_").pop();
-            $("#DocumentCategoryId").val(categoryId);
-
-
-            switch (categoryCode) {
-            case '1':
-                $("#UrlDocument").hide();
-                $("#DocumentTypeBlock").show();
-                $("#FileInputDocument").show();
-                $("#blockAddDocuments").show();
-
-                $('#UrlDocumentInput').removeAttr('required');
-                $('#fileinput').attr('required', 'required');
-                break;
-            case '2':
-                $("#UrlDocument").hide();
-                $("#DocumentTypeBlock").hide();
-                $("#FileInputDocument").show();
-                $("#blockAddDocuments").show();
-
-                $('#UrlDocumentInput').removeAttr('required');
-                $('#fileinput').attr('required', 'required');
-                break;
-            case '3':
-                $("#UrlDocument").show();
-                $("#DocumentTypeBlock").hide();
-                $("#FileInputDocument").hide();
-                $("#blockAddDocuments").show();
-
-                $('#fileinput').removeAttr('required');
-                $('#UrlDocumentInput').attr('required', 'required');
-                break;
-            default:
-                $("#blockAddDocuments").hide();
-            }
+        //    const categoryId = $(this).val().split('_')[0];
+        //    const categoryCode = $(this).val().split("_").pop();
+        //    $("#DocumentCategoryId").val(categoryId);
 
 
-        });
+        //    switch (categoryCode) {
+        //    case '1':
+        //        $("#UrlDocument").hide();
+        //        $("#DocumentTypeBlock").show();
+        //        $("#FileInputDocument").show();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#UrlDocumentInput').removeAttr('required');
+        //        $('#fileinput').attr('required', 'required');
+        //        break;
+        //    case '2':
+        //        $("#UrlDocument").hide();
+        //        $("#DocumentTypeBlock").hide();
+        //        $("#FileInputDocument").show();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#UrlDocumentInput').removeAttr('required');
+        //        $('#fileinput').attr('required', 'required');
+        //        break;
+        //    case '3':
+        //        $("#UrlDocument").show();
+        //        $("#DocumentTypeBlock").hide();
+        //        $("#FileInputDocument").hide();
+        //        $("#blockAddDocuments").show();
+
+        //        $('#fileinput').removeAttr('required');
+        //        $('#UrlDocumentInput').attr('required', 'required');
+        //        break;
+        //    default:
+        //        $("#blockAddDocuments").hide();
+        //    }
+
+
+        //});
 
         function AddNewDocumentVersions(documentId) {
             $('#AddNewVersionModal').modal('show');
@@ -515,7 +521,6 @@
                                 console.log(value);
                                 var html =
                                     `<tr>
-
                                                         <td> ${value.comments}</td>
                                                         <td><a href="#" onclick ="downloadFile('${value.fileStorageId
                                         }')">${value
@@ -545,8 +550,9 @@
         $("#formAddDocumentVersion").submit(function(e) {
             var formData = new FormData();
             const file = $('#NewVersionFileInput')[0].files[0];
-            formData.append('file', file);
+			formData.append('file', file);
 
+            
 
             $.each($(this).serializeArray(),
                 function(i, input) {
@@ -631,6 +637,7 @@
                 success: function(data) {
                     if (data.is_success) {
                         $('#EditDocumentModal').modal('hide');
+                        $("#render_document_Categories").DataTable().draw();
                     } else {
                         toast.notifyErrorList();
                     }
@@ -701,8 +708,10 @@
                     if (data.is_success) {
 
                         $(`#DocumentTypeId option[value=${data.result.documentTypeId}]`)
-                            .attr('selected', 'selected');
-                        $("#DocumentEditId").val(data.result.documentId);
+							.attr('selected', 'selected');
+
+                        $("#DocumentCategoryIdEdit").val(data.result.documentCategoryId);
+                        $("#DocumentEditId").val(documentId);
                         $("#DocumentCodeEdit").val(data.result.documentCode);
                         $("#Title").val(data.result.title);
                         $("#Description").val(data.result.description);
