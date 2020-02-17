@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using Mapster;
 using Newtonsoft.Json;
-using GR.Core;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.TaskManager.Abstractions.Enums;
 using GR.TaskManager.Abstractions.Models;
 using GR.TaskManager.Abstractions.Models.ViewModels;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Pagination;
 
 namespace GR.TaskManager.Helpers
 {
@@ -116,11 +115,11 @@ namespace GR.TaskManager.Helpers
                 PageSize = dbTasksResult.PageSize
             };
 
-            if (dbTasksResult.Results.Count > 0)
-                for (var index = 0; index < dbTasksResult.Results.Count; index++)
+            if (dbTasksResult.Result.Count > 0)
+                for (var index = 0; index < dbTasksResult.Result.Count; index++)
                 {
-                    var item = dbTasksResult.Results[index];
-                    taskPage.Results.Add(GetTaskMapper(item, currentUserId));
+                    var item = dbTasksResult.Result[index];
+                    taskPage.Result.Add(GetTaskMapper(item, currentUserId));
                 }
 
             return new ResultModel<PagedResult<GetTaskViewModel>>

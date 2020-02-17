@@ -195,9 +195,9 @@ $(function () {
         $('.task-manager-loader').fadeIn();
         return promise.then(result => {
             $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
-            $.each(result.results, function () {
+            $.each(result.result, function () {
                 objectConf.user = findUserById(this.userId);
-                const htmlOutput = taskListTemplate.render(result.results, objectConf);
+                const htmlOutput = taskListTemplate.render(result.result, objectConf);
                 $("#task-list-table").html(htmlOutput);
             });
             addTablePager(result.pageCount, result.currentPage);
@@ -672,9 +672,6 @@ $(function () {
             }
             else if (page < pageCount) {
                 $('#task-list-pager').append(`<li class="page-item"><a class="page-link previous-page" data-page="${page + 1}"><i class="material-icons">keyboard_arrow_right</i></a></li>`);
-            }
-            else {
-
             }
 
             $('#task-list-pager .page-item').off().on('click', function (e) {

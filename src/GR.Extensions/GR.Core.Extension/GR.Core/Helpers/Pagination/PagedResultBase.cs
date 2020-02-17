@@ -1,30 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace GR.Core
+namespace GR.Core.Helpers.Pagination
 {
-    public class PagedResultBase
+    public interface IPagedResult
     {
-        public int CurrentPage { get; set; }
-        public int PageCount { get; set; }
-        public int PageSize { get; set; }
-        public int RowCount { get; set; }
-
-        public int FirstRowOnPage
-        {
-            get { return (CurrentPage - 1) * PageSize + 1; }
-        }
-
-        public int LastRowOnPage => Math.Min(CurrentPage * PageSize, RowCount);
+        int CurrentPage { get; set; }
+        int PageCount { get; set; }
+        int PageSize { get; set; }
+        int RowCount { get; set; }
     }
 
-    public sealed class PagedResult<T> : PagedResultBase where T : class
+    public class PagedResult<T> : ResultModel<IList<T>>, IPagedResult where T : class
     {
-        public IList<T> Results { get; set; }
+        private static PagedResult<T> _default;
+        public static PagedResult<T> DefaultResponse => _default ?? (_default = new PagedResult<T>());
 
-        public PagedResult()
+        public virtual int CurrentPage { get; set; }
+        public virtual int PageCount { get; set; }
+        public virtual int PageSize { get; set; }
+        public virtual int RowCount { get; set; }
+
+        public virtual int FirstRowOnPage => (CurrentPage - 1) * PageSize + 1;
+
+        public virtual int LastRowOnPage => Math.Min(CurrentPage * PageSize, RowCount);
+
+        /// <summary>
+        /// Map paged result
+        /// </summary>
+        /// <typeparam name="TDest"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public virtual PagedResult<TDest> Map<TDest>(IEnumerable<TDest> data)
+            where TDest : class
         {
-            Results = new List<T>();
+            return new PagedResult<TDest>
+            {
+                Result = data.ToList(),
+                CurrentPage = CurrentPage,
+                PageCount = PageCount,
+                PageSize = PageSize,
+                RowCount = RowCount,
+                IsSuccess = IsSuccess,
+                Errors = Errors,
+                KeyEntity = KeyEntity
+            };
         }
     }
 }
