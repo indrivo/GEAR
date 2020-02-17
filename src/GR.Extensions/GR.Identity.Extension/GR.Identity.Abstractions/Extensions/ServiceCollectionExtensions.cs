@@ -91,7 +91,7 @@ namespace GR.Identity.Abstractions.Extensions
             IConfiguration configuration, string migrationsAssembly)
             where TIdentityContext : DbContext, IIdentityContext
         {
-            services.AddScopedContextFactory<IIdentityContext, TIdentityContext>();
+            services.AddTransient<IIdentityContext, TIdentityContext>();
             services.AddDbContext<TIdentityContext>(builder
                 => builder.RegisterIdentityStorage(configuration, migrationsAssembly), ServiceLifetime.Transient);
 
