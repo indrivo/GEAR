@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.8.0</Version>
+    <Version>1.9.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <FileVersion>1.8.0</FileVersion>
-    <AssemblyVersion>1.8.0</AssemblyVersion>
+    <FileVersion>1.9.0</FileVersion>
+    <AssemblyVersion>1.9.0</AssemblyVersion>
   </PropertyGroup>
   
   <ItemGroup>
