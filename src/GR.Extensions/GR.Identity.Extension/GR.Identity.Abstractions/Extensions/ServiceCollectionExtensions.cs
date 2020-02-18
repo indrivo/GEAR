@@ -93,7 +93,7 @@ namespace GR.Identity.Abstractions.Extensions
         {
             services.AddTransient<IIdentityContext, TIdentityContext>();
             services.AddDbContext<TIdentityContext>(builder
-                => builder.RegisterIdentityStorage(configuration, migrationsAssembly), ServiceLifetime.Transient);
+                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
 
             services.RegisterAuditFor<IIdentityContext>("Identity module");
             return services;
