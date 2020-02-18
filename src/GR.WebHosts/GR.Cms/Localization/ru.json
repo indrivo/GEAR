@@ -894,5 +894,8 @@
   "subscriptions_period": "Период",
   "subscriptions_remaining_days": "Оставшиеся Дни",
   "subscriptions_is_valid": "Действителен",
-  "no_data": "Нет данных"
+  "no_data": "Нет данных",
+  "system_cities": "Городов",
+  "system_city_name": "Название",
+  "system_city_code": "Код"
 }

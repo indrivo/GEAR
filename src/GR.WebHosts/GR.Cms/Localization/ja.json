@@ -894,5 +894,8 @@
   "subscriptions_period": "期間",
   "subscriptions_remaining_days": "残りの日",
   "subscriptions_is_valid": "の有効性",
-  "no_data": "データはありません。"
+  "no_data": "データはありません。",
+  "system_cities": "都市",
+  "system_city_name": "名称",
+  "system_city_code": "コード"
 }
