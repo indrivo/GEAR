@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
-    <Version>1.8.0</Version>
+    <Version>1.9.0</Version>
     <Company>Indrivo</Company>
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageReleaseNotes>-Add in memory cache provider</PackageReleaseNotes>
-    <FileVersion>1.8.0</FileVersion>
-    <AssemblyVersion>1.8.0</AssemblyVersion>
+    <FileVersion>1.9.0</FileVersion>
+    <AssemblyVersion>1.9.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
