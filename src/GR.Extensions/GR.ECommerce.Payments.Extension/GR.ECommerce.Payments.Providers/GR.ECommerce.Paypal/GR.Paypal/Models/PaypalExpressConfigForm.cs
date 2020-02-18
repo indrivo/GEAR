@@ -1,4 +1,6 @@
-﻿namespace GR.Paypal.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GR.Paypal.Models
 {
     public class PaypalExpressConfigForm
     {
@@ -8,7 +10,8 @@
 
         public string ClientSecret { get; set; }
 
-        public decimal PaymentFee { get; set; }
+        [Range(0.0, 100)]
+        public decimal PaymentFee { get; set; } = 0;
 
         public string Environment => IsSandbox ? "sandbox" : "production";
 
