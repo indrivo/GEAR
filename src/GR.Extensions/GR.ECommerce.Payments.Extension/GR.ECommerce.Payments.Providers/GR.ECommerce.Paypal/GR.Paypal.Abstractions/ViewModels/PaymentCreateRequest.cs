@@ -24,6 +24,14 @@ namespace GR.Paypal.Abstractions.ViewModels
     {
         [JsonProperty("payment_method")]
         public virtual string PaymentMethod { get; set; }
+
+        [JsonProperty("payer_info")]
+        public virtual PayerInfo PayerInfo { get; set; }
+    }
+
+    public class PayerInfo
+    {
+        public virtual string Email { get; set; }
     }
 
     public class RedirectUrls

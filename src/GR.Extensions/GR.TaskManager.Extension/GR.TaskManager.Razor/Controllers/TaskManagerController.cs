@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using GR.Core;
 using GR.Core.Extensions;
@@ -14,6 +13,7 @@ using GR.TaskManager.Abstractions;
 using GR.TaskManager.Abstractions.Enums;
 using GR.TaskManager.Abstractions.Helpers;
 using GR.TaskManager.Abstractions.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.TaskManager.Razor.Controllers
 {
@@ -21,6 +21,9 @@ namespace GR.TaskManager.Razor.Controllers
     [Route("api/[controller]/[action]")]
     public sealed class TaskManagerController : Controller
     {
+
+        #region Injectable
+
         /// <summary>
         /// Inject Task service
         /// </summary>
@@ -30,6 +33,8 @@ namespace GR.TaskManager.Razor.Controllers
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
 
         public TaskManagerController(ITaskManager taskManager, IUserManager<GearUser> userManager)
         {
@@ -44,7 +49,7 @@ namespace GR.TaskManager.Razor.Controllers
         [HttpGet("/TaskManager")]
         public IActionResult Index()
         {
-            return View();
+            return View(new List<string>());
         }
 
         [HttpGet]

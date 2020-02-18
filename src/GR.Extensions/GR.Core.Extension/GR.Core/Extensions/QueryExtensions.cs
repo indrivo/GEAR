@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using GR.Core;
+using GR.Core.Helpers.Pagination;
 
 namespace GR.Core.Extensions
 {
@@ -19,8 +19,8 @@ namespace GR.Core.Extensions
             result.PageCount = (int)Math.Ceiling(pageCount);
 
             var skip = (page - 1) * pageSize;
-            result.Results = await query.Skip(skip).Take(pageSize).ToListAsync();
-
+            result.Result = await query.Skip(skip).Take(pageSize).ToListAsync();
+            result.IsSuccess = true;
             return result;
         }
 
@@ -33,8 +33,8 @@ namespace GR.Core.Extensions
             result.PageCount = (int)Math.Ceiling(pageCount);
 
             var skip = (page - 1) * pageSize;
-            result.Results = query.Skip(skip).Take(pageSize).ToList();
-
+            result.Result = query.Skip(skip).Take(pageSize).ToList();
+            result.IsSuccess = true;
             return result;
         }
 

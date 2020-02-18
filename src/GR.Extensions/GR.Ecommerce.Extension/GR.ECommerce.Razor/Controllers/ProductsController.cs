@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GR.ECommerce.Razor.Controllers
 {
-
+    [Authorize]
     public class ProductsController : CommerceBaseController<Product, ProductViewModel>
     {
         #region Injectable

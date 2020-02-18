@@ -894,5 +894,8 @@
   "subscriptions_period": "Perioada",
   "subscriptions_remaining_days": "Zile rămase",
   "subscriptions_is_valid": "Este valabil",
-  "no_data": "Nu există date disponibile"
+  "no_data": "Nu există date disponibile",
+  "system_cities": "Orașe",
+  "system_city_name": "Nume",
+  "system_city_code": "Cod"
 }

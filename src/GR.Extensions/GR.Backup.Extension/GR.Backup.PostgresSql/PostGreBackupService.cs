@@ -1,15 +1,19 @@
-﻿using System;
+﻿using GR.Backup.Abstractions;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.Extensions.Options;
-using GR.Backup.Abstractions;
 
 namespace GR.Backup.PostGresSql
 {
+    //Special folders https://developers.redhat.com/blog/2018/11/07/dotnet-special-folder-api-linux/
+    [Author(Authors.LUPEI_NICOLAE)]
     public class PostGreBackupService : IBackupService<PostGreSqlBackupSettings>
     {
         #region Injectable
@@ -31,12 +35,39 @@ namespace GR.Backup.PostGresSql
         /// </summary>
         public virtual void Backup()
         {
-            //TODO: Backup on mac os and linux envs
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                ExecuteWindowsDump();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                ExecuteLinuxDump();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                //TODO: Backup on mac os env
+            }
+        }
+
+        /// <summary>
+        /// Build dump output file
+        /// </summary>
+        /// <returns></returns>
+        protected string BuildDumpOutputFile()
+        {
             var directoryPath = GetDirectoryPath();
             var currentDate = DateTime.Now;
             var outputFile = Path.Combine(directoryPath,
-                $"backup {currentDate.Day}.{currentDate.Month}.{currentDate.Year} {currentDate.Hour}.{currentDate.Minute}.{_options.Value.FileExtension}");
+                $"{_options.Value.Database}-backup {currentDate.Day}.{currentDate.Month}.{currentDate.Year} {currentDate.Hour}.{currentDate.Minute}.{_options.Value.FileExtension}");
+            return outputFile;
+        }
+
+        /// <summary>
+        /// Execute dump in windows
+        /// </summary>
+        protected void ExecuteWindowsDump()
+        {
+            var outputFile = BuildDumpOutputFile();
             var dumpCommand = "\"" + _options.Value.PgDumpPath + "\"" + " -Fc" + " -h " + _options.Value.Host + " -p " +
                               _options.Value.Port + " -d " + _options.Value.Database + " -U " + _options.Value.User + "";
             var passFileContent = "" + _options.Value.Host + ":" + _options.Value.Port + ":" + _options.Value.Database + ":" +
@@ -93,13 +124,36 @@ namespace GR.Backup.PostGresSql
         }
 
         /// <summary>
+        /// Execute linux dump file backup
+        /// </summary>
+        protected void ExecuteLinuxDump()
+        {
+            var outputFile = BuildDumpOutputFile();
+            var command = $"PGPASSWORD=\"{_options.Value.Password}\" pg_dump -h {_options.Value.Host}  -p {_options.Value.Port} -U {_options.Value.User} -F c -b -v -f \"{outputFile}\" {_options.Value.Database}";
+
+            var result = "";
+            using (var proc = new Process())
+            {
+                proc.StartInfo.FileName = "/bin/bash";
+                proc.StartInfo.Arguments = "-c \" " + command + " \"";
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.Start();
+
+                result += proc.StandardOutput.ReadToEnd();
+                result += proc.StandardError.ReadToEnd();
+
+                proc.WaitForExit();
+            }
+            Debug.WriteLine(result);
+        }
+
+        /// <summary>
         /// Get provider name
         /// </summary>
         /// <returns></returns>
-        public virtual string GetProviderName()
-        {
-            return nameof(PostGreBackupService);
-        }
+        public virtual string GetProviderName() => GetType().Name;
 
         /// <summary>
         /// Get backups

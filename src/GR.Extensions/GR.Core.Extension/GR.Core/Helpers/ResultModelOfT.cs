@@ -27,7 +27,7 @@ namespace GR.Core.Helpers
         /// The result of the response, if there is no errors.
         /// </summary>
         [JsonProperty("result")]
-        public T Result { get; set; }
+        public virtual T Result { get; set; }
 
         [JsonIgnore]
         public Guid? KeyEntity { get; set; }

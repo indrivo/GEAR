@@ -167,7 +167,11 @@ namespace GR.UI.Menu.Razor.Controllers
             ViewBag.ParentId = parentId;
             ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path)
                 .OrderBy(x => x);
-            return View();
+            return View(new MenuItem
+            {
+                MenuId = menuId,
+                ParentMenuItemId = parentId
+            });
         }
 
         /// <summary>

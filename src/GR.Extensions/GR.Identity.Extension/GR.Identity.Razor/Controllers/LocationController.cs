@@ -7,8 +7,10 @@ using GR.Identity.Abstractions.ViewModels.LocationViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 
@@ -38,6 +40,14 @@ namespace GR.Identity.Razor.Controllers
         /// <returns></returns>
         public IActionResult Countries()
         {
+            return View();
+        }
+
+        public async Task<IActionResult> Cities(string id)
+        {
+            var countryRequest = await _locationService.GetCountryByIdAsync(id);
+            if (!countryRequest.IsSuccess) return NotFound();
+            ViewBag.Country = countryRequest.Result;
             return View();
         }
 
@@ -104,7 +114,19 @@ namespace GR.Identity.Razor.Controllers
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<StateOrProvince>>))]
         public async Task<JsonResult> GetCitiesByCountry([Required] string countryId)
-            => await JsonAsync(_locationService.GetCitiesByCountryAsync(countryId));
+        {
+            var request = await _locationService.GetCitiesByCountryAsync(countryId);
+            if (!request.IsSuccess) return Json(request);
+            var vm = request.Result.Select(x => new
+            {
+                Id = x.Id.ToString(),
+                x.Name,
+                x.CountryId,
+                x.Type,
+                x.Code
+            });
+            return Json(new SuccessResultModel<IEnumerable<object>>(vm));
+        }
 
         /// <summary>
         /// Add city to country
@@ -113,9 +135,13 @@ namespace GR.Identity.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<long>))]
-        public async Task<JsonResult> AddCityToCountry([Required]AddCityViewModel model)
-            => !ModelState.IsValid ? Json(new ResultModel().AttachModelState(ModelState)) : Json(await _locationService.AddCityToCountryAsync(model));
+        [Produces("application/json", Type = typeof(ResultModel<string>))]
+        public async Task<JsonResult> AddCityToCountry([Required] AddCityViewModel model)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            var request = await _locationService.AddCityToCountryAsync(model);
+            return Json(request.Map(request.Result.ToString()));
+        }
 
         /// <summary>
         /// Remove city bu id

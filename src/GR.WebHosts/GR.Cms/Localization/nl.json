@@ -894,5 +894,8 @@
   "subscriptions_period": "Periode",
   "subscriptions_remaining_days": "Overige Dagen",
   "subscriptions_is_valid": "Geldig",
-  "no_data": "Geen gegevens beschikbaar"
+  "no_data": "Geen gegevens beschikbaar",
+  "system_cities": "Steden",
+  "system_city_name": "Naam",
+  "system_city_code": "Code"
 }

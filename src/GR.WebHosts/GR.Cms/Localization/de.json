@@ -894,5 +894,8 @@
   "subscriptions_period": "Zeit",
   "subscriptions_remaining_days": "Für Die Verbleibenden Tage",
   "subscriptions_is_valid": "Gültig ist",
-  "no_data": "Keine Daten verfügbar"
+  "no_data": "Keine Daten verfügbar",
+  "system_cities": "Städte",
+  "system_city_name": "Name",
+  "system_city_code": "Code"
 }

@@ -52,12 +52,8 @@ namespace GR.Documents.Razor.Controllers
                 Text = s.Name,
                 Value = s.Id.ToString(),
             }).ToList();
-            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.Select(s => new SelectListItem
-            {
-                Text = s.Name,
-                Value = s.Id.ToString() + "_" + s.Code,
-
-            }).ToList();
+           
+            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.FirstOrDefault(x=> x.Code == 1).Id;
 
             return View();
         }
@@ -110,20 +106,16 @@ namespace GR.Documents.Razor.Controllers
             var listDocument = result.Result;
             foreach (var document in listDocument)
             {
-                if (document.DocumentCategory.Code == 1)
-                {
-                    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
-                        .FirstOrDefault()?.Contract?.WorkFlowId;
-                    if (workFlow != null)
-                    {
-                        document.CurrentStateName =
-                            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
-                                workFlow)).Result.State.Name;
-                        document.ListNextState =
-                            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
-                                document.LastVersionId.ToString(), workFlow)).Result.ToList();
-                    }
-                }
+                if (document.DocumentCategory.Code != 1) continue;
+                var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
+                    .FirstOrDefault()?.Contract?.WorkFlowId;
+                if (workFlow == null) continue;
+                document.CurrentStateName =
+                    (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                        workFlow)).Result.State.Name;
+                document.ListNextState =
+                    (await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                        document.LastVersionId.ToString(), workFlow)).Result.ToList();
 
             }
 
@@ -210,6 +202,17 @@ namespace GR.Documents.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<DocumentViewModel>))]
         public async Task<JsonResult> DeleteDocumnentsByListIdAsync(List<Guid> listDocumentId)
         {
+            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumentId);
+            return Json(result, SerializerSettings);
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<DocumentViewModel>))]
+        public async Task<JsonResult> DeleteDocumnentsByIdAsync(Guid documentId)
+        {
+            var listDocumentId = new List<Guid>();
+            listDocumentId.Add(documentId);
             var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumentId);
             return Json(result, SerializerSettings);
         }

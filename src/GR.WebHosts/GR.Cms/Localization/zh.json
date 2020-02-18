@@ -894,5 +894,8 @@
   "subscriptions_period": "周期",
   "subscriptions_remaining_days": "剩下的日子",
   "subscriptions_is_valid": "是有效的",
-  "no_data": "无可用数据"
+  "no_data": "无可用数据",
+  "system_cities": "城市",
+  "system_city_name": "名称",
+  "system_city_code": "代码"
 }

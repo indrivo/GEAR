@@ -11,10 +11,12 @@ using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.MobilPay.Abstractions;
+using GR.MobilPay.Abstractions.Helpers;
 using GR.MobilPay.Abstractions.Models;
 using GR.MobilPay.Extensions;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MobilpayEncryptDecrypt;
 
@@ -49,18 +51,24 @@ namespace GR.MobilPay
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
+        /// <summary>
+        /// Inject environment manager
+        /// </summary>
+        private readonly IHostingEnvironment _environment;
+
         #endregion
 
         public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService,
             IPaymentService paymentService,
             IUserManager<GearUser> userManager,
             IOptionsSnapshot<MobilPayConfiguration> options,
-            IUserAddressService userAddressService)
+            IUserAddressService userAddressService, IHostingEnvironment environment)
         {
             _orderProductService = orderProductService;
             _paymentService = paymentService;
             _userManager = userManager;
             _userAddressService = userAddressService;
+            _environment = environment;
             _configuration = options.Value;
         }
 
@@ -113,7 +121,7 @@ namespace GR.MobilPay
                 var url = new Mobilpay_Payment_Request_Url();
 
                 var enc = new MobilpayEncryptDecrypt.MobilpayEncryptDecrypt();
-                card.OrderId = order.Id.ToString();
+                card.OrderId = CreateMobilPayOrderId(order.Id);
                 card.Type = "card";
                 card.Signature = _configuration.Signature;
                 url.ConfirmUrl = $"{hostingDomain}/MobilPay/ConfirmCard";
@@ -180,7 +188,7 @@ namespace GR.MobilPay
 
             encryptDecrypt.Decrypt(decrypt);
             var card = encryptDecrypt.GetCard(decrypt.DecryptedData);
-            var orderId = card.OrderId.ToGuid();
+            var orderId = ExtractOrderId(card.OrderId);
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess)
             {
@@ -195,8 +203,8 @@ namespace GR.MobilPay
             var order = orderRequest.Result;
             var payment = new Payment
             {
-                PaymentMethodId = "MobilPay",
-                GatewayTransactionId = orderId.ToString(),
+                PaymentMethodId = MobilPayResources.MobilPay,
+                GatewayTransactionId = card.OrderId,
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
                 UserId = order.UserId,
@@ -236,6 +244,8 @@ namespace GR.MobilPay
         }
 
 
+        #region Helpers
+
         /// <summary>
         /// Get path to certificate
         /// </summary>
@@ -246,5 +256,27 @@ namespace GR.MobilPay
             var pathToCertificate = Path.GetFullPath(Path.Combine(rootPath, _configuration.PathToCertificate));
             return pathToCertificate;
         }
+
+        /// <summary>
+        /// Create id
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        private string CreateMobilPayOrderId(Guid orderId)
+            => $"{_environment.EnvironmentName}_{orderId}";
+
+        /// <summary>
+        /// Extract order id
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        private Guid ExtractOrderId(string orderId)
+        {
+            if (orderId.IsNullOrEmpty()) return default;
+            var arr = orderId.Split("_");
+            return arr.Length != 2 ? default : arr[1].ToGuid();
+        }
+
+        #endregion
     }
 }

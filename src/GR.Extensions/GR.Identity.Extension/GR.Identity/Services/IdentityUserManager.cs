@@ -207,6 +207,7 @@ namespace GR.Identity.Services
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
                 .Where(x => x.ApplicationUserId.ToGuid().Equals(userId))
+                .NonDeleted()
                 .ToListAsync();
             return new ResultModel<IEnumerable<Address>>
             {

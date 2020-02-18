@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace GR.Core.Extensions
 {
-    public static class LambdaExtensions
+    public static class LinqExtensions
     {
         /// <summary>
         /// Func to expression
@@ -43,5 +44,16 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static Func<TObject, bool> GetValueOrDefault<TObject>(this Func<TObject, bool> func)
             => func ?? (x => true);
+
+        /// <summary>
+        /// Where clause with condition
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="condition"></param>
+        /// <param name="whereClause"></param>
+        /// <returns></returns>
+        public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, bool condition, Expression<Func<T, bool>> whereClause)
+            => condition ? query.Where(whereClause) : query;
     }
 }

@@ -192,7 +192,7 @@ namespace GR.UI.Menu
             if (menuItem == null) return new InvalidParametersResultModel().Map<Guid>();
             menuItem.AllowedRoles = $"{GlobalResources.Roles.ADMINISTRATOR}#";
 
-            foreach (var role in roles)
+            foreach (var role in roles ?? new List<string>())
             {
                 if (role.Equals(GlobalResources.Roles.ADMINISTRATOR)) continue;
                 menuItem.AllowedRoles += $"{role}#";

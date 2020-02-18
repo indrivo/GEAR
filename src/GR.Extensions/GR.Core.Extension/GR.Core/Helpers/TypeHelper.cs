@@ -1,13 +1,14 @@
-﻿
+﻿using GR.Core.Extensions;
+
 namespace GR.Core.Helpers
 {
-    public class TypeHelper
+    public static class TypeHelperExtensions
     {
-        public static object GetPropertyValue(object obj, string name)
+        public static object GetPropertyValue(this object obj, string name)
         {
             return obj?.GetType()
-                .GetProperty(name)
-                .GetValue(obj, null);
+                .GetProperty(name.FirstCharToUpper())
+                ?.GetValue(obj, null);
         }
     }
 }

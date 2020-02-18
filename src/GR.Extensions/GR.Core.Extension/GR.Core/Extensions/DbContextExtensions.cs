@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
+using GR.Core.Helpers.Responses;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Core.Extensions
@@ -164,7 +165,7 @@ namespace GR.Core.Extensions
         public static IQueryable<TEntity> Deleted<TEntity>(this IQueryable<TEntity> eQuery)
             where TEntity : class, IBaseModel
         {
-            return eQuery.Where(x => x.IsDeleted);
+            return eQuery.AsNoTracking().Where(x => x.IsDeleted);
         }
 
         /// <summary>
@@ -176,7 +177,82 @@ namespace GR.Core.Extensions
         public static IQueryable<TEntity> NonDeleted<TEntity>(this IQueryable<TEntity> eQuery)
             where TEntity : class, IBaseModel
         {
-            return eQuery.Where(x => !x.IsDeleted);
+            return eQuery.AsNoTracking().Where(x => !x.IsDeleted);
+        }
+
+        /// <summary>
+        /// Disable entry
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel> DisableRecordAsync<TEntity>(this IDbContext self, Guid? id)
+            where TEntity : class, IBaseModel, IBase<Guid>
+        {
+            if (!id.HasValue) return new InvalidParametersResultModel();
+            var dbObject = await self.SetEntity<TEntity>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (dbObject == null) return new NotFoundResultModel();
+            dbObject.IsDeleted = true;
+            self.Update(dbObject);
+            return await self.PushAsync();
+        }
+
+        /// <summary>
+        /// Activate entry
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel> ActivateRecordAsync<TEntity>(this IDbContext self, Guid? id)
+            where TEntity : class, IBaseModel, IBase<Guid>
+        {
+            if (!id.HasValue) return new InvalidParametersResultModel();
+            var dbObject = await self.SetEntity<TEntity>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (dbObject == null) return new NotFoundResultModel();
+            dbObject.IsDeleted = false;
+            self.Update(dbObject);
+            return await self.PushAsync();
+        }
+
+        /// <summary>
+        /// Remove permanent
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel> RemovePermanentRecordAsync<TEntity>(this IDbContext self, Guid? id)
+            where TEntity : class, IBaseModel, IBase<Guid>
+        {
+            if (!id.HasValue) return new InvalidParametersResultModel();
+            var dbObject = await self.SetEntity<TEntity>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (dbObject == null) return new NotFoundResultModel();
+            dbObject.IsDeleted = false;
+            ((DbContext)self).Remove(dbObject);
+            return await self.PushAsync();
+        }
+
+        /// <summary>
+        /// Find by id
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task<TEntity> FindByIdAsync<TEntity>(this DbSet<TEntity> self, Guid? id)
+            where TEntity : class, IBaseModel, IBase<Guid>
+        {
+            Arg.NotNull(self, nameof(FindByIdAsync));
+            if (id == null) return default;
+            return await self.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
     }
 }
