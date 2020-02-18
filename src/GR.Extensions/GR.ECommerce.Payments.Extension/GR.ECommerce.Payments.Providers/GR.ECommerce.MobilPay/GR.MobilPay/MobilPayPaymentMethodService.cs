@@ -11,6 +11,7 @@ using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.MobilPay.Abstractions;
+using GR.MobilPay.Abstractions.Helpers;
 using GR.MobilPay.Abstractions.Models;
 using GR.MobilPay.Extensions;
 using GR.Orders.Abstractions;
@@ -202,8 +203,8 @@ namespace GR.MobilPay
             var order = orderRequest.Result;
             var payment = new Payment
             {
-                PaymentMethodId = "MobilPay",
-                GatewayTransactionId = orderId.ToString(),
+                PaymentMethodId = MobilPayResources.MobilPay,
+                GatewayTransactionId = card.OrderId,
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
                 UserId = order.UserId,
