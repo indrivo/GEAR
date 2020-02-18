@@ -41,6 +41,14 @@ namespace GR.Identity.Razor.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Cities(string id)
+        {
+            var citiesRequest = await _locationService.GetCitiesByCountryAsync(id);
+            if (!citiesRequest.IsSuccess) return NotFound();
+            ViewBag.Country = (await _locationService.GetCountryByIdAsync(id)).Result;
+            return View(citiesRequest.Result);
+        }
+
         /// <summary>
         /// Add new country
         /// </summary>

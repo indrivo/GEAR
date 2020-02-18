@@ -894,5 +894,8 @@
   "subscriptions_period": "Період",
   "subscriptions_remaining_days": "Дні, Що Залишилися",
   "subscriptions_is_valid": "Дійсний",
-  "no_data": "Немає даних"
+  "no_data": "Немає даних",
+  "system_cities": "Міст",
+  "system_city_name": "Назва",
+  "system_city_code": "Код"
 }
