@@ -99,19 +99,7 @@ namespace GR.Subscriptions.Razor.Controllers
             var productRequest = await _productService.GetProductByIdAsync(productId);
             var lastSubscriptionForUser = await _subscriptionService.GetLastSubscriptionForUserAsync();
 
-            if (lastSubscriptionForUser.IsSuccess && productRequest.IsSuccess)
-            {
-                if (lastSubscriptionForUser.Result != null && productRequest.Result.Name != lastSubscriptionForUser.Result?.Name && !lastSubscriptionForUser.Result.IsFree)
-                {
-                    return Json(new ResultModel
-                    {
-                        IsSuccess = false, 
-                        Errors = new List<IErrorModel> { new ErrorModel() {Message = "Select plan not correspond exist plan" } }
-                    });
-                }
-            }
-
-            if (lastSubscriptionForUser.Result != null)
+            if (lastSubscriptionForUser.Result != null && !lastSubscriptionForUser.Result.IsFree)
             {
                 var product = productRequest.Result;
                 var subscription = lastSubscriptionForUser.Result;

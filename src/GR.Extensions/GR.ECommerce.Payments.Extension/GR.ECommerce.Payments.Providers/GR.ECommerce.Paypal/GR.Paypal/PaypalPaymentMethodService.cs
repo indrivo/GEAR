@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -112,21 +114,41 @@ namespace GR.Paypal
                 return new ResponsePaypal { Message = "No access token", IsSuccess = false };
             }
 
+            var fullName = user?.UserFirstName != null && user?.UserLastName != null
+                ? $"{user?.UserFirstName} {user?.UserLastName}"
+                : user.UserName;
+
             var shippingAddress = new ShippingAddress
             {
                 City = address.StateOrProvince?.Name,
-                CountryCode = address.Country?.Id,
+                CountryCode = address.Country?.Id?.ToUpper(),
                 Phone = address.Phone,
                 Line1 = address.AddressLine1,
                 Line2 = address.AddressLine2,
                 PostalCode = address.ZipCode,
-                RecipientName = $"{user?.UserFirstName} {user?.UserLastName}"
+                RecipientName = fullName
             };
+
+            var items = new List<Item>();
+            foreach (var item in order.ProductOrders)
+            {
+                items.Add(new Item
+                {
+                    Name = item.Product.Name,
+                    Currency = order.Currency?.Code,
+                    Price = item.Product.PriceWithoutDiscount.ToString("N2"),
+                    Description = item.Product.Description?.StripHtml(),
+                    Quantity = item.Amount.ToString(),
+                    Sku = "1",
+                    Tax = "0"
+                });
+            }
 
             using (var httpClient = new HttpClient())
             {
                 var experienceProfileId = await CreateExperienceProfileAsync(accessToken);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var paypalAcceptedNumericFormatCulture = CultureInfo.CreateSpecificCulture("en-US");
                 //TODO: Apply payment fee
                 var unused = CalculatePaymentFee(order.Total);
                 var paymentCreateRequest = new PaymentCreateRequest
@@ -135,7 +157,11 @@ namespace GR.Paypal
                     Intent = "sale",
                     Payer = new Payer
                     {
-                        PaymentMethod = "paypal"
+                        PaymentMethod = "paypal",
+                        PayerInfo = new PayerInfo
+                        {
+                            Email = user.Email
+                        }
                     },
                     Transactions = new[]
                     {
@@ -143,21 +169,19 @@ namespace GR.Paypal
                         {
                             Amount = new Amount
                             {
-                                Total = (order.Total + 0.11m).ToString("N2"),
+                                Total = (order.Total + CalculatePaymentFee(order.Total)).ToString("N2", paypalAcceptedNumericFormatCulture),
                                 Currency = order.Currency?.Code,
                                 Details = new Details
                                 {
-                                    Subtotal =  order.Total.ToString("N2"),
-                                    Tax = "0.07",
-                                    Shipping = "0.03",
-                                    HandlingFee  = "1.00",
-                                    ShippingDiscount = "-1.00",
-                                    Insurance = "0.01"
+                                    Subtotal =  order.Total.ToString("N2", paypalAcceptedNumericFormatCulture),
+                                    Tax = "0",
+                                    HandlingFee  = CalculatePaymentFee(order.Total).ToString("N2", paypalAcceptedNumericFormatCulture)
                                 }
                             },
                             Items = new ItemList
                             {
-                                ShippingAddress = shippingAddress
+                                Items = items.ToArray(),
+                                //ShippingAddress = shippingAddress
                             }
                         }
                     },

@@ -166,7 +166,7 @@ namespace GR.Subscriptions
             {
                 var subscription = existSubscription.Result;
                 subscription.OrderId = model.OrderId;
-                subscription.Availability += model.Availability;
+                subscription.Availability = model.Availability;
                 subscription.Name = model.Name;
                 subscription.SubscriptionPermissions = model.SubscriptionPermissions;
                 subscription.IsFree = model.IsFree;
