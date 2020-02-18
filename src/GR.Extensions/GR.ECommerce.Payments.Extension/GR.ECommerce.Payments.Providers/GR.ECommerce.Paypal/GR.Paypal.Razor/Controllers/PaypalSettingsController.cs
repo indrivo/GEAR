@@ -46,6 +46,7 @@ namespace GR.Paypal.Razor.Controllers
                 options.ClientId = model.ClientId;
                 options.ClientSecret = model.ClientSecret;
                 options.IsSandbox = model.IsSandbox;
+                options.PaymentFee = model.PaymentFee;
             });
             ViewData["isSuccess"] = true;
             return View(model);

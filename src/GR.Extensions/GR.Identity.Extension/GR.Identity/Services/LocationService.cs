@@ -24,7 +24,7 @@ namespace GR.Identity.Services
         /// </summary>
         private readonly IIdentityContext _context;
 
-        #endregion Injectable
+        #endregion 
 
         public LocationService(IIdentityContext context)
         {
@@ -51,7 +51,9 @@ namespace GR.Identity.Services
         public virtual async Task<ResultModel> DeleteCountryAsync(string countryId)
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel();
-            var country = await _context.Countries.FirstOrDefaultAsync(x => x.Id.Equals(countryId));
+            var country = await _context.Countries
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(countryId));
             if (country == null) return new NotFoundResultModel();
             _context.Countries.Remove(country);
             return await _context.PushAsync();
@@ -63,7 +65,9 @@ namespace GR.Identity.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<AddCountryViewModel>>> GetAllCountriesAsync()
         {
-            var data = await _context.Countries.ToListAsync();
+            var data = await _context.Countries
+                .AsNoTracking()
+                .ToListAsync();
             var mapped = data.Adapt<IEnumerable<AddCountryViewModel>>();
             return new SuccessResultModel<IEnumerable<AddCountryViewModel>>(mapped);
         }
@@ -76,7 +80,9 @@ namespace GR.Identity.Services
         public virtual async Task<ResultModel<Country>> GetCountryByIdAsync(string countryId)
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel<Country>();
-            var country = await _context.Countries.FirstOrDefaultAsync(x => x.Id.Equals(countryId));
+            var country = await _context.Countries
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(countryId));
             if (country == null) return new NotFoundResultModel<Country>();
             return new SuccessResultModel<Country>(country);
         }
@@ -112,7 +118,10 @@ namespace GR.Identity.Services
         public virtual async Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId)
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<StateOrProvince>>();
-            var data = await _context.StateOrProvinces.Where(x => x.CountryId.Equals(countryId)).ToListAsync();
+            var data = await _context.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(countryId))
+                .ToListAsync();
             return new SuccessResultModel<IEnumerable<StateOrProvince>>(data);
         }
 
@@ -124,10 +133,15 @@ namespace GR.Identity.Services
         public virtual async Task<ResultModel<long>> AddCityToCountryAsync(AddCityViewModel model)
         {
             if (model == null) return new InvalidParametersResultModel<long>();
-            var cities = await _context.StateOrProvinces.Select(x => x.Id).ToListAsync();
+            var cities = await _context.StateOrProvinces.AsNoTracking().Select(x => x.Id).ToListAsync();
             var id = cities.GenerateUniqueNumberThatNoIncludesNumbers();
-            var dataModel = model.Adapt<StateOrProvince>();
-            dataModel.Id = id;
+            var dataModel = new StateOrProvince(id)
+            {
+                Name = model.Name,
+                Code = model.Code,
+                CountryId = model.CountryId,
+                Type = model.Type
+            };
             await _context.StateOrProvinces.AddAsync(dataModel);
             var dbRequest = await _context.PushAsync();
             return dbRequest.Map(dataModel.Id);
@@ -140,7 +154,9 @@ namespace GR.Identity.Services
         /// <returns></returns>
         public virtual async Task<ResultModel> RemoveCityAsync(long cityId)
         {
-            var city = await _context.StateOrProvinces.FirstOrDefaultAsync(x => x.Id.Equals(cityId));
+            var city = await _context.StateOrProvinces
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(cityId));
             if (city == null) return new NotFoundResultModel();
             _context.StateOrProvinces.Remove(city);
             return await _context.PushAsync();
@@ -175,7 +191,8 @@ namespace GR.Identity.Services
             city.Name = model.Name;
             city.CountryId = model.CountryId;
             city.Type = model.Type;
-            _context.StateOrProvinces.Update(city);
+            _context.StateOrProvinces
+                .Update(city);
             return await _context.PushAsync();
         }
     }

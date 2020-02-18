@@ -5,6 +5,7 @@ namespace GR.Identity.Abstractions.ViewModels.LocationViewModels
     public class AddCityViewModel
     {
         [StringLength(450)]
+        [Required]
         public string CountryId { get; set; }
 
         [StringLength(450)]
