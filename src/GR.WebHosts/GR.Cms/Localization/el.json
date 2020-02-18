@@ -894,5 +894,8 @@
   "subscriptions_period": "Περίοδο",
   "subscriptions_remaining_days": "Υπόλοιπες Ημέρες",
   "subscriptions_is_valid": "Είναι έγκυρη",
-  "no_data": "Δεν υπάρχουν διαθέσιμα δεδομένα"
+  "no_data": "Δεν υπάρχουν διαθέσιμα δεδομένα",
+  "system_cities": "Πόλεις",
+  "system_city_name": "Όνομα",
+  "system_city_code": "Κώδικα"
 }
