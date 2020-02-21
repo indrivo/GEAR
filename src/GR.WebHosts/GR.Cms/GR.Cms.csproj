@@ -24,7 +24,6 @@
 	<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" PrivateAssets="All" />
 	<PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
 	<PackageReference Include="Microsoft.Extensions.HealthChecks.SqlServer" Version="1.0.0" />
-	<PackageReference Include="ST.ServiceDiscovery" Version="1.1.1" />
 	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
   </ItemGroup>
   <ItemGroup>
