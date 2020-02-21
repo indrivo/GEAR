@@ -121,6 +121,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using GR.Braintree;
+using GR.Braintree.Abstractions.Extensions;
+using GR.Braintree.Razor.Extensions;
 using GR.Forms;
 using GR.Identity.Data.Groups;
 using GR.Identity.Razor.Extensions;
@@ -369,9 +372,6 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterPaypalProvider<PaypalPaymentMethodService>()
-				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
-				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
 				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
 				.RegisterPayments<PaymentService>()
@@ -384,7 +384,15 @@ namespace GR.Cms
 				.RegisterSubscriptionEvents()
 				.RegisterSubscriptionRules()
 				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				//Paypal
+				.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				.RegisterPaypalRazorProvider(Configuration)
+				//Mobil Pay
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterMobilPayRazorProvider(Configuration)
+				//Braintree
+				.RegisterBraintreeProvider<BraintreePaymentMethodService>()
+				.RegisterBraintreeRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
