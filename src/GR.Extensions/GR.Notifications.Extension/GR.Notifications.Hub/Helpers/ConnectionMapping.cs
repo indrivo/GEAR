@@ -5,7 +5,7 @@ using GR.Notifications.Abstractions.Models.Config;
 
 namespace GR.Notifications.Hub.Helpers
 {
-    public class ConnectionMapping
+    public sealed class ConnectionMapping
     {
         /// <summary>
         /// Connections

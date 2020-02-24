@@ -38,9 +38,9 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModule<TRepository>(this IServiceCollection services)
-            where TRepository : class, INotificationSubscriptionRepository
+            where TRepository : class, INotificationSubscriptionService
         {
-            services.AddGearScoped<INotificationSubscriptionRepository, TRepository>();
+            services.AddGearScoped<INotificationSubscriptionService, TRepository>();
             return new NotificationSubscriptionServiceCollection(services);
         }
 
@@ -80,7 +80,7 @@ namespace GR.Notifications.Abstractions.Extensions
                    try
                    {
                        if (string.IsNullOrEmpty(args.EventName)) return;
-                       var service = IoC.Resolve<INotificationSubscriptionRepository>();
+                       var service = IoC.Resolve<INotificationSubscriptionService>();
                        var notifier = IoC.Resolve<INotify<GearRole>>();
                        var subscribedRoles = await service.GetRolesSubscribedToEventAsync(args.EventName);
                        if (!subscribedRoles.IsSuccess) return;
@@ -114,7 +114,7 @@ namespace GR.Notifications.Abstractions.Extensions
                 if (!(args.DbContext is INotificationSubscriptionsDbContext)) return;
                 try
                 {
-                    var service = IoC.Resolve<INotificationSubscriptionRepository>();
+                    var service = IoC.Resolve<INotificationSubscriptionService>();
                     await service.SeedEventsAsync();
                 }
                 catch (Exception e)

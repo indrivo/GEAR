@@ -7,7 +7,7 @@ using GR.Notifications.Abstractions.Models.Data;
 
 namespace GR.Notifications.Abstractions
 {
-    public interface INotificationSubscriptionRepository
+    public interface INotificationSubscriptionService
     {
         /// <summary>
         /// Provide system roles

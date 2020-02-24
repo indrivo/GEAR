@@ -232,7 +232,7 @@ namespace GR.Cms
 
 			//-------------------------------Notification Module-------------------------------------
 			config.GearServices.AddNotificationModule<Notify<ApplicationDbContext, GearRole, GearUser>, GearRole>()
-				.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 				{

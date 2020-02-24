@@ -15,7 +15,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Notifications
 {
-    public class NotificationSubscriptionRepository : INotificationSubscriptionRepository
+    public class NotificationSubscriptionService : INotificationSubscriptionService
     {
         #region Injectable
 
@@ -36,7 +36,7 @@ namespace GR.Notifications
 
         #endregion
 
-        public NotificationSubscriptionRepository(RoleManager<GearRole> roleManager, INotificationSubscriptionsDbContext notificationSubscriptionsDbContext, IMemoryCache memoryCache)
+        public NotificationSubscriptionService(RoleManager<GearRole> roleManager, INotificationSubscriptionsDbContext notificationSubscriptionsDbContext, IMemoryCache memoryCache)
         {
             _roleManager = roleManager;
             _notificationSubscriptionsDbContext = notificationSubscriptionsDbContext;
@@ -58,7 +58,7 @@ namespace GR.Notifications
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<NotificationTemplate>> GetEventTemplateAsync(string eventName)
+        public virtual async Task<ResultModel<NotificationTemplate>> GetEventTemplateAsync(string eventName)
         {
             Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEventAsync));
             var key = GenerateEventTemplateCacheKey(eventName);
@@ -72,25 +72,11 @@ namespace GR.Notifications
         }
 
         /// <summary>
-        /// Generate cache key for subscribed roles
-        /// </summary>
-        /// <param name="eventName"></param>
-        /// <returns></returns>
-        protected static string GenerateEventCacheKey(string eventName) => $"subscribed_roles_for_{eventName}_event";
-
-        /// <summary>
-        /// Generate cache key for event template
-        /// </summary>
-        /// <param name="eventName"></param>
-        /// <returns></returns>
-        protected static string GenerateEventTemplateCacheKey(string eventName) => $"template_for_{eventName}_event";
-
-        /// <summary>
         /// Get subscribed roles to event
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<GearRole>>> GetRolesSubscribedToEventAsync(string eventName)
+        public virtual async Task<ResultModel<IEnumerable<GearRole>>> GetRolesSubscribedToEventAsync(string eventName)
         {
             Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEventAsync));
             var key = GenerateEventCacheKey(eventName);
@@ -118,7 +104,7 @@ namespace GR.Notifications
         /// Seed events
         /// </summary>
         /// <returns></returns>
-        public async Task SeedEventsAsync()
+        public virtual async Task SeedEventsAsync()
         {
             var events = GetSystemEvents();
             var dbEvents = await _notificationSubscriptionsDbContext.NotificationEvents.ToListAsync();
@@ -131,7 +117,7 @@ namespace GR.Notifications
         /// Get all system not seeded events
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<NotificationEvent> GetSystemEvents()
+        public virtual IEnumerable<NotificationEvent> GetSystemEvents()
         {
             var events = SystemEvents.Common.RegisteredEvents;
             foreach (var evGroup in events)
@@ -155,7 +141,7 @@ namespace GR.Notifications
         /// <param name="template"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        public async Task<ResultModel> SubscribeRolesToEventAsync(IEnumerable<Guid> roles, string eventName, string template, string subject)
+        public virtual async Task<ResultModel> SubscribeRolesToEventAsync(IEnumerable<Guid> roles, string eventName, string template, string subject)
         {
             var result = new ResultModel();
             if (string.IsNullOrEmpty(eventName)) return result;
@@ -205,5 +191,23 @@ namespace GR.Notifications
             _memoryCache.Remove(templateKey);
             return await _notificationSubscriptionsDbContext.PushAsync();
         }
+
+        #region Helpers
+
+        /// <summary>
+        /// Generate cache key for subscribed roles
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <returns></returns>
+        protected static string GenerateEventCacheKey(string eventName) => $"subscribed_roles_for_{eventName}_event";
+
+        /// <summary>
+        /// Generate cache key for event template
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <returns></returns>
+        protected static string GenerateEventTemplateCacheKey(string eventName) => $"template_for_{eventName}_event";
+
+        #endregion
     }
 }

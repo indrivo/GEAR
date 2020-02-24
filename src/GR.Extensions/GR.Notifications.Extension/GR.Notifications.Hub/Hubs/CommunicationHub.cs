@@ -31,7 +31,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="users"></param>
         /// <param name="notification"></param>
-        public void SendNotification(IEnumerable<Guid> users, SystemNotifications notification)
+        public virtual void SendNotification(IEnumerable<Guid> users, SystemNotifications notification)
         {
             if (notification == null) return;
             foreach (var user in users)
@@ -50,7 +50,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="users"></param>
         /// <param name="data"></param>
-        public void SendData(IEnumerable<Guid> users, Dictionary<string, object> data)
+        public virtual void SendData(IEnumerable<Guid> users, Dictionary<string, object> data)
         {
             if (data == null) return;
             foreach (var user in users)
@@ -69,7 +69,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="users"></param>
         /// <param name="data"></param>
-        public void SendData(IEnumerable<Guid> users, object data)
+        public virtual void SendData(IEnumerable<Guid> users, object data)
         {
             if (data == null) return;
             foreach (var user in users)
@@ -88,7 +88,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool GetUserOnlineStatus(Guid userId)
+        public virtual bool GetUserOnlineStatus(Guid userId)
         {
             var userConnections = GearNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(userId);
             return userConnections.Any();
@@ -100,7 +100,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool IsUserOnline(GearUser user)
+        public virtual bool IsUserOnline(GearUser user)
         {
             return user == null ? default : GetUserOnlineStatus(Guid.Parse(user.Id));
         }
@@ -109,7 +109,7 @@ namespace GR.Notifications.Hub.Hubs
         /// Get sessions count
         /// </summary>
         /// <returns></returns>
-        public int GetSessionsCount()
+        public virtual int GetSessionsCount()
         {
             return GearNotificationHub.UserConnections.Connections.GetSessionCount();
         }
@@ -119,7 +119,7 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public int GetSessionsCountByUserId(Guid userId)
+        public virtual int GetSessionsCountByUserId(Guid userId)
         {
             return GearNotificationHub.UserConnections.Connections.GetSessionsByUserId(userId);
         }
@@ -128,7 +128,7 @@ namespace GR.Notifications.Hub.Hubs
         /// Get online users
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Guid> GetOnlineUsers()
+        public virtual IEnumerable<Guid> GetOnlineUsers()
         {
             return GearNotificationHub.UserConnections.Connections.GetUsersOnline();
         }
