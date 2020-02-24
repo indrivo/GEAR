@@ -7,7 +7,7 @@ using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 
-namespace GR.Notifications.Abstractions.Seeders
+namespace GR.Notifications.Seeders
 {
     public static class NotificationManager
     {

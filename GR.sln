@@ -315,6 +315,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree.Razor", "src\G
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Entities.Providers", "GR.Entities.Providers", "{BCF212C6-8AFE-490D-A10D-57869EFDC75C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Notifications.Hub", "src\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Hub\GR.Notifications.Hub.csproj", "{D889432D-A38A-4C22-87B0-8522192DCA49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1006,6 +1008,12 @@ Global
 		{663F27FE-FFAC-4F3D-B390-B4617A75A0F9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{663F27FE-FFAC-4F3D-B390-B4617A75A0F9}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{663F27FE-FFAC-4F3D-B390-B4617A75A0F9}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{D889432D-A38A-4C22-87B0-8522192DCA49}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1164,6 +1172,7 @@ Global
 		{F7DA2F5E-95AC-4909-976C-A0CD0FA74A51} = {AB58D5FE-AFC9-4BD6-9371-EFE689A05AFF}
 		{663F27FE-FFAC-4F3D-B390-B4617A75A0F9} = {AB58D5FE-AFC9-4BD6-9371-EFE689A05AFF}
 		{BCF212C6-8AFE-490D-A10D-57869EFDC75C} = {4B6C8C28-B2EC-4EDD-B6D8-F90B125CB109}
+		{D889432D-A38A-4C22-87B0-8522192DCA49} = {3D0F6210-272F-410D-AEAA-A5722E8C6D95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

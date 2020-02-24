@@ -24,5 +24,6 @@ namespace GR.Notifications.Abstractions.Models.Config
     {
         public const string SendClientEmail = "SendClientEmailNotification";
         public const string SendClientNotification = "SendClientNotification";
+        public const string SendData = "SendData";
     }
 }

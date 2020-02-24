@@ -6,7 +6,7 @@ using GR.Notifications.Abstractions.Models.Notifications;
 
 namespace GR.Notifications.Abstractions
 {
-	public interface INotificationHub
+	public interface ICommunicationHub
 	{
 		/// <summary>
 		/// Send email notification to users
@@ -19,12 +19,19 @@ namespace GR.Notifications.Abstractions
         /// <param name="users"></param>
         /// <param name="notification"></param>
 	    void SendNotification(IEnumerable<Guid> users, SystemNotifications notification);
+
+        /// <summary>
+        /// Send any data to clients data
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="data"></param>
+        void SendData(IEnumerable<Guid> users, Dictionary<string, object> data);
         /// <summary>
         /// Check if user is online 
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-	    bool GetUserOnlineStatus(Guid userId);
+        bool GetUserOnlineStatus(Guid userId);
 
         /// <summary>
         /// Check if user is online

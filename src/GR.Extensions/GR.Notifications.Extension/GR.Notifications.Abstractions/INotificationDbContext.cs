@@ -4,7 +4,7 @@ using GR.Notifications.Abstractions.Models.Data;
 
 namespace GR.Notifications.Abstractions
 {
-    public interface INotificationDbContext : IDbContext
+    public interface INotificationSubscriptionsDbContext : IDbContext
     {
         /// <summary>
         /// Notification events

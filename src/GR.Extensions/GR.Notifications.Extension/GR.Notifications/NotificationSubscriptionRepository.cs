@@ -27,7 +27,7 @@ namespace GR.Notifications
         /// <summary>
         /// Inject notification db context
         /// </summary>
-        private readonly INotificationDbContext _notificationDbContext;
+        private readonly INotificationSubscriptionsDbContext _notificationSubscriptionsDbContext;
 
         /// <summary>
         /// Inject memory cache
@@ -36,10 +36,10 @@ namespace GR.Notifications
 
         #endregion
 
-        public NotificationSubscriptionRepository(RoleManager<GearRole> roleManager, INotificationDbContext notificationDbContext, IMemoryCache memoryCache)
+        public NotificationSubscriptionRepository(RoleManager<GearRole> roleManager, INotificationSubscriptionsDbContext notificationSubscriptionsDbContext, IMemoryCache memoryCache)
         {
             _roleManager = roleManager;
-            _notificationDbContext = notificationDbContext;
+            _notificationSubscriptionsDbContext = notificationSubscriptionsDbContext;
             _memoryCache = memoryCache;
         }
 
@@ -51,7 +51,7 @@ namespace GR.Notifications
         /// <summary>
         /// Events
         /// </summary>
-        public IEnumerable<NotificationEvent> Events => _notificationDbContext.NotificationEvents.ToList();
+        public IEnumerable<NotificationEvent> Events => _notificationSubscriptionsDbContext.NotificationEvents.ToList();
 
         /// <summary>
         /// Get template event
@@ -64,7 +64,7 @@ namespace GR.Notifications
             var key = GenerateEventTemplateCacheKey(eventName);
             var templateFromCache = _memoryCache.Get<NotificationTemplate>(key);
             if (templateFromCache != null) return new SuccessResultModel<NotificationTemplate>(templateFromCache);
-            var template = await _notificationDbContext.NotificationTemplates.FirstOrDefaultAsync(x =>
+            var template = await _notificationSubscriptionsDbContext.NotificationTemplates.FirstOrDefaultAsync(x =>
                     x.NotificationEventId.Equals(eventName));
             if (template == null) return new NotFoundResultModel<NotificationTemplate>();
             _memoryCache.Set(key, template);
@@ -99,7 +99,7 @@ namespace GR.Notifications
             if (cachedRoles != null && cachedRoles.Any()) return new SuccessResultModel<IEnumerable<GearRole>>(cachedRoles);
 
             var result = new ResultModel<IEnumerable<GearRole>>();
-            var subscribed = await _notificationDbContext.NotificationSubscriptions
+            var subscribed = await _notificationSubscriptionsDbContext.NotificationSubscriptions
                 .Where(x => x.NotificationEventId.Equals(eventName)).ToListAsync();
             if (!subscribed.Any())
             {
@@ -121,10 +121,10 @@ namespace GR.Notifications
         public async Task SeedEventsAsync()
         {
             var events = GetSystemEvents();
-            var dbEvents = await _notificationDbContext.NotificationEvents.ToListAsync();
+            var dbEvents = await _notificationSubscriptionsDbContext.NotificationEvents.ToListAsync();
             var nonSeeded = events.Where(x => !dbEvents.Select(v => v.EventId).Contains(x.EventId));
-            await _notificationDbContext.NotificationEvents.AddRangeAsync(nonSeeded);
-            await _notificationDbContext.PushAsync();
+            await _notificationSubscriptionsDbContext.NotificationEvents.AddRangeAsync(nonSeeded);
+            await _notificationSubscriptionsDbContext.PushAsync();
         }
 
         /// <summary>
@@ -160,11 +160,11 @@ namespace GR.Notifications
             var result = new ResultModel();
             if (string.IsNullOrEmpty(eventName)) return result;
             if (!SystemEvents.Common.HasEvent(eventName)) return result;
-            var notificationTemplate = await _notificationDbContext.NotificationTemplates.FirstOrDefaultAsync(x =>
+            var notificationTemplate = await _notificationSubscriptionsDbContext.NotificationTemplates.FirstOrDefaultAsync(x =>
                 x.NotificationEventId.Equals(eventName));
             if (notificationTemplate == null)
             {
-                await _notificationDbContext.NotificationTemplates.AddAsync(new NotificationTemplate
+                await _notificationSubscriptionsDbContext.NotificationTemplates.AddAsync(new NotificationTemplate
                 {
                     NotificationEventId = eventName,
                     Subject = subject,
@@ -175,17 +175,17 @@ namespace GR.Notifications
             {
                 notificationTemplate.Value = template;
                 notificationTemplate.Subject = subject;
-                _notificationDbContext.Update(notificationTemplate);
+                _notificationSubscriptionsDbContext.Update(notificationTemplate);
             }
 
-            await _notificationDbContext.PushAsync();
+            await _notificationSubscriptionsDbContext.PushAsync();
 
             var subscriptions =
-                await _notificationDbContext.NotificationSubscriptions.Where(x =>
+                await _notificationSubscriptionsDbContext.NotificationSubscriptions.Where(x =>
                     x.NotificationEventId.Equals(eventName)).ToListAsync();
             if (subscriptions.Any())
             {
-                _notificationDbContext.NotificationSubscriptions.RemoveRange(subscriptions);
+                _notificationSubscriptionsDbContext.NotificationSubscriptions.RemoveRange(subscriptions);
             }
 
             var dataRoles = roles?.ToList();
@@ -196,14 +196,14 @@ namespace GR.Notifications
                     RoleId = x,
                     NotificationEventId = eventName
                 });
-                await _notificationDbContext.NotificationSubscriptions.AddRangeAsync(newSubscriptions);
+                await _notificationSubscriptionsDbContext.NotificationSubscriptions.AddRangeAsync(newSubscriptions);
             }
 
             var eventRolesKey = GenerateEventCacheKey(eventName);
             var templateKey = GenerateEventTemplateCacheKey(eventName);
             _memoryCache.Remove(eventRolesKey);
             _memoryCache.Remove(templateKey);
-            return await _notificationDbContext.PushAsync();
+            return await _notificationSubscriptionsDbContext.PushAsync();
         }
     }
 }

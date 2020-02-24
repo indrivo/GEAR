@@ -52,12 +52,12 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <param name="options"></param>
         /// <returns></returns>
         public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModuleStorage<TContext>(this INotificationSubscriptionServiceCollection services, Action<DbContextOptionsBuilder> options)
-            where TContext : DbContext, INotificationDbContext
+            where TContext : DbContext, INotificationSubscriptionsDbContext
         {
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
-            services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
-            services.Services.RegisterAuditFor<INotificationDbContext>($"{nameof(Notification)} module");
+            services.Services.AddScopedContextFactory<INotificationSubscriptionsDbContext, TContext>();
+            services.Services.RegisterAuditFor<INotificationSubscriptionsDbContext>($"{nameof(Notification)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
@@ -111,7 +111,7 @@ namespace GR.Notifications.Abstractions.Extensions
 
             SystemEvents.Database.OnSeed += async (obj, args) =>
             {
-                if (!(args.DbContext is INotificationDbContext)) return;
+                if (!(args.DbContext is INotificationSubscriptionsDbContext)) return;
                 try
                 {
                     var service = IoC.Resolve<INotificationSubscriptionRepository>();

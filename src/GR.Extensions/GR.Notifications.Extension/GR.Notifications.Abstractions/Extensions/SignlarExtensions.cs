@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using GR.Core.Helpers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using GR.Core.Helpers;
-using GR.Notifications.Abstractions;
-using GR.Notifications.Hubs;
 
-namespace GR.Notifications.Extensions
+namespace GR.Notifications.Abstractions.Extensions
 {
     public static class SignlarExtensions
     {
@@ -15,11 +13,12 @@ namespace GR.Notifications.Extensions
         /// <param name="app"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseSignalRModule(this IApplicationBuilder app, string path = "/rtn")
+        public static IApplicationBuilder UseNotificationsHub<THub>(this IApplicationBuilder app, string path = "/rtn")
+            where THub : Hub
         {
             app.UseSignalR(routes =>
             {
-                routes.MapHub<SignalRNotificationHub>(path,
+                routes.MapHub<THub>(path,
                     options =>
                     {
                         options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All;
@@ -33,15 +32,15 @@ namespace GR.Notifications.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSignalRModule(this IServiceCollection services) 
+        public static IServiceCollection RegisterNotificationsHubModule<TCommunicationHub>(this IServiceCollection services)
+        where TCommunicationHub : class, ICommunicationHub
         {
             Arg.NotNull(services, nameof(services));
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
             });
-            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-            services.AddTransient<INotificationHub, LocalNotificationHub>();
+            services.AddTransient<ICommunicationHub, TCommunicationHub>();
             return services;
         }
     }

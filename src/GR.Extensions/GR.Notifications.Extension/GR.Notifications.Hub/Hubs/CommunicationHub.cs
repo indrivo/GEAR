@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Config;
 using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 
-namespace GR.Notifications.Hubs
+namespace GR.Notifications.Hub.Hubs
 {
-    public class LocalNotificationHub : INotificationHub
+    public class CommunicationHub : ICommunicationHub
     {
-        private readonly UserManager<GearUser> _userManager;
-        private readonly IHubContext<SignalRNotificationHub> _hub;
+        #region Injectable
 
-        public LocalNotificationHub(UserManager<GearUser> userManager, IHubContext<SignalRNotificationHub> hub)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly UserManager<GearUser> _userManager;
+
+        /// <summary>
+        /// Inject hub
+        /// </summary>
+        private readonly IHubContext<GearNotificationHub> _hub;
+
+        #endregion
+
+        public CommunicationHub(UserManager<GearUser> userManager, IHubContext<GearNotificationHub> hub)
         {
             _userManager = userManager;
             _hub = hub;
@@ -34,7 +45,7 @@ namespace GR.Notifications.Hubs
             {
                 var user = _userManager.Users.FirstOrDefault(y => y.Id.Equals(x));
                 if (user == null) return;
-                var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(Guid.Parse(user.Id));
+                var userConnections = GearNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(Guid.Parse(user.Id));
                 userConnections.ToList().ForEach(c =>
                 {
                     _hub.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientEmail,
@@ -53,7 +64,7 @@ namespace GR.Notifications.Hubs
             if (notification == null) return;
             foreach (var user in users)
             {
-                var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(user);
+                var userConnections = GearNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(user);
                 userConnections.ToList().ForEach(c =>
                 {
                     notification.UserId = user;
@@ -61,6 +72,25 @@ namespace GR.Notifications.Hubs
                 });
             }
         }
+
+        /// <summary>
+        /// Send data
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="data"></param>
+        public void SendData(IEnumerable<Guid> users, Dictionary<string, object> data)
+        {
+            if (data == null) return;
+            foreach (var user in users)
+            {
+                var userConnections = GearNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(user);
+                userConnections.ToList().ForEach(c =>
+                {
+                    _hub.Clients.Client(c).SendAsync(SignalrSendMethods.SendData, data);
+                });
+            }
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Check if user is online
@@ -69,7 +99,7 @@ namespace GR.Notifications.Hubs
         /// <returns></returns>
         public bool GetUserOnlineStatus(Guid userId)
         {
-            var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(userId);
+            var userConnections = GearNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(userId);
             return userConnections.Any();
         }
 
@@ -90,7 +120,7 @@ namespace GR.Notifications.Hubs
         /// <returns></returns>
         public int GetSessionsCount()
         {
-            return SignalRNotificationHub.UserConnections.Connections.GetSessionCount();
+            return GearNotificationHub.UserConnections.Connections.GetSessionCount();
         }
         /// <inheritdoc />
         /// <summary>
@@ -100,7 +130,7 @@ namespace GR.Notifications.Hubs
         /// <returns></returns>
         public int GetSessionsCountByUserId(Guid userId)
         {
-            return SignalRNotificationHub.UserConnections.Connections.GetSesionsByUserId(userId);
+            return GearNotificationHub.UserConnections.Connections.GetSessionsByUserId(userId);
         }
         /// <inheritdoc />
         /// <summary>
@@ -109,7 +139,7 @@ namespace GR.Notifications.Hubs
         /// <returns></returns>
         public IEnumerable<Guid> GetOnlineUsers()
         {
-            return SignalRNotificationHub.UserConnections.Connections.GetUsersOnline();
+            return GearNotificationHub.UserConnections.Connections.GetUsersOnline();
         }
     }
 }

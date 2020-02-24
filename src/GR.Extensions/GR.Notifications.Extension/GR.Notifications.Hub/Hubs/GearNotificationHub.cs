@@ -1,12 +1,11 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 using GR.Notifications.Abstractions.Models.Config;
+using GR.Notifications.Hub.Helpers;
 
-namespace GR.Notifications.Hubs
+namespace GR.Notifications.Hub.Hubs
 {
-    public class SignalRNotificationHub : Hub
+    public class GearNotificationHub : Microsoft.AspNetCore.SignalR.Hub
     {
         internal static class UserConnections
         {
@@ -49,15 +48,6 @@ namespace GR.Notifications.Hubs
         {
             UserConnections.Connections.Remove(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
-        }
-    }
-
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class NameUserIdProvider : IUserIdProvider
-    {
-        public string GetUserId(HubConnectionContext connection)
-        {
-            return connection.User?.FindFirst(ClaimTypes.Name)?.Value;
         }
     }
 }

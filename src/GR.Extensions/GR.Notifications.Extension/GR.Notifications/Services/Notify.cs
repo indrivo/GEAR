@@ -37,7 +37,7 @@ namespace GR.Notifications.Services
         /// <summary>
         /// Notification hub
         /// </summary>
-        private readonly INotificationHub _hub;
+        private readonly ICommunicationHub _hub;
         /// <summary>
         /// Logger
         /// </summary>
@@ -64,7 +64,7 @@ namespace GR.Notifications.Services
         /// <param name="logger"></param>
         /// <param name="emailSender"></param>
         /// <param name="userManager"></param>
-        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<GearUser> userManager)
+        public Notify(IDynamicService dataService, TContext context, ICommunicationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<GearUser> userManager)
         {
             _dataService = dataService;
             _context = context;
