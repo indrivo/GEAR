@@ -22,7 +22,7 @@ using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Services
 {
-    public class Notify<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, string> where TRole : IdentityRole<string> where TUser : IdentityUser
+    public class NotifyWithDynamicEntities<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, string> where TRole : IdentityRole<string> where TUser : IdentityUser
     {
         #region Injectable
 
@@ -41,7 +41,7 @@ namespace GR.Notifications.Services
         /// <summary>
         /// Logger
         /// </summary>
-        private readonly ILogger<Notify<TContext, TRole, TUser>> _logger;
+        private readonly ILogger<NotifyWithDynamicEntities<TContext, TRole, TUser>> _logger;
 
         /// <summary>
         /// Email sender
@@ -64,7 +64,7 @@ namespace GR.Notifications.Services
         /// <param name="logger"></param>
         /// <param name="emailSender"></param>
         /// <param name="userManager"></param>
-        public Notify(IDynamicService dataService, TContext context, ICommunicationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<GearUser> userManager)
+        public NotifyWithDynamicEntities(IDynamicService dataService, TContext context, ICommunicationHub hub, ILogger<NotifyWithDynamicEntities<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<GearUser> userManager)
         {
             _dataService = dataService;
             _context = context;

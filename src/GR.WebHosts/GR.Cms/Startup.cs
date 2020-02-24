@@ -231,7 +231,7 @@ namespace GR.Cms
 				.RegisterProgramAssembly(typeof(Program));
 
 			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<Notify<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
