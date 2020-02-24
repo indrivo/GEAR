@@ -19,8 +19,7 @@ deploy_to_server_job:
   only:
     - develop
   environment:
-    name: ISO
-    url: "http://109.185.158.154:6969"
+    name: APP
   before_script:
     - pushd "./src/GR.WebHosts/GR.Cms"
     - dotnet restore

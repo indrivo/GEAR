@@ -12,7 +12,7 @@
   "PageStyles": [
     {
       "Order": 1,
-      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/iso/css/style.css\" />"
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/cosmo/css/style.css\" />"
     },
     {
       "Order": 2,
@@ -32,7 +32,7 @@
     },
     {
       "Order": 6,
-      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/iso/css/custom.css\" />"
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/themes/cosmo/css/custom.css\" />"
     }
   ],
   "PageScripts": [
@@ -42,11 +42,11 @@
     },
     {
       "Order": 2,
-      "Script": "<script type=\"text/javascript\" src=\"/themes/iso/js/site.js\"></script>"
+      "Script": "<script type=\"text/javascript\" src=\"/themes/cosmo/js/site.js\"></script>"
     },
     {
       "Order": 3,
-      "Script": "<script type=\"text/javascript\" src=\"/themes/iso/js/bundle.js\"></script>"
+      "Script": "<script type=\"text/javascript\" src=\"/themes/cosmo/js/bundle.js\"></script>"
     }
   ]
 }

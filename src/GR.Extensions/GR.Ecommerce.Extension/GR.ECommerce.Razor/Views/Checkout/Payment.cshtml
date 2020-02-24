@@ -109,7 +109,7 @@
             {
                 @foreach (var provider in providers)
                 {
-                    var partialViewName = $"_{provider.Name}_PaymentMethodPartialView";
+                    var partialViewName = $"_{provider.Name}_MethodPartialView";
                     <partial name="@partialViewName" model="@Model.Id" />
                 }
             }

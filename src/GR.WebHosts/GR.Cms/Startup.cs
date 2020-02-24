@@ -14,7 +14,6 @@ using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.Calendar.Providers.Google.Extensions;
 using GR.Calendar.Providers.Outlook.Extensions;
 using GR.Calendar.Razor.Extensions;
-using GR.Cms.Services.Abstractions;
 using GR.Core.Extensions;
 using GR.Dashboard;
 using GR.Dashboard.Abstractions;
@@ -117,12 +116,14 @@ using GR.WorkFlows.Data;
 using GR.WorkFlows.Razor.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using GR.Braintree;
+using GR.Braintree.Abstractions.Extensions;
+using GR.Braintree.Razor.Extensions;
 using GR.Forms;
 using GR.Identity.Data.Groups;
 using GR.Identity.Razor.Extensions;
@@ -131,7 +132,6 @@ using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
-using TreeIsoService = GR.Cms.Services.TreeIsoService;
 using GR.Documents.Razor.Extensions;
 
 #endregion Usings
@@ -154,16 +154,9 @@ namespace GR.Cms
 		public override void Configure(IApplicationBuilder app)
 			=> app.UseGearWebApp(config =>
 			{
-				config.AppName = "ISO APP";
+				config.AppName = "Web APP";
 				config.HostingEnvironment = HostingEnvironment;
 				config.Configuration = Configuration;
-				//rewrite root path to redirect on dynamic page, only for commerce landing page
-				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
-					{
-						{
-							"/", context => context.MapTo("/public")
-						}
-					};
 			});
 
 		/// <summary>
@@ -379,9 +372,6 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterPaypalProvider<PaypalPaymentMethodService>()
-				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
-				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
 				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
 				.RegisterPayments<PaymentService>()
@@ -394,15 +384,20 @@ namespace GR.Cms
 				.RegisterSubscriptionEvents()
 				.RegisterSubscriptionRules()
 				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				//Paypal
+				.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				.RegisterPaypalRazorProvider(Configuration)
+				//Mobil Pay
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterMobilPayRazorProvider(Configuration)
+				//Braintree
+				.RegisterBraintreeProvider<BraintreePaymentMethodService>()
+				.RegisterBraintreeRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			config.GearServices.AddTenantModule<OrganizationService, Tenant>()
 				.AddMultiTenantRazorUIModule();
-
-			//------------------------------------------Custom ISO-------------------------------------
-			config.GearServices.AddTransient<ITreeIsoService, TreeIsoService>();
 
 			//-------------------------------------Workflow module-------------------------------------
 			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
