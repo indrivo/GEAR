@@ -7,7 +7,7 @@ namespace GR.Core.Helpers
         public static object GetPropertyValue(this object obj, string name)
         {
             return obj?.GetType()
-                .GetProperty(name.FirstCharToUpper())
+                .GetProperty(name.Trim().FirstCharToUpper())
                 ?.GetValue(obj, null);
         }
     }

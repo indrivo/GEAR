@@ -1,0 +1,60 @@
+﻿@using GR.Braintree.Abstractions
+@using GR.Core.Razor.Extensions
+
+@model Guid
+@inject IBraintreePaymentMethod PaymentMethod
+
+
+<div class="form-group">
+    <div class="col-md-12">
+        <button type="button" class="btn btn-order payment-method-button card" data-toggle="modal" data-target="#braintreeModal">Pay with Braintree</button>
+    </div>
+</div>
+
+<!-- Trigger the modal with a button -->
+<!-- Modal -->
+<div id="braintreeModal" class="modal" role="dialog" style="z-index: 999999">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="alert alert-success alert-dismissible" style='display: none;'>
+                    <span id="alertBraintree"></span>
+                    <button data-dismiss="alert" type="button" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="dropin-container"></div>
+                <button id="braintree-submit-button" class="btn btn-primary">Pay</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginPartialViewScripts())
+{
+    <script src="https://js.braintreegateway.com/web/dropin/1.14.1/js/dropin.min.js"></script>
+    <script src="~/assets/js/braintree-plugin.js"></script>
+    <script>
+    const plugin = new BraintreePlugin({
+        clientToken: "@(await PaymentMethod.GetClientToken())",
+        invokeButtonSelector: "#braintree-submit-button",
+        url: "@Url.Action("Charge", "Braintree")"
+    });
+        console.log(plugin);
+        plugin.initAsync().then(ob => {
+            console.log(ob);
+            plugin.payAsync("@Model", ob.payload).then(data => {
+             window.location = "/checkout/success?orderId=" + data.orderId;
+             }).catch(e => {
+                console.log(e);
+            });
+        }).catch(e => {
+        console.log(e);
+    });
+
+    </script>
+}

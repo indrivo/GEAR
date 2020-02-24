@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\..\GR.Files.Abstraction\GR.Files.Abstraction.csproj" />
     <ProjectReference Include="..\..\GR.WorkFlow.Extension\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>

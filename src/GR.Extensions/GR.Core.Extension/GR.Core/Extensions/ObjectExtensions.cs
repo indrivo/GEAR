@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Mapster;
@@ -79,7 +82,7 @@ namespace GR.Core.Extensions
         /// <returns>Returns the copied object.</returns>
         public static T Clone<T>(this object item)
         {
-            if (item == null) return default(T);
+            if (item == null) return default;
             var formatter = new BinaryFormatter();
             var stream = new MemoryStream();
 
@@ -165,5 +168,14 @@ namespace GR.Core.Extensions
                     return default;
             }
         }
+
+        /// <summary>
+        /// Get type proprieties by prop type
+        /// </summary>
+        /// <param name="sourceType"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> GetTypeProprietiesByType(this Type sourceType, Type type)
+            => sourceType.GetProperties().Where(x => x.PropertyType == type).ToList();
     }
 }

@@ -2,14 +2,16 @@
 {
     public enum Criteria
     {
-        Equals, 
-        Greater, 
+        Equals,
+        Greater,
         Less,
-        Contains, 
-        StartWith, 
+        LessOrEqual,
+        GreaterOrEqual,
+        Contains,
+        StartWith,
         EndWith,
-        BetWheen, 
-        DateRange, 
+        BetWheen,
+        DateRange,
         AtLeastOne
     }
 }
