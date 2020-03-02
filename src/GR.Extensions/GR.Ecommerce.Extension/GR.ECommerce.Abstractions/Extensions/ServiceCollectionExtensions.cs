@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Events;
 using GR.ECommerce.Abstractions.Models;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.ECommerce.Abstractions.Extensions
 {
@@ -62,7 +62,7 @@ namespace GR.ECommerce.Abstractions.Extensions
             services.AddDbContext<TContext>(storageOptions);
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TContext>();
             };
             return services;
         }

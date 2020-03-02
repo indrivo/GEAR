@@ -17,9 +17,9 @@ using GR.MultiTenant.Abstractions.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.WebApplication;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
 namespace GR.Install
@@ -31,7 +31,7 @@ namespace GR.Install
         /// <summary>
         /// Inject env
         /// </summary>
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Inject application context
@@ -55,7 +55,7 @@ namespace GR.Install
 
         #endregion
 
-        public GearWebInstallerService(INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostingEnvironment hostingEnvironment)
+        public GearWebInstallerService(INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostEnvironment hostingEnvironment)
         {
             _notify = notify;
             _permissionService = permissionService;

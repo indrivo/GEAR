@@ -6,7 +6,6 @@ using GR.Identity.Data.Permissions;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Seeders;
 using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -15,13 +14,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Identity.IdentityServer4.Seeders
 {
     public static class IdentityServerConfigDbSeeder
     {
         public static async Task SeedAsync<TIdentityServer4Configurator>(TIdentityServer4Configurator configurator, ConfigurationDbContext context, ApplicationDbContext applicationDbContext,
-            IConfiguration configuration, IHostingEnvironment env) where TIdentityServer4Configurator : IdentityServer4Configurator
+            IConfiguration configuration, IHostEnvironment env) where TIdentityServer4Configurator : IdentityServer4Configurator
         {
             var clientUrls = new Dictionary<string, string>
             {
@@ -152,7 +152,7 @@ namespace GR.Identity.IdentityServer4.Seeders
         /// <param name="configuration"></param>
         /// <param name="sectionName"></param>
         /// <returns></returns>
-        public static string GetClientUrl(IHostingEnvironment env, IConfiguration configuration, string sectionName)
+        public static string GetClientUrl(IHostEnvironment env, IConfiguration configuration, string sectionName)
         {
             var configs = configuration.GetSection("WebClients");
             var clientSection = configs.GetSection(sectionName);

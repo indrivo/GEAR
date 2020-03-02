@@ -4,9 +4,9 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.UI.Menu.Abstractions.Events;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.UI.Menu.Abstractions.Extensions
 {
@@ -43,7 +43,7 @@ namespace GR.UI.Menu.Abstractions.Extensions
 
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TMenuContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TMenuContext>();
             };
             return services;
         }

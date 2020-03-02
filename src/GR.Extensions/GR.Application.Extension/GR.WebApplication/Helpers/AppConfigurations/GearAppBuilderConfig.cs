@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WebApplication.Helpers.AppConfigurations
 {
@@ -16,7 +16,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// <summary>
         /// Hosting environment
         /// </summary>
-        public IHostingEnvironment HostingEnvironment { get; set; }
+        public IHostEnvironment HostingEnvironment { get; set; }
 
         /// <summary>
         /// App configuration

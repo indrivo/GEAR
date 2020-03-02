@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 
 namespace GR.Core.Helpers
 {
@@ -7,7 +7,7 @@ namespace GR.Core.Helpers
         /// <summary>
         /// Get file path
         /// </summary>
-        public static string AppSettingsFilepath(IHostingEnvironment hostingEnvironment)
+        public static string AppSettingsFilepath(IHostEnvironment hostingEnvironment)
         {
             var path = "appsettings.json";
             if (hostingEnvironment.IsDevelopment())

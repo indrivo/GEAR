@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.TaskManager.Abstractions.BackgroundServices;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.TaskManager.Abstractions.Extensions
 {
@@ -44,7 +44,7 @@ namespace GR.TaskManager.Abstractions.Extensions
             services.RegisterAuditFor<ITaskManagerContext>($"{nameof(TaskManager)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TTaskManagerContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TTaskManagerContext>();
             };
             return services;
         }

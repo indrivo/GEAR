@@ -7,9 +7,9 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.WorkFlows.Abstractions.Helpers.ActionHandlers;
 using GR.WorkFlows.Abstractions.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WorkFlows.Abstractions.Extensions
 {
@@ -50,7 +50,7 @@ namespace GR.WorkFlows.Abstractions.Extensions
             services.RegisterAuditFor<IWorkFlowContext>($"{nameof(WorkFlow)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TContext>();
             };
             return services;
         }

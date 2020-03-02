@@ -5,7 +5,7 @@ using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Report.Abstractions.Extensions
 {
@@ -39,7 +39,7 @@ namespace GR.Report.Abstractions.Extensions
             services.RegisterAuditFor<IReportContext>($"{nameof(Report)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TReportContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TReportContext>();
             };
             return services;
         }

@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using GR.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core.Extensions;
 using GR.Install.Abstractions;
 using GR.Install.Abstractions.Models;
 using GR.WebApplication;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Install.Razor.Controllers
 {
@@ -39,7 +39,7 @@ namespace GR.Install.Razor.Controllers
         /// <param name="hostingEnvironment"></param>
         /// <param name="configuration"></param>
         /// <param name="installerService"></param>
-        public InstallerController(IHostingEnvironment hostingEnvironment, IConfiguration configuration, IGearWebInstallerService installerService)
+        public InstallerController(IHostEnvironment hostingEnvironment, IConfiguration configuration, IGearWebInstallerService installerService)
         {
             _configuration = configuration;
             _installerService = installerService;

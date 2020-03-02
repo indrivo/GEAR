@@ -5,8 +5,17 @@ using GR.Email.Abstractions.Models.EmailViewModels;
 
 namespace GR.Email.Abstractions
 {
-    public interface IEmailSender : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender
+    public interface IEmailSender
     {
+        /// <summary>
+        /// Send email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task SendEmailAsync(string email, string subject, string message);
+
         /// <summary>
         /// Send message to multiple users
         /// </summary>

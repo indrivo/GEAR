@@ -10,7 +10,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Helpers.Compilers;
 using GR.Dashboard.Abstractions.ServiceBuilder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Dashboard.Abstractions.Extensions
 {
@@ -53,7 +53,7 @@ namespace GR.Dashboard.Abstractions.Extensions
             configuration.Services.AddScopedContextFactory<IDashboardDbContext, TDbContext>();
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TDbContext>();
             };
             return configuration;
         }

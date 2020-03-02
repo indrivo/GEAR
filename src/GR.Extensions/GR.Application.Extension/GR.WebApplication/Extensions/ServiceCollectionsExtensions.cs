@@ -19,7 +19,6 @@ using GR.PageRender.Abstractions.Extensions;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -29,6 +28,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace GR.WebApplication.Extensions
@@ -61,8 +61,8 @@ namespace GR.WebApplication.Extensions
                     options.EnableEndpointRouting = false;
                     options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x =>
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddNewtonsoftJson(x =>
                 {
                     x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
                 });
@@ -145,10 +145,10 @@ namespace GR.WebApplication.Extensions
                 .CreateScope())
             {
                 var sp = serviceScope.ServiceProvider;
-                var environment = sp.GetService<IHostingEnvironment>();
+                var environment = sp.GetService<IHostEnvironment>();
                 GearWebApplication.IsConfigured(environment);
 
-                var lifeTimeService = serviceScope.ServiceProvider.GetService<IApplicationLifetime>();
+                var lifeTimeService = serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
                 lifeTimeService.RegisterAppEvents(app, configuration.AppName);
 
                 //----------------------------------Localization Usage-------------------------------------

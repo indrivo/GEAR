@@ -115,7 +115,6 @@ using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Data;
 using GR.WorkFlows.Razor.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -133,6 +132,7 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using Microsoft.Extensions.Hosting;
 
 #endregion Usings
 
@@ -145,7 +145,7 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="configuration"></param>
 		/// <param name="env"></param>
-		public Startup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env) { }
+		public Startup(IConfiguration configuration, IHostEnvironment env) : base(configuration, env) { }
 
 		/// <summary>
 		/// Configure cms app

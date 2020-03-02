@@ -2,9 +2,9 @@
 using System.Reflection;
 using GR.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WebApplication.Helpers
 {
@@ -20,7 +20,7 @@ namespace GR.WebApplication.Helpers
         /// <summary>
         /// Hosting configuration
         /// </summary>
-        protected virtual IHostingEnvironment HostingEnvironment { get; }
+        protected virtual IHostEnvironment HostingEnvironment { get; }
 
         #endregion
 
@@ -30,7 +30,7 @@ namespace GR.WebApplication.Helpers
         protected static readonly string MigrationsAssembly =
             typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
 
-        protected GearCoreStartup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        protected GearCoreStartup(IConfiguration configuration, IHostEnvironment hostingEnvironment)
         {
             Configuration = configuration;
             HostingEnvironment = hostingEnvironment;

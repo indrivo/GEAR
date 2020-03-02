@@ -20,8 +20,9 @@ using GR.Core.Helpers.Global;
 using GR.Entities.Data;
 using GR.Logger.Extensions;
 using GR.UI.Menu.Data;
+using GR.WebApplication.Helpers;
 using GR.WebApplication.Models;
-using Microsoft.AspNetCore;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
 namespace GR.WebApplication
@@ -32,12 +33,12 @@ namespace GR.WebApplication
         /// <summary>
         /// Build web host
         /// </summary>
-        protected static IWebHost GlobalWebHost;
+        protected static IHost GlobalWebHost;
 
         /// <summary>
         /// Get settings
         /// </summary>
-        public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
+        public static AppSettingsModel.RootObject Settings(IHostEnvironment hostingEnvironment)
             => JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(
                 ResourceProvider.AppSettingsFilepath(hostingEnvironment));
 
@@ -55,7 +56,7 @@ namespace GR.WebApplication
         /// Migrate Web host extension
         /// </summary>
         /// <returns></returns>
-        private static IWebHost Migrate()
+        private static IHost Migrate()
         {
             AppState.InstallOnProgress = true;
 
@@ -67,7 +68,7 @@ namespace GR.WebApplication
                 .MigrateDbContext<ConfigurationDbContext>((context, services) =>
                 {
                     var config = services.GetService<IConfiguration>();
-                    var env = services.GetService<IHostingEnvironment>();
+                    var env = services.GetService<IWebHostEnvironment>();
                     var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
                     var configurator = new IdentityServer4Configurator();
                     IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
@@ -83,10 +84,10 @@ namespace GR.WebApplication
         /// Run application
         /// </summary>
         /// <param name="args"></param>
-        public static void Run<TStartUp>(string[] args) where TStartUp : class
+        public static void Run<TStartup>(string[] args) where TStartup : GearCoreStartup
         {
             SystemEvents.RegisterEvents();
-            BuildWebHost<TStartUp>(args).Run();
+            BuildWebHost<TStartup>(args).Run();
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace GR.WebApplication
         /// </summary>
         /// <param name="hostingEnvironment"></param>
         /// <returns></returns>
-        public static bool IsConfigured(IHostingEnvironment hostingEnvironment)
+        public static bool IsConfigured(IHostEnvironment hostingEnvironment)
         {
             var settings = Settings(hostingEnvironment);
             ConfigurationsApplied = settings != null && settings.IsConfigured;
@@ -160,14 +161,17 @@ namespace GR.WebApplication
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private static IWebHost BuildWebHost<TStartUp>(string[] args) where TStartUp : class
+        private static IHost BuildWebHost<TStartup>(string[] args) where TStartup : GearCoreStartup
         {
-            GlobalAppHost = GlobalWebHost = WebHost.CreateDefaultBuilder(args)
-                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
-                .UseConfiguration(BuildConfiguration())
-                .RegisterGearLoggingProviders()
-                .CaptureStartupErrors(true)
-                .UseStartup<TStartUp>()
+            GlobalAppHost = GlobalWebHost = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<TStartup>();
+                    webBuilder.UseSetting(WebHostDefaults.DetailedErrorsKey, "true");
+                    webBuilder.UseConfiguration(BuildConfiguration());
+                    webBuilder.RegisterGearLoggingProviders();
+                    webBuilder.CaptureStartupErrors(true);
+                })
                 .ConfigureAppConfiguration((hostingContext, conf) =>
                 {
                     var path = Path.Combine(AppContext.BaseDirectory, "translationSettings.json");

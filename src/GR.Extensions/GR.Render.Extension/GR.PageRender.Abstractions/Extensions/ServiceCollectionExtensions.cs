@@ -10,8 +10,8 @@ using GR.Core.Helpers;
 using GR.PageRender.Abstractions.Events;
 using GR.PageRender.Abstractions.Helpers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.PageRender.Abstractions.Extensions
 {
@@ -46,7 +46,7 @@ namespace GR.PageRender.Abstractions.Extensions
 
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TPageContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TPageContext>();
             };
             return services;
         }

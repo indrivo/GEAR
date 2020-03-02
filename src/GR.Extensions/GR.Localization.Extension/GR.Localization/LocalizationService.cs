@@ -8,7 +8,7 @@ using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -19,12 +19,12 @@ namespace GR.Localization
     public class LocalizationService : ILocalizationService
     {
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
-        private readonly IHostingEnvironment _env;
+        private readonly IHostEnvironment _env;
         private readonly IStringLocalizer _localizer;
         private readonly ICacheService _cache;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
 
-        public LocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env,
+        public LocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostEnvironment env,
             IStringLocalizer localizer, ICacheService cache, IExternalTranslationProvider externalTranslationProvider)
         {
             _env = env;

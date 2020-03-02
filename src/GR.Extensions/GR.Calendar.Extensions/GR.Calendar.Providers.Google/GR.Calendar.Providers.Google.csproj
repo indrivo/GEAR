@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.41.1.1732" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.43.0.1872" />
     <PackageReference Include="Google.Apis.People.v1" Version="1.25.0.830" />
-    <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.41.1.1741" />
+    <PackageReference Include="Google.Apis.PeopleService.v1" Version="1.43.0.1876" />
   </ItemGroup>
 
   <ItemGroup>

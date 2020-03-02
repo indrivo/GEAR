@@ -9,8 +9,8 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ServiceBuilder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Notifications.Abstractions.Extensions
 {
@@ -60,7 +60,7 @@ namespace GR.Notifications.Abstractions.Extensions
             services.Services.RegisterAuditFor<INotificationSubscriptionsDbContext>($"{nameof(Notification)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost<IHost>().MigrateDbContext<TContext>();
             };
             return services;
         }

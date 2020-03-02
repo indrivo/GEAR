@@ -1,10 +1,10 @@
 ﻿using System;
 using GR.Identity.Versioning;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WebApplication.Helpers.AppConfigurations
 {
@@ -16,7 +16,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// <summary>
         /// Hosting environment
         /// </summary>
-        public virtual IHostingEnvironment HostingEnvironment { get; set; }
+        public virtual IHostEnvironment HostingEnvironment { get; set; }
 
         /// <summary>
         /// App configuration

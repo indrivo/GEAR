@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Core.Extensions
 {
     public static class ApplicationLifeTimeExtensions
     {
-        public static IApplicationLifetime RegisterAppEvents(this IApplicationLifetime lifeTime, IApplicationBuilder app, string appName)
+        public static IHostApplicationLifetime RegisterAppEvents(this IHostApplicationLifetime lifeTime, IApplicationBuilder app, string appName)
         {
             lifeTime.ApplicationStarted.Register(() =>
                 SystemEvents.Application.ApplicationStarted(new ApplicationStartedEventArgs

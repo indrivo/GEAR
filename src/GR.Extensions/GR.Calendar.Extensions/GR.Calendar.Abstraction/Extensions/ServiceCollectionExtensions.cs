@@ -14,8 +14,8 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 
 namespace GR.Calendar.Abstractions.Extensions
@@ -54,7 +54,7 @@ namespace GR.Calendar.Abstractions.Extensions
             configuration.Services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
                 {
-                    GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+                    GearApplication.GetHost<IHost>().MigrateDbContext<TDbContext>();
                 };
             return configuration;
         }
