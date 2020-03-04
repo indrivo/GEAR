@@ -161,7 +161,7 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
             where TLocationService : class, ILocationService
         {
-            services.AddGearSingleton<ILocationService, TLocationService>();
+            services.AddGearScoped<ILocationService, TLocationService>();
             return services;
         }
     }

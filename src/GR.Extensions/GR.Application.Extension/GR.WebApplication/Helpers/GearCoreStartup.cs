@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using GR.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -52,6 +51,6 @@ namespace GR.WebApplication.Helpers
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public abstract IServiceProvider ConfigureServices(IServiceCollection services);
+        public abstract void ConfigureServices(IServiceCollection services);
     }
 }

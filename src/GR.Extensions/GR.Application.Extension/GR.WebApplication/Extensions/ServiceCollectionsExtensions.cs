@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Facilities.AspNetCore;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Exceptions;
@@ -41,12 +42,15 @@ namespace GR.WebApplication.Extensions
         /// <param name="services"></param>
         /// <param name="configAction"></param>
         /// <returns></returns>
-        public static IServiceProvider RegisterGearWebApp(this IServiceCollection services, Action<GearServiceCollectionConfig> configAction)
+        public static void RegisterGearWebApp(this IServiceCollection services, Action<GearServiceCollectionConfig> configAction)
         {
             var configuration = new GearServiceCollectionConfig
             {
                 GearServices = services
             };
+
+            // Setup component model contributors for making windsor services available to IServiceProvider
+            IoC.Container.AddFacility<AspNetCoreFacility>(f => f.CrossWiresInto(services));
             configAction(configuration);
 
             //Register system config
@@ -61,7 +65,7 @@ namespace GR.WebApplication.Extensions
                     options.EnableEndpointRouting = false;
                     options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddNewtonsoftJson(x =>
                 {
                     x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
@@ -104,15 +108,6 @@ namespace GR.WebApplication.Extensions
                 services.AddCacheModule<InMemoryCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
 
-            //---------------------------------Api version Module-------------------------------------
-            services.AddApiVersioning(options =>
-            {
-                options.ReportApiVersions = configuration.ApiVersioningOptions.ReportApiVersions;
-                options.AssumeDefaultVersionWhenUnspecified = configuration.ApiVersioningOptions.AssumeDefaultVersionWhenUnspecified;
-                options.DefaultApiVersion = configuration.ApiVersioningOptions.DefaultApiVersion;
-                options.ErrorResponses = configuration.ApiVersioningOptions.ErrorResponses;
-            });
-
             //--------------------------------------SignalR Module-------------------------------------
             if (configuration.SignlarConfiguration.UseDefaultConfiguration)
                 services.RegisterNotificationsHubModule<CommunicationHub>();
@@ -126,7 +121,11 @@ namespace GR.WebApplication.Extensions
             var cacheService = configuration.BuildGearServices.GetService<IMemoryCache>();
             IoC.Container.Register(Component.For<IMemoryCache>().Instance(cacheService));
 
-            return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
+            //services.AddWindsor(IoC.Container, opts =>
+            //{
+            //    opts.UseEntryAssembly(typeof(GearServiceCollectionConfig).Assembly);
+            //});
+            //return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>

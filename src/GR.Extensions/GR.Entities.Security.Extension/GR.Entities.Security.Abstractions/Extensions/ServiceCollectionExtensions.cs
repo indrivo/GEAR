@@ -22,7 +22,7 @@ namespace GR.Entities.Security.Abstractions.Extensions
             where TRepository : class, IEntityRoleAccessService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IEntityRoleAccessService, TRepository>();
+            services.AddGearScoped<IEntityRoleAccessService, TRepository>();
             IoC.RegisterTransientService<IEntityRoleAccessService, TRepository>();
 
             EntityEvents.Entities.OnEntityDeleted += (sender, args) =>

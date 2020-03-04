@@ -164,263 +164,265 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="services"></param>
 		/// <returns></returns>
-		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
-			services.RegisterGearWebApp(config =>
+		public override void ConfigureServices(IServiceCollection services)
 		{
-			config.Configuration = Configuration;
-			config.HostingEnvironment = HostingEnvironment;
-			config.CacheConfiguration.UseInMemoryCache = true;
+			services.RegisterGearWebApp(config =>
+			{
+				config.Configuration = Configuration;
+				config.HostingEnvironment = HostingEnvironment;
+				config.CacheConfiguration.UseInMemoryCache = true;
 
-			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<ApplicationDbContext>()
-				.AddIdentityUserManager<IdentityUserManager, GearUser>()
-				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
-				.AddAppProvider<AppProvider>()
-				.AddUserAddressService<UserAddressService>()
-				.AddIdentityModuleEvents()
-				.RegisterLocationService<LocationService>()
-				.AddIdentityRazorModule();
+				//------------------------------Identity Module-------------------------------------
+				config.GearServices.AddIdentityModule<ApplicationDbContext>()
+					.AddIdentityUserManager<IdentityUserManager, GearUser>()
+					.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
+					.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
+					.AddAppProvider<AppProvider>()
+					.AddUserAddressService<UserAddressService>()
+					.AddIdentityModuleEvents()
+					.RegisterLocationService<LocationService>()
+					.AddIdentityRazorModule();
 
-			config.GearServices.AddAuthentication(Configuration)
-				.AddPermissionService<PermissionService<ApplicationDbContext>>()
-				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, MigrationsAssembly);
+				config.GearServices.AddAuthentication(Configuration)
+					.AddPermissionService<PermissionService<ApplicationDbContext>>()
+					.AddIdentityModuleProfileServices()
+					.AddIdentityServer(Configuration, MigrationsAssembly);
 
-			//---------------------------------------Entity Module-------------------------------------
-			config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
-				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
-				.AddEntityModuleStorage<EntitiesDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddEntityModuleEvents()
-				.RegisterEntityBuilderJob()
-				.AddEntityRazorUIModule();
+				//---------------------------------------Entity Module-------------------------------------
+				config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
+					.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
+					.AddEntityModuleStorage<EntitiesDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddEntityModuleEvents()
+					.RegisterEntityBuilderJob()
+					.AddEntityRazorUIModule();
 
-			//------------------------------Entity Security Module-------------------------------------
-			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
-				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddEntitySecurityRazorUIModule();
+				//------------------------------Entity Security Module-------------------------------------
+				config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
+					.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddEntitySecurityRazorUIModule();
 
-			//----------------------------------------Audit Module-------------------------------------
-			config.GearServices.AddAuditModule<AuditManager>();
+				//----------------------------------------Audit Module-------------------------------------
+				config.GearServices.AddAuditModule<AuditManager>();
 
-			//---------------------------Dynamic repository Module-------------------------------------
-			config.GearServices.AddDynamicDataProviderModule<EntitiesDbContext>();
+				//---------------------------Dynamic repository Module-------------------------------------
+				config.GearServices.AddDynamicDataProviderModule<EntitiesDbContext>();
 
-			//------------------------------------Dashboard Module-------------------------------------
-			config.GearServices.AddDashboardModule<DashboardService, WidgetGroupRepository, WidgetService>()
-				.AddDashboardModuleStorage<DashBoardDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.RegisterDashboardEvents()
-				.AddDashboardRazorUIModule()
-				.AddDashboardRenderServices(new Dictionary<Type, Type>
-				{
+				//------------------------------------Dashboard Module-------------------------------------
+				config.GearServices.AddDashboardModule<DashboardService, WidgetGroupRepository, WidgetService>()
+					.AddDashboardModuleStorage<DashBoardDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.RegisterDashboardEvents()
+					.AddDashboardRazorUIModule()
+					.AddDashboardRenderServices(new Dictionary<Type, Type>
+					{
 					{typeof(IWidgetRenderer<ReportWidget>), typeof(ReportWidgetRender)},
 					{typeof(IWidgetRenderer<CustomWidget>), typeof(CustomWidgetRender)},
-				})
-				.RegisterProgramAssembly(typeof(Program));
-
-			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
-				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
-				.AddNotificationModuleEvents()
-				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddNotificationRazorUIModule();
-
-			//---------------------------------Localization Module-------------------------------------
-			config.GearServices
-				.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
-					new TranslationModuleOptions
-					{
-						Configuration = Configuration,
-						LocalizationProvider = LocalizationProvider.Yandex
 					})
-				.AddLocalizationRazorModule();
+					.RegisterProgramAssembly(typeof(Program));
 
-			//--------------------------------------Menu UI Module-------------------------------------
-			config.GearServices.AddMenuModule<MenuService>()
-				.AddMenuModuleStorage<MenuDbContext>(options =>
+				//-------------------------------Notification Module-------------------------------------
+				config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+					.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
+					.AddNotificationModuleEvents()
+					.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddNotificationRazorUIModule();
+
+				//---------------------------------Localization Module-------------------------------------
+				config.GearServices
+					.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
+						new TranslationModuleOptions
+						{
+							Configuration = Configuration,
+							LocalizationProvider = LocalizationProvider.Yandex
+						})
+					.AddLocalizationRazorModule();
+
+				//--------------------------------------Menu UI Module-------------------------------------
+				config.GearServices.AddMenuModule<MenuService>()
+					.AddMenuModuleStorage<MenuDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					});
+
+
+				//------------------------------Database backup Module-------------------------------------
+				config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
+						PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+
+				//------------------------------------Processes Module-------------------------------------
+				config.GearServices.AddProcessesModule()
+				.AddDbContext<ProcessesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
 
+				//------------------------------------Calendar Module-------------------------------------
+				config.GearServices.AddCalendarModule<CalendarManager>()
+					.AddCalendarModuleStorage<CalendarDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddCalendarRazorUIModule()
+					.SetSerializationFormatSettings(settings =>
+					{
+						settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+					})
+					.AddCalendarRuntimeEvents()
+					.RegisterSyncOnExternalCalendars()
+					.RegisterTokenProvider<CalendarExternalTokenProvider>()
+					.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
+					.RegisterGoogleCalendarProvider()
+					.RegisterOutlookCalendarProvider(options =>
+					{
+						options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
+						options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
+						options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
+					})
+					.AddCalendarGraphQlApi();
 
-			//------------------------------Database backup Module-------------------------------------
-			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
-					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+				//------------------------------------File Module-------------------------------------
+				config.GearServices.AddFileModule<FileManager<FileDbContext>>()
+					.AddFileModuleStorage<FileDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					}, Configuration);
 
-			//------------------------------------Processes Module-------------------------------------
-			config.GearServices.AddProcessesModule()
-			.AddDbContext<ProcessesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
+				config.GearServices
+					.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
+					.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					}, Configuration);
+				//------------------------------------Task Module-------------------------------------
+				config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
+					.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddTaskManagerRazorUIModule();
+
+				//-----------------------------------------Form Module-------------------------------------
+				config.GearServices.AddFormModule<FormDbContext>()
+					.AddFormModuleStorage<FormDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.RegisterFormService<FormService<FormDbContext>>()
+					.AddFormStaticFilesModule();
+
+				//-----------------------------------------Page Module-------------------------------------
+				config.GearServices.AddPageModule()
+					.AddPageModuleStorage<DynamicPagesDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddPageRenderUIModule<PageRender.PageRender>()
+					.RegisterViewModelService<ViewModelService>()
+					.AddPageAclService<PageAclService>();
+
+				//---------------------------------------Report Module-------------------------------------
+				config.GearServices.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
+					.AddDynamicReportModuleStorage<DynamicReportDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddReportUIModule();
+
+				//----------------------------------------Installer Module-------------------------------------
+				config.GearServices.AddInstallerModule<GearWebInstallerService>();
+
+				//----------------------------------------Email Module-------------------------------------
+				config.GearServices.AddEmailModule<EmailSender>()
+					.AddEmailRazorUIModule()
+					.BindEmailSettings(Configuration);
+
+				//----------------------------------------Ldap Module-------------------------------------
+				config.GearServices
+					.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(
+						Configuration);
+
+				//-------------------------------------Commerce module-------------------------------------
+				config.GearServices.RegisterCommerceModule<CommerceDbContext>()
+					.RegisterCommerceProductRepository<ProductService, Product>()
+					.RegisterCommerceStorage<CommerceDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.RegisterProductOrderServices<Order, OrderProductService>()
+					.RegisterSubscriptionServices<Subscription, SubscriptionService>()
+					.RegisterPayments<PaymentService>()
+					.RegisterCartService<CartService>()
+					.RegisterOrdersStorage<CommerceDbContext>()
+					.RegisterSubscriptionStorage<CommerceDbContext>()
+					.RegisterPaymentStorage<CommerceDbContext>()
+					.RegisterCommerceEvents()
+					.RegisterOrderEvents()
+					.RegisterSubscriptionEvents()
+					.RegisterSubscriptionRules()
+					.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+					//Paypal
+					.RegisterPaypalProvider<PaypalPaymentMethodService>()
+					.RegisterPaypalRazorProvider(Configuration)
+					//Mobil Pay
+					.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
+					.RegisterMobilPayRazorProvider(Configuration)
+					//Braintree
+					.RegisterBraintreeProvider<BraintreePaymentMethodService>()
+					.RegisterBraintreeRazorProvider(Configuration)
+					.AddCommerceRazorUIModule();
+
+				//---------------------------------Multi Tenant Module-------------------------------------
+				config.GearServices.AddTenantModule<OrganizationService, Tenant>()
+					.AddMultiTenantRazorUIModule();
+
+				//-------------------------------------Workflow module-------------------------------------
+				config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
+					.AddWorkflowModuleStorage<WorkFlowsDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
+					.AddWorkflowRazorModule()
+					.RegisterWorkFlowContract(nameof(DocumentVersion), null);
+
+				//------------------------------------ Documents Module -----------------------------------
+
+				config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+					.RegisterDocumentTypeServices<DocumentTypeService>()
+					.RegisterDocumentCategoryServices<DocumentCategoryService>()
+					.RegisterDocumentServices<DocumentWithWorkflowService>()
+					.AddDocumentRazorUIModule();
+
 			});
-
-			//------------------------------------Calendar Module-------------------------------------
-			config.GearServices.AddCalendarModule<CalendarManager>()
-				.AddCalendarModuleStorage<CalendarDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddCalendarRazorUIModule()
-				.SetSerializationFormatSettings(settings =>
-				{
-					settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-				})
-				.AddCalendarRuntimeEvents()
-				.RegisterSyncOnExternalCalendars()
-				.RegisterTokenProvider<CalendarExternalTokenProvider>()
-				.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
-				.RegisterGoogleCalendarProvider()
-				.RegisterOutlookCalendarProvider(options =>
-				{
-					options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
-					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
-					options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
-				})
-				.AddCalendarGraphQlApi();
-
-			//------------------------------------File Module-------------------------------------
-			config.GearServices.AddFileModule<FileManager<FileDbContext>>()
-				.AddFileModuleStorage<FileDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				}, Configuration);
-
-			config.GearServices
-				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
-				.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				}, Configuration);
-			//------------------------------------Task Module-------------------------------------
-			config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
-				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddTaskManagerRazorUIModule();
-
-			//-----------------------------------------Form Module-------------------------------------
-			config.GearServices.AddFormModule<FormDbContext>()
-				.AddFormModuleStorage<FormDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.RegisterFormService<FormService<FormDbContext>>()
-				.AddFormStaticFilesModule();
-
-			//-----------------------------------------Page Module-------------------------------------
-			config.GearServices.AddPageModule()
-				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddPageRenderUIModule<PageRender.PageRender>()
-				.RegisterViewModelService<ViewModelService>()
-				.AddPageAclService<PageAclService>();
-
-			//---------------------------------------Report Module-------------------------------------
-			config.GearServices.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
-				.AddDynamicReportModuleStorage<DynamicReportDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddReportUIModule();
-
-			//----------------------------------------Installer Module-------------------------------------
-			config.GearServices.AddInstallerModule<GearWebInstallerService>();
-
-			//----------------------------------------Email Module-------------------------------------
-			config.GearServices.AddEmailModule<EmailSender>()
-				.AddEmailRazorUIModule()
-				.BindEmailSettings(Configuration);
-
-			//----------------------------------------Ldap Module-------------------------------------
-			config.GearServices
-				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(
-					Configuration);
-
-			//-------------------------------------Commerce module-------------------------------------
-			config.GearServices.RegisterCommerceModule<CommerceDbContext>()
-				.RegisterCommerceProductRepository<ProductService, Product>()
-				.RegisterCommerceStorage<CommerceDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.RegisterProductOrderServices<Order, OrderProductService>()
-				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
-				.RegisterPayments<PaymentService>()
-				.RegisterCartService<CartService>()
-				.RegisterOrdersStorage<CommerceDbContext>()
-				.RegisterSubscriptionStorage<CommerceDbContext>()
-				.RegisterPaymentStorage<CommerceDbContext>()
-				.RegisterCommerceEvents()
-				.RegisterOrderEvents()
-				.RegisterSubscriptionEvents()
-				.RegisterSubscriptionRules()
-				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
-				//Paypal
-				.RegisterPaypalProvider<PaypalPaymentMethodService>()
-				.RegisterPaypalRazorProvider(Configuration)
-				//Mobil Pay
-				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
-				.RegisterMobilPayRazorProvider(Configuration)
-				//Braintree
-				.RegisterBraintreeProvider<BraintreePaymentMethodService>()
-				.RegisterBraintreeRazorProvider(Configuration)
-				.AddCommerceRazorUIModule();
-
-			//---------------------------------Multi Tenant Module-------------------------------------
-			config.GearServices.AddTenantModule<OrganizationService, Tenant>()
-				.AddMultiTenantRazorUIModule();
-
-			//-------------------------------------Workflow module-------------------------------------
-			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
-				.AddWorkflowModuleStorage<WorkFlowsDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.AddWorkflowRazorModule()
-				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
-
-			//------------------------------------ Documents Module -----------------------------------
-
-			config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
-				.RegisterDocumentTypeServices<DocumentTypeService>()
-				.RegisterDocumentCategoryServices<DocumentCategoryService>()
-				.RegisterDocumentServices<DocumentWithWorkflowService>()
-				.AddDocumentRazorUIModule();
-
-		});
+		}
 	}
 }
