@@ -609,7 +609,7 @@ namespace GR.Identity.Razor.Controllers
 
         [HttpPost]
         public async Task<JsonResult> _EditRole([FromServices] SignInManager<GearUser> signInManager,
-            [FromServices] INotificationHub hub, string id, UpdateRoleViewModel model)
+            [FromServices] ICommunicationHub hub, string id, UpdateRoleViewModel model)
         {
             if (id != model.Id)
             {
@@ -826,7 +826,7 @@ namespace GR.Identity.Razor.Controllers
 
         [HttpPost]
         public async Task<JsonResult> _EditPermission([FromServices] SignInManager<GearUser> signInManager,
-            [FromServices] INotificationHub hub, EditPermissionViewModel model)
+            [FromServices] ICommunicationHub hub, EditPermissionViewModel model)
         {
             if (!ModelState.IsValid)
             {

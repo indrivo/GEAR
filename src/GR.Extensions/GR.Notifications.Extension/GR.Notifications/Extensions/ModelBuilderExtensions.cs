@@ -4,7 +4,7 @@ using GR.Notifications.Data;
 
 namespace GR.Notifications.Extensions
 {
-    public static class ModelBuilderExtensions
+    internal static class ModelBuilderExtensions
     {
         /// <summary>
         /// Db configurations

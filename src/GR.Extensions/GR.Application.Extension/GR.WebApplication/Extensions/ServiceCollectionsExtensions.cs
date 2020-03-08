@@ -13,7 +13,8 @@ using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
-using GR.Notifications.Extensions;
+using GR.Notifications.Abstractions.Extensions;
+using GR.Notifications.Hub.Hubs;
 using GR.PageRender.Abstractions.Extensions;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
@@ -114,7 +115,7 @@ namespace GR.WebApplication.Extensions
 
             //--------------------------------------SignalR Module-------------------------------------
             if (configuration.SignlarConfiguration.UseDefaultConfiguration)
-                services.AddSignalRModule();
+                services.RegisterNotificationsHubModule<CommunicationHub>();
 
 
             //--------------------------------------Swagger Module-------------------------------------
@@ -212,7 +213,7 @@ namespace GR.WebApplication.Extensions
             //---------------------------------------SignalR Usage-------------------------------------
             if (configuration.SignlarAppConfiguration.UseDefaultSignlarConfiguration)
             {
-                app.UseSignalRModule(configuration.SignlarAppConfiguration.Path);
+                app.UseNotificationsHub<GearNotificationHub>(configuration.SignlarAppConfiguration.Path);
             }
 
             return new GearAppBuilder(app.ApplicationServices);

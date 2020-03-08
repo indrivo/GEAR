@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
-    <Version>1.9.0</Version>
+    <Version>1.9.1</Version>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>commerce-ui gear orders razor</PackageTags>
-    <FileVersion>1.9.0</FileVersion>
-    <AssemblyVersion>1.9.0</AssemblyVersion>
+    <FileVersion>1.9.1</FileVersion>
+    <AssemblyVersion>1.9.1</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
-    <ProjectReference Include="..\..\..\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.ECommerce.Payments\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
   </ItemGroup>
 

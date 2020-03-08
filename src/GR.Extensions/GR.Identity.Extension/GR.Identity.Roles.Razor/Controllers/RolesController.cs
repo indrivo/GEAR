@@ -356,7 +356,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEditRole)]
-        public async Task<IActionResult> Edit([FromServices] INotificationHub hub, string id, UpdateRoleViewModel model)
+        public async Task<IActionResult> Edit([FromServices] ICommunicationHub hub, string id, UpdateRoleViewModel model)
         {
             if (id != model.Id)
             {
