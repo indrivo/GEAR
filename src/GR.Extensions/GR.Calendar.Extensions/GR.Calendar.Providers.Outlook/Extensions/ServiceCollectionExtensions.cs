@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.ExternalProviders.Extensions;
-using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Calendar.Providers.Outlook.Helpers;
 using GR.Core.Helpers;
 
@@ -19,7 +18,7 @@ namespace GR.Calendar.Providers.Outlook.Extensions
         /// <param name="serviceCollection"></param>
         /// <param name="outlookOptions"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterOutlookCalendarProvider(this CalendarServiceCollection serviceCollection, Action<MsAuthorizationSettings> outlookOptions)
+        public static IServiceCollection RegisterOutlookCalendarProvider(this IServiceCollection serviceCollection, Action<MsAuthorizationSettings> outlookOptions)
         {
             Arg.NotNull(outlookOptions, nameof(RegisterOutlookCalendarProvider));
             serviceCollection.RegisterExternalCalendarProvider(options =>
@@ -34,7 +33,7 @@ namespace GR.Calendar.Providers.Outlook.Extensions
             outlookOptions(authSettings);
             OutlookAuthSettings.SetAuthSettings(authSettings);
 
-            serviceCollection.Services.AddAuthentication()
+            serviceCollection.AddAuthentication()
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
                     microsoftOptions.ClientId = authSettings.ClientId;

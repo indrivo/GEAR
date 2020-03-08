@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using GR.Core;
 using GR.Core.Extensions;
@@ -14,26 +13,23 @@ using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Security.Abstractions;
 using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Models;
-using GR.Entities.Security.Data;
 using GR.Identity.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Entities.Security
 {
-    public class EntityRoleAccessService<TAclContext, TIdentityContext> : IEntityRoleAccessService
-        where TAclContext : EntitySecurityDbContext
-        where TIdentityContext : IdentityDbContext<GearUser, GearRole, string>
+    public class EntityRoleAccessService: IEntityRoleAccessService
     {
         #region Inject Services
         /// <summary>
         /// Inject context
         /// </summary>
-        private readonly TAclContext _context;
+        private readonly IEntitySecurityDbContext _context;
 
         /// <summary>
         /// Inject identity context
         /// </summary>
-        private readonly TIdentityContext _identityContext;
+        private readonly IIdentityContext _identityContext;
 
         /// <summary>
         /// Inject user manager
@@ -72,7 +68,7 @@ namespace GR.Entities.Security
         /// <param name="entityContext"></param>
         /// <param name="memoryCache"></param>
         /// <param name="entityService"></param>
-        public EntityRoleAccessService(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache, IEntityService entityService)
+        public EntityRoleAccessService(IEntitySecurityDbContext context, IIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext, IMemoryCache memoryCache, IEntityService entityService)
         {
             _context = context;
             _identityContext = identityContext;
@@ -176,7 +172,7 @@ namespace GR.Entities.Security
 
                 if (check.Any())
                 {
-                    await _context.AddRangeAsync(check);
+                    await _context.EntityPermissionAccesses.AddRangeAsync(check);
                 }
             }
 
@@ -270,7 +266,7 @@ namespace GR.Entities.Security
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(IEnumerable<string> userRoles, Guid entityId)
         {
             var result = new List<EntityAccessType>();
-            var roles = _identityContext.Set<GearRole>().Where(x => userRoles.Contains(x.Name)).ToList();
+            var roles = _identityContext.Roles.Where(x => userRoles.Contains(x.Name)).ToList();
             if (roles.Select(x => x.Name).Contains(GlobalResources.Roles.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.BackGroundServices;
 using GR.Calendar.Abstractions.Events;
-using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -28,35 +27,35 @@ namespace GR.Calendar.Abstractions.Extensions
         /// <typeparam name="TCalendarService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarModule<TCalendarService>(this IServiceCollection services)
+        public static IServiceCollection AddCalendarModule<TCalendarService>(this IServiceCollection services)
             where TCalendarService : class, ICalendarManager
         {
             Arg.NotNull(services, nameof(AddCalendarModule));
             services.AddGearTransient<ICalendarManager, TCalendarService>();
             services.AddHostedService<EventReminderBackgroundService>();
-            return new CalendarServiceCollection(services);
+            return services;
         }
 
         /// <summary>
         /// Add calendar module storage
         /// </summary>
         /// <typeparam name="TDbContext"></typeparam>
-        /// <param name="configuration"></param>
+        /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarModuleStorage<TDbContext>(
-            this CalendarServiceCollection configuration, Action<DbContextOptionsBuilder> options)
+        public static IServiceCollection AddCalendarModuleStorage<TDbContext>(
+            this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TDbContext : DbContext, ICalendarDbContext
         {
-            Arg.NotNull(configuration.Services, nameof(AddCalendarModuleStorage));
-            configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
-            configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
-            configuration.Services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
+            Arg.NotNull(services, nameof(AddCalendarModuleStorage));
+            services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
+            services.AddGearTransient<ICalendarDbContext, TDbContext>();
+            services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
                 {
                     GearApplication.GetHost<IHost>().MigrateDbContext<TDbContext>();
                 };
-            return configuration;
+            return services;
         }
 
 
@@ -65,7 +64,7 @@ namespace GR.Calendar.Abstractions.Extensions
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarRuntimeEvents(this CalendarServiceCollection serviceCollection)
+        public static IServiceCollection AddCalendarRuntimeEvents(this IServiceCollection serviceCollection)
         {
             CalendarEvents.RegisterEvents();
             const string calendarLink = "<a href='/calendar'>here</a>";
@@ -124,26 +123,26 @@ namespace GR.Calendar.Abstractions.Extensions
         /// Register token provider
         /// </summary>
         /// <typeparam name="TProvider"></typeparam>
-        /// <param name="serviceCollection"></param>
+        /// <param name="services"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterTokenProvider<TProvider>(this CalendarServiceCollection serviceCollection)
+        public static IServiceCollection RegisterTokenProvider<TProvider>(this IServiceCollection services)
             where TProvider : class, ICalendarExternalTokenProvider
         {
-            IoC.RegisterTransientService<ICalendarExternalTokenProvider, TProvider>();
-            return serviceCollection;
+            services.AddGearTransient<ICalendarExternalTokenProvider, TProvider>();
+            return services;
         }
 
         /// <summary>
         /// Register calendar
         /// </summary>
         /// <typeparam name="TService"></typeparam>
-        /// <param name="serviceCollection"></param>
+        /// <param name="services"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterCalendarUserPreferencesProvider<TService>(this CalendarServiceCollection serviceCollection)
+        public static IServiceCollection RegisterCalendarUserPreferencesProvider<TService>(this IServiceCollection services)
             where TService : class, ICalendarUserSettingsService
         {
-            IoC.RegisterTransientService<ICalendarUserSettingsService, TService>();
-            return serviceCollection;
+            services.AddGearTransient<ICalendarUserSettingsService, TService>();
+            return services;
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Events;
 using GR.Entities.Abstractions.Helpers;
@@ -26,13 +27,8 @@ namespace GR.Entities.Abstractions.Extensions
             where TEntityRepository : class, IEntityService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IEntityContext, TEntityContext>();
-            IoC.RegisterTransientService<IEntityContext, TEntityContext>();
-
-            IoC.RegisterServiceCollection(new Dictionary<Type, Type>
-            {
-                { typeof(IEntityService), typeof(TEntityRepository) }
-            });
+            services.AddGearScoped<IEntityContext, TEntityContext>();
+            services.AddGearTransient<IEntityService, TEntityRepository>();
 
             return services;
         }
@@ -49,8 +45,8 @@ namespace GR.Entities.Abstractions.Extensions
 
             SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
             {
-                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
-                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+                //var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
+                //DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
             };
 
             SystemEvents.Application.OnApplicationStopped += delegate

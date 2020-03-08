@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace GR.Core.Razor.Helpers.Filters
+namespace GR.WebApplication.Helpers.Filters
 {
     /// <summary>
     ///     Swagger authorize check filter
@@ -16,7 +16,7 @@ namespace GR.Core.Razor.Helpers.Filters
         /// </summary>
         /// <param name="operation"></param>
         /// <param name="context"></param>
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (context.MethodInfo.DeclaringType != null)
             {
@@ -27,8 +27,8 @@ namespace GR.Core.Razor.Helpers.Filters
                 if (!authAttributes.Any()) return;
             }
 
-            operation.Responses.Add("401", new Response { Description = "Unauthorized" });
-            operation.Responses.Add("403", new Response { Description = "Forbidden" });
+            operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+            operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
         }
     }
 }

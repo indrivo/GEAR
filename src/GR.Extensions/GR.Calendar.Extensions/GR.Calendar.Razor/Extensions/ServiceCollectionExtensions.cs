@@ -18,9 +18,9 @@ namespace GR.Calendar.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarRazorUIModule(this CalendarServiceCollection services)
+        public static IServiceCollection AddCalendarRazorUIModule(this IServiceCollection services)
         {
-            services.Services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
+            services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
 
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
@@ -39,7 +39,7 @@ namespace GR.Calendar.Razor.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection SetSerializationFormatSettings(this CalendarServiceCollection services,
+        public static IServiceCollection SetSerializationFormatSettings(this IServiceCollection services,
             Action<JsonSerializerSettings> options)
         {
             options.Invoke(CalendarServiceCollection.JsonSerializerSettings);

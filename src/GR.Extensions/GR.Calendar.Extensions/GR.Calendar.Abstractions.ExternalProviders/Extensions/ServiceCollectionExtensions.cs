@@ -4,9 +4,9 @@ using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.ExternalProviders.Exceptions;
 using GR.Calendar.Abstractions.ExternalProviders.Helpers;
 using GR.Calendar.Abstractions.Helpers.Mappers;
-using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Core.Helpers;
 using GR.Core.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
 {
@@ -18,7 +18,7 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
         /// <param name="serviceCollection"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterExternalCalendarProvider(this CalendarServiceCollection serviceCollection, Action<ExternalProviderConfig> options)
+        public static IServiceCollection RegisterExternalCalendarProvider(this IServiceCollection serviceCollection, Action<ExternalProviderConfig> options)
         {
             var configuration = new ExternalProviderConfig();
             options(configuration);
@@ -34,7 +34,7 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterSyncOnExternalCalendars(this CalendarServiceCollection serviceCollection)
+        public static IServiceCollection RegisterSyncOnExternalCalendars(this IServiceCollection serviceCollection)
         {
             //On event created
             CalendarEvents.SystemCalendarEvents.OnEventCreated += async (sender, args) =>

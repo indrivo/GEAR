@@ -17,6 +17,7 @@ namespace GR.Core.StaticFiles
 
         public void PostConfigure(string name, StaticFileOptions options)
         {
+            var tp = GetType().Namespace;
             name = name ?? throw new ArgumentNullException(nameof(name));
             options = options ?? throw new ArgumentNullException(nameof(options));
 

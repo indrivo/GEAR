@@ -1,5 +1,6 @@
 ﻿using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Calendar.Abstractions.ExternalProviders.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Calendar.Providers.Google.Extensions
 {
@@ -10,7 +11,7 @@ namespace GR.Calendar.Providers.Google.Extensions
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection RegisterGoogleCalendarProvider(this CalendarServiceCollection serviceCollection)
+        public static IServiceCollection RegisterGoogleCalendarProvider(this IServiceCollection serviceCollection)
         {
             serviceCollection.RegisterExternalCalendarProvider(options =>
             {

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Castle.Facilities.AspNetCore;
+using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Exceptions;
@@ -12,6 +13,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
+using GR.Core.Razor.Helpers;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Notifications.Abstractions.Extensions;
@@ -19,6 +21,7 @@ using GR.Notifications.Hub.Hubs;
 using GR.PageRender.Abstractions.Extensions;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
+using GR.WebApplication.Helpers.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -31,6 +34,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.OpenApi.Models;
 
 namespace GR.WebApplication.Extensions
 {
@@ -49,8 +54,6 @@ namespace GR.WebApplication.Extensions
                 GearServices = services
             };
 
-            // Setup component model contributors for making windsor services available to IServiceProvider
-            IoC.Container.AddFacility<AspNetCoreFacility>(f => f.CrossWiresInto(services));
             configAction(configuration);
 
             //Register system config
@@ -60,16 +63,16 @@ namespace GR.WebApplication.Extensions
                 configuration.ServerConfiguration.UploadMaximSize);
 
             //Global settings
-            services.AddMvc(options =>
-                {
-                    options.EnableEndpointRouting = false;
-                    options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-                .AddNewtonsoftJson(x =>
-                {
-                    x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
-                });
+            //services.AddMvc(options =>
+            //    {
+            //        options.EnableEndpointRouting = false;
+            //        options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
+            //    })
+            //    .SetCompatibilityVersion(CompatibilityVersion.Latest)
+            //    .AddNewtonsoftJson(x =>
+            //    {
+            //        x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
+            //    });
 
             services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -117,15 +120,15 @@ namespace GR.WebApplication.Extensions
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
                 services.AddSwaggerModule(configuration.Configuration);
 
+            //services.AddOptions();
+            services.AddControllersWithViews();
+            //services.AddControllers();
+            //services.AddRazorPages(); 
+
             //Register memory cache
             var cacheService = configuration.BuildGearServices.GetService<IMemoryCache>();
             IoC.Container.Register(Component.For<IMemoryCache>().Instance(cacheService));
-
-            //services.AddWindsor(IoC.Container, opts =>
-            //{
-            //    opts.UseEntryAssembly(typeof(GearServiceCollectionConfig).Assembly);
-            //});
-            //return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
+            WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>
@@ -227,43 +230,132 @@ namespace GR.WebApplication.Extensions
         /// <returns></returns>
         public static IApplicationBuilder UseAppMvc(this IApplicationBuilder app, IConfiguration configuration, Dictionary<string, Action<HttpContext>> routeMapping = null)
         {
+            app.UseRouting();
             var isConfigured = configuration.GetValue<bool>("IsConfigured");
 
             var singleTenantTemplate = isConfigured
                 ? "{controller=Home}/{action=Index}"
                 : "{controller=Installer}/{action=Index}";
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.ApplicationBuilder.Use(async (context, next) =>
+                //var builder = endpoints.CreateApplicationBuilder();
+                //builder.Use(async (context, next) =>
+                //{
+                //    if (routeMapping == null || !isConfigured)
+                //    {
+                //        await next();
+                //    }
+                //    else
+                //    {
+                //        var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
+                //        if (!match.IsNull())
+                //        {
+                //            match.Value.Invoke(context);
+                //            await next();
+                //        }
+                //        else
+                //        {
+                //            await next();
+                //        }
+                //    }
+                //});
+
+                //endpoints.MapControllerRoute("default", singleTenantTemplate);
+                //endpoints.MapControllerRoute("defaultError", "{controller=Error}/{action=Error}");
+                //endpoints.MapControllers();
+            });
+
+            //app.UseMvc(routes =>
+            //{
+            //    routes.ApplicationBuilder.Use(async (context, next) =>
+            //    {
+            //        if (routeMapping == null || !isConfigured)
+            //        {
+            //            await next();
+            //        }
+            //        else
+            //        {
+            //            var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
+            //            if (!match.IsNull())
+            //            {
+            //                match.Value.Invoke(context);
+            //                await next();
+            //            }
+            //            else
+            //            {
+            //                await next();
+            //            }
+            //        }
+            //    });
+
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: singleTenantTemplate,
+            //        defaults: singleTenantTemplate
+            //    //constraints: new { tenant = new TenantRouteConstraint() }
+            //    );
+            //});
+            return app;
+        }
+
+
+        /// <summary>
+        /// Add swagger
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSwaggerModule(this IServiceCollection services, IConfiguration configuration)
+        {
+            var confAuth = configuration.GetSection("WebClients").GetSection("CORE");
+            var authUrl = confAuth.GetValue<string>("uri");
+            services.AddSwaggerGen(options =>
+            {
+                options.DocInclusionPredicate(SwaggerVersioning.DocInclusionPredicate);
+
+                options.SwaggerDoc("v1.0", new OpenApiInfo
                 {
-                    if (routeMapping == null || !isConfigured)
+                    Title = "GEAR APP HTTP API",
+                    Version = "v1.0",
+                    Description = "GEAR Service HTTP API",
+                    TermsOfService = new Uri("http://indrivo.com"),
+
+                    Contact = new OpenApiContact
                     {
-                        await next();
-                    }
-                    else
-                    {
-                        var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
-                        if (!match.IsNull())
-                        {
-                            match.Value.Invoke(context);
-                            await next();
-                        }
-                        else
-                        {
-                            await next();
-                        }
+                        Url = new Uri("http://indrivo.com"),
+                        Email = "support@indrivo.com",
+                        Name = "Indrivo SRL"
                     }
                 });
 
-                routes.MapRoute(
-                    name: "default",
-                    template: singleTenantTemplate,
-                    defaults: singleTenantTemplate
-                //constraints: new { tenant = new TenantRouteConstraint() }
-                );
+                // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
+                //
+                options.IgnoreObsoleteActions();
+
+                // Set this flag to omit schema property descriptions for any type properties decorated with the
+                // Obsolete attribute
+                //
+                options.IgnoreObsoleteProperties();
+                options.OperationFilter<SwaggerAuthorizeCheckOperationFilter>();
+                // Integrate XML comments
+                if (File.Exists(XmlCommentsFilePath))
+                    options.IncludeXmlComments(XmlCommentsFilePath);
             });
-            return app;
+            return services;
+        }
+
+        /// <summary>
+        /// XML Comments File path
+        /// </summary>
+        private static string XmlCommentsFilePath
+        {
+            get
+            {
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var fileName = typeof(ResultModel).GetTypeInfo().Assembly.GetName().Name + ".xml";
+                return Path.Combine(basePath, fileName);
+            }
         }
     }
 }

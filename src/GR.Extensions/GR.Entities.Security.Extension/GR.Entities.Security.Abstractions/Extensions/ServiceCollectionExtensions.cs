@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using GR.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
@@ -23,7 +21,6 @@ namespace GR.Entities.Security.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(services));
             services.AddGearScoped<IEntityRoleAccessService, TRepository>();
-            IoC.RegisterTransientService<IEntityRoleAccessService, TRepository>();
 
             EntityEvents.Entities.OnEntityDeleted += (sender, args) =>
             {

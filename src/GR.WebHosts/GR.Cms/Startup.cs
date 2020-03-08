@@ -180,13 +180,22 @@ namespace GR.Cms
 					.AddAppProvider<AppProvider>()
 					.AddUserAddressService<UserAddressService>()
 					.AddIdentityModuleEvents()
-					.RegisterLocationService<LocationService>()
-					.AddIdentityRazorModule();
+					.RegisterLocationService<LocationService>();
+					//.AddIdentityRazorModule();
 
 				config.GearServices.AddAuthentication(Configuration)
 					.AddPermissionService<PermissionService<ApplicationDbContext>>()
 					.AddIdentityModuleProfileServices()
 					.AddIdentityServer(Configuration, MigrationsAssembly);
+
+				//------------------------------Entity Security Module-------------------------------------
+				config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService>()
+					.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					});
+					//.AddEntitySecurityRazorUIModule();
 
 				//---------------------------------------Entity Module-------------------------------------
 				config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
@@ -197,17 +206,8 @@ namespace GR.Cms
 						options.EnableSensitiveDataLogging();
 					})
 					.AddEntityModuleEvents()
-					.RegisterEntityBuilderJob()
-					.AddEntityRazorUIModule();
-
-				//------------------------------Entity Security Module-------------------------------------
-				config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
-					.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
-					{
-						options.GetDefaultOptions(Configuration);
-						options.EnableSensitiveDataLogging();
-					})
-					.AddEntitySecurityRazorUIModule();
+					.RegisterEntityBuilderJob();
+					//.AddEntityRazorUIModule();
 
 				//----------------------------------------Audit Module-------------------------------------
 				config.GearServices.AddAuditModule<AuditManager>();
@@ -223,7 +223,7 @@ namespace GR.Cms
 						options.EnableSensitiveDataLogging();
 					})
 					.RegisterDashboardEvents()
-					.AddDashboardRazorUIModule()
+					//.AddDashboardRazorUIModule()
 					.AddDashboardRenderServices(new Dictionary<Type, Type>
 					{
 					{typeof(IWidgetRenderer<ReportWidget>), typeof(ReportWidgetRender)},
@@ -232,15 +232,16 @@ namespace GR.Cms
 					.RegisterProgramAssembly(typeof(Program));
 
 				//-------------------------------Notification Module-------------------------------------
-				config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+				config.GearServices
+					.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
 					.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 					.AddNotificationModuleEvents()
 					.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 					{
 						options.GetDefaultOptions(Configuration);
 						options.EnableSensitiveDataLogging();
-					})
-					.AddNotificationRazorUIModule();
+					});
+					//.AddNotificationRazorUIModule();
 
 				//---------------------------------Localization Module-------------------------------------
 				config.GearServices
@@ -249,8 +250,8 @@ namespace GR.Cms
 						{
 							Configuration = Configuration,
 							LocalizationProvider = LocalizationProvider.Yandex
-						})
-					.AddLocalizationRazorModule();
+						});
+					//.AddLocalizationRazorModule();
 
 				//--------------------------------------Menu UI Module-------------------------------------
 				config.GearServices.AddMenuModule<MenuService>()
@@ -266,37 +267,37 @@ namespace GR.Cms
 						PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 				//------------------------------------Processes Module-------------------------------------
-				config.GearServices.AddProcessesModule()
-				.AddDbContext<ProcessesDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				});
+				//config.GearServices.AddProcessesModule()
+				//.AddDbContext<ProcessesDbContext>(options =>
+				//{
+				//	options.GetDefaultOptions(Configuration);
+				//	options.EnableSensitiveDataLogging();
+				//});
 
 				//------------------------------------Calendar Module-------------------------------------
-				config.GearServices.AddCalendarModule<CalendarManager>()
-					.AddCalendarModuleStorage<CalendarDbContext>(options =>
-					{
-						options.GetDefaultOptions(Configuration);
-						options.EnableSensitiveDataLogging();
-					})
-					.AddCalendarRazorUIModule()
-					.SetSerializationFormatSettings(settings =>
-					{
-						settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-					})
-					.AddCalendarRuntimeEvents()
-					.RegisterSyncOnExternalCalendars()
-					.RegisterTokenProvider<CalendarExternalTokenProvider>()
-					.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
-					.RegisterGoogleCalendarProvider()
-					.RegisterOutlookCalendarProvider(options =>
-					{
-						options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
-						options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
-						options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
-					})
-					.AddCalendarGraphQlApi();
+				//config.GearServices.AddCalendarModule<CalendarManager>()
+				//	.AddCalendarModuleStorage<CalendarDbContext>(options =>
+				//	{
+				//		options.GetDefaultOptions(Configuration);
+				//		options.EnableSensitiveDataLogging();
+				//	})
+				//	.AddCalendarRazorUIModule()
+				//	.SetSerializationFormatSettings(settings =>
+				//	{
+				//		settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+				//	})
+				//	.AddCalendarRuntimeEvents()
+				//	.RegisterSyncOnExternalCalendars()
+				//	.RegisterTokenProvider<CalendarExternalTokenProvider>()
+				//	.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
+				//	.RegisterGoogleCalendarProvider()
+				//	.RegisterOutlookCalendarProvider(options =>
+				//	{
+				//		options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
+				//		options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
+				//		options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
+				//	})
+				//	.AddCalendarGraphQlApi();
 
 				//------------------------------------File Module-------------------------------------
 				config.GearServices.AddFileModule<FileManager<FileDbContext>>()
@@ -314,13 +315,13 @@ namespace GR.Cms
 						options.EnableSensitiveDataLogging();
 					}, Configuration);
 				//------------------------------------Task Module-------------------------------------
-				config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
-					.AddTaskModuleStorage<TaskManagerDbContext>(options =>
-					{
-						options.GetDefaultOptions(Configuration);
-						options.EnableSensitiveDataLogging();
-					})
-					.AddTaskManagerRazorUIModule();
+				//config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
+				//	.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+				//	{
+				//		options.GetDefaultOptions(Configuration);
+				//		options.EnableSensitiveDataLogging();
+				//	})
+				//	.AddTaskManagerRazorUIModule();
 
 				//-----------------------------------------Form Module-------------------------------------
 				config.GearServices.AddFormModule<FormDbContext>()
@@ -329,8 +330,8 @@ namespace GR.Cms
 						options.GetDefaultOptions(Configuration);
 						options.EnableSensitiveDataLogging();
 					})
-					.RegisterFormService<FormService<FormDbContext>>()
-					.AddFormStaticFilesModule();
+					.RegisterFormService<FormService<FormDbContext>>();
+					//.AddFormStaticFilesModule();
 
 				//-----------------------------------------Page Module-------------------------------------
 				config.GearServices.AddPageModule()
@@ -339,7 +340,7 @@ namespace GR.Cms
 						options.GetDefaultOptions(Configuration);
 						options.EnableSensitiveDataLogging();
 					})
-					.AddPageRenderUIModule<PageRender.PageRender>()
+					//.AddPageRenderUIModule<PageRender.PageRender>()
 					.RegisterViewModelService<ViewModelService>()
 					.AddPageAclService<PageAclService>();
 
@@ -349,15 +350,15 @@ namespace GR.Cms
 					{
 						options.GetDefaultOptions(Configuration);
 						options.EnableSensitiveDataLogging();
-					})
-					.AddReportUIModule();
+					});
+					//.AddReportUIModule();
 
 				//----------------------------------------Installer Module-------------------------------------
 				config.GearServices.AddInstallerModule<GearWebInstallerService>();
 
 				//----------------------------------------Email Module-------------------------------------
 				config.GearServices.AddEmailModule<EmailSender>()
-					.AddEmailRazorUIModule()
+					//.AddEmailRazorUIModule()
 					.BindEmailSettings(Configuration);
 
 				//----------------------------------------Ldap Module-------------------------------------
@@ -366,39 +367,39 @@ namespace GR.Cms
 						Configuration);
 
 				//-------------------------------------Commerce module-------------------------------------
-				config.GearServices.RegisterCommerceModule<CommerceDbContext>()
-					.RegisterCommerceProductRepository<ProductService, Product>()
-					.RegisterCommerceStorage<CommerceDbContext>(options =>
-					{
-						options.GetDefaultOptions(Configuration);
-						options.EnableSensitiveDataLogging();
-					})
-					.RegisterProductOrderServices<Order, OrderProductService>()
-					.RegisterSubscriptionServices<Subscription, SubscriptionService>()
-					.RegisterPayments<PaymentService>()
-					.RegisterCartService<CartService>()
-					.RegisterOrdersStorage<CommerceDbContext>()
-					.RegisterSubscriptionStorage<CommerceDbContext>()
-					.RegisterPaymentStorage<CommerceDbContext>()
-					.RegisterCommerceEvents()
-					.RegisterOrderEvents()
-					.RegisterSubscriptionEvents()
-					.RegisterSubscriptionRules()
-					.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
-					//Paypal
-					.RegisterPaypalProvider<PaypalPaymentMethodService>()
-					.RegisterPaypalRazorProvider(Configuration)
-					//Mobil Pay
-					.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
-					.RegisterMobilPayRazorProvider(Configuration)
-					//Braintree
-					.RegisterBraintreeProvider<BraintreePaymentMethodService>()
-					.RegisterBraintreeRazorProvider(Configuration)
-					.AddCommerceRazorUIModule();
+				//config.GearServices.RegisterCommerceModule<CommerceDbContext>()
+				//	.RegisterCommerceProductRepository<ProductService, Product>()
+				//	.RegisterCommerceStorage<CommerceDbContext>(options =>
+				//	{
+				//		options.GetDefaultOptions(Configuration);
+				//		options.EnableSensitiveDataLogging();
+				//	})
+				//	.RegisterProductOrderServices<Order, OrderProductService>()
+				//	.RegisterSubscriptionServices<Subscription, SubscriptionService>()
+				//	.RegisterPayments<PaymentService>()
+				//	.RegisterCartService<CartService>()
+				//	.RegisterOrdersStorage<CommerceDbContext>()
+				//	.RegisterSubscriptionStorage<CommerceDbContext>()
+				//	.RegisterPaymentStorage<CommerceDbContext>()
+				//	.RegisterCommerceEvents()
+				//	.RegisterOrderEvents()
+				//	.RegisterSubscriptionEvents()
+				//	.RegisterSubscriptionRules()
+				//	.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				//	//Paypal
+				//	.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				//	.RegisterPaypalRazorProvider(Configuration)
+				//	//Mobil Pay
+				//	.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
+				//	.RegisterMobilPayRazorProvider(Configuration)
+				//	//Braintree
+				//	.RegisterBraintreeProvider<BraintreePaymentMethodService>()
+				//	.RegisterBraintreeRazorProvider(Configuration)
+				//	.AddCommerceRazorUIModule();
 
 				//---------------------------------Multi Tenant Module-------------------------------------
-				config.GearServices.AddTenantModule<OrganizationService, Tenant>()
-					.AddMultiTenantRazorUIModule();
+				config.GearServices.AddTenantModule<OrganizationService, Tenant>();
+					//.AddMultiTenantRazorUIModule();
 
 				//-------------------------------------Workflow module-------------------------------------
 				config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
@@ -407,20 +408,20 @@ namespace GR.Cms
 						options.GetDefaultOptions(Configuration);
 						options.EnableSensitiveDataLogging();
 					})
-					.AddWorkflowRazorModule()
+					//.AddWorkflowRazorModule()
 					.RegisterWorkFlowContract(nameof(DocumentVersion), null);
 
 				//------------------------------------ Documents Module -----------------------------------
 
 				config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
-				{
-					options.GetDefaultOptions(Configuration);
-					options.EnableSensitiveDataLogging();
-				})
+					{
+						options.GetDefaultOptions(Configuration);
+						options.EnableSensitiveDataLogging();
+					})
 					.RegisterDocumentTypeServices<DocumentTypeService>()
 					.RegisterDocumentCategoryServices<DocumentCategoryService>()
-					.RegisterDocumentServices<DocumentWithWorkflowService>()
-					.AddDocumentRazorUIModule();
+					.RegisterDocumentServices<DocumentWithWorkflowService>();
+				//.AddDocumentRazorUIModule();
 
 			});
 		}
