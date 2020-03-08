@@ -217,7 +217,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Calendar.NetCore.Api.Gra
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Payments", "GR.ECommerce.Payments", "{A7B5EA4E-8A86-4F5D-820C-443A6C54BF36}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Payments.Providers", "GR.ECommerce.Payments.Providers", "{E7023FD7-77DB-4A24-9ED4-A6054977BC22}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Providers", "GR.Providers", "{E7023FD7-77DB-4A24-9ED4-A6054977BC22}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Paypal", "GR.ECommerce.Paypal", "{9BEA7DC3-0498-4E31-805C-40E09C36F88F}"
 EndProject
@@ -279,17 +279,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.ECommerce.Infrastructure
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Modules", "GR.ECommerce.Modules", "{688A8EA1-8902-4AED-A503-AF1CC129F993}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj", "{55FC695F-3F4D-4CF9-9EE0-42E51A2AEC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj", "{55FC695F-3F4D-4CF9-9EE0-42E51A2AEC44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj", "{DE7B26A1-55DA-4615-A7B3-52AE931AA0E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj", "{DE7B26A1-55DA-4615-A7B3-52AE931AA0E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj", "{835B2DF3-C7CB-4120-ACC4-1793C9AF8EA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj", "{835B2DF3-C7CB-4120-ACC4-1793C9AF8EA0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Abstractions\GR.Paypal.Abstractions.csproj", "{DE2990AB-133B-4E60-8706-FB12C053DFCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Paypal\GR.Paypal.Abstractions\GR.Paypal.Abstractions.csproj", "{DE2990AB-133B-4E60-8706-FB12C053DFCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal\GR.Paypal.csproj", "{57E23449-A099-4B70-8585-322DB2CECCEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Paypal\GR.Paypal\GR.Paypal.csproj", "{57E23449-A099-4B70-8585-322DB2CECCEE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj", "{42E837B7-66F8-45E3-9F8F-FFE019CB83C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj", "{42E837B7-66F8-45E3-9F8F-FFE019CB83C6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.ECommerce.Payments.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj", "{475F1FC4-62BD-416B-A5E1-56E02F09595E}"
 EndProject
@@ -307,11 +307,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions.Razor", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Braintree", "GR.ECommerce.Braintree", "{AB58D5FE-AFC9-4BD6-9371-EFE689A05AFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Braintree\GR.Braintree.Abstractions\GR.Braintree.Abstractions.csproj", "{120E621A-C97F-4104-942A-2359F973BF2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Braintree\GR.Braintree.Abstractions\GR.Braintree.Abstractions.csproj", "{120E621A-C97F-4104-942A-2359F973BF2E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Braintree\GR.Braintree\GR.Braintree.csproj", "{F7DA2F5E-95AC-4909-976C-A0CD0FA74A51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Braintree\GR.Braintree\GR.Braintree.csproj", "{F7DA2F5E-95AC-4909-976C-A0CD0FA74A51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Braintree\GR.Braintree.Razor\GR.Braintree.Razor.csproj", "{663F27FE-FFAC-4F3D-B390-B4617A75A0F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Braintree.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Braintree\GR.Braintree.Razor\GR.Braintree.Razor.csproj", "{663F27FE-FFAC-4F3D-B390-B4617A75A0F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Entities.Providers", "GR.Entities.Providers", "{BCF212C6-8AFE-490D-A10D-57869EFDC75C}"
 EndProject
