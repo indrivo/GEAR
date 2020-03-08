@@ -98,7 +98,7 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<string> roles);
+        Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<Guid> roles);
 
         /// <summary>
         /// Get tenant by current user

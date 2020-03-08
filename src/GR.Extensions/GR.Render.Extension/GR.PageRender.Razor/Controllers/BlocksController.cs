@@ -67,7 +67,7 @@ namespace GR.PageRender.Razor.Controllers
             try
             {
                 model.TenantId = CurrentUserTenantId;
-                model.Author = GetCurrentUser().Id;
+                model.Author = GetCurrentUser().UserName;
                 model.Changed = DateTime.Now;
                 _pagesContext.Blocks.Add(model);
                 _pagesContext.SaveChanges();

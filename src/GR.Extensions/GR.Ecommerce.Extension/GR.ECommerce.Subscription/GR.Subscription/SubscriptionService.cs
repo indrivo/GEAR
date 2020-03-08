@@ -185,7 +185,7 @@ namespace GR.Subscriptions
                 var subscription = new Subscription
                 {
                     Id = model.Id,
-                    UserId = user.Id.ToGuid(),
+                    UserId = user.Id,
                     TenantId =  user.TenantId,
                     StartDate = model.StartDate,
                     Availability = model.Availability,

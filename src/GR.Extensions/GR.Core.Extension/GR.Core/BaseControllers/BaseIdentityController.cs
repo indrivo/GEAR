@@ -13,8 +13,8 @@ namespace GR.Core.BaseControllers
 {
     [Authorize]
     public abstract class BaseIdentityController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : BaseGearController
-        where TUser : IdentityUser, IBaseModel
-        where TRole : IdentityRole<string>, IBaseModel
+        where TUser : IdentityUser<Guid>, IBaseModel
+        where TRole : IdentityRole<Guid>, IBaseModel
         where TTenant : BaseModel
         where TIdentityContext : DbContext
         where TEntityContext : DbContext

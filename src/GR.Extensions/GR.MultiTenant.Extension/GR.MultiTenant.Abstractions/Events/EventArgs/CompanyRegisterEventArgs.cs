@@ -1,4 +1,6 @@
-﻿namespace GR.MultiTenant.Abstractions.Events.EventArgs
+﻿using System;
+
+namespace GR.MultiTenant.Abstractions.Events.EventArgs
 {
     public class CompanyRegisterEventArgs : System.EventArgs
     {
@@ -10,7 +12,7 @@
         /// <summary>
         /// Company user id
         /// </summary>
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Email adress

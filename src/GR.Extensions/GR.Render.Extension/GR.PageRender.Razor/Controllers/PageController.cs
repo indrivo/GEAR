@@ -689,7 +689,7 @@ namespace GR.PageRender.Razor.Controllers
             if (page == null) return NotFound();
             var roles = RoleManager.Roles.Where(x => !x.IsDeleted).ToList();
             ViewBag.Roles = roles;
-            var rolesAcl = roles.ToDictionary(x => x, x => page.RolePagesAcls.FirstOrDefault(y => y.RoleId == Guid.Parse(x.Id)));
+            var rolesAcl = roles.ToDictionary(x => x, x => page.RolePagesAcls.FirstOrDefault(y => y.RoleId == x.Id));
             ViewBag.ACL = rolesAcl;
             return View(page);
         }

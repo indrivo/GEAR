@@ -113,7 +113,7 @@ namespace GR.WorkFlows
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return new NotAuthorizedResultModel().ToBase();
             var roles = await _userManager.GetUserRolesAsync(userRequest.Result);
-            var allowPerformAction = roles.Select(x => x.Id.ToGuid())
+            var allowPerformAction = roles.Select(x => x.Id)
                 .ContainsAny(transaction.TransitionRoles
                     .Select(x => x.RoleId));
             if (!allowPerformAction) return new ActionBlockedResultModel<object>().ToBase();
@@ -266,7 +266,7 @@ namespace GR.WorkFlows
             var transitions = transitionsRequest.Result.ToList();
             var userRoles = (await _userManager.GetUserRolesAsync(userRequest.Result)).ToList();
             var nextStates = transitions.Where(x => userRoles
-                .Select(m => m.Id.ToGuid())
+                .Select(m => m.Id)
                 .ContainsAny(x.TransitionRoles
                     .Select(y => y.RoleId))).Select(x => x.ToState).DistinctBy(x => x.Name).ToList();
             return new SuccessResultModel<IEnumerable<State>>(nextStates);

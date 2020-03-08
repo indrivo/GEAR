@@ -80,7 +80,7 @@ namespace GR.Identity.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Subject, user.Id),
+                new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
                 new Claim(JwtClaimTypes.Name, user.UserName)
             };
 

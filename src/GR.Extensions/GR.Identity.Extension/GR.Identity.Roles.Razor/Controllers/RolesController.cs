@@ -227,14 +227,14 @@ namespace GR.Identity.Roles.Razor.Controllers
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmDeleteRole)]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid? id)
         {
             if (id == null)
             {
                 return Json(new { message = "Not found!", success = false });
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             if (applicationRole == null)
             {
                 return Json(new { message = "Role not found!", success = false });
@@ -309,14 +309,14 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEditRole)]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             if (applicationRole == null)
             {
                 return NotFound();
@@ -356,7 +356,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEditRole)]
-        public async Task<IActionResult> Edit([FromServices] ICommunicationHub hub, string id, UpdateRoleViewModel model)
+        public async Task<IActionResult> Edit([FromServices] ICommunicationHub hub, Guid? id, UpdateRoleViewModel model)
         {
             if (id != model.Id)
             {
@@ -368,7 +368,7 @@ namespace GR.Identity.Roles.Razor.Controllers
                 return View(model);
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             applicationRole.Name = model.Name;
             applicationRole.Title = model.Title;
             applicationRole.IsNoEditable = model.IsNoEditable;
@@ -451,7 +451,7 @@ namespace GR.Identity.Roles.Razor.Controllers
                     rolePermissionList.Add(new RolePermission
                     {
                         PermissionCode = permission.PermissionKey,
-                        RoleId = id,
+                        RoleId = id.Value,
                         PermissionId = permission.Id
                     });
                 }

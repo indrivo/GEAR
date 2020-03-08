@@ -106,7 +106,7 @@ namespace GR.PageRender.Razor.Controllers
             {
                 model.IdentifierName = $"template_{model.Name}";
                 model.TenantId = CurrentUserTenantId;
-                model.Author = GetCurrentUser()?.Id;
+                model.Author = GetCurrentUser()?.UserName;
                 _pagesContext.Templates.Add(model);
                 _pagesContext.SaveChanges();
                 await _cacheService.SetAsync(model.IdentifierName, new TemplateCacheModel
@@ -159,7 +159,7 @@ namespace GR.PageRender.Razor.Controllers
             dataModel.Author = model.Author;
             dataModel.Value = model.Value;
             dataModel.Changed = DateTime.Now;
-            dataModel.ModifiedBy = GetCurrentUser()?.Id;
+            dataModel.ModifiedBy = GetCurrentUser()?.UserName;
             try
             {
                 _pagesContext.Templates.Update(dataModel);

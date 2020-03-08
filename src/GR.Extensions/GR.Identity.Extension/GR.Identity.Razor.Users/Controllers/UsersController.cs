@@ -275,7 +275,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(result);
             }
 
-            user.Id = Guid.NewGuid().ToString();
+            user.Id = Guid.NewGuid();
             user.UserName = ldapUser.SamAccountName;
             user.Email = ldapUser.EmailAddress;
             user.AuthenticationType = AuthenticationType.Ad;
@@ -298,7 +298,7 @@ namespace GR.Identity.Razor.Users.Controllers
                     UserName = user.UserName,
                     UserId = user.Id
                 });
-                result.Result = Guid.Parse(user.Id);
+                result.Result = user.Id;
             }
 
             return Json(result);
@@ -313,9 +313,9 @@ namespace GR.Identity.Razor.Users.Controllers
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (id.IsNullOrEmpty())
+            if (id == Guid.Empty)
             {
                 return Json(new { success = false, message = "Id is null" });
             }
@@ -362,9 +362,9 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
@@ -385,7 +385,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             var model = new UpdateUserViewModel
             {
-                Id = applicationUser.Id.ToGuid(),
+                Id = applicationUser.Id,
                 Email = applicationUser.Email,
                 IsDeleted = applicationUser.IsDeleted,
                 Password = applicationUser.PasswordHash,
@@ -415,9 +415,9 @@ namespace GR.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public virtual async Task<IActionResult> Edit(string id, UpdateUserViewModel model)
+        public virtual async Task<IActionResult> Edit(Guid id, UpdateUserViewModel model)
         {
-            if (Guid.Parse(id) != model.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -449,7 +449,7 @@ namespace GR.Identity.Razor.Users.Controllers
             }
 
             // Update User Data
-            var user = await UserManager.FindByIdAsync(id);
+            var user = await UserManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return NotFound();
@@ -504,7 +504,7 @@ namespace GR.Identity.Razor.Users.Controllers
             var rolesList = new List<string>();
             foreach (var _ in userRoles)
             {
-                var role = await RoleManager.FindByIdAsync(_.RoleId);
+                var role = await RoleManager.FindByIdAsync(_.RoleId.ToString());
                 rolesList.Add(role.Name);
             }
 
@@ -589,7 +589,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             var model = new UserProfileViewModel
             {
-                UserId = currentUser.Id.ToGuid(),
+                UserId = currentUser.Id,
                 TenantId = currentUser.TenantId ?? Guid.Empty,
                 UserName = currentUser.UserName,
                 UserFirstName = currentUser.UserFirstName,
@@ -614,9 +614,9 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> EditProfile(string userId)
+        public virtual async Task<IActionResult> EditProfile(Guid userId)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (userId == Guid.Empty)
             {
                 return NotFound();
             }
@@ -700,7 +700,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 Email = user.Email,
                 UserName = user.UserName,
                 AuthenticationType = user.AuthenticationType,
-                UserId = user.Id.ToGuid(),
+                UserId = user.Id,
                 CallBackUrl = callBackUrl
             });
         }
@@ -772,7 +772,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             var usersList = filtered.Select(async o =>
             {
-                var sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id));
+                var sessions = hub.GetSessionsCountByUserId(o.Id);
                 var roles = await UserManager.GetRolesAsync(o);
                 var org = await ApplicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
                 return new UserListItemViewModel
@@ -884,7 +884,7 @@ namespace GR.Identity.Razor.Users.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult GetUserById([Required] Guid userId)
         {
-            var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId);
             return Json(new ResultModel
             {
                 IsSuccess = true,
@@ -897,9 +897,9 @@ namespace GR.Identity.Razor.Users.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsCurrentUser(string id)
+        private bool IsCurrentUser(Guid id)
         {
-            return id.Equals(User.Identity.Name);
+            return id.Equals(User.Identity.Name.ToGuid());
         }
 
         /// <summary>
@@ -908,9 +908,9 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult GetImage(string id)
+        public IActionResult GetImage(Guid id)
         {
-            if (id.IsNullOrEmpty())
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
@@ -1094,7 +1094,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             var addressList = ApplicationDbContext.Addresses
                 .AsNoTracking()
-                .Where(x => x.ApplicationUserId.Equals(userId.Value.ToString()) && x.IsDeleted == false)
+                .Where(x => x.ApplicationUserId.Equals(userId.Value) && x.IsDeleted == false)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
                 .Include(x => x.District)
@@ -1348,7 +1348,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 .AsNoTracking()
                 .Select(x => new SelectListItem
                 {
-                    Value = x.Id,
+                    Value = x.Id.ToString(),
                     Text = x.Name
                 }).ToListAsync();
             roles.Insert(0, new SelectListItem(_localizer["sel_role"], string.Empty));

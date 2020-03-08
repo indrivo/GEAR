@@ -21,7 +21,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
             Tenants = new HashSet<SelectListItem>();
             Roles = new HashSet<SelectListItem>();
             Groups = new HashSet<SelectListItem>();
-            SelectedRoleId = new HashSet<string>();
+            SelectedRoleId = new HashSet<Guid>();
             SelectedGroupId = new HashSet<string>();
             Profiles = new HashSet<EntityViewModel>();
             CountrySelectListItems = new HashSet<SelectListItem>();
@@ -80,7 +80,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Select a role for this user"),
          Display(Name = "User's Role")]
-        public IEnumerable<string> SelectedRoleId { get; set; }
+        public IEnumerable<Guid> SelectedRoleId { get; set; }
 
         [Display(Name = "User's group")] public IEnumerable<string> SelectedGroupId { get; set; }
 

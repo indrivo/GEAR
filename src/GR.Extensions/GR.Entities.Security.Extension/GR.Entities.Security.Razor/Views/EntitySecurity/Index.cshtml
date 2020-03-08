@@ -37,7 +37,7 @@
                                 var normalizedName = role.Name.Replace(" ", "");
                                 var identifier = $"collapse_{table.Name}_{normalizedName}";
                                 var rolePermissions = tableConf.IsNull() ? new List<string>()
-                                    : tableConf.Value?.FirstOrDefault(x => x.Key.Equals(role.Id.ToGuid())).Value?.ToList();
+                                    : tableConf.Value?.FirstOrDefault(x => x.Key.Equals(role.Id)).Value?.ToList();
                                 var haveFullControl = rolePermissions?.Any(x => x.Equals(nameof(EntityAccessType.FullControl))) ?? false;
                                 <div>
                                     <a class="btn" data-toggle="collapse" href="#@identifier" role="button" aria-expanded="false" aria-controls="@identifier">

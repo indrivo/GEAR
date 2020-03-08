@@ -158,7 +158,7 @@ namespace GR.Install
             //Send welcome message to user
             await _notify.SendNotificationAsync(new List<Guid>
                 {
-                    superUser?.Id.ToGuid() ?? Guid.Empty
+                    superUser?.Id ?? Guid.Empty
                 },
                 new Notification
                 {

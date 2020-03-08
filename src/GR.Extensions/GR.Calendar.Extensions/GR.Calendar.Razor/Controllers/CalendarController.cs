@@ -115,7 +115,7 @@ namespace GR.Calendar.Razor.Controllers
                 var userRequest = await _userManager.GetCurrentUserAsync();
                 if (!userRequest.IsSuccess) return Json(response);
                 var user = userRequest.Result;
-                return Json(await _calendarManager.UpdateEventAsync(model, user.Id.ToGuid()));
+                return Json(await _calendarManager.UpdateEventAsync(model, user.Id));
             }
             response.Errors = ModelState.ToResultModelErrors().ToList();
             return Json(response, _serializeSettings);
@@ -295,7 +295,7 @@ namespace GR.Calendar.Razor.Controllers
         {
             var user = await _userManager.GetCurrentUserAsync();
             return !user.IsSuccess ? Json(new ResultModel())
-                : Json(await _userSettingsService.ChangeProviderSettings(user.Result.Id.ToGuid(), providerName, state));
+                : Json(await _userSettingsService.ChangeProviderSettings(user.Result.Id, providerName, state));
         }
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace GR.Calendar.Razor.Controllers
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (!user.IsSuccess) return NotFound();
-            var userId = user.Result.Id.ToGuid();
+            var userId = user.Result.Id;
             var factory = new ExternalCalendarProviderFactory();
             var providers = factory.GetProvidersInfo();
             var exportModel = new List<ExternalCalendarProviderSettingsViewModel>();
@@ -375,7 +375,7 @@ namespace GR.Calendar.Razor.Controllers
                         if (factory.GetProviders().Contains(provider))
                         {
                             var serviceProvider = factory.CreateService(provider);
-                            await serviceProvider.AuthorizeAsync(user.Result.Id.ToGuid(), true);
+                            await serviceProvider.AuthorizeAsync(user.Result.Id, true);
                             result = RedirectToAction("ExternalCalendarProviders");
                         }
                         else result = RedirectToAction(nameof(ExternalCalendarProviders));

@@ -114,9 +114,9 @@ namespace GR.Paypal
                 return new ResponsePaypal { Message = "No access token", IsSuccess = false };
             }
 
-            var fullName = user?.UserFirstName != null && user?.UserLastName != null
-                ? $"{user?.UserFirstName} {user?.UserLastName}"
-                : user.UserName;
+            var fullName = user?.UserFirstName != null && user.UserLastName != null
+                ? $"{user.UserFirstName} {user.UserLastName}"
+                : user?.UserName;
 
             var shippingAddress = new ShippingAddress
             {
@@ -160,7 +160,7 @@ namespace GR.Paypal
                         PaymentMethod = "paypal",
                         PayerInfo = new PayerInfo
                         {
-                            Email = user.Email
+                            Email = user?.Email
                         }
                     },
                     Transactions = new[]
@@ -246,7 +246,7 @@ namespace GR.Paypal
                     GatewayTransactionId = model.PaymentId,
                     PaymentStatus = PaymentStatus.Failed,
                     Total = order.Total,
-                    UserId = userRequest.Result.Id.ToGuid(),
+                    UserId = userRequest.Result.Id,
                     FailureMessage = responseBody
                 };
 

@@ -92,7 +92,7 @@ namespace GR.Braintree
                 PaymentMethodId = "Braintree",
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
-                UserId = user.Id.ToGuid()
+                UserId = user.Id
             };
 
             var request = new TransactionRequest

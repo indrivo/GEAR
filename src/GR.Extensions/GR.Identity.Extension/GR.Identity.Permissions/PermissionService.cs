@@ -1,5 +1,4 @@
 ﻿using GR.Cache.Abstractions;
-using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Configurators;
@@ -225,7 +224,7 @@ namespace GR.Identity.Permissions
                     var userRequest = await _userManager.GetCurrentUserAsync();
                     if (!userRequest.IsSuccess) return true;
                     var user = userRequest.Result;
-                    return PermissionCustomRules.ExecuteRulesAndCheckAccess(userPermissions, roles, user.TenantId, user.Id.ToGuid());
+                    return PermissionCustomRules.ExecuteRulesAndCheckAccess(userPermissions, roles, user.TenantId, user.Id);
                 }
             }
             catch (Exception e)

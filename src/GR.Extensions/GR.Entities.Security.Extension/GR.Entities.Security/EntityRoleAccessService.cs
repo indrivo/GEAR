@@ -22,7 +22,7 @@ namespace GR.Entities.Security
 {
     public class EntityRoleAccessService<TAclContext, TIdentityContext> : IEntityRoleAccessService
         where TAclContext : EntitySecurityDbContext
-        where TIdentityContext : IdentityDbContext<GearUser, GearRole, string>
+        where TIdentityContext : IdentityDbContext<GearUser, GearRole, Guid>
     {
         #region Inject Services
         /// <summary>
@@ -127,7 +127,7 @@ namespace GR.Entities.Security
             }
 
             var entity = await Tables.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
-            var role = await Roles.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(roleId));
+            var role = await Roles.FirstOrDefaultAsync(x => x.Id.Equals(roleId));
             if (entity == null || role == null)
             {
                 result.Errors.Add(nullValueError);
@@ -299,7 +299,7 @@ namespace GR.Entities.Security
 
             var permissionGroup = await _context.EntityPermissions
                 .Include(x => x.EntityPermissionAccesses)
-                .Where(x => roles.Select(b => b.Id.ToGuid())
+                .Where(x => roles.Select(b => b.Id)
                                 .Contains(x.ApplicationRoleId) && x.TableModelId
                                 .Equals(systemEntityId))
 

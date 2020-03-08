@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace GR.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, string>, IIdentityContext
+    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IIdentityContext
     {
         /// <summary>
         /// Schema
@@ -85,8 +85,6 @@ namespace GR.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
-            builder.Entity<GearUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
-            builder.Entity<GearRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);

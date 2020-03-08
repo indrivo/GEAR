@@ -8,7 +8,7 @@ using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Abstractions
 {
-    public interface INotify<in TRole> where TRole : IdentityRole<string>
+    public interface INotify<in TRole> where TRole : IdentityRole<Guid>
     {
         /// <summary>
         /// Send notification

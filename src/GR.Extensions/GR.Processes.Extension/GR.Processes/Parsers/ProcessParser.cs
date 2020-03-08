@@ -360,7 +360,7 @@ namespace GR.Procesess.Parsers
                             var actor = new STTransitionActor
                             {
                                 Name = xActor.ID,
-                                RoleId = Guid.Parse(role.Id),
+                                RoleId = role.Id,
                                 ActorSettings = actorSettings.ToStringSettings()
                             };
                             //Get actor transitions

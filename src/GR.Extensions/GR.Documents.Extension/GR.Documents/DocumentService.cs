@@ -29,7 +29,7 @@ namespace GR.Documents
         /// <summary>
         /// Inject db context 
         /// </summary>
-        public readonly IDocumentContext _documentContext;
+        private readonly IDocumentContext _documentContext;
 
         /// <summary>
         /// Inject user manager
@@ -57,7 +57,7 @@ namespace GR.Documents
             FileManager = fileManager;
             DataFilter = dataFilter;
         }
-        
+
 
         /// <summary>
         /// Get all document from table model
@@ -72,12 +72,12 @@ namespace GR.Documents
                 param.Length,
                 out var totalCount).Select(x =>
                 {
-                    x.DocumentVersions = _documentContext.DocumentVersions.Where(i=> i.DocumentId == x.Id).ToList();
+                    x.DocumentVersions = _documentContext.DocumentVersions.Where(i => i.DocumentId == x.Id).ToList();
                     x.DocumentType = _documentContext.DocumentTypes.FirstOrDefault(i => x.DocumentTypeId == i.Id) ?? new DocumentType();
                     x.DocumentCategory = _documentContext.DocumentCategories.FirstOrDefault(i => i.Id == x.DocumentCategoryId);
                     var listModel = x.Adapt<DocumentViewModel>();
                     return listModel;
-                }).Where(x=> !x.IsDeleted && x.DocumentCategory?.Code == 1).ToList();
+                }).Where(x => !x.IsDeleted && x.DocumentCategory?.Code == 1).ToList();
 
             var result = new DTResult<DocumentViewModel>
             {
@@ -102,7 +102,7 @@ namespace GR.Documents
             var listDocuments = await _documentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Include(i=> i.DocumentCategory)
+                .Include(i => i.DocumentCategory)
                 .Where(x => x.TenantId == user.Result.TenantId && !x.IsDeleted)
                 .ToListAsync();
 
@@ -291,7 +291,7 @@ namespace GR.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
                 .Include(i => i.DocumentCategory)
-                .Where(x => x.UserId == user.Id.ToGuid() && !x.IsDeleted).ToListAsync();
+                .Where(x => x.UserId == user.Id && !x.IsDeleted).ToListAsync();
 
             if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
 
@@ -335,7 +335,7 @@ namespace GR.Documents
         {
             var result = new ResultModel();
 
-            if (model == null || model.Title == null || model.DocumentCategoryId == null)
+            if (model == null || model.Title.IsNull() || model.DocumentCategoryId.Equals(Guid.Empty))
             {
                 result.Errors.Add(new ErrorModel { Message = "entity is not valid" });
                 result.IsSuccess = false;
@@ -359,7 +359,7 @@ namespace GR.Documents
                 Title = model.Title,
                 Description = model.Description,
                 Group = model.Group,
-                UserId = user.Id.ToGuid()
+                UserId = user.Id
             };
 
             await _documentContext.Documents.AddAsync(newDocument);
@@ -368,7 +368,7 @@ namespace GR.Documents
 
             if (result.IsSuccess)
             {
-                result =  await AddNewDocumentVersionAsync(new AddNewVersionDocumentViewModel
+                result = await AddNewDocumentVersionAsync(new AddNewVersionDocumentViewModel
                 {
                     Comments = model.Comments,
                     DocumentId = newDocument.Id,
@@ -450,7 +450,7 @@ namespace GR.Documents
             Guid? fileId = null;
 
             if (model.File != null)
-                fileId = FileManager.AddFile(new UploadFileViewModel { File = model.File }, user.Id.ToGuid()).Result;
+                fileId = FileManager.AddFile(new UploadFileViewModel { File = model.File }, user.Id).Result;
 
             var newDocumentVersion = new DocumentVersion
             {
@@ -458,7 +458,7 @@ namespace GR.Documents
                 FileStorageId = fileId,
                 IsArhive = false,
                 Comments = model.Comments,
-                OwnerId = user.Id.ToGuid(),
+                OwnerId = user.Id,
                 IsMajorVersion = model.IsMajorVersion,
                 FileName = model.File?.FileName ?? "",
                 Url = model.Url,
@@ -515,6 +515,6 @@ namespace GR.Documents
             return result;
 
         }
-       
+
     }
 }

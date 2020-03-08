@@ -87,7 +87,7 @@ namespace GR.Process.Razor.Controllers
                 ModifiedBy = User.Identity.Name,
                 Title = model.Title,
                 Diagram = model.Diagram.Replace("'+'", string.Empty),
-                Author = _applicationDbContext.Users.Single(x => x.UserName.Equals(User.Identity.Name)).Id
+                Author = _applicationDbContext.Users.Single(x => x.UserName.Equals(User.Identity.Name)).UserName
             };
 
             try

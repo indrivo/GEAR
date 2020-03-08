@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
@@ -15,9 +14,13 @@ namespace GR.TaskManager.Services
 {
     public sealed class TaskManagerNotificationService : ITaskManagerNotificationService
     {
+        #region Injectable
+
         private readonly INotify<GearRole> _notify;
         private readonly IUserManager<GearUser> _identity;
         private readonly ITaskManagerContext _context;
+
+        #endregion
 
         private const string TaskCreated = "Task #{0} has been assigned to you.";
         private const string TaskUpdated = "Task #{0} has been updated by {1}.";
@@ -55,15 +58,15 @@ namespace GR.TaskManager.Services
             var currentUser = await _identity.GetCurrentUserAsync();
             if (!currentUser.IsSuccess) return;
 
-            if (currentUser.Result.Id.ToGuid() == task.UserId)
+            if (currentUser.Result.Id == task.UserId)
             {
                 var user = await _identity.UserManager.FindByNameAsync(task.Author);
-                recipients.Add(user.Id.ToGuid());
+                recipients.Add(user.Id);
                 content = task.Status != TaskStatus.Completed ? string.Format(TaskUpdated, task.TaskNumber, currentUser.Result.UserName) : string.Format(TaskCompleted, task.TaskNumber, currentUser.Result.UserName);
             }
             else
             {
-                recipients.Add(currentUser.Result.Id.ToGuid());
+                recipients.Add(currentUser.Result.Id);
                 content = string.Format(TaskUpdated, task.TaskNumber, task.Author);
             }
 

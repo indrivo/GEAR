@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
@@ -22,7 +21,7 @@ namespace GR.PageRender
             var hasAccess = false;
             foreach (var role in roles)
             {
-                var query = acl.FirstOrDefault(x => x.RoleId == role.Id.ToGuid());
+                var query = acl.FirstOrDefault(x => x.RoleId == role.Id);
                 if (query == null) continue;
                 if (query.AllowAccess)
                 {

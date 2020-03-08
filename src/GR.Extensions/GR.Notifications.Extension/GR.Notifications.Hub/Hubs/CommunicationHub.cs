@@ -102,7 +102,7 @@ namespace GR.Notifications.Hub.Hubs
         /// <returns></returns>
         public virtual bool IsUserOnline(GearUser user)
         {
-            return user == null ? default : GetUserOnlineStatus(Guid.Parse(user.Id));
+            return user == null ? default : GetUserOnlineStatus(user.Id);
         }
         /// <inheritdoc />
         /// <summary>

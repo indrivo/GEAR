@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +10,8 @@ using GR.Core.Helpers;
 namespace GR.Core.BaseControllers
 {
     public abstract class BaseCrudController<TOperationContext, TEntity, TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : BaseIdentityController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify>
-        where TUser : IdentityUser, IBaseModel
-        where TRole : IdentityRole<string>, IBaseModel
+        where TUser : IdentityUser<Guid>, IBaseModel
+        where TRole : IdentityRole<Guid>, IBaseModel
         where TTenant : BaseModel
         where TIdentityContext : DbContext
         where TEntityContext : DbContext

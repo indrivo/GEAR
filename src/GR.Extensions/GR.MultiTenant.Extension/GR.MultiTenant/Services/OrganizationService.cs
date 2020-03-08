@@ -122,7 +122,7 @@ namespace GR.MultiTenant.Services
         public virtual async Task<bool> IsUserPartOfOrganizationAsync(Guid? userId, Guid? tenantId)
         {
             if (!userId.HasValue || !tenantId.HasValue) return false;
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             return user != null && user.TenantId.Equals(tenantId);
         }
 
@@ -171,11 +171,9 @@ namespace GR.MultiTenant.Services
         public virtual IEnumerable<GearUser> GetUsersByOrganization(Guid organizationId, Guid roleId)
         {
             if (organizationId == Guid.Empty || roleId == Guid.Empty) return new List<GearUser>();
-            var role = _context.Roles.FirstOrDefault(x =>
-                string.Equals(x.Id, roleId.ToString(), StringComparison.CurrentCultureIgnoreCase));
+            var role = _context.Roles.FirstOrDefault(x => x.Id.Equals(roleId));
             if (role == null) return default;
-            var usersId = _context.UserRoles.Where(x =>
-                    string.Equals(x.RoleId, roleId.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            var usersId = _context.UserRoles.Where(x => x.RoleId.Equals(roleId))
                 .ToList()
                 .Select(x => x.UserId).ToList();
             return _context.Users.Where(x => x.TenantId == organizationId && usersId.Contains(x.Id));
@@ -235,7 +233,7 @@ namespace GR.MultiTenant.Services
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<string> roles)
+        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<Guid> roles)
         {
             Arg.NotNull(user, nameof(CreateNewOrganizationUserAsync));
             var mResult = new ResultModel();
@@ -540,7 +538,7 @@ namespace GR.MultiTenant.Services
             {
                 var u = x.Adapt<CompanyUsersViewModel>();
                 u.Roles = await _userManager.UserManager.GetRolesAsync(x);
-                u.IsOnline = _hub.GetUserOnlineStatus(x.Id.ToGuid());
+                u.IsOnline = _hub.GetUserOnlineStatus(x.Id);
                 return u;
             }).Select(x => x.Result);
 
@@ -610,7 +608,7 @@ namespace GR.MultiTenant.Services
         public async Task<ResultModel> DeleteUserPermanentAsync(Guid? userId)
         {
             if (userId == null) return NotFoundResultModel<object>.Instance.ToBase();
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             var tenantId = _userManager.CurrentUserTenantId;
             if (user == null) return NotFoundResultModel<object>.Instance.ToBase();
             if (tenantId != user.TenantId) return NotFoundResultModel<object>.Instance.ToBase();
