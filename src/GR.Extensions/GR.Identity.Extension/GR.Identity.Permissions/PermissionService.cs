@@ -111,7 +111,7 @@ namespace GR.Identity.Permissions
         public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(Guid userId)
         {
             if (userId == Guid.Empty) return default;
-            var user = await _signInManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
+            var user = await _signInManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (user == null) return default;
             return await _signInManager.UserManager.GetClaimsAsync(user);
         }

@@ -825,8 +825,7 @@ namespace GR.Identity.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> _EditPermission([FromServices] SignInManager<GearUser> signInManager,
-            [FromServices] ICommunicationHub hub, EditPermissionViewModel model)
+        public async Task<JsonResult> _EditPermission(EditPermissionViewModel model)
         {
             if (!ModelState.IsValid)
             {
