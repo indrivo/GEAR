@@ -67,7 +67,7 @@ namespace GR.MultiTenant.Services
         /// <summary>
         /// Inject hub
         /// </summary>
-        private readonly INotificationHub _hub;
+        private readonly ICommunicationHub _hub;
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace GR.MultiTenant.Services
         /// <param name="localizer"></param>
         /// <param name="hub"></param>
         public OrganizationService(ApplicationDbContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
+            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub)
         {
             _context = context;
             _userManager = userManager;

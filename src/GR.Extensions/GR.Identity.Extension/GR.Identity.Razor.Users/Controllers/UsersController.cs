@@ -765,7 +765,7 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
+        public JsonResult LoadUsers([FromServices] ICommunicationHub hub, DTParameters param)
         {
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);

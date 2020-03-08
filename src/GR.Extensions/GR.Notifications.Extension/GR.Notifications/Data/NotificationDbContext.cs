@@ -5,12 +5,12 @@ using GR.Audit.Contexts;
 using GR.Core;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Data;
-using GR.Notifications.Abstractions.Seeders;
+using GR.Notifications.Seeders;
 using GR.Notifications.Extensions;
 
 namespace GR.Notifications.Data
 {
-    public class NotificationDbContext : TrackerDbContext, INotificationDbContext
+    public class NotificationDbContext : TrackerDbContext, INotificationSubscriptionsDbContext
     {
         /// <summary>
         /// Context schema

@@ -12,17 +12,9 @@ namespace GR.Notifications.Abstractions.Models.Config
         public Guid UserId { get; set; }
     }
 
-    public class SignalrEmail
+    public static class SignalrSendMethods
     {
-        public Guid UserId { get; set; }
-        public string Subject { get; set; }
-        public string Message { get; set; }
-        public List<string> EmailRecipients { get; set; }
-    }
-
-    public abstract class SignalrSendMethods
-    {
-        public const string SendClientEmail = "SendClientEmailNotification";
         public const string SendClientNotification = "SendClientNotification";
+        public const string SendData = "SendData";
     }
 }
