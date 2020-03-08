@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using StackExchange.Redis;
 
-namespace GR.Cache.Abstractions
+namespace GR.Cache
 {
     public interface IRedisConnection
     {

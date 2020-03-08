@@ -73,5 +73,11 @@ namespace GR.Cache.Services
                 var ob = _inMemoryCacheService.Set(key, obj);
                 return ob != null;
             });
+
+        /// <summary>
+        /// Get provider name
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetImplementationProviderName() => GetType().Name;
     }
 }

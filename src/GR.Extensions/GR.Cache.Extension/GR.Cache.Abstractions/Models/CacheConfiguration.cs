@@ -1,6 +1,6 @@
-﻿namespace GR.Cache.Abstractions
+﻿namespace GR.Cache.Abstractions.Models
 {
-    public sealed class RedisConnectionConfig
+    public class CacheConfiguration
     {
         /// <summary>
         /// Host of redis

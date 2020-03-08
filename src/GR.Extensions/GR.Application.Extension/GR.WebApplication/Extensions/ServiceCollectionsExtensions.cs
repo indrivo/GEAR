@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
-using GR.Cache.Abstractions.Exceptions;
 using GR.Cache.Abstractions.Extensions;
+using GR.Cache.Exceptions;
+using GR.Cache.Extensions;
+using GR.Cache.Helpers;
 using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
@@ -97,11 +99,12 @@ namespace GR.WebApplication.Extensions
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
                 services.AddDistributedMemoryCache()
-                .AddCacheModule<DistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                .AddCacheModule<DistributedCacheService>()
+                .AddRedisCacheConfiguration<RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
             else if (configuration.CacheConfiguration.UseInMemoryCache)
             {
-                services.AddCacheModule<InMemoryCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                services.AddCacheModule<InMemoryCacheService>();
             }
 
             //---------------------------------Api version Module-------------------------------------

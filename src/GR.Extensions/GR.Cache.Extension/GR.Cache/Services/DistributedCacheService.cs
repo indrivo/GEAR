@@ -121,6 +121,12 @@ namespace GR.Cache.Services
         /// </summary>
         public virtual void FlushAll() => _redisConnection.FlushAll();
 
+        /// <summary>
+        /// Get provider name
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetImplementationProviderName() => GetType().Name;
+
 
         #region Helpers
 

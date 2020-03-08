@@ -16,8 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.Cache\GR.Cache.csproj" />
   </ItemGroup>
 </Project>
