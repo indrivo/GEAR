@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit.Abstractions\GR.Audit.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

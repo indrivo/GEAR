@@ -13,8 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
-    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit.Abstractions\GR.Audit.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.Abstractions\GR.Entities.Abstractions.csproj" />
   </ItemGroup>
 

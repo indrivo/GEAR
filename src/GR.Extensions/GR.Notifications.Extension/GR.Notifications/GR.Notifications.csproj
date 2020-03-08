@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />

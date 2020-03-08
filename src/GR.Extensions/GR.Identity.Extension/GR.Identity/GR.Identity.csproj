@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities\GR.Entities.csproj" />
     <ProjectReference Include="..\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
