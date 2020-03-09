@@ -15,6 +15,7 @@ using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
+using GR.Localization.Abstractions.Models.Config;
 using GR.Notifications.Abstractions.Extensions;
 using GR.Notifications.Hub.Hubs;
 using GR.PageRender.Abstractions.Extensions;

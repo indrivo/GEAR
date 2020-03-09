@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
-using GR.Localization.Abstractions.Models;
+using GR.Localization.Abstractions.Models.Config;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace GR.Localization
+namespace GR.Localization.JsonStringProvider
 {
     public class JsonStringLocalizer : IStringLocalizer
     {
@@ -66,32 +64,24 @@ namespace GR.Localization
                 var filePath = GetFilePath();
 
                 var exists = File.Exists(filePath);
-                if (!exists)
-                {
-                    return new LocalizedString(name, $"[{name}]", true);
-                }
+                if (!exists) return new LocalizedString(name, $"[{name}]", true);
 
                 var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{_language}";
                 var locKey = $"{cacheKey}_{name}";
 
                 var cacheTranslated = _cache.GetAsync<string>(locKey).ExecuteAsync();
-                if (string.IsNullOrEmpty(cacheTranslated))
-                {
-                    Stream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    var value = PullDeserialize<string>(name, fileStream);
+                if (!string.IsNullOrEmpty(cacheTranslated)) return new LocalizedString(name, cacheTranslated, false);
+                Stream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                var value = PullDeserialize<string>(name, fileStream);
 
-                    var translated = value ?? $"[{name}]";
-                    var resourceNotFound = value == null;
-                    if (!resourceNotFound)
-                    {
-                        _cache.SetAsync(locKey, translated).ExecuteAsync();
-                    }
-                    return new LocalizedString(name, translated, resourceNotFound);
-                }
-                else
+                var translated = value ?? $"[{name}]";
+                var resourceNotFound = value == null;
+                if (!resourceNotFound)
                 {
-                    return new LocalizedString(name, cacheTranslated, false);
+                    _cache.SetAsync(locKey, translated).ExecuteAsync();
                 }
+                return new LocalizedString(name, translated, resourceNotFound);
+
             }
         }
 
@@ -148,10 +138,7 @@ namespace GR.Localization
             var filePath = GetFilePath();
 
             var exists = File.Exists(filePath);
-            if (!exists)
-            {
-                Enumerable.Empty<LocalizedString>();
-            }
+            if (!exists) yield break;
 
             using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var sReader = new StreamReader(stream))
@@ -169,7 +156,7 @@ namespace GR.Localization
             }
         }
 
-        public IStringLocalizer WithCulture(CultureInfo culture)
+        public virtual IStringLocalizer WithCulture(CultureInfo culture)
         {
             _language = culture.TwoLetterISOLanguageName;
             return this;
@@ -178,10 +165,10 @@ namespace GR.Localization
 
         private string GetFilePath()
         {
-            var paths = new string[]
+            var paths = new[]
             {
                 _env.ContentRootPath,
-                string.Format("{0}/{1}{2}", _path, _language, ".json")
+                $"{_path}/{_language}.json"
             };
             return Path.Combine(paths);
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using GR.Localization.Abstractions.Helpers.Comparators;
 
-namespace GR.Localization.Abstractions.Models
+namespace GR.Localization.Abstractions.Models.Config
 {
 	public class LocalizationConfig
     {
@@ -10,7 +10,8 @@ namespace GR.Localization.Abstractions.Models
         /// the json configuration for languages does not exist.
         /// </summary>
         #region Backing fields Default Values
-        HashSet<Language> _defaultLanguages = new HashSet<Language>(new LanguageEqualityComparer())
+
+        private HashSet<Language> _defaultLanguages = new HashSet<Language>(new LanguageEqualityComparer())
         {
             new Language { Identifier="en", Name = "English"}
         };
@@ -26,14 +27,8 @@ namespace GR.Localization.Abstractions.Models
         /// </summary>
         public HashSet<Language> Languages
         {
-            get
-            {
-                return _defaultLanguages;
-            }
-            set
-            {
-                _defaultLanguages = value;
-            }
+            get => _defaultLanguages;
+            set => _defaultLanguages = value;
         }
 
         /// <summary>
@@ -41,14 +36,8 @@ namespace GR.Localization.Abstractions.Models
         /// </summary>
         public string Path
         {
-            get
-            {
-                return _path;
-            }
-            set
-            {
-                _path = value;
-            }
+            get => _path;
+            set => _path = value;
         }
 
         /// <summary>
@@ -57,14 +46,8 @@ namespace GR.Localization.Abstractions.Models
         /// </summary>
         public string SessionStoreKeyName
         {
-            get
-            {
-                return _sessionStoreKeyName;
-            }
-            set
-            {
-                _sessionStoreKeyName = value;
-            }
+            get => _sessionStoreKeyName;
+            set => _sessionStoreKeyName = value;
         }
 
         /// <summary>
@@ -72,14 +55,8 @@ namespace GR.Localization.Abstractions.Models
         /// </summary>
         public string DefaultLanguage
         {
-            get
-            {
-                return _defaultLanguage;
-            }
-            set
-            {
-                _defaultLanguage = value;
-            }
+            get => _defaultLanguage;
+            set => _defaultLanguage = value;
         }
     }
 }

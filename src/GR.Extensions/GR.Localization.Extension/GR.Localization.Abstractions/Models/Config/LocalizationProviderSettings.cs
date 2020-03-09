@@ -1,4 +1,4 @@
-﻿namespace GR.Localization.Abstractions.Models
+﻿namespace GR.Localization.Abstractions.Models.Config
 {
     public sealed class LocalizationProviderSettings
     {

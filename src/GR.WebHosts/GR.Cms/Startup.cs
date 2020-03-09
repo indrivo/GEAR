@@ -72,7 +72,6 @@ using GR.Install.Abstractions.Extensions;
 using GR.Localization;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
-using GR.Localization.Abstractions.Models;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
 using GR.MobilPay.Razor.Extensions;
@@ -133,6 +132,8 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Localization.Abstractions.Models.Config;
+using GR.Localization.JsonStringProvider;
 
 #endregion Usings
 
@@ -243,7 +244,7 @@ namespace GR.Cms
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
-				.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
+				.AddLocalizationModule<JsonFileLocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
 					new TranslationModuleOptions
 					{
 						Configuration = Configuration,
