@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GR.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191126112520_ApplicationDbContext_Initial")]
+    [Migration("20200309141644_ApplicationDbContext_Initial")]
     partial class ApplicationDbContext_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,11 +88,38 @@ namespace GR.Identity.Migrations
                     b.ToTable("TrackAuditDetails");
                 });
 
-            modelBuilder.Entity("GR.Identity.Abstractions.ApplicationRole", b =>
+            modelBuilder.Entity("GR.Identity.Abstractions.AuthGroup", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AuthGroups");
+                });
+
+            modelBuilder.Entity("GR.Identity.Abstractions.GearRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Author");
 
@@ -134,11 +161,10 @@ namespace GR.Identity.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("GR.Identity.Abstractions.ApplicationUser", b =>
+            modelBuilder.Entity("GR.Identity.Abstractions.GearUser", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("AboutMe")
                         .HasMaxLength(500);
@@ -224,34 +250,6 @@ namespace GR.Identity.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("GR.Identity.Abstractions.AuthGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AuthGroups");
-                });
-
             modelBuilder.Entity("GR.Identity.Abstractions.Models.AddressModels.Address", b =>
                 {
                     b.Property<Guid>("Id")
@@ -263,8 +261,7 @@ namespace GR.Identity.Migrations
                     b.Property<string>("AddressLine2")
                         .HasMaxLength(450);
 
-                    b.Property<Guid?>("ApplicationUserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("ApplicationUserId");
 
                     b.Property<string>("Author");
 
@@ -4791,8 +4788,7 @@ namespace GR.Identity.Migrations
 
                     b.Property<Guid>("PermissionId");
 
-                    b.Property<Guid?>("RoleId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("RoleId");
 
                     b.Property<Guid?>("TenantId");
 
@@ -4842,8 +4838,7 @@ namespace GR.Identity.Migrations
 
             modelBuilder.Entity("GR.Identity.Abstractions.Models.UserProfiles.RoleProfile", b =>
                 {
-                    b.Property<Guid>("ApplicationRoleId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("ApplicationRoleId");
 
                     b.Property<Guid>("ProfileId");
 
@@ -4858,8 +4853,7 @@ namespace GR.Identity.Migrations
                 {
                     b.Property<Guid>("AuthGroupId");
 
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("Author");
 
@@ -4884,7 +4878,7 @@ namespace GR.Identity.Migrations
                     b.ToTable("UserGroups");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -4893,8 +4887,7 @@ namespace GR.Identity.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<Guid>("RoleId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("Id");
 
@@ -4903,7 +4896,7 @@ namespace GR.Identity.Migrations
                     b.ToTable("RoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -4912,8 +4905,7 @@ namespace GR.Identity.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("Id");
 
@@ -4922,7 +4914,7 @@ namespace GR.Identity.Migrations
                     b.ToTable("UserClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider");
 
@@ -4930,8 +4922,7 @@ namespace GR.Identity.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -4940,13 +4931,11 @@ namespace GR.Identity.Migrations
                     b.ToTable("UserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("UserId");
 
-                    b.Property<Guid>("RoleId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -4955,10 +4944,9 @@ namespace GR.Identity.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("LoginProvider");
 
@@ -4981,7 +4969,7 @@ namespace GR.Identity.Migrations
 
             modelBuilder.Entity("GR.Identity.Abstractions.Models.AddressModels.Address", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser", "ApplicationUser")
+                    b.HasOne("GR.Identity.Abstractions.GearUser", "ApplicationUser")
                         .WithMany("Addresses")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -5041,14 +5029,15 @@ namespace GR.Identity.Migrations
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GR.Identity.Abstractions.ApplicationRole", "Role")
+                    b.HasOne("GR.Identity.Abstractions.GearRole", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GR.Identity.Abstractions.Models.UserProfiles.RoleProfile", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationRole", "ApplicationRole")
+                    b.HasOne("GR.Identity.Abstractions.GearRole", "ApplicationRole")
                         .WithMany()
                         .HasForeignKey("ApplicationRoleId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -5066,52 +5055,52 @@ namespace GR.Identity.Migrations
                         .HasForeignKey("AuthGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser", "User")
+                    b.HasOne("GR.Identity.Abstractions.GearUser", "User")
                         .WithMany("UserGroups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationRole")
+                    b.HasOne("GR.Identity.Abstractions.GearRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser")
+                    b.HasOne("GR.Identity.Abstractions.GearUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser")
+                    b.HasOne("GR.Identity.Abstractions.GearUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationRole")
+                    b.HasOne("GR.Identity.Abstractions.GearRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser")
+                    b.HasOne("GR.Identity.Abstractions.GearUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("GR.Identity.Abstractions.ApplicationUser")
+                    b.HasOne("GR.Identity.Abstractions.GearUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using System;
 
 namespace GR.Identity.Migrations
 {
@@ -276,7 +276,7 @@ namespace GR.Identity.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
                     TenantId = table.Column<Guid>(nullable: true),
-                    RoleId = table.Column<Guid>(nullable: true),
+                    RoleId = table.Column<Guid>(nullable: false),
                     PermissionCode = table.Column<string>(nullable: false),
                     PermissionId = table.Column<Guid>(nullable: false)
                 },
@@ -296,7 +296,7 @@ namespace GR.Identity.Migrations
                         principalSchema: "Identity",
                         principalTable: "Roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -576,7 +576,7 @@ namespace GR.Identity.Migrations
                     DistrictId = table.Column<Guid>(nullable: true),
                     StateOrProvinceId = table.Column<long>(nullable: false),
                     CountryId = table.Column<string>(maxLength: 450, nullable: false),
-                    ApplicationUserId = table.Column<Guid>(nullable: true),
+                    ApplicationUserId = table.Column<Guid>(nullable: false),
                     IsDefault = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
