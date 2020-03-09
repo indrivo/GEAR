@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace GR.Core.BaseControllers
+namespace GR.Core.Razor.BaseControllers
 {
     public abstract class BaseGearController : Controller
     {

@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.Abstractions\GR.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
     <ProjectReference Include="..\GR.Identity.LdapAuth.Abstractions\GR.Identity.LdapAuth.Abstractions.csproj" />
   </ItemGroup>

@@ -1,17 +1,12 @@
 using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
-using GR.Entities.Data;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Events;
 using GR.PageRender.Abstractions.Events.EventArgs;
@@ -23,17 +18,20 @@ using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Razor.BaseControllers;
+using GR.Entities.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.PageRender.Razor.Controllers
 {
-    public class PageController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    [Authorize]
+    public class PageController : BaseGearController
     {
         #region Injectable
 
@@ -42,13 +40,25 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         private readonly IPageRender _pageRender;
 
+        /// <summary>
+        /// Inject form service
+        /// </summary>
         private readonly IFormService _formService;
+
+        /// <summary>
+        /// Inject pages context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
-        /// Inject memory cache
+        /// Inject context
         /// </summary>
-        private readonly IMemoryCache _memoryCache;
+        private readonly IEntityContext _context;
+
+        /// <summary>
+        /// Inject role manager
+        /// </summary>
+        private readonly RoleManager<GearRole> _roleManager;
 
         /// <summary>
         /// Inject cache service
@@ -57,13 +67,14 @@ namespace GR.PageRender.Razor.Controllers
 
         #endregion Injectable
 
-        public PageController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext, IMemoryCache memoryCache) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public PageController(IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext, IEntityContext context, RoleManager<GearRole> roleManager, ICacheService cacheService)
         {
-            _cacheService = cacheService;
             _pageRender = pageRender;
             _formService = formService;
             _pagesContext = pagesContext;
-            _memoryCache = memoryCache;
+            _context = context;
+            _roleManager = roleManager;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -627,13 +638,13 @@ namespace GR.PageRender.Razor.Controllers
 
             var key = $"entity_Scaffold";
 
-            var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
-            var table = tables.FirstOrDefault(x => x.Id == tableId) ?? await Context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
+            var tables = (await _cacheService.GetAsync<IEnumerable<TableModel>>(key))?.ToList() ?? new List<TableModel>();
+            var table = tables.FirstOrDefault(x => x.Id == tableId) ?? await _context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
 
             if (tables.FirstOrDefault(x => x.Id == tableId) == null)
             {
                 tables.Add(table);
-                _memoryCache.Set(key, tables);
+                await _cacheService.SetAsync(key, tables);
             }
 
             if (table == null) return NotFound();
@@ -687,7 +698,7 @@ namespace GR.PageRender.Razor.Controllers
                 .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id == pageId);
             if (page == null) return NotFound();
-            var roles = RoleManager.Roles.Where(x => !x.IsDeleted).ToList();
+            var roles = _roleManager.Roles.Where(x => !x.IsDeleted).ToList();
             ViewBag.Roles = roles;
             var rolesAcl = roles.ToDictionary(x => x, x => page.RolePagesAcls.FirstOrDefault(y => y.RoleId == x.Id));
             ViewBag.ACL = rolesAcl;

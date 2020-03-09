@@ -61,6 +61,9 @@ namespace GR.Core.Razor.Extensions
                 //
                 options.IgnoreObsoleteProperties();
 
+                // Set custom schema name 
+                options.CustomSchemaIds(x => x.FullName);
+
                 // In accordance with the built in JsonSerializer, Swashbuckle will, by default, describe enums as integers.
                 // You can change the serializer behavior by configuring the StringToEnumConverter globally or for a given
                 // enum type. Swashbuckle will honor this change out-of-the-box. However, if you use a different

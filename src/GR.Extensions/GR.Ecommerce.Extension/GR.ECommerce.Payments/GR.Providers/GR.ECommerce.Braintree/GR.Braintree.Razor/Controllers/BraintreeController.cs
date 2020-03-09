@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.Braintree.Abstractions;
-using GR.Core.BaseControllers;
+using GR.Core.Razor.BaseControllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

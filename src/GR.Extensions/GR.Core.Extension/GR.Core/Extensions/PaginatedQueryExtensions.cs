@@ -33,6 +33,7 @@ namespace GR.Core.Extensions
             return result;
         }
 
+
         /// <summary>
         /// Get paged response with filters
         /// </summary>
@@ -105,6 +106,74 @@ namespace GR.Core.Extensions
             result.IsSuccess = true;
             return result;
         }
+
+        #region Paged for DTParameters
+
+        /// <summary>
+        /// Get paged
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static async Task<PagedResult<T>> GetPagedAsync<T>(this IQueryable<T> query,
+            DTParameters parameters)
+            where T : class
+        {
+            if (query == null) throw new NullReferenceException("Invalid query");
+
+            var result = new PagedResult<T>
+            {
+                CurrentPage = parameters.Draw,
+                PageSize = parameters.Length
+            };
+
+            if (!parameters.Search.Value.IsNullOrEmpty())
+            {
+                query = parameters.Search.Regex
+                    ? query.FilterSourceByRegEx(parameters.Search.Value)
+                    : query.FilterSourceByTextExpression(parameters.Search.Value);
+            }
+
+            if (!parameters.SortOrder.IsNullOrEmpty())
+            {
+                var split = parameters.SortOrder.Split(' ');
+                var propName = split[0].ToLower().FirstCharToUpper();
+                var isAsc = split.Length != 2;
+                query = query.OrderByWithDirection(x => x.GetPropertyValue(propName), !isAsc);
+            }
+
+            result.RowCount = await query.CountAsync();
+            var pageCount = (double)result.RowCount / parameters.Length;
+            result.PageCount = (int)Math.Ceiling(pageCount);
+
+            result.Result = await query.Skip(parameters.Start).Take(parameters.Length).ToListAsync();
+            result.IsSuccess = true;
+            return result;
+        }
+
+        /// <summary>
+        /// Get paged response
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static async Task<DTResult<T>> GetPagedAsDtResultAsync<T>(this IQueryable<T> query,
+            DTParameters parameters)
+            where T : class
+        {
+            var paged = await query.GetPagedAsync(parameters);
+            return new DTResult<T>
+            {
+                Draw = paged.CurrentPage,
+                Data = paged.Result.ToList(),
+                RecordsFiltered = paged.RowCount,
+                RecordsTotal = paged.PageCount
+            };
+        }
+
+        #endregion
 
 
         /// <summary>

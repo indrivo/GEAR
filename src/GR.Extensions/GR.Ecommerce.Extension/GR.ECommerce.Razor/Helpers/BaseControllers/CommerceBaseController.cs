@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GR.Core;
 using GR.Core.Abstractions;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
+using GR.Core.Razor.BaseControllers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
 
 namespace GR.ECommerce.Razor.Helpers.BaseControllers
 {
-    [ Authorize]
+    [Authorize]
     public abstract class CommerceBaseController<TEntity, TViewModel> : BaseGearController
         where TEntity : BaseModel
         where TViewModel : TEntity

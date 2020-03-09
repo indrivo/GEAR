@@ -1,28 +1,29 @@
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
 {
-    public class BlockCategoryController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    public class BlockCategoryController : BaseGearController
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject pages context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
-        public BlockCategoryController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        #endregion
+
+        public BlockCategoryController(IDynamicPagesContext pagesContext)
         {
             _pagesContext = pagesContext;
         }

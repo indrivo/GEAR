@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
   </ItemGroup>
 </Project>

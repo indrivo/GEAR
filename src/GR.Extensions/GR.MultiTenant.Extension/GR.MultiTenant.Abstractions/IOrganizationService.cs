@@ -123,7 +123,7 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        DTResult<OrganizationListViewModel> GetFilteredList(DTParameters param);
+        Task<DTResult<OrganizationListViewModel>> GetFilteredList(DTParameters param);
 
         /// <summary>
         /// Get country list for VM states

@@ -6,36 +6,30 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions;
 using GR.Core;
-using GR.Core.Abstractions;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using GR.Entities.Abstractions;
-using GR.Entities.Data;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
 using GR.Identity.Permissions.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.MultiTenant.Abstractions.Events.EventArgs;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
-using GR.Notifications.Abstractions;
 using IdentityServer4.Extensions;
 
 namespace GR.MultiTenant.Razor.Controllers
 {
     [Authorize(Roles = MultiTenantResources.Roles.COMPANY_ADMINISTRATOR)]
-    public class CompanyManageController : BaseCrudController<ApplicationDbContext, GearUser,
-        ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    public class CompanyManageController : BaseGearController
     {
         #region Injectable
 
@@ -71,11 +65,7 @@ namespace GR.MultiTenant.Razor.Controllers
 
         #endregion
 
-        public CompanyManageController(UserManager<GearUser> userManager,
-            RoleManager<GearRole> roleManager,
-            ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityService service, IUserManager<GearUser> userManager1, SignInManager<GearUser> signInManager, IPermissionService permissionService) :
-            base(userManager, roleManager, applicationDbContext, context, notify, dataFilter, localizer)
+        public CompanyManageController(IOrganizationService<Tenant> organizationService, IEntityService service, IUserManager<GearUser> userManager1, SignInManager<GearUser> signInManager, IPermissionService permissionService)
         {
             _organizationService = organizationService;
             _service = service;
@@ -86,10 +76,12 @@ namespace GR.MultiTenant.Razor.Controllers
         }
 
         [HttpGet]
-        public new async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
-            var user = GetCurrentUser();
-            ViewBag.UserRoles = string.Join(", ", UserManager.GetRolesAsync(user).GetAwaiter().GetResult());
+            var user = (await _userManager.GetCurrentUserAsync()).Result;
+            var roles = await _userManager.UserManager.GetRolesAsync(user);
+            ViewBag.UserRoles = string.Join(", ", roles
+            );
             ViewBag.User = user;
             var hasAccess = await _permissionService.HasPermissionAsync(new List<string> { UserPermissions.UserCreate });
             var listSettings = _listSettings.GetCompanyUserListSettings();
@@ -100,14 +92,13 @@ namespace GR.MultiTenant.Razor.Controllers
             return View();
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Load page items
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public override JsonResult LoadPageItems(DTParameters param)
+        public JsonResult LoadPageItems(DTParameters param)
         {
             var listObj = _organizationService
                 .LoadFilteredListCompanyUsersAsync(param)

@@ -1,30 +1,24 @@
 using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.RenderTemplates;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize]
-    public class TemplatesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    public class TemplatesController : BaseGearController
     {
         #region Injectable
 
@@ -33,11 +27,14 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
         private readonly ICacheService _cacheService;
 
         #endregion Injectable
 
-        public TemplatesController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public TemplatesController(ICacheService cacheService, IDynamicPagesContext pagesContext)
         {
             _cacheService = cacheService;
             _pagesContext = pagesContext;
@@ -105,8 +102,6 @@ namespace GR.PageRender.Razor.Controllers
             try
             {
                 model.IdentifierName = $"template_{model.Name}";
-                model.TenantId = CurrentUserTenantId;
-                model.Author = GetCurrentUser()?.UserName;
                 _pagesContext.Templates.Add(model);
                 _pagesContext.SaveChanges();
                 await _cacheService.SetAsync(model.IdentifierName, new TemplateCacheModel
@@ -156,10 +151,7 @@ namespace GR.PageRender.Razor.Controllers
 
             dataModel.Name = model.Name;
             dataModel.Description = model.Description;
-            dataModel.Author = model.Author;
             dataModel.Value = model.Value;
-            dataModel.Changed = DateTime.Now;
-            dataModel.ModifiedBy = GetCurrentUser()?.UserName;
             try
             {
                 _pagesContext.Templates.Update(dataModel);

@@ -1,5 +1,4 @@
 using GR.Core.Attributes.Documentation;
-using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 {
