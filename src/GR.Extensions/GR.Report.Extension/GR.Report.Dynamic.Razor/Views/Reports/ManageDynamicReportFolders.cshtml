@@ -1,6 +1,6 @@
 @model Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<GR.Report.Abstractions.Models.DynamicReportFolder, IEnumerable<GR.Report.Abstractions.Models.DynamicReport>>
 @{
-    ViewData["Title"] = "Manage Dynamic Report Folders";
+    ViewData["Title"] = "Manage Report Folders";
 }
 
 <div class="col-md-12">
@@ -8,7 +8,7 @@
         <div class="card-body">
             <h4 class="card-title text-center">
                 Folder Management
-                <a class=" btn btn-info pull-right text-white" asp-action="CreateFolder" asp-controller="DynamicReports">Add</a>
+                <a class=" btn btn-info pull-right text-white" asp-action="CreateFolder" asp-controller="Reports">Add</a>
             </h4>
             <div class="table-responsive m-t-40">
                 <table class="table stylish-table">
@@ -165,10 +165,10 @@
     <script>
         $(".js-folder-edit-trigger").click(function () {
             editEntity($(this).attr('data-type-id'),'folderNameSave','folderNameInput',
-                '@Url.Action("EditFolder", "DynamicReports")');
+                '@Url.Action("EditFolder", "Reports")');
         });
         $(".js-folder-delete-trigger").click(function () {
-            deleteEntity($(this).attr('data-type-id'), '@Url.Action("DeleteReportFolder","DynamicReports")');
+            deleteEntity($(this).attr('data-type-id'), '@Url.Action("DeleteReportFolder","Reports")');
         });
     </script>
 }

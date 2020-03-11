@@ -119,7 +119,7 @@
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-warning btn-sm" onclick="GetReportDataById('@Url.Action("GetReportDataById")', '${row.id}', 'displayReportBox')" href="javascript:">Display</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("Save")?id=${row.id}">Edit</a>
-									<a class="btn btn-danger btn-sm deleteReport" data-request-url="@Url.Action("DeleteReport", "DynamicReports")" data-value="${row.id}" href="javascript:">Delete</a>
+									<a class="btn btn-danger btn-sm deleteReport" data-request-url="@Url.Action("DeleteReport", "Reports")" data-value="${row.id}" href="javascript:">Delete</a>
 									</div>`;
 						}
 					}

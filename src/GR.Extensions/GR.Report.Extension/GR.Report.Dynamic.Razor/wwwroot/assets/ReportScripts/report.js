@@ -441,7 +441,6 @@ function AddChart(chartType) {
     return dfd.promise();
 }
 
-
 function SetRelValues() {
     $('#pnlRelationships > .row').each(function () {
 
@@ -498,7 +497,6 @@ function prepareFields($n, option) {
 
     return dfd.promise();
 }
-
 
 function SetFieldValues(data) {
     if (data.length > 0) {

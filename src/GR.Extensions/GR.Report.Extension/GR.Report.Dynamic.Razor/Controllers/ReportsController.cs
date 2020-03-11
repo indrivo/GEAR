@@ -12,20 +12,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Razor.BaseControllers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.Report.Dynamic.Razor.Controllers
 {
-    public class DynamicReportsController : Controller
+    [Authorize]
+    public class ReportsController : BaseGearController
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject reports service
+        /// </summary>
         private readonly IDynamicReportsService _service;
 
-        public DynamicReportsController(IDynamicReportsService service)
+        #endregion
+
+        public ReportsController(IDynamicReportsService service)
         {
             _service = service;
         }
 
         #region ReportFolders
-
 
         [HttpGet]
         public IActionResult Index()
