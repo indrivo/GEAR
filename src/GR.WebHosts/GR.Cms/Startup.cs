@@ -134,6 +134,9 @@ using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.JsonStringProvider;
+using GR.Logger;
+using GR.Logger.Abstractions.Extensions;
+using Microsoft.Extensions.Logging;
 
 #endregion Usings
 
@@ -421,6 +424,18 @@ namespace GR.Cms
 				.RegisterDocumentCategoryServices<DocumentCategoryService>()
 				.RegisterDocumentServices<DocumentWithWorkflowService>()
 				.AddDocumentRazorUIModule();
+
+
+			//------------------------------------ Logging Module -----------------------------------
+			config.GearServices.RegisterLoggerModule<GearLoggerFactory>()
+				.AddLoggingConfiguration(logging =>
+				{
+					logging.SetMinimumLevel(LogLevel.Trace);
+					logging.AddSeq(Configuration.GetSection("Logging:Seq"));
+					//logging.ClearProviders();
+					//logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
+					//logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
+				});
 
 		});
 	}
