@@ -4,16 +4,15 @@ using GR.UI.Menu.Abstractions.Helpers;
 
 namespace GR.Notifications.Razor.Helpers
 {
-    public class NotificationsMenuInitializer: BaseMenuInitializer
+    public class NotificationsMenuInitializer : BaseMenuInitializer
     {
         public override MenuInitBuilder Builder => new MenuInitBuilder
         {
             MenuGroup = MenuResources.AppMenuId,
             Configs = new List<MenuItemConfig>
             {
-                new MenuItemConfig
+                new MenuItemConfig(NotificationsRazorResources.Menu.Notifications)
                 {
-                    Id = NotificationsRazorResources.Menu.Notifications,
                     Name = "Notifications",
                     ParentMenuItemId = MenuResources.MenuItems.ConfigurationItem,
                     Href = MenuResources.MenuItems.None,
@@ -23,11 +22,10 @@ namespace GR.Notifications.Razor.Helpers
                         GlobalResources.Roles.ADMINISTRATOR
                     }
                 },
-                new MenuItemConfig
+                new MenuItemConfig(NotificationsRazorResources.Menu.Subscriptions)
                 {
-                    Id = NotificationsRazorResources.Menu.Subscriptions,
                     Name = "Notifications subscriptions",
-                    ParentMenuItemId = MenuResources.MenuItems.ConfigurationItem,
+                    ParentMenuItemId = NotificationsRazorResources.Menu.Notifications,
                     Href = "/NotificationSubscriptions",
                     AllowedRoles = new List<string>
                     {
