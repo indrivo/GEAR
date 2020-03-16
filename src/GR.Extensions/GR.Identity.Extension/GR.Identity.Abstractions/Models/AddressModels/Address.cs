@@ -68,7 +68,7 @@ namespace GR.Identity.Abstractions.Models.AddressModels
         /// </summary>
         public GearUser ApplicationUser { get; set; }
 
-        public string ApplicationUserId { get; set; }
+        public Guid ApplicationUserId { get; set; }
 
         /// <summary>
         /// Represent default user address

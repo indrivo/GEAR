@@ -5,13 +5,13 @@
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <Authors>Lupei Nicolae</Authors>
-    <Version>1.9.1</Version>
+    <Version>1.9.2</Version>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>commerce-ui gear</PackageTags>
     <PackageReleaseNotes>- .net core mvc ui for manage products</PackageReleaseNotes>
-    <FileVersion>1.9.1</FileVersion>
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

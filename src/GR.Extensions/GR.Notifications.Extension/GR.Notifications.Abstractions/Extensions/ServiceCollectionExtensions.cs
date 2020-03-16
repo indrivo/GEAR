@@ -25,7 +25,7 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddNotificationModule<TNotifyService, TRole>(this IServiceCollection services)
             where TNotifyService : class, INotify<TRole>
-            where TRole : IdentityRole<string>
+            where TRole : IdentityRole<Guid>
         {
             services.AddGearTransient<INotify<TRole>, TNotifyService>();
 

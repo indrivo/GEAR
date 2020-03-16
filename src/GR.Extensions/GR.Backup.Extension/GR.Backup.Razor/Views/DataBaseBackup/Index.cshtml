@@ -1,5 +1,75 @@
-﻿@{
-    ViewData["Title"] = "Backup manager";
+@using ByteSizeLib
+
+@model IEnumerable<GR.Backup.Abstractions.ViewModels.BackupViewModel>
+
+@{
+	ViewData["Title"] = "Database Backups";
 }
 
-<h1>Incoming...</h1>
+<div class="card">
+	<div class="card-header">
+		<a href="#" id="clear-backups" class="btn btn-danger">Clear</a>
+	</div>
+	<div class="card-body">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Extension</th>
+					<th>Creation date</th>
+					<th>Size</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.Name</td>
+						<td>@item.Extension</td>
+						<td>@item.CreationDate</td>
+						<td>@ByteSize.FromBytes(item.Size).ToString()</td>
+						<td>
+							<a asp-action="DownloadBackup" asp-controller="DataBaseBackup" asp-route-backupName="@item.Name" class="btn btn-default">Download</a>
+						</td>
+					</tr>
+				}
+
+				@if (!Model.Any())
+				{
+					<tr>
+						<td colspan="5">No backups!</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+@section Scripts{
+	<script>
+		$(document).ready(function () {
+			const toast = new ToastNotifier();
+			$("#clear-backups").on("click", function () {
+				$.ajax({
+					url: "@Url.Action("ClearAll", "DataBaseBackup")",
+					method: "post",
+					success: function (response) {
+						if (response.is_success) {
+							toast.notifySuccess("Info", "Clear success");
+							setInterval(() => {
+								location.reload();
+							}, 1000);
+						} else{
+							toast.notifyErrorList(response.error_list);
+						}
+					},
+					error: function (e) {
+						console.error(e);
+					}
+				});
+			});
+		});
+	</script>
+}

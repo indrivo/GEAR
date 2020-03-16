@@ -17,9 +17,24 @@ namespace GR.Core.Helpers.Pagination
         private static PagedResult<T> _default;
         public static PagedResult<T> DefaultResponse => _default ?? (_default = new PagedResult<T>());
 
+        /// <summary>
+        /// Current page
+        /// </summary>
         public virtual int CurrentPage { get; set; }
+
+        /// <summary>
+        /// Items on current page
+        /// </summary>
         public virtual int PageCount { get; set; }
+
+        /// <summary>
+        /// Items per page
+        /// </summary>
         public virtual int PageSize { get; set; }
+
+        /// <summary>
+        /// Total filtered items
+        /// </summary>
         public virtual int RowCount { get; set; }
 
         public virtual int FirstRowOnPage => (CurrentPage - 1) * PageSize + 1;

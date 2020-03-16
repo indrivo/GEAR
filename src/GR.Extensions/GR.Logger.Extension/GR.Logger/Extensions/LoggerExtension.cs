@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Web;
 using LogLevel = NLog.LogLevel;
@@ -40,15 +39,8 @@ namespace GR.Logger.Extensions
                 });
             });
 
-            builder.ConfigureLogging(logging =>
-                {
-                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                    //logging.ClearProviders();
-                    //logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
-                    //logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
-                })
-                .UseNLog()
-                .UseSentry();
+            builder.UseNLog()
+            .UseSentry();
 
             return builder;
         }

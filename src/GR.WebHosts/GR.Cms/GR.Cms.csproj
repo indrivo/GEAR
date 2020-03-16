@@ -7,14 +7,14 @@
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<IsPackable>false</IsPackable>
 	<LangVersion>7.3</LangVersion>
-	<Version>1.9.1</Version>
+	<Version>1.9.2</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Indrivo</Company>
 	<Product>Gear</Product>
 	<Description>BPMN</Description>
 	<Copyright>Indrivo 2019</Copyright>
-	<FileVersion>1.9.1</FileVersion>
-	<AssemblyVersion>1.9.1</AssemblyVersion>
+	<FileVersion>1.9.2</FileVersion>
+	<AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
    <ItemGroup>
@@ -52,12 +52,12 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Infrastructure\GR.ECommerce.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Orders\GR.Orders\GR.Orders.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Braintree\GR.Braintree.Razor\GR.Braintree.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Braintree\GR.Braintree\GR.Braintree.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal\GR.Paypal.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Braintree\GR.Braintree.Razor\GR.Braintree.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Braintree\GR.Braintree\GR.Braintree.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Payments\GR.Providers\GR.ECommerce.Paypal\GR.Paypal\GR.Paypal.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Razor\GR.ECommerce.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Subscription\GR.Subscription\GR.Subscriptions.csproj" />

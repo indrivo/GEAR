@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace GR.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, string>, IIdentityContext
+    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IIdentityContext
     {
         /// <summary>
         /// Schema
@@ -65,11 +65,11 @@ namespace GR.Identity.Data
             builder.Entity<GearRole>().ToTable("Roles");
             builder.Entity<GearUser>().ToTable("Users");
             builder.Entity<Permission>().ToTable("Permissions");
-            builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
-            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
-            builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+            builder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+            builder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+            builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+            builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
+            builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
 
             builder.Entity<RoleProfile>().HasKey(ug => new { ug.ApplicationRoleId, ug.ProfileId });
 
@@ -85,8 +85,6 @@ namespace GR.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
-            builder.Entity<GearUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
-            builder.Entity<GearRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);

@@ -92,7 +92,7 @@ namespace GR.Notifications
                 _memoryCache.Set(key, new List<GearRole>());
                 return result;
             }
-            var roles = await _roleManager.Roles.Where(x => subscribed.Select(j => j.RoleId).Contains(x.Id.ToGuid()))
+            var roles = await _roleManager.Roles.Where(x => subscribed.Select(j => j.RoleId).Contains(x.Id))
                 .ToListAsync();
             result.IsSuccess = true;
             result.Result = roles;

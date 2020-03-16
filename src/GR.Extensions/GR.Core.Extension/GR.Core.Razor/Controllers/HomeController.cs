@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
-using GR.Core.Helpers;
+using GR.Core.Razor.Helpers;
 using GR.Core.Razor.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -41,8 +41,8 @@ namespace GR.Identity.Services
         public async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync()
         {
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
-            if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<Address>>(null);
-            return await GetUserAddressesAsync(currentUserRequest.Result.Id.ToGuid());
+            if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<Address>>();
+            return await GetUserAddressesAsync(currentUserRequest.Result.Id);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace GR.Identity.Services
         public async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId)
         {
             if (userId == null) return new InvalidParametersResultModel<IEnumerable<Address>>();
-            var data = await _context.Addresses.Where(x => x.ApplicationUserId.ToGuid() == userId)
+            var data = await _context.Addresses.Where(x => x.ApplicationUserId == userId)
                 .Include(x => x.ApplicationUser)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)

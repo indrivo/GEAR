@@ -187,7 +187,7 @@ namespace GR.Identity.Services
         {
             var response = new ResultModel();
             if (userId == null) return response;
-            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (user == null) return response;
             if (CurrentUserTenantId != user.TenantId) return response;
             user.IsDisabled = true;
@@ -206,7 +206,7 @@ namespace GR.Identity.Services
             var addresses = await IdentityContext.Addresses
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
-                .Where(x => x.ApplicationUserId.ToGuid().Equals(userId))
+                .Where(x => x.ApplicationUserId.Equals(userId))
                 .NonDeleted()
                 .ToListAsync();
             return new ResultModel<IEnumerable<Address>>
@@ -312,7 +312,7 @@ namespace GR.Identity.Services
             var currentRolesRequest = await FindRolesByNamesAsync(await UserManager.GetRolesAsync(user));
             if (!currentRolesRequest.IsSuccess) return currentRolesRequest.ToBase();
             var currentRoles = currentRolesRequest.Result.ToList();
-            var rolesIds = currentRoles.Select(x => x.Id.ToGuid()).ToList();
+            var rolesIds = currentRoles.Select(x => x.Id).ToList();
             var (newRoles, excludeRoles) = rolesIds.GetDifferences(roles);
             if (newRoles.Any())
             {

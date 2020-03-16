@@ -186,10 +186,7 @@ namespace GR.Localization.Razor.Controllers
             return View();
         }
 
-        [HttpGet]
-        private List<LanguageCreateViewModel> GetLanguagesFiltered(string search, string sortOrder, int start,
-            int length,
-            out int totalCount)
+        private List<LanguageCreateViewModel> GetLanguagesFiltered(string search, string sortOrder, out int totalCount)
         {
             var result = _locConfig.Value.Languages.Where(p =>
                 search == null || p.Name != null &&
@@ -228,7 +225,7 @@ namespace GR.Localization.Razor.Controllers
         [HttpPost]
         public JsonResult LanguageList(DTParameters param)
         {
-            var filtered = GetLanguagesFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
+            var filtered = GetLanguagesFiltered(param.Search.Value, param.SortOrder,
                 out var totalCount);
             var finalResult = new DTResult<LanguageCreateViewModel>
             {
@@ -421,15 +418,12 @@ namespace GR.Localization.Razor.Controllers
         [HttpGet]
         public IActionResult ChangeStatus(string key)
         {
-            if (key != null)
-            {
-                var language =
-                    _locConfig.Value.Languages.Single(x =>
-                        string.Equals(x.Identifier, key, StringComparison.CurrentCultureIgnoreCase));
-                return View(language);
-            }
+            if (key == null) return RedirectToAction("GetLanguages", "Localization", new { page = 1, perPage = 10 });
+            var language =
+                _locConfig.Value.Languages.Single(x =>
+                    string.Equals(x.Identifier, key, StringComparison.CurrentCultureIgnoreCase));
+            return View(language);
 
-            return RedirectToAction("GetLanguages", "Localization", new { page = 1, perPage = 10 });
         }
 
         /// <summary>

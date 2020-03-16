@@ -1,12 +1,10 @@
-﻿using GR.Identity.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,7 +15,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Templates;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
@@ -27,6 +24,7 @@ using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.Notifications.Abstractions;
+using Mapster;
 
 namespace GR.MultiTenant.Services
 {
@@ -37,7 +35,7 @@ namespace GR.MultiTenant.Services
         /// <summary>
         /// Inject context
         /// </summary>
-        private readonly ApplicationDbContext _context;
+        private readonly IIdentityContext _context;
 
         /// <summary>
         /// Inject user manager
@@ -81,7 +79,7 @@ namespace GR.MultiTenant.Services
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
         /// <param name="hub"></param>
-        public OrganizationService(ApplicationDbContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
+        public OrganizationService(IIdentityContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
             IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub)
         {
             _context = context;
@@ -122,7 +120,7 @@ namespace GR.MultiTenant.Services
         public virtual async Task<bool> IsUserPartOfOrganizationAsync(Guid? userId, Guid? tenantId)
         {
             if (!userId.HasValue || !tenantId.HasValue) return false;
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             return user != null && user.TenantId.Equals(tenantId);
         }
 
@@ -171,11 +169,9 @@ namespace GR.MultiTenant.Services
         public virtual IEnumerable<GearUser> GetUsersByOrganization(Guid organizationId, Guid roleId)
         {
             if (organizationId == Guid.Empty || roleId == Guid.Empty) return new List<GearUser>();
-            var role = _context.Roles.FirstOrDefault(x =>
-                string.Equals(x.Id, roleId.ToString(), StringComparison.CurrentCultureIgnoreCase));
+            var role = _context.Roles.FirstOrDefault(x => x.Id.Equals(roleId));
             if (role == null) return default;
-            var usersId = _context.UserRoles.Where(x =>
-                    string.Equals(x.RoleId, roleId.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            var usersId = _context.UserRoles.Where(x => x.RoleId.Equals(roleId))
                 .ToList()
                 .Select(x => x.UserId).ToList();
             return _context.Users.Where(x => x.TenantId == organizationId && usersId.Contains(x.Id));
@@ -235,7 +231,7 @@ namespace GR.MultiTenant.Services
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<string> roles)
+        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<Guid> roles)
         {
             Arg.NotNull(user, nameof(CreateNewOrganizationUserAsync));
             var mResult = new ResultModel();
@@ -407,14 +403,12 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual DTResult<OrganizationListViewModel> GetFilteredList(DTParameters param)
+        public virtual async Task<DTResult<OrganizationListViewModel>> GetFilteredList(DTParameters param)
         {
             if (param == null) return new DTResult<OrganizationListViewModel>();
-            var filtered = _context.Filter<Tenant>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
+            var filtered = await _context.Tenants.GetPagedAsDtResultAsync(param);
 
-            var list = filtered.Select(x => new OrganizationListViewModel
+            var list = filtered.Data.Select(x => new OrganizationListViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -430,8 +424,8 @@ namespace GR.MultiTenant.Services
             {
                 Draw = param.Draw,
                 Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
         }
 
@@ -495,7 +489,7 @@ namespace GR.MultiTenant.Services
 
             _context.Tenants.Add(model);
 
-            var dbResult = await _context.SaveAsync();
+            var dbResult = await _context.PushAsync();
             if (dbResult.IsSuccess) response.IsSuccess = true;
             else dbResult.Errors = dbResult.Errors;
 
@@ -530,17 +524,15 @@ namespace GR.MultiTenant.Services
                 if (tenant == null) return def;
             }
 
-            var filtered = _context.Filter<GearUser>(param.Search.Value, param.SortOrder,
-                param.Start,
-                param.Length,
-                out var totalCount,
-                x => !x.IsDeleted && x.TenantId == currentUser.TenantId && x.Id != currentUser.Id).ToList();
+            var filtered = await _context.Users
+                .Where(x => !x.IsDeleted && x.TenantId == currentUser.TenantId && x.Id != currentUser.Id)
+                .GetPagedAsDtResultAsync(param);
 
-            var rs = filtered.Select(async x =>
+            var rs = filtered.Data.Select(async x =>
             {
                 var u = x.Adapt<CompanyUsersViewModel>();
                 u.Roles = await _userManager.UserManager.GetRolesAsync(x);
-                u.IsOnline = _hub.GetUserOnlineStatus(x.Id.ToGuid());
+                u.IsOnline = _hub.GetUserOnlineStatus(x.Id);
                 return u;
             }).Select(x => x.Result);
 
@@ -548,8 +540,8 @@ namespace GR.MultiTenant.Services
             {
                 Draw = param.Draw,
                 Data = rs.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
 
             return finalResult;
@@ -610,7 +602,7 @@ namespace GR.MultiTenant.Services
         public async Task<ResultModel> DeleteUserPermanentAsync(Guid? userId)
         {
             if (userId == null) return NotFoundResultModel<object>.Instance.ToBase();
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             var tenantId = _userManager.CurrentUserTenantId;
             if (user == null) return NotFoundResultModel<object>.Instance.ToBase();
             if (tenantId != user.TenantId) return NotFoundResultModel<object>.Instance.ToBase();

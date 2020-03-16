@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 
 namespace GR.Identity.Data.Permissions
 {
@@ -54,7 +55,7 @@ namespace GR.Identity.Data.Permissions
             var claims = claimsPrincipal.Claims.ToList();
             var userFromClaims = new GearUser
             {
-                Id = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Subject))?.Value ?? string.Empty,
+                Id = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Subject))?.Value.ToGuid() ?? Guid.Empty,
                 UserName = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Name))?.Value ?? string.Empty,
                 Email = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Email))?.Value ?? string.Empty,
             };

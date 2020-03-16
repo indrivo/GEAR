@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using GR.Identity.Abstractions.Models.GroupModels;
 using Microsoft.AspNetCore.Identity;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Abstractions
 {
-    public interface IGroupRepository<T, in TUser> where T : DbContext where TUser : IdentityUser
+    public interface IGroupRepository<T, in TUser> where T : DbContext where TUser : IdentityUser<Guid>
     {
         GroupResult AddUserToGroup(TUser user, string groupName);
 

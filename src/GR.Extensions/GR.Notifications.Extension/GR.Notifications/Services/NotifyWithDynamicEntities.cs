@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,7 @@ using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Services
 {
-    public class NotifyWithDynamicEntities<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, string> where TRole : IdentityRole<string> where TUser : IdentityUser
+    public class NotifyWithDynamicEntities<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, Guid> where TRole : IdentityRole<Guid> where TUser : IdentityUser<Guid>
     {
         #region Injectable
 
@@ -86,7 +85,7 @@ namespace GR.Notifications.Services
         {
             var usersRequest = await _userManager.GetUsersInRolesAsync((IEnumerable<GearRole>)roles, tenantId);
             if (!usersRequest.IsSuccess) return;
-            var usersUniques = usersRequest.Result.Select(x => x.Id.ToGuid()).ToList();
+            var usersUniques = usersRequest.Result.Select(x => x.Id).ToList();
             await SendNotificationAsync(usersUniques, notification);
         }
 
@@ -117,7 +116,7 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task SendNotificationAsync(Notification notification)
         {
-            var users = _context.Users.Select(x => x.Id.ToGuid()).ToList();
+            var users = _context.Users.Select(x => x.Id).ToList();
             await SendNotificationAsync(users, notification);
         }
 
@@ -172,7 +171,7 @@ namespace GR.Notifications.Services
                 .FirstOrDefaultAsync(x => x.Name.Equals(GlobalResources.Roles.ADMINISTRATOR)) is GearRole role)) return;
             var usersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { role });
             if (!usersRequest.IsSuccess) return;
-            var users = usersRequest.Result.Select(x => x.Id.ToGuid()).ToList();
+            var users = usersRequest.Result.Select(x => x.Id).ToList();
             await SendNotificationAsync(users, notification);
         }
 
@@ -215,7 +214,7 @@ namespace GR.Notifications.Services
             var user = userRequest.Result;
             var filters = new List<Filter>
             {
-                new Filter(nameof(SystemNotifications.UserId),user.Id.ToGuid())
+                new Filter(nameof(SystemNotifications.UserId),user.Id)
             };
 
             if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));

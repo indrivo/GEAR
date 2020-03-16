@@ -37,6 +37,6 @@ namespace GR.Backup.PostGresSql
         /// <summary>
         /// File extension
         /// </summary>
-        public string FileExtension { get; set; } = "pgbackup";
+        public string FileExtension { get; set; } = "backup";
     }
 }

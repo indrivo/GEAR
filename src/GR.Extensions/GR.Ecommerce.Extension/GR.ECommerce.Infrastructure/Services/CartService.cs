@@ -121,7 +121,7 @@ namespace GR.ECommerce.Products.Services
                 .ThenInclude(i => i.ProductPrices)
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.ProductVariation)
-                .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id.ToGuid());
+                .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id);
 
             if (cart == null)
             {
@@ -152,11 +152,11 @@ namespace GR.ECommerce.Products.Services
 
             if (product != null)
             {
-                var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Result.Result.Id.ToGuid());
+                var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Result.Result.Id);
 
                 if (cart == null)
                 {
-                    cart = new Cart { UserId = user.Result.Result.Id.ToGuid() };
+                    cart = new Cart { UserId = user.Result.Result.Id };
                     await _context.Carts.AddAsync(cart);
                 }
 

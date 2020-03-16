@@ -571,14 +571,14 @@ namespace GR.Identity.Razor.Controllers
             return Json(new { success = true, message = "Save success!!!" });
         }
 
-        public async Task<IActionResult> _EditRole(string id)
+        public async Task<IActionResult> _EditRole(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             if (applicationRole == null)
             {
                 return NotFound();
@@ -609,7 +609,7 @@ namespace GR.Identity.Razor.Controllers
 
         [HttpPost]
         public async Task<JsonResult> _EditRole([FromServices] SignInManager<GearUser> signInManager,
-            [FromServices] ICommunicationHub hub, string id, UpdateRoleViewModel model)
+            [FromServices] ICommunicationHub hub, Guid id, UpdateRoleViewModel model)
         {
             if (id != model.Id)
             {
@@ -621,7 +621,7 @@ namespace GR.Identity.Razor.Controllers
                 return Json(new { success = false, message = "Model is not valid" });
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             applicationRole.Name = model.Name;
             applicationRole.Title = model.Title;
             applicationRole.IsDeleted = model.IsDeleted;
@@ -825,8 +825,7 @@ namespace GR.Identity.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> _EditPermission([FromServices] SignInManager<GearUser> signInManager,
-            [FromServices] ICommunicationHub hub, EditPermissionViewModel model)
+        public async Task<JsonResult> _EditPermission(EditPermissionViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -863,7 +862,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> DeleteRole(string id)
+        public async Task<JsonResult> DeleteRole(Guid? id)
         {
             if (id == null)
             {
@@ -876,7 +875,7 @@ namespace GR.Identity.Razor.Controllers
                 return Json(new { success = false, message = "Role is used!" });
             }
 
-            var applicationRole = await RoleManager.FindByIdAsync(id);
+            var applicationRole = await RoleManager.FindByIdAsync(id.ToString());
             if (applicationRole == null)
             {
                 return Json(new { success = false, message = "Role not found!" });

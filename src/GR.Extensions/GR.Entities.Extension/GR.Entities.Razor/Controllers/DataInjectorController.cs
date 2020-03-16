@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
+using GR.Core.Razor.BaseControllers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Security.Abstractions.Attributes;
@@ -20,17 +20,17 @@ using GR.Entities.Security.Abstractions.Helpers;
 namespace GR.Entities.Razor.Controllers
 {
     [Authorize, Route("api/[controller]/[action]")]
-    public class DataInjectorController : Controller
+    public class DataInjectorController : BaseGearController
     {
+        #region Injectable
+
         /// <summary>
         /// Inject dynamic service
         /// </summary>
         private readonly IDynamicService _dynamicService;
 
-        /// <summary>
-        /// json settings
-        /// </summary>
-        private readonly JsonSerializerSettings _jsonSerializeOptions;
+        #endregion
+
 
         /// <summary>
         /// Constructor
@@ -39,12 +39,6 @@ namespace GR.Entities.Razor.Controllers
         public DataInjectorController(IDynamicService dynamicService)
         {
             _dynamicService = dynamicService;
-            _jsonSerializeOptions = new JsonSerializerSettings
-            {
-                DateFormatString = GearSettings.Date.DateFormat,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
-            };
         }
 
         /// <summary>
@@ -59,7 +53,7 @@ namespace GR.Entities.Razor.Controllers
             if (data == null) return RequestData.InvalidRequest;
             Guid.TryParse(data.Object, out var itemId);
             var rq = await _dynamicService.GetByIdWithInclude(data.EntityName, itemId);
-            return Json(rq, _jsonSerializeOptions);
+            return Json(rq, SerializerSettings);
         }
 
         /// <summary>
@@ -76,7 +70,7 @@ namespace GR.Entities.Razor.Controllers
             var operationalTable = _dynamicService.Table(data.EntityName);
             try
             {
-                var parsed = JsonConvert.DeserializeObject(data.Object, operationalTable.Type, _jsonSerializeOptions);
+                var parsed = JsonConvert.DeserializeObject(data.Object, operationalTable.Type, SerializerSettings);
                 var rq = await operationalTable.Update(parsed);
                 return Json(rq);
             }
@@ -105,7 +99,7 @@ namespace GR.Entities.Razor.Controllers
             var result = new ResultModel();
             try
             {
-                var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
+                var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, SerializerSettings);
                 var rq = await _dynamicService.Table(data.EntityName).Add(parsed);
                 return Json(rq);
             }
@@ -137,7 +131,7 @@ namespace GR.Entities.Razor.Controllers
                 var tableManger = _dynamicService.Table(data.EntityName);
                 var list = typeof(List<>);
                 var listOfType = list.MakeGenericType(tableManger.Type);
-                var parsed = JsonConvert.DeserializeObject(data.Object, listOfType, _jsonSerializeOptions);
+                var parsed = JsonConvert.DeserializeObject(data.Object, listOfType, SerializerSettings);
                 var rq = await _dynamicService.Table(data.EntityName).AddRange(parsed as IEnumerable<object>);
                 return Json(rq);
             }

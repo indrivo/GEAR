@@ -135,7 +135,7 @@ namespace GR.Identity.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
             where TGroupRepository : class, IGroupRepository<TContext, TUser>
-            where TContext : DbContext where TUser : IdentityUser
+            where TContext : DbContext where TUser : IdentityUser<Guid>
         {
             services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;

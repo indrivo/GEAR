@@ -61,7 +61,7 @@ namespace GR.TaskManager.Services
                 .FirstOrDefaultAsync(x => x.Id == taskId);
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<GetTaskViewModel>();
-            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id.ToGuid();
+            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id;
             var dto = GetTaskMapper(dbTaskResult, currentUser);
 
             return new ResultModel<GetTaskViewModel>
@@ -102,7 +102,7 @@ namespace GR.TaskManager.Services
                 .Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == request.Deleted))
                 .OrderByWithDirection(x => x.GetPropertyValue(request.Attribute), request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
-            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id.ToGuid();
+            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id;
             return GetTasksAsync(dbTasksResult, currentUser);
         }
 
@@ -134,7 +134,7 @@ namespace GR.TaskManager.Services
                 var checkUser = await _userManager
                         .UserManager
                         .Users
-                        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id.ToGuid().Equals(user));
+                        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id.Equals(user));
                 if (checkUser == null) continue;
                 taskModel.AssignedUsers.Add(new TaskAssignedUser
                 {

@@ -1,6 +1,5 @@
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.PageRender.Abstractions;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
 {

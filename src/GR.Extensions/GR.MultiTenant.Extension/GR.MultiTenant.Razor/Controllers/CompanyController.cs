@@ -69,7 +69,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 await _httpContextAccessor.HttpContext.SignOutAsync();
             }
 
-            var currentUser = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
+            var currentUser = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (currentUser == null)
             {
                 return NotFound();
@@ -106,7 +106,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 await _httpContextAccessor.HttpContext.SignOutAsync();
             }
 
-            var currentUser = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
+            var currentUser = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (currentUser == null)
             {
                 return NotFound();

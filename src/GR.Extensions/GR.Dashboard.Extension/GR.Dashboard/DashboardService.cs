@@ -695,7 +695,7 @@ namespace GR.Dashboard
             {
                 foreach (var item in configuration)
                 {
-                    if (roles.FirstOrDefault(x => x.Id.ToGuid().Equals(item.RoleId)) == null) continue;
+                    if (roles.FirstOrDefault(x => x.Id.Equals(item.RoleId)) == null) continue;
 
                     var o = item.Adapt<RowWidgetAcl>();
                     o.RowId = rowId.GetValueOrDefault();
@@ -723,7 +723,7 @@ namespace GR.Dashboard
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess) return false;
             var roles = (await _userManager.GetUserRolesAsync(currentUserRequest.Result))
-                .Select(x => x.Id.ToGuid()).ToList();
+                .Select(x => x.Id).ToList();
 
             var selected = confRequest.Result.Where(x => x.Allow).Select(x => x.RoleId).ToList();
             return roles.Intersect(selected).Any();

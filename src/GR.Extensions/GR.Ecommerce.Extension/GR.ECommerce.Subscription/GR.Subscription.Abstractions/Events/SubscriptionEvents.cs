@@ -6,7 +6,6 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
-using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Events;
@@ -49,7 +48,7 @@ namespace GR.Subscriptions.Abstractions.Events
                         Name = "Free trial",
                         StartDate = DateTime.Now,
                         Availability = int.Parse(freeTrialPeriodStr), 
-                        UserId = args.UserId.ToGuid(),
+                        UserId = args.UserId,
                         IsFree = true,
                         SubscriptionPermissions = permissions
                     });

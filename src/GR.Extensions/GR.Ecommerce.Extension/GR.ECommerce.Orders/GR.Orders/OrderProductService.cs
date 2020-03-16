@@ -118,7 +118,7 @@ namespace GR.Orders
                 .Include(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
                 .ThenInclude(x => x.ProductPrices)
-                .Where(x => x.UserId.Equals(userRequest.Result.Id.ToGuid()))
+                .Where(x => x.UserId.Equals(userRequest.Result.Id))
                 .ToListAsync();
             response.IsSuccess = true;
             response.Result = orders;
@@ -207,7 +207,7 @@ namespace GR.Orders
             var order = OrderMapper.Map(product);
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             order.CurrencyId = currency.Code;
-            order.UserId = userRequest.Result.Id.ToGuid();
+            order.UserId = userRequest.Result.Id;
             await _orderDbContext.Orders.AddAsync(order);
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
@@ -240,7 +240,7 @@ namespace GR.Orders
             var product = productRequest.Result;
             var variation = product.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
             var order = OrderMapper.Map(product, variation);
-            order.UserId = userRequest.Result.Id.ToGuid();
+            order.UserId = userRequest.Result.Id;
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             order.CurrencyId = currency.Code;
             await _orderDbContext.Orders.AddAsync(order);
@@ -267,7 +267,7 @@ namespace GR.Orders
         public virtual async Task<DTResult<GetOrdersViewModel>> GetMyOrdersWithPaginationWayAsync(DTParameters param)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
-            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id.ToGuid());
+            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id);
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace GR.Orders
                 var map = x.Adapt<GetOrdersViewModel>();
                 map.ProductOrders =
                     await _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id)).ToListAsync();
-                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.ToGuid().Equals(x.UserId));
+                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.Equals(x.UserId));
                 return map;
             }).Select(x => x.Result);
 
