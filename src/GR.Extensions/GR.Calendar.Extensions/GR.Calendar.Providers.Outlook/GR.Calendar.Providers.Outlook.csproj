@@ -7,9 +7,9 @@
     <Company>Indrivo</Company>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Providers.Outlook</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Providers.Outlook</PackageProjectUrl>
-    <Version>1.9.1</Version>
-    <FileVersion>1.9.1</FileVersion>
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <Version>1.9.2</Version>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

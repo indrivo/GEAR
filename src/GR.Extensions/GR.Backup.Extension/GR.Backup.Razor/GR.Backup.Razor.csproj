@@ -4,10 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.1</Version>
+    <Version>1.9.2</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <FileVersion>1.9.1</FileVersion>
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\DataBaseBackup\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
     </Content>

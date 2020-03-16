@@ -5,13 +5,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.1</Version>
+    <Version>1.9.2</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
     <IncludeBuildOutput>true</IncludeBuildOutput>
-    <FileVersion>1.9.1</FileVersion>
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,11 +8,11 @@
     <Description>Email sender for gear</Description>
     <PackageTags>gear c# email sender</PackageTags>
 
-    <Version>1.9.1</Version>
+    <Version>1.9.2</Version>
 
-    <FileVersion>1.9.1</FileVersion>
+    <FileVersion>1.9.2</FileVersion>
 
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

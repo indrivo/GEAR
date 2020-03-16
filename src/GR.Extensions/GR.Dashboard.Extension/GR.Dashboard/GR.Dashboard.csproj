@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.9.1</Version>
+    <Version>1.9.2</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Implementation of GR.Dasjboard.Abstractions with EF core</Description>
     <PackageReleaseNotes>- Implementation of GR.Dash.Abstractions</PackageReleaseNotes>
-    <FileVersion>1.9.1</FileVersion>
-    <AssemblyVersion>1.9.1</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
