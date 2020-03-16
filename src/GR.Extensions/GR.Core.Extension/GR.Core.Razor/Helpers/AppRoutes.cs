@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GR.Core.Helpers
+namespace GR.Core.Razor.Helpers
 {
     public static class AppRoutes
     {

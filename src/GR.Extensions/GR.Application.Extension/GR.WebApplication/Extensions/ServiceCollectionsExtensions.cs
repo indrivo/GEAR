@@ -14,11 +14,9 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
-using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Notifications.Abstractions.Extensions;
 using GR.Notifications.Hub.Hubs;
-using GR.PageRender.Abstractions.Extensions;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
@@ -179,9 +177,6 @@ namespace GR.WebApplication.Extensions
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            //-----------------------Custom url redirection Usage-------------------------------------
-            if (configuration.UseCustomUrlRewrite) app.UseUrlRewriteModule();
 
             //----------------------------------Origin Cors Usage-------------------------------------
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();

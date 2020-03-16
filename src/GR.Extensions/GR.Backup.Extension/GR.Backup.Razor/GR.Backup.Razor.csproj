@@ -11,10 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ByteSize" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\GR.Backup.PostgresSql\GR.Backup.PostgresSql.csproj" />
   </ItemGroup>
 

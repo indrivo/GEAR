@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using GR.Core;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
+using GR.Core.Razor.Helpers;
+using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Constants;
 using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 #pragma warning disable 1998
 
-namespace GR.PageRender.Abstractions.Helpers
+namespace GR.PageRender.Razor.Helpers
 {
     public static class UrlRewriteHelper
     {

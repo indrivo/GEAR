@@ -156,12 +156,17 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="app"></param>
 		public override void Configure(IApplicationBuilder app)
-			=> app.UseGearWebApp(config =>
+		{
+			app.UseGearWebApp(config =>
 			{
 				config.AppName = "Web APP";
 				config.HostingEnvironment = HostingEnvironment;
 				config.Configuration = Configuration;
 			});
+
+			//-----------------------Page Module Custom url redirection-------------------------------------
+			app.UseUrlRewriteModule();
+		}
 
 		/// <summary>
 		/// This method gets called by the runtime. Use this method to add services to the container.
@@ -263,10 +268,9 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				});
 
-
 			//------------------------------Database backup Module-------------------------------------
-			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
-					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+			config.GearServices.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
+				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
 
 			//------------------------------------Processes Module-------------------------------------
 			config.GearServices.AddProcessesModule()
