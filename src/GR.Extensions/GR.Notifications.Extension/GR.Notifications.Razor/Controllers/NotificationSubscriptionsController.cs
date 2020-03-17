@@ -16,11 +16,11 @@ namespace GR.Notifications.Razor.Controllers
         /// <summary>
         /// Inject repository
         /// </summary>
-        private readonly INotificationSubscriptionRepository _subscriptionRepository;
+        private readonly INotificationSubscriptionService _subscriptionService;
 
-        public NotificationSubscriptionsController(INotificationSubscriptionRepository subscriptionRepository)
+        public NotificationSubscriptionsController(INotificationSubscriptionService subscriptionService)
         {
-            _subscriptionRepository = subscriptionRepository;
+            _subscriptionService = subscriptionService;
         }
 
         /// <summary>
@@ -30,22 +30,22 @@ namespace GR.Notifications.Razor.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var events = _subscriptionRepository.Events
+            var events = _subscriptionService.Events
                 .Select(async x =>
                 {
-                    var template = await _subscriptionRepository.GetEventTemplateAsync(x.EventId);
+                    var template = await _subscriptionService.GetEventTemplateAsync(x.EventId);
                     return new NotificationSubscribeGetViewModel
                     {
                         Subject = template?.Result?.Subject,
                         EventId = x.EventId,
                         Template = template?.Result?.Value,
                         EventGroupName = x.EventGroupName,
-                        SubscribedRoles = (await _subscriptionRepository.GetRolesSubscribedToEventAsync(x.EventId))
+                        SubscribedRoles = (await _subscriptionService.GetRolesSubscribedToEventAsync(x.EventId))
                             .Result
                     };
                 }).Select(x => x.Result).OrderBy(x => x.EventGroupName).GroupBy(x => x.EventGroupName);
 
-            var roles = _subscriptionRepository.Roles.OrderBy(x => x.Name);
+            var roles = _subscriptionService.Roles.OrderBy(x => x.Name);
             ViewBag.Events = events;
             ViewBag.Roles = roles;
             return View();
@@ -61,7 +61,7 @@ namespace GR.Notifications.Razor.Controllers
         {
             if (model == null) return Json(new ResultModel());
             if (!ModelState.IsValid) return Json(new ResultModel());
-            var response = await _subscriptionRepository
+            var response = await _subscriptionService
                 .SubscribeRolesToEventAsync(model.Roles, model.Event, model.Template, model.Subject);
             return Json(response);
         }

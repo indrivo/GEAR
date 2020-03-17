@@ -134,7 +134,7 @@ namespace GR.Identity.Data.Groups
         {
             Arg.NotNull(user, nameof(ValidateUserAndGroupInput));
             if (isValidatedAlready) return GroupResult.Success;
-            var userProvided = user != null || !string.IsNullOrEmpty(user.Id);
+            var userProvided = user != null;
             var groupNameProvided = !string.IsNullOrEmpty(groupName);
 
             if (!userProvided && !groupNameProvided)

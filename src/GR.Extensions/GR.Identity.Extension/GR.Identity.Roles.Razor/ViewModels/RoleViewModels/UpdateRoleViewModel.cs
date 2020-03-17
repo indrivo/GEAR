@@ -22,7 +22,7 @@ namespace GR.Identity.Roles.Razor.ViewModels.RoleViewModels
         public string Name { get; set; }
 
         [Required]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         public bool IsDeleted { get; set; }
 

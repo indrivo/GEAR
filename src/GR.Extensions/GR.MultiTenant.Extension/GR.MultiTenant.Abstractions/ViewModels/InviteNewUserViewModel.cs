@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GR.MultiTenant.Abstractions.ViewModels
@@ -15,6 +16,6 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         /// <summary>
         /// User roles
         /// </summary>
-        public IEnumerable<string> Roles { get; set; } = new List<string>();
+        public IEnumerable<Guid> Roles { get; set; } = new List<Guid>();
     }
 }

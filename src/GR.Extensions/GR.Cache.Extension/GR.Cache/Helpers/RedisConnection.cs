@@ -2,14 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using GR.Cache.Exceptions;
+using GR.Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using GR.Cache.Abstractions;
-using GR.Cache.Abstractions.Exceptions;
-using GR.Core;
 using StackExchange.Redis;
 
-namespace GR.Cache.Services
+namespace GR.Cache.Helpers
 {
     public class RedisConnection : IRedisConnection
     {

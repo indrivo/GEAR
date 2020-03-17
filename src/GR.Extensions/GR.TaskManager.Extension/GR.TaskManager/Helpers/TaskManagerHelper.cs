@@ -86,7 +86,7 @@ namespace GR.TaskManager.Helpers
             var userManager = IoC.Resolve<IUserManager<GearUser>>();
             if (currentUserId == null) return TaskAccess.Undefined;
             var taskAuthor = userManager.UserManager.Users.FirstOrDefault(x => x.UserName.Equals(dbTaskResult.Author.Trim()));
-            if (taskAuthor != null && taskAuthor.Id.ToGuid().Equals(currentUserId.Value)) return TaskAccess.Author;
+            if (taskAuthor != null && taskAuthor.Id.Equals(currentUserId.Value)) return TaskAccess.Author;
 
             return dbTaskResult.UserId.Equals(currentUserId)
                     ? TaskAccess.Owner

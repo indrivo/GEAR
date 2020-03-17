@@ -3,14 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.0</Version>
+    <Version>1.9.2</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <AssemblyName>GR.Entities</AssemblyName>
     <RootNamespace>GR.Entities</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
-    <FileVersion>1.9.0</FileVersion>
-    <AssemblyVersion>1.9.0</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Seed\**" />

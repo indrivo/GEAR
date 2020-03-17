@@ -54,5 +54,11 @@ namespace GR.Cache.Abstractions
         /// Flush all keys
         /// </summary>
         void FlushAll();
+
+        /// <summary>
+        /// Get provider name
+        /// </summary>
+        /// <returns></returns>
+        string GetImplementationProviderName();
     }
 }

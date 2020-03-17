@@ -24,11 +24,6 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public IConfiguration Configuration { get; set; }
 
         /// <summary>
-        /// Use dynamic pages url rewrite
-        /// </summary>
-        public virtual bool UseCustomUrlRewrite { get; set; } = true;
-
-        /// <summary>
         /// Use default cors 
         /// </summary>
         public virtual bool UseDefaultCorsConfiguration { get; set; } = true;

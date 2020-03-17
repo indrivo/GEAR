@@ -15,6 +15,6 @@ namespace GR.Identity.Abstractions.Models.UserProfiles
 
         [Key]
         [Column(Order = 2)]
-        public string ApplicationRoleId { get; set; }
+        public Guid ApplicationRoleId { get; set; }
     }
 }

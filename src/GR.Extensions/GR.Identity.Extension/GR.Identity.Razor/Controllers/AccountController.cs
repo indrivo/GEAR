@@ -204,7 +204,7 @@ namespace GR.Identity.Razor.Controllers
                 return Json(resultModel);
             }
 
-            var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
+            var callbackUrl = Url.ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
             var mail = $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>";
             var templateRequest = TemplateManager.GetTemplateBody("forgot-password");
             if (templateRequest.IsSuccess)
@@ -302,7 +302,7 @@ namespace GR.Identity.Razor.Controllers
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
                         IpAdress = _userManager.GetRequestIpAdress(),
-                        UserId = user.Id.ToGuid(),
+                        UserId = user.Id,
                         Email = user.Email,
                         FirstName = user.UserFirstName,
                         LastName = user.UserLastName
@@ -445,7 +445,7 @@ namespace GR.Identity.Razor.Controllers
 
             IdentityEvents.Authorization.UserLogout(new UserLogOutEventArgs
             {
-                UserId = user.Id.ToGuid(),
+                UserId = user.Id,
                 Email = user.Email,
                 FirstName = user.UserFirstName,
                 LastName = user.UserLastName,
@@ -507,9 +507,9 @@ namespace GR.Identity.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(string userId, string code)
+        public async Task<IActionResult> ResetPassword(Guid userId, string code)
         {
-            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(code) || userId != Guid.Empty)
             {
                 NotFound();
             }

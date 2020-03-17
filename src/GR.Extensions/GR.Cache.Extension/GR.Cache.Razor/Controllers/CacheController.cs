@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GR.Cache.Abstractions;
+using GR.Cache.Abstractions.Models;
 using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
@@ -20,14 +21,14 @@ namespace GR.Cache.Razor.Controllers
         /// <summary>
         /// Cache options
         /// </summary>
-        private readonly IWritableOptions<RedisConnectionConfig> _writableOptions;
+        private readonly IWritableOptions<CacheConfiguration> _writableOptions;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="cacheService"></param>
         /// <param name="writableOptions"></param>
-        public CacheController(ICacheService cacheService, IWritableOptions<RedisConnectionConfig> writableOptions)
+        public CacheController(ICacheService cacheService, IWritableOptions<CacheConfiguration> writableOptions)
         {
             _cacheService = cacheService;
             _writableOptions = writableOptions;
@@ -87,7 +88,7 @@ namespace GR.Cache.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Settings(RedisConnectionConfig model)
+        public IActionResult Settings(CacheConfiguration model)
         {
             _writableOptions.Update(opt =>
             {

@@ -1,7 +1,5 @@
 using GR.Core;
-using GR.Entities.Data;
 using GR.Identity.Abstractions.Models.UserProfiles;
-using GR.Identity.Data;
 using GR.Identity.Razor.ViewModels.UserProfileViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Entities.Abstractions;
+using GR.Identity.Abstractions;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -20,13 +20,13 @@ namespace GR.Identity.Razor.Controllers
     /// </summary>
     public class ProfileController : Controller
     {
-        private readonly EntitiesDbContext _contextEntities;
-        private readonly ApplicationDbContext _context;
+        private readonly IEntityContext _contextEntities;
+        private readonly IIdentityContext _context;
         private readonly ILogger<ProfileController> _logger;
 
-        public ProfileController(ApplicationDbContext context,
+        public ProfileController(IIdentityContext context,
             ILogger<ProfileController> logger,
-            EntitiesDbContext contextEntities)
+            IEntityContext contextEntities)
         {
             _contextEntities = contextEntities;
             _context = context;
@@ -239,7 +239,7 @@ namespace GR.Identity.Razor.Controllers
 
             try
             {
-                _context.RemoveRange(group);
+                _context.Profiles.RemoveRange(group);
                 _context.SaveChanges();
                 return Json(true);
             }

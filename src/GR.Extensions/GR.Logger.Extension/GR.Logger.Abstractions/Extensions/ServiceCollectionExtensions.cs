@@ -1,5 +1,7 @@
-﻿using GR.Core.Extensions;
+﻿using System;
+using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GR.Logger.Abstractions.Extensions
 {
@@ -15,6 +17,20 @@ namespace GR.Logger.Abstractions.Extensions
             where TLoggerFactory : class, IGearLoggerFactory
         {
             services.AddGearSingleton<IGearLoggerFactory, TLoggerFactory>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Add logging configuration
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddLoggingConfiguration(this IServiceCollection services,
+            Action<ILoggingBuilder> configuration)
+        {
+            services.AddLogging(configuration);
             return services;
         }
     }

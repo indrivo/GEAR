@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using GR.Core;
-using GR.Core.Extensions;
 using GR.Core.Helpers.Pagination;
 using GR.Identity.Abstractions;
 using GR.TaskManager.Abstractions;
@@ -108,7 +106,7 @@ namespace GR.TaskManager.Razor.Controllers
 
             if (user.Result == null) return Json(ExceptionMessagesEnum.UserNotFound.ToErrorModel());
 
-            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid(), user.Result.UserName, request);
+            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id, user.Result.UserName, request);
             return Json(response);
         }
 

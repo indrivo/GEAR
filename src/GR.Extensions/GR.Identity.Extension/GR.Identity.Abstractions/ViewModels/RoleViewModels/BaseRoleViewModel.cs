@@ -1,8 +1,10 @@
-﻿namespace GR.Identity.Abstractions.ViewModels.RoleViewModels
+﻿using System;
+
+namespace GR.Identity.Abstractions.ViewModels.RoleViewModels
 {
     public class BaseRoleViewModel
     {
-        public virtual string Id { get; set; }
+        public virtual Guid Id { get; set; }
         public virtual string Name { get; set; }
     }
 }

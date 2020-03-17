@@ -32,6 +32,14 @@ namespace GR.Identity.Abstractions
         Guid? CurrentUserTenantId { get; }
 
         /// <summary>
+        /// Create new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> CreateUserAsync(TUser user, string password);
+
+        /// <summary>
         /// Get the current user
         /// </summary>
         /// <returns></returns>
@@ -55,14 +63,21 @@ namespace GR.Identity.Abstractions
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        Task<ResultModel> AddToRolesAsync(GearUser user, ICollection<string> roles);
+        Task<ResultModel> AddToRolesAsync(TUser user, ICollection<string> roles);
+
+        /// <summary>
+        /// Add default roles
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddDefaultRoles(GearUser user);
 
         /// <summary>
         /// Get user roles
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<IEnumerable<GearRole>> GetUserRolesAsync(GearUser user);
+        Task<IEnumerable<GearRole>> GetUserRolesAsync(TUser user);
 
         /// <summary>
         /// Disable user
@@ -70,6 +85,21 @@ namespace GR.Identity.Abstractions
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<ResultModel> DisableUserAsync(Guid? userId);
+
+        /// <summary>
+        /// Enable user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> EnableUserAsync(Guid? userId);
+
+        /// <summary>
+        /// Set editable status
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="editableStatus"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetEditableStatusForUserAsync(Guid? userId, bool editableStatus);
 
         /// <summary>
         /// Get user addresses
@@ -106,7 +136,7 @@ namespace GR.Identity.Abstractions
         /// <param name="roles"></param>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRolesAsync(IEnumerable<GearRole> roles, Guid? tenantId = null);
+        Task<ResultModel<IEnumerable<TUser>>> GetUsersInRolesAsync(IEnumerable<GearRole> roles, Guid? tenantId = null);
 
         /// <summary>
         /// Find roles by names
@@ -122,5 +152,19 @@ namespace GR.Identity.Abstractions
         /// <param name="roles"></param>
         /// <returns></returns>
         Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles);
+
+        /// <summary>
+        /// Delete user permanently
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteUserPermanently(Guid? userId);
+
+        /// <summary>
+        /// Check if current user has this id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        bool IsCurrentUser(Guid id);
     }
 }

@@ -56,9 +56,9 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
 
             totalCount = result.Count;
 
-            result = result.Skip(start).Take(length).ToList();
-
             result = result.Order(sortOrder);
+
+            result = result.Skip(start).Take(length).ToList();
 
             return result.Adapt<List<T>>();
         }
@@ -84,9 +84,9 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
 
             totalCount = result.Count;
 
-            result = result.Skip(start).Take(length).ToList();
-
             result = result.Order(sortOrder);
+
+            result = result.Skip(start).Take(length).ToList();
 
             return result.Adapt<List<T>>();
         }
@@ -110,10 +110,8 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
             var result = data.Result.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 
             var totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-
             result = result.Order(sortOrder);
+            result = result.Skip(start).Take(length).ToList();
 
             return (result.Adapt<List<T>>(), totalCount);
         }
@@ -138,9 +136,9 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
 
             var totalCount = result.Count;
 
-            result = result.Skip(start).Take(length).ToList();
-
             result = result.Order(sortOrder);
+
+            result = result.Skip(start).Take(length).ToList();
 
             return (result.Adapt<List<object>>(), totalCount);
         }
@@ -167,8 +165,8 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
                 var property = props.FirstOrDefault(x => x.Name.ToLower().Equals(toFind));
                 if (property == null) return list.ToList();
                 {
-                    list = isAsc ? list.OrderBy(x => x.GetType().GetProperty(property.Name).GetValue(x)).ToList()
-                        : list.OrderByDescending(x => x.GetType().GetProperty(property.Name).GetValue(x)).ToList();
+                    list = isAsc ? list.OrderBy(x => x?.GetType().GetProperty(property.Name)?.GetValue(x)).ToList()
+                        : list.OrderByDescending(x => x?.GetType().GetProperty(property.Name)?.GetValue(x)).ToList();
                 }
             }
             catch (Exception e)

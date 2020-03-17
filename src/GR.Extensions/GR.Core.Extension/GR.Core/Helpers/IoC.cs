@@ -5,13 +5,27 @@ using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using GR.Core.Exceptions;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Patterns;
 
 namespace GR.Core.Helpers
 {
     public static class IoC
     {
-        private static IWindsorContainer _container;
-        public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
+        /// <summary>
+        /// IoC container
+        /// </summary>
+        public static IWindsorContainer Container => Singleton<IWindsorContainer, WindsorContainer>.Instance;
+
+        ///// <summary>
+        ///// IoC container
+        ///// </summary>
+        //private static IWindsorContainer _container;
+
+        ///// <summary>
+        ///// Container resolver
+        ///// </summary>
+        //public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
+
 
         /// <summary>
         /// Register new service
@@ -46,8 +60,24 @@ namespace GR.Core.Helpers
         public static void RegisterTransientService<TAbstraction, TImplementation>(TImplementation instance) where TImplementation : class, TAbstraction where TAbstraction : class
         {
             if (!IsServiceRegistered<TAbstraction>())
-                Container.Register(Component.For<TAbstraction>().Instance(instance)
+                Container.Register(Component.For<TAbstraction>()
+                    .Instance(instance)
                     .LifestyleTransient());
+        }
+
+        /// <summary>
+        /// Register named transient service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
+        /// <param name="providerName"></param>
+        public static void RegisterTransientService<TAbstraction, TImplementation>(string providerName) where TImplementation : class, TAbstraction where TAbstraction : class
+        {
+            if (!IsServiceRegistered(providerName))
+                Container.Register(Component.For<TAbstraction>()
+                    .ImplementedBy<TImplementation>()
+                    .LifestyleTransient()
+                    .Named(providerName));
         }
 
         /// <summary>
@@ -102,14 +132,35 @@ namespace GR.Core.Helpers
         }
 
         /// <summary>
+        /// Register service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
+        /// <param name="configuration"></param>
+        public static void RegisterService<TAbstraction, TImplementation>(Func<ComponentRegistration<TAbstraction>, ComponentRegistration<TAbstraction>> configuration)
+            where TImplementation : class, TAbstraction where TAbstraction : class
+        {
+            var component = Component.For<TAbstraction>()
+                .ImplementedBy<TImplementation>();
+            component = configuration(component);
+            Container.Register(component);
+        }
+
+        /// <summary>
         /// Check if service is registered
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
         public static bool IsServiceRegistered<TService>()
-        {
-            return Container.Kernel.HasComponent(typeof(TService));
-        }
+            => Container.Kernel.HasComponent(typeof(TService));
+
+        /// <summary>
+        /// Check if service is registered
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static bool IsServiceRegistered(string provider)
+            => Container.Kernel.HasComponent(provider);
 
         /// <summary>
         /// Check if service is registered
@@ -117,9 +168,7 @@ namespace GR.Core.Helpers
         /// <param name="service"></param>
         /// <returns></returns>
         private static bool IsServiceRegistered(Type service)
-        {
-            return Container.Kernel.HasComponent(service);
-        }
+            => Container.Kernel.HasComponent(service);
 
         /// <summary>
         /// Resolve generic type

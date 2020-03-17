@@ -8,11 +8,10 @@ cache:
     - src/GR.WebHosts/GR.Cms/wwwroot/lib/
 test_projects:
   stage: test
-  only:
-    - develop
   script:
     - dotnet clean
-
+    - dotnet build ./GR.sln
+    - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
 
 deploy_to_server_job:
   stage: deploy_to_server

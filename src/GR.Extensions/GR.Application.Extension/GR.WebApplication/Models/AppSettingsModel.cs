@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using GR.Backup.Abstractions.Models;
-using GR.Cache.Abstractions;
+using GR.Cache.Abstractions.Models;
 using GR.Core;
 using GR.Email.Abstractions.Models.EmailViewModels;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
@@ -61,7 +61,7 @@ namespace GR.WebApplication.Models
             /// <summary>
             /// Redis connection configuration
             /// </summary>
-            public RedisConnectionConfig RedisConnection { get; set; } = new RedisConnectionConfig();
+            public CacheConfiguration RedisConnection { get; set; } = new CacheConfiguration();
         }
 
         public sealed class ConnectionStrings

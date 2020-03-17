@@ -72,7 +72,6 @@ using GR.Install.Abstractions.Extensions;
 using GR.Localization;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
-using GR.Localization.Abstractions.Models;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
 using GR.MobilPay.Razor.Extensions;
@@ -133,6 +132,13 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Identity.PhoneVerification.Abstractions.Extensions;
+using GR.Identity.PhoneVerification.Infrastructure;
+using GR.Localization.Abstractions.Models.Config;
+using GR.Localization.JsonStringProvider;
+using GR.Logger;
+using GR.Logger.Abstractions.Extensions;
+using Microsoft.Extensions.Logging;
 
 #endregion Usings
 
@@ -152,12 +158,17 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="app"></param>
 		public override void Configure(IApplicationBuilder app)
-			=> app.UseGearWebApp(config =>
+		{
+			app.UseGearWebApp(config =>
 			{
 				config.AppName = "Web APP";
 				config.HostingEnvironment = HostingEnvironment;
 				config.Configuration = Configuration;
 			});
+
+			//-----------------------Page Module Custom url redirection-------------------------------------
+			app.UseUrlRewriteModule();
+		}
 
 		/// <summary>
 		/// This method gets called by the runtime. Use this method to add services to the container.
@@ -173,6 +184,14 @@ namespace GR.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>()
+				//.PasswordPolicy(options =>
+				//{
+				//	options.RequireDigit = true;
+				//	options.RequiredLength = 6;
+				//	options.RequireNonAlphanumeric = false;
+				//	options.RequireUppercase = false;
+				//	options.RequireLowercase = false;
+				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
@@ -231,8 +250,8 @@ namespace GR.Cms
 				.RegisterProgramAssembly(typeof(Program));
 
 			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<Notify<ApplicationDbContext, GearRole, GearUser>, GearRole>()
-				.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 				{
@@ -243,7 +262,7 @@ namespace GR.Cms
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
-				.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
+				.AddLocalizationModule<JsonFileLocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
 					new TranslationModuleOptions
 					{
 						Configuration = Configuration,
@@ -259,10 +278,9 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				});
 
-
 			//------------------------------Database backup Module-------------------------------------
-			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
-					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+			config.GearServices.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
+				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
 
 			//------------------------------------Processes Module-------------------------------------
 			config.GearServices.AddProcessesModule()
@@ -420,6 +438,22 @@ namespace GR.Cms
 				.RegisterDocumentCategoryServices<DocumentCategoryService>()
 				.RegisterDocumentServices<DocumentWithWorkflowService>()
 				.AddDocumentRazorUIModule();
+
+
+			//------------------------------------ Logging Module -----------------------------------
+			config.GearServices.RegisterLoggerModule<GearLoggerFactory>()
+				.AddLoggingConfiguration(logging =>
+				{
+					logging.SetMinimumLevel(LogLevel.Trace);
+					logging.AddSeq(Configuration.GetSection("Logging:Seq"));
+					//logging.ClearProviders();
+					//logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
+					//logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
+				});
+
+
+			//-------------------------- Phone verification Module ----------------------------------
+			config.GearServices.AddPhoneVerificationModule<Authy>();
 
 		});
 	}

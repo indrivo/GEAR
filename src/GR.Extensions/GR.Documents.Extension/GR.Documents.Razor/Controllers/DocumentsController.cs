@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Razor.BaseControllers;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using GR.WorkFlows.Abstractions;
@@ -13,10 +13,6 @@ using GR.WorkFlows.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GR.Documents.Razor.Controllers
 {
@@ -33,8 +29,6 @@ namespace GR.Documents.Razor.Controllers
 
 
         #endregion
-
-
 
         public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService, IDocumentCategoryService documentCategoryService)
         {

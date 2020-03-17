@@ -4,31 +4,27 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using GR.Core;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
+using GR.Core.Razor.BaseControllers;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.Table;
-using GR.Entities.Data;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
 using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.MultiTenant.Abstractions;
-using GR.Notifications.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.Entities.Razor.Controllers.Entity
 {
@@ -37,8 +33,11 @@ namespace GR.Entities.Razor.Controllers.Entity
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class TableController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    [Authorize]
+    public class TableController : BaseGearController
     {
+        #region Injectable
+
         /// <summary>
         /// Inject entity repository
         /// </summary>
@@ -55,18 +54,32 @@ namespace GR.Entities.Razor.Controllers.Entity
         private readonly IOrganizationService<Tenant> _organizationService;
 
         /// <summary>
+        /// Inject context
+        /// </summary>
+        private readonly IEntityContext _context;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
+
+        /// <summary>
         /// Database connection string
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IConfiguration configuration, IEntityService entityService, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public TableController(IEntityContext context, IConfiguration configuration, IEntityService entityService, ITablesService tablesService, IOrganizationService<Tenant> organizationService, IUserManager<GearUser> userManager)
         {
             _entityService = entityService;
             _tablesService = tablesService;
             _organizationService = organizationService;
+            _userManager = userManager;
             var (_, connection) = DbUtil.GetConnectionString(configuration);
             ConnectionString = connection;
-            Context.Validate();
+            _context = context;
+            _context.ValidateNullAbstractionContext();
         }
 
         /// <summary>
@@ -77,7 +90,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
         public IActionResult Create()
         {
-            var schemes = Context.EntityTypes.Where(x => !x.IsDeleted).ToList();
+            var schemes = _context.EntityTypes.Where(x => !x.IsDeleted).ToList();
             var defaultSchema = schemes.FirstOrDefault(x => x.MachineName.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA));
             if (defaultSchema == null) return NotFound();
             var model = new CreateTableViewModel
@@ -98,7 +111,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         {
             if (!ModelState.IsValid) return View(model);
             var entityType =
-                await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == model.SelectedTypeId);
+                await _context.EntityTypes.FirstOrDefaultAsync(x => x.Id == model.SelectedTypeId);
             if (entityType == null) return View(model);
 
             var newTable = new CreateTableViewModel
@@ -106,12 +119,12 @@ namespace GR.Entities.Razor.Controllers.Entity
                 Name = model.Name,
                 EntityType = GearSettings.DEFAULT_ENTITY_SCHEMA,  //entityType.Name,
                 Description = model.Description,
-                TenantId = CurrentUserTenantId,
+                TenantId = _userManager.CurrentUserTenantId,
                 IsCommon = model.IsCommon
             };
             var table = newTable.Adapt<TableModel>();
-            await Context.Table.AddAsync(table);
-            var dbResult = await Context.SaveAsync();
+            await _context.Table.AddAsync(table);
+            var dbResult = await _context.PushAsync();
             if (dbResult.IsSuccess)
             {
                 var response = _tablesService.CreateSqlTable(table, ConnectionString);
@@ -157,37 +170,14 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// <param name="isStatic"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderList(DTParameters param, bool isStatic = false)
+        public async Task<JsonResult> OrderList(DTParameters param, bool isStatic = false)
         {
-            var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => x.IsPartOfDbContext.Equals(isStatic) && isStatic || x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA && x.IsPartOfDbContext.Equals(isStatic));
+            var filtered = await _context.Table.Where(x =>
+                    x.IsPartOfDbContext.Equals(isStatic) && isStatic ||
+                    x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA && x.IsPartOfDbContext.Equals(isStatic))
+                .GetPagedAsDtResultAsync(param);
 
-            var orderList = filtered.Select(o => new TableModel
-            {
-                Id = o.Id,
-                Name = o.Name,
-                IsDeleted = o.IsDeleted,
-                Author = o.Author,
-                Created = o.Created,
-                ModifiedBy = o.ModifiedBy,
-                Description = o.Description,
-                IsPartOfDbContext = o.IsPartOfDbContext,
-                EntityType = o.EntityType,
-                Changed = o.Changed,
-                IsSystem = o.IsSystem,
-                TableFields = o.TableFields
-            });
-
-            var finalResult = new DTResult<TableModel>
-            {
-                Draw = param.Draw,
-                Data = orderList.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
+            return Json(filtered);
         }
 
         /// <param name="id"></param>
@@ -197,11 +187,11 @@ namespace GR.Entities.Razor.Controllers.Entity
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
         public async Task<IActionResult> Edit(Guid id, string tab)
         {
-            var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == id);
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Id == id);
             if (table == null) return NotFound();
             var model = table.Adapt<UpdateTableViewModel>();
-            model.TableFields = await Context.TableFields.AsNoTracking().Where(x => x.TableId == table.Id).ToListAsync();
-            model.Groups = await Context.TableFieldGroups.AsNoTracking().Include(s => s.TableFieldTypes).ToListAsync();
+            model.TableFields = await _context.TableFields.AsNoTracking().Where(x => x.TableId == table.Id).ToListAsync();
+            model.Groups = await _context.TableFieldGroups.AsNoTracking().Include(s => s.TableFieldTypes).ToListAsync();
             model.TabName = tab;
             return View(model);
         }
@@ -213,11 +203,11 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// <returns></returns>
         [HttpPost]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
-        public IActionResult Edit(UpdateTableViewModel model)
+        public async Task<IActionResult> Edit(UpdateTableViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
-            Context.Table.Update(model.Adapt<TableModel>());
-            var dbResult = Context.Save();
+            _context.Table.Update(model.Adapt<TableModel>());
+            var dbResult = await _context.PushAsync();
             if (dbResult.IsSuccess)
             {
                 return RedirectToAction(nameof(Index), "Table");
@@ -295,7 +285,7 @@ namespace GR.Entities.Razor.Controllers.Entity
 
                     if (!referenceTableName.IsNullOrEmpty())
                     {
-                        var refTable = await Context.Table.FirstOrDefaultAsync(x =>
+                        var refTable = await _context.Table.FirstOrDefaultAsync(x =>
                             x.Name.Equals(referenceTableName) && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
                             || x.Name.Equals(referenceTableName) && x.IsPartOfDbContext);
 
@@ -340,8 +330,8 @@ namespace GR.Entities.Razor.Controllers.Entity
                 TableFieldConfigValues = configs
             };
 
-            Context.TableFields.Add(model);
-            var result = await Context.SaveAsync();
+            _context.TableFields.Add(model);
+            var result = await _context.PushAsync();
             if (result.IsSuccess)
             {
                 RefreshRuntimeTypes();
@@ -378,12 +368,12 @@ namespace GR.Entities.Razor.Controllers.Entity
         public async Task<IActionResult> EditField(Guid fieldId, Guid type)
         {
             if (type == Guid.Empty || fieldId == Guid.Empty) return NotFound();
-            var field = await Context.TableFields
+            var field = await _context.TableFields
                 .Include(x => x.TableFieldConfigValues)
                 .FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field == null) return NotFound();
-            var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
-            var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+            var fieldType = await _context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
+            var fieldTypeConfig = _context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
             var configFields = field.TableFieldConfigValues
                 .Select(y =>
                 {
@@ -431,7 +421,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [HttpPost]
         public async Task<IActionResult> EditField([Required]CreateTableFieldViewModel field)
         {
-            var table = await Context.Table
+            var table = await _context.Table
                 .Include(x => x.TableFields)
                 .FirstOrDefaultAsync(x => x.Id == field.TableId && x.TableFields.FirstOrDefault(y => y.Id == field.Id) != null);
 
@@ -471,14 +461,14 @@ namespace GR.Entities.Razor.Controllers.Entity
                     if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
                     break;
             }
-            var fieldType = await Context.TableFieldTypes
+            var fieldType = await _context.TableFieldTypes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.DataType == field.DataType);
-            var fieldTypeConfig = Context.TableFieldConfigs.AsNoTracking()
+            var fieldTypeConfig = _context.TableFieldConfigs.AsNoTracking()
                 .Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
 
             var newConfigs = field.Configurations;
-            var dbFieldConfigs = Context.TableFieldConfigValues.AsNoTracking()
+            var dbFieldConfigs = _context.TableFieldConfigValues.AsNoTracking()
                 .Include(x => x.TableFieldConfig)
                 .Include(x => x.TableModelField)
                 .Where(x => x.TableModelFieldId == field.Id).ToList();
@@ -507,8 +497,8 @@ namespace GR.Entities.Razor.Controllers.Entity
 
             try
             {
-                Context.TableFields.Update(model);
-                Context.SaveChanges();
+                _context.TableFields.Update(model);
+                _context.SaveChanges();
                 _entityService.UpdateTableFieldConfigurations(model.Id, newConfigs, dbFieldConfigs);
                 return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
             }
@@ -531,12 +521,12 @@ namespace GR.Entities.Razor.Controllers.Entity
         [HttpGet]
         public async Task<JsonResult> DeleteField([Required]string id)
         {
-            var field = Context.TableFields.FirstOrDefault(x => x.Id == Guid.Parse(id));
+            var field = _context.TableFields.FirstOrDefault(x => x.Id == Guid.Parse(id));
             if (field == null)
             {
                 return Json(false);
             }
-            var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+            var table = _context.Table.FirstOrDefault(x => x.Id == field.TableId);
             if (table == null)
             {
                 return Json(false);
@@ -548,7 +538,7 @@ namespace GR.Entities.Razor.Controllers.Entity
                 return Json(false);
             }
 
-            var fieldType = Context.TableFieldTypes.FirstOrDefault(x => x.Name == FieldType.EntityReference);
+            var fieldType = _context.TableFieldTypes.FirstOrDefault(x => x.Name == FieldType.EntityReference);
             if (fieldType == null)
             {
                 return Json(false);
@@ -559,10 +549,10 @@ namespace GR.Entities.Razor.Controllers.Entity
 
             if (field.TableFieldTypeId == fieldType.Id)
             {
-                var configType = Context.TableFieldConfigs.FirstOrDefault(x => x.TableFieldTypeId == fieldType.Id);
+                var configType = _context.TableFieldConfigs.FirstOrDefault(x => x.TableFieldTypeId == fieldType.Id);
                 if (configType == null)
                 {
-                    var configValue = Context.TableFieldConfigValues.First(x =>
+                    var configValue = _context.TableFieldConfigValues.First(x =>
                         x.TableFieldConfigId == configType.Id && x.TableModelFieldId == field.Id).Value;
                     if (configValue != null)
                     {
@@ -584,8 +574,8 @@ namespace GR.Entities.Razor.Controllers.Entity
             {
                 _tablesService.DropColumn(ConnectionString, table.Name, tenant.MachineName, field.Name);
             }
-            Context.TableFields.Remove(field);
-            var updateResult = await Context.SaveAsync();
+            _context.TableFields.Remove(field);
+            var updateResult = await _context.PushAsync();
             if (!updateResult.IsSuccess) return Json(false);
             //Call to refresh runtime dynamic types
             RefreshRuntimeTypes();

@@ -8,6 +8,6 @@ namespace GR.Identity.Abstractions
         public AuthGroup AuthGroup { get; set; }
         public Guid AuthGroupId { get; set; }
         public GearUser User { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

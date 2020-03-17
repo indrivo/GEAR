@@ -37,9 +37,23 @@ namespace GR.Identity.Abstractions.Extensions
                 })
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
+            return services;
+        }
 
-            //Register user manager
-            IoC.Container.Register(Component.For<UserManager<GearUser>>());
+        /// <summary>
+        /// Set password policy
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="passwordOptions"></param>
+        /// <returns></returns>
+        public static IServiceCollection PasswordPolicy(this IServiceCollection services, Action<PasswordOptions> passwordOptions)
+        {
+            // Configure Identity
+            services.Configure<IdentityOptions>(options =>
+            {
+                passwordOptions(options.Password);
+            });
+
             return services;
         }
 
@@ -77,6 +91,8 @@ namespace GR.Identity.Abstractions.Extensions
             where TUserManager : class, IUserManager<TUser>
         {
             services.AddGearTransient<IUserManager<TUser>, TUserManager>();
+            //Register user manager
+            IoC.Container.Register(Component.For<UserManager<GearUser>>());
             return services;
         }
 
@@ -135,7 +151,7 @@ namespace GR.Identity.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
             where TGroupRepository : class, IGroupRepository<TContext, TUser>
-            where TContext : DbContext where TUser : IdentityUser
+            where TContext : DbContext where TUser : IdentityUser<Guid>
         {
             services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;

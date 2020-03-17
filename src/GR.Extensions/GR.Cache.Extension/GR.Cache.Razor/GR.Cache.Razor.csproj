@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Authors>Lupei Nicolae</Authors>
-    <Version>1.9.0</Version>
+    <Version>1.9.2</Version>
     <PackageTags>redis cache ui gear</PackageTags>
     <PackageReleaseNotes>- Fix container scroll</PackageReleaseNotes>
-    <FileVersion>1.9.0</FileVersion>
-    <AssemblyVersion>1.9.0</AssemblyVersion>
+    <FileVersion>1.9.2</FileVersion>
+    <AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.Cache\GR.Cache.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using GR.Core;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -31,7 +30,7 @@ namespace GR.Subscriptions.Abstractions.Helpers
                 if (!companyAdminRequest.IsSuccess) grant = false;
                 else
                 {
-                    var subscriptionsRequest = await subscriptionService.GetValidSubscriptionsForUserAsync(companyAdminRequest.Result.Id.ToGuid());
+                    var subscriptionsRequest = await subscriptionService.GetValidSubscriptionsForUserAsync(companyAdminRequest.Result.Id);
                     if (!subscriptionsRequest.IsSuccess) grant = false;
                     else
                     {

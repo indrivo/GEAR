@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Models.Tables;
-using GR.Entities.Data;
 using GR.Identity.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,7 @@ namespace GR.Forms.Razor.TagHelpers
 		/// <summary>
 		/// Inject context
 		/// </summary>
-		private readonly EntitiesDbContext _dbContext;
+		private readonly IEntityContext _dbContext;
 		/// <summary>
 		/// Inject User Manager
 		/// </summary>
@@ -84,7 +84,7 @@ namespace GR.Forms.Razor.TagHelpers
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
 		/// <param name="localizer"></param>
-		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<GearUser> userManager, IStringLocalizer localizer)
+		public FormTagHelper(IEntityContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<GearUser> userManager, IStringLocalizer localizer)
 		{
 			_dbContext = dbContext;
 			_userManager = userManager;

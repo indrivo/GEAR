@@ -101,7 +101,7 @@ namespace GR.Calendar
 
             var events = await _context.CalendarEvents
                 .Include(x => x.EventMembers)
-                .Where(x => x.Organizer.Equals(user.Id.ToGuid()) && !x.IsDeleted)
+                .Where(x => x.Organizer.Equals(user.Id) && !x.IsDeleted)
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -150,7 +150,7 @@ namespace GR.Calendar
             }
 
             var user = currentUserRequest.Result;
-            return await GetEventsAsync(user.Id.ToGuid(), startDate, endDate);
+            return await GetEventsAsync(user.Id, startDate, endDate);
         }
 
         /// <inheritdoc />
@@ -215,7 +215,7 @@ namespace GR.Calendar
 
             var user = currentUserRequest.Result;
             var evt = model.Adapt<CalendarEvent>();
-            evt.Organizer = user.Id.ToGuid();
+            evt.Organizer = user.Id;
             await _context.CalendarEvents.AddAsync(evt);
             var dbResult = await _context.PushAsync();
             if (!dbResult.IsSuccess)

@@ -1,33 +1,36 @@
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Razor.ViewModels.PageViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-    public class BlocksController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    public class BlocksController : BaseGearController
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject page context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
-        public BlocksController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        #endregion
+
+        public BlocksController(IDynamicPagesContext pagesContext)
         {
             _pagesContext = pagesContext;
         }
@@ -62,21 +65,12 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([Required]CreateBlockViewModel model)
+        public async Task<IActionResult> Create([Required]CreateBlockViewModel model)
         {
-            try
-            {
-                model.TenantId = CurrentUserTenantId;
-                model.Author = GetCurrentUser().Id;
-                model.Changed = DateTime.Now;
-                _pagesContext.Blocks.Add(model);
-                _pagesContext.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            _pagesContext.Blocks.Add(model);
+            var dbResult = await _pagesContext.PushAsync();
+            if (dbResult.IsSuccess) return RedirectToAction("Index");
+
             model.BlockCategories = _pagesContext.BlockCategories.ToList();
             return View(model);
         }

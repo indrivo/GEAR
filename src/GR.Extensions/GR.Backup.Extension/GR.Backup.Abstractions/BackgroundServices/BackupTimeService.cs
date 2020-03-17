@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -30,9 +29,9 @@ namespace GR.Backup.Abstractions.BackgroundServices
         /// <summary>
         /// Inject backup service
         /// </summary>
-        private readonly IBackupService<T> _backupService;
+        private readonly IBackupService _backupService;
 
-        public BackupTimeService(ILogger<BackupTimeService<T>> logger, IOptions<T> options, IBackupService<T> backupService)
+        public BackupTimeService(ILogger<BackupTimeService<T>> logger, IOptions<T> options, IBackupService backupService)
         {
             _logger = logger;
             _backupService = backupService;

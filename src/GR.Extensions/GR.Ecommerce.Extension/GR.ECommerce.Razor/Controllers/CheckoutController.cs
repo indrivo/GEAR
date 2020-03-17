@@ -54,7 +54,7 @@ namespace GR.ECommerce.Razor.Controllers
 
             var wasInvoicedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.Invoiced);
             if (wasInvoicedRequest.IsSuccess && wasInvoicedRequest.Result) return NotFound();
-            var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
+            var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id);
             var model = new CheckoutShippingViewModel
             {
                 Order = orderRequest.Result,
@@ -87,7 +87,7 @@ namespace GR.ECommerce.Razor.Controllers
             var orderRequest = await _orderProductService.GetOrderByIdAsync(model.Order?.Id);
             if (!orderRequest.IsSuccess) return NotFound();
             if (orderRequest.Result.OrderState != OrderState.New) return NotFound();
-            var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
+            var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id);
             model.Order = orderRequest.Result;
             model.Addresses = addressesRequest.Result;
             return View(model);

@@ -5,7 +5,7 @@ namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels
 {
     public class UserProfileEditViewModel
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [MaxLength(50)]

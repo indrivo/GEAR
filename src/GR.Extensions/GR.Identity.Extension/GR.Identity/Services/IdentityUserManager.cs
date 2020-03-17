@@ -17,6 +17,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Events.EventArgs.Users;
+using IdentityServer4.Extensions;
 
 namespace GR.Identity.Services
 {
@@ -24,6 +27,20 @@ namespace GR.Identity.Services
     [Documentation("Base implementation of gear user manager")]
     public class IdentityUserManager : IUserManager<GearUser>
     {
+        #region Helpers
+
+        /// <summary>
+        /// Default roles
+        /// </summary>
+        protected readonly Collection<string> DefaultRoles = new Collection<string> {
+            GlobalResources.Roles.USER,
+            GlobalResources.Roles.ANONIMOUS_USER
+        };
+
+        #endregion
+
+        #region Injectable
+
         /// <inheritdoc />
         /// <summary>
         /// Inject user manager
@@ -47,6 +64,8 @@ namespace GR.Identity.Services
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        #endregion
+
         public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext)
         {
             UserManager = userManager;
@@ -55,12 +74,32 @@ namespace GR.Identity.Services
             IdentityContext = identityContext;
         }
 
+        /// <summary>
+        /// Create new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> CreateUserAsync(GearUser user, string password)
+        {
+            if (user == null) return new InvalidParametersResultModel<Guid>();
+            var createResponse = await UserManager.CreateAsync(user, password);
+            var response = createResponse.ToResultModel<Guid>();
+            response.Result = user.Id;
+            if (response.IsSuccess)
+            {
+                await AddDefaultRoles(user);
+            }
+            return response;
+        }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Get current user
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<GearUser>> GetCurrentUserAsync()
+        public virtual async Task<ResultModel<GearUser>> GetCurrentUserAsync()
         {
             var result = new ResultModel<GearUser>();
             if (_httpContextAccessor.HttpContext == null)
@@ -79,7 +118,7 @@ namespace GR.Identity.Services
         /// Get roles from claims
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetRolesFromClaims()
+        public virtual IEnumerable<string> GetRolesFromClaims()
         {
             var roles = _httpContextAccessor.HttpContext.User.Claims
                 .Where(x => x.Type.Equals("role") || x.Type.EndsWith("role")).Select(x => x.Value)
@@ -92,10 +131,7 @@ namespace GR.Identity.Services
         /// Get request ip address
         /// </summary>
         /// <returns></returns>
-        public string GetRequestIpAdress()
-        {
-            return _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
-        }
+        public virtual string GetRequestIpAdress() => _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
 
         /// <inheritdoc />
         /// <summary>
@@ -119,6 +155,13 @@ namespace GR.Identity.Services
             }
         }
 
+        /// <summary>
+        /// Add default roles
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddDefaultRoles(GearUser user) => await AddToRolesAsync(user, DefaultRoles);
+
         /// <inheritdoc />
         /// <summary>
         /// Add roles to user
@@ -129,7 +172,6 @@ namespace GR.Identity.Services
         public virtual async Task<ResultModel> AddToRolesAsync(GearUser user, ICollection<string> roles)
         {
             var result = new ResultModel();
-            var defaultRoles = new Collection<string> { GlobalResources.Roles.USER, GlobalResources.Roles.ANONIMOUS_USER };
 
             if (user == null || roles == null)
             {
@@ -137,14 +179,14 @@ namespace GR.Identity.Services
                 return result;
             }
 
-            var exist = await UserManager.FindByEmailAsync(user.Email);
+            var exist = await UserManager.FindByNameAsync(user.UserName);
             if (exist == null)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, "User not found"));
                 return result;
             }
 
-            foreach (var defaultRole in defaultRoles)
+            foreach (var defaultRole in DefaultRoles)
             {
                 if (roles.Contains(defaultRole)) continue;
                 roles.Add(defaultRole);
@@ -183,14 +225,49 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<ResultModel> DisableUserAsync(Guid? userId)
+        public virtual async Task<ResultModel> DisableUserAsync(Guid? userId)
         {
             var response = new ResultModel();
             if (userId == null) return response;
-            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (user == null) return response;
             if (CurrentUserTenantId != user.TenantId) return response;
             user.IsDisabled = true;
+            var request = await UserManager.UpdateAsync(user);
+            return request.ToResultModel<object>().ToBase();
+        }
+
+        /// <summary>
+        /// Enable user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> EnableUserAsync(Guid? userId)
+        {
+            var response = new ResultModel();
+            if (userId == null) return response;
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (user == null) return response;
+            if (CurrentUserTenantId != user.TenantId) return response;
+            user.IsDisabled = false;
+            var request = await UserManager.UpdateAsync(user);
+            return request.ToResultModel<object>().ToBase();
+        }
+
+        /// <summary>
+        /// Set editable status
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="editableStatus"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SetEditableStatusForUserAsync(Guid? userId, bool editableStatus)
+        {
+            var response = new ResultModel();
+            if (userId == null) return response;
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (user == null) return response;
+            if (CurrentUserTenantId != user.TenantId) return response;
+            user.IsEditable = editableStatus;
             var request = await UserManager.UpdateAsync(user);
             return request.ToResultModel<object>().ToBase();
         }
@@ -206,7 +283,7 @@ namespace GR.Identity.Services
             var addresses = await IdentityContext.Addresses
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
-                .Where(x => x.ApplicationUserId.ToGuid().Equals(userId))
+                .Where(x => x.ApplicationUserId.Equals(userId))
                 .NonDeleted()
                 .ToListAsync();
             return new ResultModel<IEnumerable<Address>>
@@ -305,14 +382,14 @@ namespace GR.Identity.Services
         /// <param name="userId"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles)
+        public virtual async Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles)
         {
             var user = await UserManager.FindByIdAsync(userId.ToString());
             if (user == null) return new NotFoundResultModel();
             var currentRolesRequest = await FindRolesByNamesAsync(await UserManager.GetRolesAsync(user));
             if (!currentRolesRequest.IsSuccess) return currentRolesRequest.ToBase();
             var currentRoles = currentRolesRequest.Result.ToList();
-            var rolesIds = currentRoles.Select(x => x.Id.ToGuid()).ToList();
+            var rolesIds = currentRoles.Select(x => x.Id).ToList();
             var (newRoles, excludeRoles) = rolesIds.GetDifferences(roles);
             if (newRoles.Any())
             {
@@ -328,5 +405,57 @@ namespace GR.Identity.Services
 
             return new SuccessResultModel<object>().ToBase();
         }
+
+        /// <summary>
+        /// Delete user permanently
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DeleteUserPermanently(Guid? userId)
+        {
+            if (userId == null) return new InvalidParametersResultModel();
+            var result = new ResultModel();
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                result.Errors.Add(new ErrorModel("User not found"));
+                return result;
+            }
+
+            if (IsCurrentUser(userId.Value))
+            {
+                result.Errors.Add(new ErrorModel("You can't delete current user"));
+                return result;
+            }
+
+            if (!user.IsEditable)
+            {
+                result.Errors.Add(new ErrorModel("This user cannot be deleted"));
+                return result;
+            }
+
+            var deleteResult = await UserManager.DeleteAsync(user);
+            if (deleteResult.Succeeded)
+            {
+                IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id
+                });
+                return new SuccessResultModel<Guid>().ToBase();
+            }
+
+            return deleteResult.ToResultModel<object>().ToBase();
+        }
+
+        /// <summary>
+        /// Check if user is current user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool IsCurrentUser(Guid id)
+            => _httpContextAccessor.HttpContext.User.IsAuthenticated()
+               && id.Equals(_httpContextAccessor.HttpContext.User.Identity.Name.ToGuid());
     }
 }

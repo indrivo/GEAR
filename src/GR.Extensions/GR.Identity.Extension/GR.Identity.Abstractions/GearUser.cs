@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GR.Identity.Abstractions
 {
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
-    public class GearUser : IdentityUser, IBaseModel
+    public class GearUser : IdentityUser<Guid>, IBase<Guid>
     {
         /// <summary>
         /// Stores user first name

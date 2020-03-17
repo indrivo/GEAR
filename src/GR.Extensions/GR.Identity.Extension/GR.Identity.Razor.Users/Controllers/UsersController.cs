@@ -1,17 +1,13 @@
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Entities.Data;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Models.AddressModels;
-using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
-using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
 using GR.Identity.LdapAuth.Abstractions;
 using GR.Identity.LdapAuth.Abstractions.Models;
@@ -34,26 +30,15 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Razor.BaseControllers;
 using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
 
 namespace GR.Identity.Razor.Users.Controllers
 {
-    public class UsersController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser,
-        GearRole, Tenant, INotify<GearRole>>
+    [Authorize]
+    public class UsersController : BaseGearController
     {
-        #region Injections
-
-        public UsersController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager,
-            ApplicationDbContext applicationDbContext, EntitiesDbContext context,
-            INotify<GearRole> notify, BaseLdapUserManager<LdapUser> ldapUserManager,
-            ILogger<UsersController> logger, IStringLocalizer localizer) : base(userManager, roleManager,
-            applicationDbContext,
-            context, notify)
-        {
-            _ldapUserManager = ldapUserManager;
-            Logger = logger;
-            _localizer = localizer;
-        }
+        #region Injectable
 
         /// <summary>
         /// Logger
@@ -65,9 +50,42 @@ namespace GR.Identity.Razor.Users.Controllers
         /// </summary>
         private readonly BaseLdapUserManager<LdapUser> _ldapUserManager;
 
+        /// <summary>
+        /// Inject localizer
+        /// </summary>
         private readonly IStringLocalizer _localizer;
 
-        #endregion Injections
+        private readonly RoleManager<GearRole> _roleManager;
+
+        /// <summary>
+        /// Inject identity user manager
+        /// </summary>
+        private readonly UserManager<GearUser> _userManager;
+
+        /// <summary>
+        /// Inject identity context
+        /// </summary>
+        private readonly IIdentityContext _identityContext;
+
+        /// <summary>
+        /// Inject custom user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _customUserManager;
+
+        #endregion
+
+        public UsersController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager,
+             BaseLdapUserManager<LdapUser> ldapUserManager,
+            ILogger<UsersController> logger, IStringLocalizer localizer, IIdentityContext identityContext, IUserManager<GearUser> customUserManager)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _ldapUserManager = ldapUserManager;
+            Logger = logger;
+            _localizer = localizer;
+            _identityContext = identityContext;
+            _customUserManager = customUserManager;
+        }
 
         /// <summary>
         /// User list for admin visualization
@@ -143,7 +161,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 }
             }
 
-            var result = await UserManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -162,9 +180,9 @@ namespace GR.Identity.Razor.Users.Controllers
 
             if (model.SelectedRoleId != null && model.SelectedRoleId.Any())
             {
-                var rolesNameList = await RoleManager.Roles.Where(x => model.SelectedRoleId.Contains(x.Id))
+                var rolesNameList = await _roleManager.Roles.Where(x => model.SelectedRoleId.Contains(x.Id))
                     .Select(x => x.Name).ToListAsync();
-                var roleAddResult = await UserManager.AddToRolesAsync(user, rolesNameList);
+                var roleAddResult = await _userManager.AddToRolesAsync(user, rolesNameList);
                 if (!roleAddResult.Succeeded)
                 {
                     foreach (var error in roleAddResult.Errors)
@@ -185,14 +203,14 @@ namespace GR.Identity.Razor.Users.Controllers
                 var userGroupList = model.SelectedGroupId
                     .Select(_ => new UserGroup { AuthGroupId = Guid.Parse(_), UserId = user.Id }).ToList();
 
-                await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
+                await _identityContext.UserGroups.AddRangeAsync(userGroupList);
             }
             else
             {
-                var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
+                var groupId = await _identityContext.AuthGroups.FirstOrDefaultAsync();
                 if (groupId != null)
                 {
-                    ApplicationDbContext.UserGroups.Add(new UserGroup
+                    _identityContext.UserGroups.Add(new UserGroup
                     {
                         AuthGroupId = groupId.Id,
                         UserId = user.Id
@@ -200,7 +218,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 }
             }
 
-            var dbResult = await ApplicationDbContext.SaveAsync();
+            var dbResult = await _identityContext.PushAsync();
             if (!dbResult.IsSuccess)
             {
                 ModelState.AppendResultModelErrors(dbResult.Errors);
@@ -230,7 +248,7 @@ namespace GR.Identity.Razor.Users.Controllers
         public JsonResult GetAdUsers()
         {
             var result = new ResultModel<IEnumerable<LdapUser>>();
-            var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).Adapt<IEnumerable<LdapUser>>()
+            var addedUsers = _identityContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).Adapt<IEnumerable<LdapUser>>()
                 .ToList();
             var users = _ldapUserManager.Users;
             if (addedUsers.Any())
@@ -259,7 +277,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(result);
             }
 
-            var exists = await UserManager.FindByNameAsync(userName);
+            var exists = await _userManager.FindByNameAsync(userName);
             if (exists != null)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, $"UserName {userName} exists!"));
@@ -275,16 +293,12 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(result);
             }
 
-            user.Id = Guid.NewGuid().ToString();
+            user.Id = Guid.NewGuid();
             user.UserName = ldapUser.SamAccountName;
             user.Email = ldapUser.EmailAddress;
             user.AuthenticationType = AuthenticationType.Ad;
-            user.Created = DateTime.Now;
-            user.Author = User.Identity.Name;
-            user.Changed = DateTime.Now;
-            user.TenantId = CurrentUserTenantId;
             result.IsSuccess = true;
-            var req = await UserManager.CreateAsync(user, "ldap_default_password");
+            var req = await _userManager.CreateAsync(user, "ldap_default_password");
             if (!req.Succeeded)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, $"Fail to add user : {userName}"));
@@ -298,7 +312,7 @@ namespace GR.Identity.Razor.Users.Controllers
                     UserName = user.UserName,
                     UserId = user.Id
                 });
-                result.Result = Guid.Parse(user.Id);
+                result.Result = user.Id;
             }
 
             return Json(result);
@@ -310,49 +324,12 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<JsonResult> Delete(Guid? id)
         {
-            if (id.IsNullOrEmpty())
-            {
-                return Json(new { success = false, message = "Id is null" });
-            }
-
-            if (IsCurrentUser(id))
-            {
-                return Json(new { success = false, message = "You can't delete current user" });
-            }
-
-            var applicationUser = await ApplicationDbContext.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (applicationUser == null)
-            {
-                return Json(new { success = false, message = "User not found" });
-            }
-
-            if (applicationUser.IsEditable == false)
-            {
-                return Json(new { succsess = false, message = "Is system user!!!" });
-            }
-
-            var deleteResult = await UserManager.DeleteAsync(applicationUser);
-            if (deleteResult.Succeeded)
-            {
-                IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
-                {
-                    Email = applicationUser.Email,
-                    UserName = applicationUser.UserName,
-                    UserId = applicationUser.Id
-                });
-                return Json(new { success = true, message = "Delete success" });
-            }
-            else
-            {
-                return Json(new { success = false, message = deleteResult.Errors.FirstOrDefault()?.Description });
-            }
+            var deleteRequest = await _customUserManager.DeleteUserPermanently(id);
+            return Json(deleteRequest);
         }
 
         /// <summary>
@@ -362,30 +339,30 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
+            var applicationUser = await _identityContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
                 return NotFound();
             }
 
-            var roles = RoleManager.Roles.AsEnumerable();
-            var groups = ApplicationDbContext.AuthGroups.AsEnumerable();
-            var userGroup = ApplicationDbContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
+            var roles = _roleManager.Roles.AsEnumerable();
+            var groups = _identityContext.AuthGroups.AsEnumerable();
+            var userGroup = _identityContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
                 .Select(s => s.AuthGroupId.ToString()).ToList();
-            var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
+            var userRolesNames = await _userManager.GetRolesAsync(applicationUser);
             var userRoles = userRolesNames.Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
                 .ToList();
 
             var model = new UpdateUserViewModel
             {
-                Id = applicationUser.Id.ToGuid(),
+                Id = applicationUser.Id,
                 Email = applicationUser.Email,
                 IsDeleted = applicationUser.IsDeleted,
                 Password = applicationUser.PasswordHash,
@@ -399,7 +376,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 UserPhoto = applicationUser.UserPhoto,
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
-                Tenants = ApplicationDbContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
+                Tenants = _identityContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
                 FirstName = applicationUser.UserFirstName,
                 LastName = applicationUser.UserLastName
             };
@@ -415,19 +392,19 @@ namespace GR.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public virtual async Task<IActionResult> Edit(string id, UpdateUserViewModel model)
+        public virtual async Task<IActionResult> Edit(Guid id, UpdateUserViewModel model)
         {
-            if (Guid.Parse(id) != model.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
-            var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
-            var roles = RoleManager.Roles.AsEnumerable();
-            var groupsList = ApplicationDbContext.AuthGroups.AsEnumerable();
-            var userGroupListList = ApplicationDbContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
+            var applicationUser = await _identityContext.Users.SingleOrDefaultAsync(m => m.Id == id);
+            var roles = _roleManager.Roles.AsEnumerable();
+            var groupsList = _identityContext.AuthGroups.AsEnumerable();
+            var userGroupListList = _identityContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
                 .Select(s => s.AuthGroupId.ToString()).ToList();
-            var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
+            var userRolesNames = await _userManager.GetRolesAsync(applicationUser);
             var userRoleList = userRolesNames
                 .Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
                 .ToList();
@@ -435,7 +412,7 @@ namespace GR.Identity.Razor.Users.Controllers
             model.Roles = roles;
             model.Groups = groupsList;
             model.SelectedGroupId = userGroupListList;
-            model.Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList();
+            model.Tenants = _identityContext.Tenants.Where(x => !x.IsDeleted).ToList();
 
             if (!ModelState.IsValid)
             {
@@ -449,7 +426,7 @@ namespace GR.Identity.Razor.Users.Controllers
             }
 
             // Update User Data
-            var user = await UserManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return NotFound();
@@ -487,7 +464,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 }
             }
 
-            var result = await UserManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 model.SelectedRoleId = userRoleList;
@@ -500,38 +477,38 @@ namespace GR.Identity.Razor.Users.Controllers
             }
 
             // REFRESH USER ROLES
-            var userRoles = await ApplicationDbContext.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
+            var userRoles = await _identityContext.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
             var rolesList = new List<string>();
             foreach (var _ in userRoles)
             {
-                var role = await RoleManager.FindByIdAsync(_.RoleId);
+                var role = await _roleManager.FindByIdAsync(_.RoleId.ToString());
                 rolesList.Add(role.Name);
             }
 
-            await UserManager.RemoveFromRolesAsync(user, rolesList);
+            await _userManager.RemoveFromRolesAsync(user, rolesList);
 
             var roleNameList = new List<string>();
             foreach (var _ in model.SelectedRoleId)
             {
-                var role = await RoleManager.FindByIdAsync(_);
+                var role = await _roleManager.FindByIdAsync(_);
                 roleNameList.Add(role.Name);
             }
 
-            await UserManager.AddToRolesAsync(user, roleNameList);
+            await _userManager.AddToRolesAsync(user, roleNameList);
 
             if (model.Groups != null && model.Groups.Any())
             {
                 //Refresh groups
                 var currentGroupsList =
-                    await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
-                ApplicationDbContext.UserGroups.RemoveRange(currentGroupsList);
+                    await _identityContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
+                _identityContext.UserGroups.RemoveRange(currentGroupsList);
 
                 var userGroupList = model.SelectedGroupId
                     .Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
-                await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
+                await _identityContext.UserGroups.AddRangeAsync(userGroupList);
             }
 
-            await UserManager.UpdateSecurityStampAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user);
 
             //Refresh user claims for this user
             //await user.RefreshClaims(Context, signInManager);
@@ -559,7 +536,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var citySelectList = ApplicationDbContext.StateOrProvinces
+            var citySelectList = _identityContext.StateOrProvinces
                 .AsNoTracking()
                 .Where(x => x.CountryId.Equals(countryId))
                 .Select(x => new SelectListItem
@@ -581,7 +558,7 @@ namespace GR.Identity.Razor.Users.Controllers
         [HttpGet]
         public virtual async Task<IActionResult> Profile()
         {
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
             if (currentUser == null)
             {
                 return NotFound();
@@ -589,7 +566,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             var model = new UserProfileViewModel
             {
-                UserId = currentUser.Id.ToGuid(),
+                UserId = currentUser.Id,
                 TenantId = currentUser.TenantId ?? Guid.Empty,
                 UserName = currentUser.UserName,
                 UserFirstName = currentUser.UserFirstName,
@@ -598,8 +575,8 @@ namespace GR.Identity.Razor.Users.Controllers
                 AboutMe = currentUser.AboutMe,
                 Birthday = currentUser.Birthday,
                 Email = currentUser.Email,
-                Roles = await UserManager.GetRolesAsync(currentUser),
-                Groups = await ApplicationDbContext.UserGroups
+                Roles = await _userManager.GetRolesAsync(currentUser),
+                Groups = await _identityContext.UserGroups
                     .Include(x => x.AuthGroup)
                     .Where(x => x.UserId.Equals(currentUser.Id))
                     .Select(x => x.AuthGroup.Name)
@@ -614,14 +591,14 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> EditProfile(string userId)
+        public virtual async Task<IActionResult> EditProfile(Guid userId)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (userId == Guid.Empty)
             {
                 return NotFound();
             }
 
-            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (currentUser == null)
             {
                 return NotFound();
@@ -655,7 +632,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
             if (currentUser == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
@@ -668,7 +645,7 @@ namespace GR.Identity.Razor.Users.Controllers
             currentUser.AboutMe = model.AboutMe;
             currentUser.PhoneNumber = model.UserPhoneNumber;
 
-            var result = await UserManager.UpdateAsync(currentUser);
+            var result = await _userManager.UpdateAsync(currentUser);
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
@@ -693,14 +670,14 @@ namespace GR.Identity.Razor.Users.Controllers
         public async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
         {
             if (userId == null) return NotFound();
-            var user = await UserManager.FindByIdAsync(userId.Value.ToString());
+            var user = await _userManager.FindByIdAsync(userId.Value.ToString());
             if (user == null) return NotFound();
             return View(new ChangeUserPasswordViewModel
             {
                 Email = user.Email,
                 UserName = user.UserName,
                 AuthenticationType = user.AuthenticationType,
-                UserId = user.Id.ToGuid(),
+                UserId = user.Id,
                 CallBackUrl = callBackUrl
             });
         }
@@ -725,7 +702,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 }
             }
 
-            var user = await UserManager.FindByIdAsync(model.UserId.ToString());
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
             if (user == null)
             {
                 ModelState.AddModelError("", "The user is no longer in the system");
@@ -736,7 +713,7 @@ namespace GR.Identity.Razor.Users.Controllers
             var hashedPassword = hasher.HashPassword(user, model.Password);
             user.PasswordHash = hashedPassword;
             user.LastPasswordChanged = DateTime.Now;
-            var result = await UserManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
@@ -765,16 +742,16 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
+        public JsonResult LoadUsers([FromServices] ICommunicationHub hub, DTParameters param)
         {
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
 
             var usersList = filtered.Select(async o =>
             {
-                var sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id));
-                var roles = await UserManager.GetRolesAsync(o);
-                var org = await ApplicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
+                var sessions = hub.GetSessionsCountByUserId(o.Id);
+                var roles = await _userManager.GetRolesAsync(o);
+                var org = await _identityContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
                 return new UserListItemViewModel
                 {
                     Id = o.Id,
@@ -815,7 +792,7 @@ namespace GR.Identity.Razor.Users.Controllers
         private List<GearUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
             out int totalCount)
         {
-            var result = ApplicationDbContext.Users.AsNoTracking()
+            var result = _identityContext.Users.AsNoTracking()
                 .Where(p =>
                     search == null || p.Email != null &&
                     p.Email.ToLower().Contains(search.ToLower()) || p.UserName != null &&
@@ -884,7 +861,7 @@ namespace GR.Identity.Razor.Users.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult GetUserById([Required] Guid userId)
         {
-            var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId.ToString());
+            var user = _identityContext.Users.FirstOrDefault(x => x.Id == userId);
             return Json(new ResultModel
             {
                 IsSuccess = true,
@@ -897,9 +874,9 @@ namespace GR.Identity.Razor.Users.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsCurrentUser(string id)
+        private bool IsCurrentUser(Guid id)
         {
-            return id.Equals(User.Identity.Name);
+            return id.Equals(User.Identity.Name.ToGuid());
         }
 
         /// <summary>
@@ -908,16 +885,16 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult GetImage(string id)
+        public IActionResult GetImage(Guid id)
         {
-            if (id.IsNullOrEmpty())
+            if (id == Guid.Empty)
             {
                 return NotFound();
             }
 
             try
             {
-                var photo = ApplicationDbContext.Users.SingleOrDefault(x => x.Id == id);
+                var photo = _identityContext.Users.SingleOrDefault(x => x.Id == id);
                 if (photo?.UserPhoto != null) return File(photo.UserPhoto, "image/jpg");
                 var def = GetDefaultImage();
                 if (def == null) return NotFound();
@@ -972,7 +949,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(true);
             }
 
-            if (await ApplicationDbContext.Users
+            if (await _identityContext.Users
                 .AsNoTracking()
                 .AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
             {
@@ -992,7 +969,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentAddress = await ApplicationDbContext.Addresses.FindAsync(id.Value);
+            var currentAddress = await _identityContext.Addresses.FindAsync(id.Value);
             if (currentAddress == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
@@ -1000,7 +977,7 @@ namespace GR.Identity.Razor.Users.Controllers
             }
 
             currentAddress.IsDeleted = true;
-            var result = await ApplicationDbContext.SaveAsync();
+            var result = await _identityContext.PushAsync();
             if (!result.IsSuccess)
             {
                 foreach (var error in result.Errors)
@@ -1032,14 +1009,14 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
             if (currentUser == null)
             {
                 resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
                 return Json(resultModel);
             }
 
-            var result = await UserManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
+            var result = await _userManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
@@ -1067,7 +1044,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return NotFound();
             }
 
-            var tenant = await ApplicationDbContext.Tenants.FindAsync(tenantId);
+            var tenant = await _identityContext.Tenants.FindAsync(tenantId);
             if (tenant == null)
             {
                 return NotFound();
@@ -1092,9 +1069,9 @@ namespace GR.Identity.Razor.Users.Controllers
                 return NotFound();
             }
 
-            var addressList = ApplicationDbContext.Addresses
+            var addressList = _identityContext.Addresses
                 .AsNoTracking()
-                .Where(x => x.ApplicationUserId.Equals(userId.Value.ToString()) && x.IsDeleted == false)
+                .Where(x => x.ApplicationUserId.Equals(userId.Value) && x.IsDeleted == false)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
                 .Include(x => x.District)
@@ -1144,7 +1121,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
             if (currentUser == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
@@ -1167,13 +1144,13 @@ namespace GR.Identity.Razor.Users.Controllers
 
             if (model.IsDefault)
             {
-                ApplicationDbContext.Addresses
+                _identityContext.Addresses
                     .Where(x => x.ApplicationUserId.Equals(currentUser.Id))
                     .ToList().ForEach(b => b.IsDefault = false);
             }
 
-            await ApplicationDbContext.AddAsync(address);
-            var result = await ApplicationDbContext.SaveAsync();
+            await _identityContext.Addresses.AddAsync(address);
+            var result = await _identityContext.PushAsync();
             if (!result.IsSuccess)
             {
                 foreach (var resultError in result.Errors)
@@ -1196,9 +1173,9 @@ namespace GR.Identity.Razor.Users.Controllers
                 return NotFound();
             }
 
-            var currentAddress = await ApplicationDbContext.Addresses
+            var currentAddress = await _identityContext.Addresses
                 .FirstOrDefaultAsync(x => x.Id.Equals(addressId.Value));
-            var cityBySelectedCountry = await ApplicationDbContext.StateOrProvinces
+            var cityBySelectedCountry = await _identityContext.StateOrProvinces
                 .AsNoTracking()
                 .Where(x => x.CountryId.Equals(currentAddress.CountryId))
                 .Select(x => new SelectListItem
@@ -1240,7 +1217,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentAddress = await ApplicationDbContext.Addresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            var currentAddress = await _identityContext.Addresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
             if (currentAddress == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
@@ -1249,7 +1226,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
             if (model.IsDefault)
             {
-                ApplicationDbContext.Addresses
+                _identityContext.Addresses
                     .Where(x => x.ApplicationUserId.Equals(currentAddress.ApplicationUserId))
                     .ToList().ForEach(b => b.IsDefault = false);
             }
@@ -1264,8 +1241,8 @@ namespace GR.Identity.Razor.Users.Controllers
             currentAddress.IsDefault = model.IsDefault;
             currentAddress.Changed = DateTime.Now;
 
-            ApplicationDbContext.Update(currentAddress);
-            var result = await ApplicationDbContext.SaveAsync();
+            _identityContext.Update(currentAddress);
+            var result = await _identityContext.PushAsync();
             if (!result.IsSuccess)
             {
                 foreach (var resultError in result.Errors)
@@ -1293,7 +1270,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
             if (currentUser == null)
             {
                 resultModel.IsSuccess = false;
@@ -1307,7 +1284,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 currentUser.UserPhoto = memoryStream.ToArray();
             }
 
-            var result = await UserManager.UpdateAsync(currentUser);
+            var result = await _userManager.UpdateAsync(currentUser);
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
@@ -1325,7 +1302,7 @@ namespace GR.Identity.Razor.Users.Controllers
 
         protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
         {
-            var countrySelectList = await ApplicationDbContext.Countries
+            var countrySelectList = await _identityContext.Countries
                 .AsNoTracking()
                 .Select(x => new SelectListItem
                 {
@@ -1344,11 +1321,11 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         protected virtual async Task<IEnumerable<SelectListItem>> GetRoleSelectListItemAsync()
         {
-            var roles = await RoleManager.Roles
+            var roles = await _roleManager.Roles
                 .AsNoTracking()
                 .Select(x => new SelectListItem
                 {
-                    Value = x.Id,
+                    Value = x.Id.ToString(),
                     Text = x.Name
                 }).ToListAsync();
             roles.Insert(0, new SelectListItem(_localizer["sel_role"], string.Empty));
@@ -1362,7 +1339,7 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         protected virtual async Task<IEnumerable<SelectListItem>> GetAuthGroupSelectListItemAsync()
         {
-            var authGroups = await ApplicationDbContext.AuthGroups
+            var authGroups = await _identityContext.AuthGroups
                 .AsNoTracking()
                 .Select(x => new SelectListItem
                 {
@@ -1380,7 +1357,7 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <returns></returns>
         protected virtual async Task<IEnumerable<SelectListItem>> GetTenantsSelectListItemAsync()
         {
-            var tenants = await ApplicationDbContext.Tenants
+            var tenants = await _identityContext.Tenants
                 .AsNoTracking()
                 .Where(x => !x.IsDeleted)
                 .Select(x => new SelectListItem

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
@@ -16,20 +15,15 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models;
 using GR.Forms.Razor.ViewModels.FormsViewModels;
-using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
-using GR.Notifications.Abstractions;
 using GR.Core;
 using GR.Core.Attributes;
-using GR.Core.BaseControllers;
 using GR.Core.Helpers;
+using GR.Core.Razor.BaseControllers;
 using GR.Entities.Abstractions;
-using GR.Entities.Data;
 using GR.Forms.Abstractions;
 using GR.Forms.Abstractions.Models.FormModels;
 using GR.Forms.Abstractions.ViewModels.FormViewModels;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Permissions.Abstractions.Attributes;
 
 namespace GR.Forms.Razor.Controllers
@@ -38,14 +32,15 @@ namespace GR.Forms.Razor.Controllers
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class FormController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
+    [Authorize]
+    public class FormController : BaseGearController
     {
         #region Inject
 
         /// <summary>
         /// Inject form service
         /// </summary>
-        private IFormService FormService { get; }
+        private readonly IFormService _formService;
 
         /// <summary>
         /// Inject form context
@@ -69,11 +64,11 @@ namespace GR.Forms.Razor.Controllers
         #endregion
 
 
-        public FormController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public FormController(ICacheService cacheService, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext)
         {
             _cacheService = cacheService;
             _service = service;
-            FormService = formService;
+            _formService = formService;
             _formContext = formContext;
             _entityContext = entityContext;
         }
@@ -85,7 +80,7 @@ namespace GR.Forms.Razor.Controllers
         /// <returns></returns>
         public IActionResult Create()
         {
-            ViewData["models"] = Context.Table.Where(x => !x.IsDeleted).ToList();
+            ViewData["models"] = _entityContext.Table.Where(x => !x.IsDeleted).ToList();
             ViewData["formTypes"] = _formContext.FormTypes.Where(x => !x.IsDeleted).ToList().OrderBy(s => s.Code);
             return View();
         }
@@ -137,16 +132,14 @@ namespace GR.Forms.Razor.Controllers
         {
             var bdForm = _formContext.Forms.FirstOrDefault(x => x.Id.Equals(formId));
             if (bdForm == null) return Json(new ResultModel());
-            var res = FormService.DeleteForm(formId);
+            var res = _formService.DeleteForm(formId);
             if (!res.IsSuccess) return Json(new ResultModel());
-            var response = FormService.CreateForm(new FormCreateDetailsViewModel
+            var response = _formService.CreateForm(new FormCreateDetailsViewModel
             {
                 Id = formId,
                 Created = bdForm.Created,
                 Author = bdForm.Author,
                 Description = description,
-                ModifiedBy = GetCurrentUser()?.Id,
-                TenantId = CurrentUserTenantId,
                 Name = name,
                 PostUrl = postUrl,
                 RedirectUrl = redirectUrl,
@@ -168,7 +161,7 @@ namespace GR.Forms.Razor.Controllers
         [HttpGet, Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult GetForm(Guid id)
         {
-            var response = FormService.GetFormById(id);
+            var response = _formService.GetFormById(id);
             return Json(response);
         }
 
@@ -181,7 +174,7 @@ namespace GR.Forms.Razor.Controllers
         [HttpGet, Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult GetTableFields(Guid tableId)
         {
-            return FormService.GetTableFields(tableId);
+            return _formService.GetTableFields(tableId);
         }
 
         /// <summary>
@@ -203,7 +196,7 @@ namespace GR.Forms.Razor.Controllers
         {
             ViewBag.FormId = formId;
             ViewBag.Form = _formContext.Forms.FirstOrDefault(x => x.Id == formId);
-            ViewBag.FormType = FormService.GetTypeByFormId(formId);
+            ViewBag.FormType = _formService.GetTypeByFormId(formId);
             return View();
         }
 
@@ -214,7 +207,7 @@ namespace GR.Forms.Razor.Controllers
             if (formId == null) return default;
             var form = _formContext.Forms.FirstOrDefault(x => x.Id == formId);
             if (form == null) return Json(default(TableModel));
-            var table = Context.Table.FirstOrDefault(x => x.Id == form.TableId);
+            var table = _entityContext.Table.FirstOrDefault(x => x.Id == form.TableId);
             return Json(table);
         }
 
@@ -241,7 +234,7 @@ namespace GR.Forms.Razor.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     Created = x.Created,
-                    TableName = Context.Table.FirstOrDefault(o => o.Id == x.TableId)?.Name,
+                    TableName = _entityContext.Table.FirstOrDefault(o => o.Id == x.TableId)?.Name,
                     IsDeleted = x.IsDeleted,
                     TypeId = x.TypeId,
                     Type = x.Type,
@@ -270,17 +263,14 @@ namespace GR.Forms.Razor.Controllers
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> CreateNewForm(FormViewModel form, Guid tableId, Guid formTypeId,
+        public JsonResult CreateNewForm(FormViewModel form, Guid tableId, Guid formTypeId,
             string name, string description, string postUrl, string redirectUrl)
         {
-            var user = await GetCurrentUserAsync();
-            var response = FormService.CreateForm(new FormCreateDetailsViewModel
+            var response = _formService.CreateForm(new FormCreateDetailsViewModel
             {
                 Description = description,
                 Name = name,
                 PostUrl = postUrl,
-                Author = user.Id,
-                ModifiedBy = user.Id,
                 RedirectUrl = redirectUrl,
                 Model = form,
                 TableId = tableId,
@@ -298,7 +288,7 @@ namespace GR.Forms.Razor.Controllers
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetEntityFields(Guid tableId)
         {
-            return FormService.GetEntityFields(tableId);
+            return _formService.GetEntityFields(tableId);
         }
 
         /// <summary>
@@ -311,7 +301,7 @@ namespace GR.Forms.Razor.Controllers
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
         {
-            return FormService.GetEntityReferenceFields(entityName, entitySchema);
+            return _formService.GetEntityReferenceFields(entityName, entitySchema);
         }
 
         /// <summary>
@@ -324,7 +314,7 @@ namespace GR.Forms.Razor.Controllers
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
         {
-            return FormService.GetReferenceFields(entityId, entityFieldId);
+            return _formService.GetReferenceFields(entityId, entityFieldId);
         }
 
         /// <summary>
@@ -365,7 +355,7 @@ namespace GR.Forms.Razor.Controllers
                 return Json(result);
             }
 
-            var formValues = FormService.GetValuesForEditForm(form, obj.Result);
+            var formValues = _formService.GetValuesForEditForm(form, obj.Result);
             if (!formValues.IsSuccess) return Json(result);
             result.Result = formValues.Result;
             result.IsSuccess = formValues.IsSuccess;
@@ -400,7 +390,7 @@ namespace GR.Forms.Razor.Controllers
                 field.TableField = table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);
                 return field;
             }).ToList();
-            
+
             return View(model);
         }
 
@@ -506,12 +496,11 @@ namespace GR.Forms.Razor.Controllers
                     Field = field,
                     Value = item.Default,
                     Key = item.Name,
-                    Type = AttrValueType.String,
-                    TenantId = CurrentUserTenantId
+                    Type = AttrValueType.String
                 });
             }
 
-            await Context.SaveChangesAsync();
+            await _entityContext.SaveChangesAsync();
             return RedirectToAction("GetFormFields", new { formId = model.Field.FormId });
         }
 
@@ -547,7 +536,7 @@ namespace GR.Forms.Razor.Controllers
         public JsonResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });
-            var res = FormService.DeleteForm(Guid.Parse(id));
+            var res = _formService.DeleteForm(Guid.Parse(id));
             return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
         }
     }

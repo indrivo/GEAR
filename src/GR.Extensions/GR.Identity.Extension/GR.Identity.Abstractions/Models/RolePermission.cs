@@ -16,7 +16,7 @@ namespace GR.Identity.Abstractions.Models
         /// <summary>
         /// The Id of the Role
         /// </summary>
-        public string RoleId { get; set; }
+        public Guid RoleId { get; set; }
 
         /// <summary>
         /// The role object that will be populated if using

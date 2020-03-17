@@ -1,5 +1,4 @@
-﻿using GR.Core.BaseControllers;
-using GR.Core.Extensions;
+﻿using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers.Responses;
+using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 

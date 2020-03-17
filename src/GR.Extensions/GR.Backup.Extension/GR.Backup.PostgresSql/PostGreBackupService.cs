@@ -9,12 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using GR.Backup.Abstractions.ViewModels;
+using GR.Core.Helpers;
 
 namespace GR.Backup.PostGresSql
 {
     //Special folders https://developers.redhat.com/blog/2018/11/07/dotnet-special-folder-api-linux/
     [Author(Authors.LUPEI_NICOLAE)]
-    public class PostGreBackupService : IBackupService<PostGreSqlBackupSettings>
+    public class PostGreBackupService : IBackupService
     {
         #region Injectable
 
@@ -46,14 +48,117 @@ namespace GR.Backup.PostGresSql
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 //TODO: Backup on mac os env
+                ExecuteLinuxDump();
             }
         }
+
+        /// <summary>
+        /// Get provider name
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetProviderName() => GetType().Name;
+
+        /// <summary>
+        /// Get backups
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<BackupViewModel> GetBackups()
+        {
+            var files = Directory.GetFiles(GetDirectoryPath())
+                .ToList();
+
+            foreach (var file in files)
+            {
+                var fileInfo = new FileInfo(file);
+                yield return new BackupViewModel
+                {
+                    Name = fileInfo.Name,
+                    Path = file,
+                    CreationDate = fileInfo.CreationTime,
+                    Size = fileInfo.Length,
+                    Extension = fileInfo.Extension
+                };
+            }
+        }
+
+        /// <summary>
+        /// Clear all
+        /// </summary>
+        public virtual ResultModel Clear()
+        {
+            var response = new ResultModel();
+            var backups = GetBackups();
+            foreach (var backup in backups)
+            {
+                try
+                {
+                    File.Delete(backup.Path);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    response.Errors.Add(new ErrorModel(e.HelpLink, e.Message));
+                }
+            }
+
+            response.IsSuccess = !response.Errors.Any();
+            return response;
+        }
+
+        /// <summary>
+        /// Download file
+        /// </summary>
+        /// <param name="backupName"></param>
+        /// <returns></returns>
+        public virtual DownloadBackupResultModel DownloadBackup(string backupName)
+        {
+            var path = Path.Combine(GetDirectoryPath(), backupName);
+            var result = new DownloadBackupResultModel
+            {
+                FullPath = path,
+                Name = backupName
+            };
+
+            if (!File.Exists(path))
+            {
+                result.Errors.Add(new ErrorModel
+                {
+                    Key = string.Empty,
+                    Message = "File not found"
+                });
+                return result;
+            }
+
+            var blob = File.ReadAllBytes(path);
+            result.Result = blob;
+            result.IsSuccess = true;
+            return result;
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Get directory path
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetDirectoryPath()
+        {
+            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var directoryPath = Path.Combine(userProfilePath, $"backup\\{_options.Value.BackupFolder}");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            return directoryPath;
+        }
+
 
         /// <summary>
         /// Build dump output file
         /// </summary>
         /// <returns></returns>
-        protected string BuildDumpOutputFile()
+        protected virtual string BuildDumpOutputFile()
         {
             var directoryPath = GetDirectoryPath();
             var currentDate = DateTime.Now;
@@ -65,7 +170,7 @@ namespace GR.Backup.PostGresSql
         /// <summary>
         /// Execute dump in windows
         /// </summary>
-        protected void ExecuteWindowsDump()
+        protected virtual void ExecuteWindowsDump()
         {
             var outputFile = BuildDumpOutputFile();
             var dumpCommand = "\"" + _options.Value.PgDumpPath + "\"" + " -Fc" + " -h " + _options.Value.Host + " -p " +
@@ -126,7 +231,7 @@ namespace GR.Backup.PostGresSql
         /// <summary>
         /// Execute linux dump file backup
         /// </summary>
-        protected void ExecuteLinuxDump()
+        protected virtual void ExecuteLinuxDump()
         {
             var outputFile = BuildDumpOutputFile();
             var command = $"PGPASSWORD=\"{_options.Value.Password}\" pg_dump -h {_options.Value.Host}  -p {_options.Value.Port} -U {_options.Value.User} -F c -b -v -f \"{outputFile}\" {_options.Value.Database}";
@@ -149,36 +254,6 @@ namespace GR.Backup.PostGresSql
             Debug.WriteLine(result);
         }
 
-        /// <summary>
-        /// Get provider name
-        /// </summary>
-        /// <returns></returns>
-        public virtual string GetProviderName() => GetType().Name;
-
-        /// <summary>
-        /// Get backups
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<string> GetBackups()
-        {
-            var files = Directory.GetFiles(GetDirectoryPath()).ToList();
-            return files;
-        }
-
-        /// <summary>
-        /// Get directory path
-        /// </summary>
-        /// <returns></returns>
-        protected virtual string GetDirectoryPath()
-        {
-            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var directoryPath = Path.Combine(userProfilePath, $"backup\\{_options.Value.BackupFolder}");
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            return directoryPath;
-        }
+        #endregion
     }
 }

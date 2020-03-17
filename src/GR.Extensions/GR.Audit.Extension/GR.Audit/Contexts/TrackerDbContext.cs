@@ -21,8 +21,7 @@ namespace GR.Audit.Contexts
         /// <param name="options"></param>
         protected TrackerDbContext(DbContextOptions options) : base(options)
         {
-            //Enable tracking
-            //this.EnableTracking();
+
         }
 
         /// <inheritdoc />
