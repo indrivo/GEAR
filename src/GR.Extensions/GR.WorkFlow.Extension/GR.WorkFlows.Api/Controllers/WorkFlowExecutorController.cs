@@ -14,7 +14,7 @@ using GR.WorkFlows.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GR.WorkFlows.Razor.Controllers
+namespace GR.WorkFlows.Api.Controllers
 {
     [Authorize]
     [Author(Authors.LUPEI_NICOLAE, 1.1)]
@@ -41,8 +41,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Guid>))]
         public async Task<JsonResult> RegisterEntityContractToWorkFlow([Required] string entityName, Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.RegisterEntityContractToWorkFlowAsync(entityName, workFlowId));
 
@@ -54,8 +54,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(bool))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(bool))]
         public async Task<JsonResult> IsAnyRegisteredContractToEntity([Required] string entityName, Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.IsAnyRegisteredContractToEntityAsync(entityName, workFlowId));
 
@@ -66,8 +66,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="entryId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<EntryState>>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<EntryState>>))]
         public async Task<JsonResult> GetEntryStates([Required] string entryId)
             => await JsonAsync(_workFlowExecutorService.GetEntryStatesAsync(entryId));
 
@@ -78,8 +78,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<EntryState>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<EntryState>))]
         public async Task<JsonResult> GetEntryState([Required] string entryId, [Required] Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.GetEntryStateAsync(entryId, workFlowId));
 
@@ -91,8 +91,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<StateGetViewModel>>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<StateGetViewModel>>))]
         public async Task<JsonResult> GetNextStatesForEntry([Required] string entryId, [Required] Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.GetNextStatesForEntryAsync(entryId, workFlowId));
 
@@ -103,8 +103,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="entityName"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<WorkFlowEntityContract>>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<WorkFlowEntityContract>>))]
         public async Task<JsonResult> GetEntityContracts([Required] string entityName)
             => await JsonAsync(_workFlowExecutorService.GetEntityContractsAsync(entityName));
 
@@ -116,8 +116,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="entryId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public async Task<JsonResult> SetStartStateForEntry([Required] string entityName, [Required] string entryId)
             => await JsonAsync(_workFlowExecutorService.SetStartStateForEntryAsync(entityName, entryId));
 
@@ -128,8 +128,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public async Task<JsonResult> ChangeStateForEntry([Required] ObjectChangeStateViewModel model)
         {
             if (!ModelState.IsValid) return Json(new InvalidParametersResultModel().AttachModelState(ModelState));
@@ -144,8 +144,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public async Task<JsonResult> RemoveEntityContractToWorkFlow([Required] string entityName, Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.RemoveEntityContractToWorkFlowAsync(entityName, workFlowId));
 
@@ -156,8 +156,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="entryId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<EntryHistoryViewModel>>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<EntryHistoryViewModel>>))]
         public async Task<JsonResult> GetEntryHistoryByWorkflowId([Required]Guid? workflowId, [Required]string entryId)
             => await JsonAsync(_workFlowExecutorService.GetEntryHistoryByWorkflowIdAsync(workflowId, entryId));
 
@@ -167,8 +167,8 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <param name="workFLowId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<WorkFlowEntityContract>>))]
+        [Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<WorkFlowEntityContract>>))]
         public async Task<JsonResult> GetWorkflowContracts(Guid? workFLowId)
             => await JsonAsync(_workFlowExecutorService.GetWorkflowContractsAsync(workFLowId));
     }

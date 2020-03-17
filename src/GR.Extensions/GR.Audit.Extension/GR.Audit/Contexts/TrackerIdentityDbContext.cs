@@ -24,8 +24,7 @@ namespace GR.Audit.Contexts
         /// <param name="options"></param>
         protected TrackerIdentityDbContext(DbContextOptions options) : base(options)
         {
-            //Enable tracking for identity db context
-            //this.EnableIdentityTracking<TrackerIdentityDbContext<TUser, TRole, TKey>, TUser, TRole, TKey>();
+
         }
 
         /// <inheritdoc />

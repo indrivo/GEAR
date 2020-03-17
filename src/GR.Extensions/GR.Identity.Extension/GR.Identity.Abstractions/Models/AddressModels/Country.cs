@@ -1,13 +1,12 @@
 ﻿using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
-using GR.Core.Abstractions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models.AddressModels
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class Country : IBase<string>
+    public class Country
     {
         /// <summary>
         /// Id

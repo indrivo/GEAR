@@ -2,12 +2,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
-using GR.Core.Abstractions;
 
 namespace GR.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableFieldConfigs : IBase<Guid>
+    public class TableFieldConfigs
     {
         /// <summary>
         /// TableFieldConfig Id

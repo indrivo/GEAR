@@ -1,12 +1,11 @@
 ﻿using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
-using GR.Core.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models.AddressModels
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class StateOrProvince : IBase<long>
+    public class StateOrProvince
     {
         public long Id { get; set; }
 

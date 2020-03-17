@@ -10,7 +10,7 @@ namespace GR.Identity.Abstractions
     /// Represents the Role of the user
     /// </summary>
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
-    public class GearRole : IdentityRole<Guid>, IBaseModel
+    public class GearRole : IdentityRole<Guid>, IBase<Guid>
     {
         /// <inheritdoc />
         /// <summary>
