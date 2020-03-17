@@ -48,14 +48,5 @@ namespace GR.Core.Razor.BaseControllers
         {
             return Json(new ResultModel().AttachModelState(ModelState));
         }
-
-        #region Helpers
-
-        public struct ContentType
-        {
-            public const string ApplicationJson = "application/json";
-        }
-
-        #endregion
     }
 }

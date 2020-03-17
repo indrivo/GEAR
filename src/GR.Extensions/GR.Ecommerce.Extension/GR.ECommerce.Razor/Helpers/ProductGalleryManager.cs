@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.MimeTypes;
 using GR.Core.Helpers.Responses;
 using GR.Core.Razor.Extensions;
-using GR.Core.Razor.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Models;
@@ -18,9 +18,13 @@ namespace GR.ECommerce.Razor.Helpers
 {
     public sealed class ProductGalleryManager
     {
+        #region Constants
+
         private const string URL_BASE = "/Products/GetImage";
         private const string DELETE_URL = "/Products/DeleteImage?imageId=";
         private const string DELETE_TYPE = "DELETE";
+
+        #endregion
 
         #region Injectable
 
@@ -30,6 +34,7 @@ namespace GR.ECommerce.Razor.Helpers
         private readonly ICommerceContext _context;
 
         #endregion
+
         public ProductGalleryManager(ICommerceContext context)
         {
             _context = context;
