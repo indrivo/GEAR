@@ -17,7 +17,7 @@
 	<AssemblyVersion>1.9.2</AssemblyVersion>
   </PropertyGroup>
 
-   <ItemGroup>
+  <ItemGroup>
 	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.1.0" />
 	<PackageReference Include="Microsoft.AspNetCore.All" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Audit.Extension\GR.Audit.Razor\GR.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Backup.Extension\GR.Backup.Razor\GR.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Cache.Extension\GR.Cache.Razor\GR.Cache.Razor.csproj" />
@@ -80,10 +80,10 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Infrastructure\GR.Identity.PhoneVerification.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Razor\GR.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />	
-	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />	
-	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj" />	
-	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj" />	
+	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
