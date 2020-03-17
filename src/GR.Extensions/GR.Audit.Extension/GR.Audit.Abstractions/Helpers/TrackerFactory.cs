@@ -19,7 +19,7 @@ namespace GR.Audit.Abstractions.Helpers
     public static class TrackerFactory
     {
         /// <summary>
-        /// 
+        /// Use accessor
         /// </summary>
         private static IHttpContextAccessor ContextAccessor => IoC.Resolve<IHttpContextAccessor>();
 
@@ -34,7 +34,8 @@ namespace GR.Audit.Abstractions.Helpers
                 if (ContextAccessor == null) return;
 
                 var currentUsername = ContextAccessor?.HttpContext?.User?.Identity?.Name ?? GlobalResources.Roles.ANONIMOUS_USER;
-                var tenantId = ContextAccessor?.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == "tenant")?.Value.ToGuid();
+                var tenantId = ContextAccessor?.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == "tenant")?.Value.ToGuid()
+                               ?? GearSettings.TenantId;
 
                 var entities = context.ChangeTracker
                     .Entries()
@@ -54,6 +55,7 @@ namespace GR.Audit.Abstractions.Helpers
                     {
                         case EntityState.Added:
                             model.Created = DateTime.UtcNow;
+                            model.Changed = DateTime.UtcNow;
                             model.Author = currentUsername;
                             model.ModifiedBy = currentUsername;
                             model.TenantId = model.TenantId ?? tenantId;
@@ -68,7 +70,7 @@ namespace GR.Audit.Abstractions.Helpers
                     }
                 }
 
-                var audit = entities.Select(Audit)
+                var audit = entities.Select(ExtractAudit)
                     .Where(x => x.IsSuccess)
                     .Select(x => x.Result.Item1)
                     .ToList();
@@ -85,13 +87,13 @@ namespace GR.Audit.Abstractions.Helpers
         /// </summary>
         /// <param name="eventArgs"></param>
         /// <returns></returns>
-        public static ResultModel<(TrackAudit, object)> Audit(EntityEntry eventArgs)
+        public static ResultModel<(TrackAudit, object)> ExtractAudit(EntityEntry eventArgs)
         {
             var response = new ResultModel<(TrackAudit, object)>();
             //If is trackable entity return
             if (eventArgs.Entity is TrackAudit || eventArgs.Entity is TrackAuditDetails) return response;
 
-            if (!(eventArgs.Entity is BaseModel baseModel)) return response;
+            if (!(eventArgs.Entity is IBase<Guid> baseModel)) return response;
 
             var (isTrackable, trackOption) = IsTrackable(eventArgs.Entity.GetType());
 
@@ -110,7 +112,7 @@ namespace GR.Audit.Abstractions.Helpers
                     DatabaseContextName = contextName,
                     RecordId = baseModel.Id,
                     UserName = baseModel.ModifiedBy,
-                    TenantId = baseModel.TenantId 
+                    TenantId = baseModel.TenantId
                 };
 
                 var auditDetails = new List<TrackAuditDetails>();

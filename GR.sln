@@ -323,6 +323,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Profile", "GR.Profile", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Ldap", "GR.Ldap", "{9E32496B-C795-45E7-B22F-FB382D8208BD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.PhoneVerification", "GR.PhoneVerification", "{749896BC-2273-4684-9293-2C128C963212}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.PhoneVerification.Abstractions", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Abstractions\GR.Identity.PhoneVerification.Abstractions.csproj", "{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.PhoneVerification.Api", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Api\GR.Identity.PhoneVerification.Api.csproj", "{73686522-44FC-4423-8FA3-C41242C100EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.PhoneVerification.Infrastructure", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Infrastructure\GR.Identity.PhoneVerification.Infrastructure.csproj", "{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1020,6 +1028,24 @@ Global
 		{D889432D-A38A-4C22-87B0-8522192DCA49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D889432D-A38A-4C22-87B0-8522192DCA49}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D889432D-A38A-4C22-87B0-8522192DCA49}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{73686522-44FC-4423-8FA3-C41242C100EB}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1182,6 +1208,10 @@ Global
 		{A9CDA9C0-A7EE-4B79-8DB0-CAA036A01B7C} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 		{1896A6F8-56E1-4C56-ACBB-C9350014EB85} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 		{9E32496B-C795-45E7-B22F-FB382D8208BD} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
+		{749896BC-2273-4684-9293-2C128C963212} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
+		{E19C7D00-1BEE-4B2B-8BE8-5A51F609813F} = {749896BC-2273-4684-9293-2C128C963212}
+		{73686522-44FC-4423-8FA3-C41242C100EB} = {749896BC-2273-4684-9293-2C128C963212}
+		{D78C06BA-B086-4FF5-BE6B-0C43F4DB0444} = {749896BC-2273-4684-9293-2C128C963212}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

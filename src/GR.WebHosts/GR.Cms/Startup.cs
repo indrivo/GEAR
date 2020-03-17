@@ -132,6 +132,8 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Identity.PhoneVerification.Abstractions.Extensions;
+using GR.Identity.PhoneVerification.Infrastructure;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
@@ -182,6 +184,14 @@ namespace GR.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>()
+				//.PasswordPolicy(options =>
+				//{
+				//	options.RequireDigit = true;
+				//	options.RequiredLength = 6;
+				//	options.RequireNonAlphanumeric = false;
+				//	options.RequireUppercase = false;
+				//	options.RequireLowercase = false;
+				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
@@ -440,6 +450,10 @@ namespace GR.Cms
 					//logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
 					//logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
 				});
+
+
+			//-------------------------- Phone verification Module ----------------------------------
+			config.GearServices.AddPhoneVerificationModule<Authy>();
 
 		});
 	}

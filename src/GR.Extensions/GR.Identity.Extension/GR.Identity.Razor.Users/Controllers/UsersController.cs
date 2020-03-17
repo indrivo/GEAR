@@ -324,49 +324,12 @@ namespace GR.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public async Task<JsonResult> Delete(Guid? id)
         {
-            if (id == Guid.Empty)
-            {
-                return Json(new { success = false, message = "Id is null" });
-            }
-
-            if (IsCurrentUser(id))
-            {
-                return Json(new { success = false, message = "You can't delete current user" });
-            }
-
-            var applicationUser = await _identityContext.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (applicationUser == null)
-            {
-                return Json(new { success = false, message = "User not found" });
-            }
-
-            if (applicationUser.IsEditable == false)
-            {
-                return Json(new { succsess = false, message = "Is system user!!!" });
-            }
-
-            var deleteResult = await _userManager.DeleteAsync(applicationUser);
-            if (deleteResult.Succeeded)
-            {
-                IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
-                {
-                    Email = applicationUser.Email,
-                    UserName = applicationUser.UserName,
-                    UserId = applicationUser.Id
-                });
-                return Json(new { success = true, message = "Delete success" });
-            }
-            else
-            {
-                return Json(new { success = false, message = deleteResult.Errors.FirstOrDefault()?.Description });
-            }
+            var deleteRequest = await _customUserManager.DeleteUserPermanently(id);
+            return Json(deleteRequest);
         }
 
         /// <summary>

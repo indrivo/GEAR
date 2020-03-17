@@ -46,7 +46,11 @@ namespace GR.Identity.Abstractions.Extensions
         /// <returns></returns>
         public static ResultModel<T> ToResultModel<T>(this IdentityResult result)
         {
-            var response = new ResultModel<T>();
+            var response = new ResultModel<T>
+            {
+                IsSuccess = result.Succeeded
+            };
+
             foreach (var e in result.Errors)
             {
                 response.Errors.Add(new ErrorModel(e.Code, e.Description));

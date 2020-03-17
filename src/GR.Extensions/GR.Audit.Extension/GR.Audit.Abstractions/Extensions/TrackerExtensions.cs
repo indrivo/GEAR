@@ -166,7 +166,7 @@ namespace GR.Audit.Abstractions.Extensions
                try
                {
                    if (eventArgs.Entry.State == EntityState.Unchanged) return;
-                   var auditResponse = TrackerFactory.Audit(eventArgs.Entry);
+                   var auditResponse = TrackerFactory.ExtractAudit(eventArgs.Entry);
 
                    if (!auditResponse.IsSuccess) return;
                    await context.AddAsync(auditResponse.Result.Item1);
