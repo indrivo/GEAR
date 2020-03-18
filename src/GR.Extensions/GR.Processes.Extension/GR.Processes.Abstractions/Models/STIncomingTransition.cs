@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     public class STIncomingTransition
     {

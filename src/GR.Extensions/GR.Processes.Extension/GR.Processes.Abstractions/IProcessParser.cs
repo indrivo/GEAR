@@ -1,9 +1,8 @@
-﻿using GR.Procesess.Models;
-using GR.Procesess.Models.ParserModels;
-using GR.Procesess.ViewModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GR.Processes.Abstractions.Models;
+using GR.Processes.Abstractions.Models.ParserModels;
 
-namespace GR.Procesess.Abstraction
+namespace GR.Processes.Abstractions
 {
     public interface IProcessParser
     {

@@ -1,5 +1,5 @@
 
-using GR.Procesess.Models;
+using GR.Processes.Abstractions.Models;
 
 namespace GR.Process.Razor.ViewModels.ProcessViewModels
 {

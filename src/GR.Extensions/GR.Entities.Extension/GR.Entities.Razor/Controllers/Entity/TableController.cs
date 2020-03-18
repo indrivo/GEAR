@@ -17,11 +17,11 @@ using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Extensions;
+using GR.Entities.Abstractions.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.Table;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data.Permissions;
 using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -87,7 +87,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
+        [AuthorizePermission(EntityPermissions.EntityCreate)]
         public IActionResult Create()
         {
             var schemes = _context.EntityTypes.Where(x => !x.IsDeleted).ToList();
@@ -106,7 +106,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
+        [AuthorizePermission(EntityPermissions.EntityCreate)]
         public async Task<IActionResult> Create(CreateTableViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -157,7 +157,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableRead)]
+        [AuthorizePermission(EntityPermissions.EntityRead)]
         public IActionResult Index()
         {
             return View();
@@ -184,7 +184,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// <param name="tab"></param>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
+        [AuthorizePermission(EntityPermissions.EntityUpdate)]
         public async Task<IActionResult> Edit(Guid id, string tab)
         {
             var table = await _context.Table.FirstOrDefaultAsync(x => x.Id == id);
@@ -202,7 +202,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
+        [AuthorizePermission(EntityPermissions.EntityUpdate)]
         public async Task<IActionResult> Edit(UpdateTableViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -594,7 +594,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         [HttpDelete]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableDelete)]
+        [AuthorizePermission(EntityPermissions.EntityDelete)]
         public async Task<JsonResult> DeleteTable([Required]Guid? id) => Json(await _entityService.DeleteTableAsync(id));
 
         #endregion

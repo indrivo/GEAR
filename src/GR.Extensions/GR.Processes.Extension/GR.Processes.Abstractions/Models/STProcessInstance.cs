@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using GR.Core;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     public class STProcessInstance : BaseModel
     {

@@ -1,8 +1,7 @@
-﻿
-using GR.Procesess.Models;
-using System;
+﻿using System;
+using GR.Processes.Abstractions.Models;
 
-namespace GR.Procesess
+namespace GR.Processes.Abstractions.Helpers
 {
     public static class XElementType
     {
@@ -42,7 +41,7 @@ namespace GR.Procesess
 
         public static string ToUpperFirstString(this string xString)
         {
-            var str = xString.ToString();
+            var str = xString;
             return $"{str[0].ToString().ToUpper()}{str.Substring(1, str.Length - 1)}";
         }
 

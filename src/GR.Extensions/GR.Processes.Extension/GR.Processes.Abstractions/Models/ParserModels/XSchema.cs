@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GR.Processes.Abstractions.Helpers;
 
-namespace GR.Procesess.Models.ParserModels
+namespace GR.Processes.Abstractions.Models.ParserModels
 {
     public class XSchema
     {
@@ -20,7 +21,7 @@ namespace GR.Procesess.Models.ParserModels
 
         public IEnumerable<XElement> GetParticipantsbyCollaborationId(string collaborationId)
         {
-            return this.Elements
+            return Elements
                      .Where(x => x.TypeName == XElementType.Participant.ToString()
                      && x.ParentID == collaborationId).ToList();
         }

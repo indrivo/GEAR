@@ -1,4 +1,4 @@
-namespace GR.Procesess.ViewModels
+namespace GR.Processes.Abstractions.ViewModels
 {
     public class CreateProcessDiagramViewModel
     {

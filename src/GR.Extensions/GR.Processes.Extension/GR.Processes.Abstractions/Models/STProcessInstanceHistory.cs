@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     public class STProcessInstanceHistory
     {

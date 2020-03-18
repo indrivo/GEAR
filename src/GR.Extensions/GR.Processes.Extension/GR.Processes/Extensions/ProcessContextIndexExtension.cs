@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GR.Procesess.Models;
+using GR.Processes.Abstractions.Models;
 
 namespace GR.Procesess.Extensions
 {

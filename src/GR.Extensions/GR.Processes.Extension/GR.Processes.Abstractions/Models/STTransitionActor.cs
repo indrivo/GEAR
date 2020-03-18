@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     public class STTransitionActor : BaseModel
     {

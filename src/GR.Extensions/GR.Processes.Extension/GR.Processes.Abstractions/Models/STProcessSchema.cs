@@ -5,7 +5,7 @@ using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class STProcessSchema : BaseModel

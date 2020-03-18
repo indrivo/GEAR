@@ -92,8 +92,6 @@ using GR.PageRender.Razor.Extensions;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
-using GR.Procesess.Data;
-using GR.Process.Razor.Extensions;
 using GR.Report.Abstractions.Extensions;
 using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
@@ -140,6 +138,9 @@ using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
+using GR.Procesess.Data;
+using GR.Procesess.Parsers;
+using GR.Processes.Abstractions.Extensions;
 using Microsoft.Extensions.Logging;
 
 #endregion Usings
@@ -291,14 +292,6 @@ namespace GR.Cms
 			//------------------------------Database backup Module-------------------------------------
 			config.GearServices.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
 				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
-
-			//------------------------------------Processes Module-------------------------------------
-			config.GearServices.AddProcessesModule()
-			.AddDbContext<ProcessesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			});
 
 			//------------------------------------Calendar Module-------------------------------------
 			config.GearServices.AddCalendarModule<CalendarManager>()
@@ -464,6 +457,14 @@ namespace GR.Cms
 
 			//-------------------------- Phone verification Module ----------------------------------
 			config.GearServices.AddPhoneVerificationModule<Authy>();
+
+			//------------------------------------Processes Module-------------------------------------
+			config.GearServices.AddProcessesModule<ProcessParser>()
+				.AddProcessesModuleStorage<ProcessesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 		});
 	}

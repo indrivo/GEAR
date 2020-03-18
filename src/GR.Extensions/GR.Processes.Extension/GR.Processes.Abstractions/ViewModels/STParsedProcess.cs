@@ -1,7 +1,7 @@
-﻿using GR.Procesess.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GR.Processes.Abstractions.Models;
 
-namespace GR.Procesess.ViewModels
+namespace GR.Processes.Abstractions.ViewModels
 {
     public class STParsedProcess
     {

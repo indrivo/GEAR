@@ -1,7 +1,7 @@
 ﻿using System;
 using GR.Core;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     public class UserProcessTasks : BaseModel
     {

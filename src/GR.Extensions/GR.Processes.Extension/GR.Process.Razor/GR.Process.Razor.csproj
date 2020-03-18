@@ -40,6 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GR.Processes\GR.Procesess.csproj" />
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Processes.Abstractions\GR.Processes.Abstractions.csproj" />
   </ItemGroup>
 </Project>

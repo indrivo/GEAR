@@ -91,6 +91,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Process.Razor\GR.Process.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Processes\GR.Procesess.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender\GR.PageRender.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic.Razor\GR.Report.Dynamic.Razor.csproj" />

@@ -6,7 +6,7 @@ using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core;
 
-namespace GR.Procesess.Models
+namespace GR.Processes.Abstractions.Models
 {
     /// <inheritdoc />
     [TrackEntity(Option = TrackEntityOption.AllFields)]
