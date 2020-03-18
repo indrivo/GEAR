@@ -27,11 +27,6 @@
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="SelectedProfileId"></label>
-                    <select asp-for="SelectedProfileId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
-                    <span asp-validation-for="SelectedProfileId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <label asp-for="SelectedPermissionId"></label>
                     <select asp-for="SelectedPermissionId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Permissions, "Id", "PermissionName", null))" class="form-control"></select>
                     <span asp-validation-for="SelectedPermissionId" class="text-danger"></span>
@@ -56,10 +51,6 @@
 </div>
 <script language="javascript" type="text/javascript">
 	$(document).ready(function () {
-		$('#SelectedProfileId').select2({
-			allowClear: false,
-			placeholder: "Select a profile..."
-		});
 		$('#SelectedRoleId').select2({
 			allowClear: false,
 			placeholder: "Select role..."

@@ -17,24 +17,6 @@ namespace GR.Identity.Data.Permissions
 
             #endregion Roles
 
-            #region Groups
-
-            public const string BpmGroupCreate = "Core_GroupCreate";
-            public const string BpmGroupRead = "Core_GroupRead";
-            public const string BpmGroupUpdate = "Core_GroupUpdate";
-            public const string BpmGroupDelete = "Core_GroupDelete";
-
-            #endregion Groups
-
-            #region Users
-
-            public const string BpmUserCreate = "Core_UserCreate";
-            public const string BpmUserRead = "Core_UserRead";
-            public const string BpmUserUpdate = "Core_UserUpdate";
-            public const string BpmUserDelete = "Core_UserDelete";
-
-            #endregion Users
-
             #region Profiles
 
             public const string BpmProfileCreate = "Core_ProfileCreate";

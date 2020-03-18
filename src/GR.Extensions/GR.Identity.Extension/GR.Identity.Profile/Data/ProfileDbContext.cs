@@ -1,7 +1,6 @@
 ﻿using GR.Audit.Contexts;
 using GR.Identity.Profile.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Threading.Tasks;
 using ProfileModels = GR.Identity.Profile.Abstractions.Models;
@@ -20,10 +19,25 @@ namespace GR.Identity.Profile.Data
         {
         }
 
-        public DbSet<ProfileModels.Profile> Profiles { get; set; }
-        public DbSet<ProfileModels.UserProfile> UserProfiles { get; set; }
-        public DbSet<ProfileModels.RoleProfile> RoleProfiles { get; set; }
+        public virtual DbSet<ProfileModels.Profile> Profiles { get; set; }
+        public virtual DbSet<ProfileModels.UserProfile> UserProfiles { get; set; }
+        public virtual DbSet<ProfileModels.RoleProfile> RoleProfiles { get; set; }
 
+
+        /// <summary>
+        /// On model creating
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.HasDefaultSchema(Schema);
+
+            builder.Entity<ProfileModels.RoleProfile>().HasKey(ug => new { ug.RoleId, ug.ProfileId });
+
+            builder.Entity<ProfileModels.Profile>()
+                .HasIndex(x => x.TenantId);
+        }
 
         /// <summary>
         /// Seed data
@@ -32,22 +46,6 @@ namespace GR.Identity.Profile.Data
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
-        }
-    }
-
-    public class ProfileDbContextContextFactory : IDesignTimeDbContextFactory<ProfileDbContext>
-    {
-        /// <inheritdoc />
-        /// <summary>
-        /// For creating migrations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public ProfileDbContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ProfileDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new ProfileDbContext(optionsBuilder.Options);
         }
     }
 }

@@ -32,7 +32,7 @@
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Groups.Razor\GR.Identity.Groups.Razor.csproj" />
-    <ProjectReference Include="..\GR.Identity.Razor.Users\GR.Identity.Razor.Users.csproj" />
+    <ProjectReference Include="..\GR.Identity.Users.Razor\GR.Identity.Users.Razor.csproj" />
     <ProjectReference Include="..\GR.Identity.Roles.Razor\GR.Identity.Roles.Razor.csproj" />
   </ItemGroup>
 

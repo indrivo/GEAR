@@ -4,7 +4,6 @@ using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.Permmisions;
-using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Extensions;
 using GR.Identity.Seeders;
 using Microsoft.AspNetCore.Identity;
@@ -35,15 +34,10 @@ namespace GR.Identity.Data
         #region Permissions Store
 
         public virtual DbSet<Tenant> Tenants { get; set; }
-        public virtual DbSet<AuthGroup> AuthGroups { get; set; }
-        public virtual DbSet<UserGroup> UserGroups { get; set; }
         public virtual DbSet<RolePermission> RolePermissions { get; set; }
-        public virtual DbSet<GroupPermission> GroupPermissions { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
-        public virtual DbSet<Profile> Profiles { get; set; }
-        public virtual DbSet<RoleProfile> RoleProfiles { get; set; }
 
-        #endregion Permissions Store
+        #endregion
 
         #region Address
 
@@ -70,21 +64,6 @@ namespace GR.Identity.Data
             builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
             builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
             builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
-
-            builder.Entity<RoleProfile>().HasKey(ug => new { ug.ApplicationRoleId, ug.ProfileId });
-
-            builder.Entity<UserGroup>()
-                .HasKey(ug => new { ug.AuthGroupId, ug.UserId });
-
-            builder.Entity<UserGroup>()
-                .HasOne(ug => ug.User)
-                .WithMany(ug => ug.UserGroups)
-                .HasForeignKey(ug => ug.UserId);
-
-            builder.Entity<UserGroup>()
-                .HasOne(ug => ug.AuthGroup)
-                .WithMany(ug => ug.UserGroups)
-                .HasForeignKey(ug => ug.AuthGroupId);
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);

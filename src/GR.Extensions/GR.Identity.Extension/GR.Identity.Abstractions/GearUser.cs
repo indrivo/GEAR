@@ -87,11 +87,6 @@ namespace GR.Identity.Abstractions
         public string ModifiedBy { get; set; }
 
         /// <summary>
-        /// Add to user group
-        /// </summary>
-        public List<UserGroup> UserGroups { get; set; }
-
-        /// <summary>
         /// Stores user photo
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]

@@ -2,7 +2,6 @@ using GR.Core;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.Permmisions;
-using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Data;
 using GR.Identity.Extensions;
 using GR.Identity.Permissions.Abstractions;
@@ -478,8 +477,7 @@ namespace GR.Identity.Razor.Controllers
             var model = new CreateRoleViewModel
             {
                 PermissionsList = ApplicationDbContext.Permissions.AsNoTracking().Where(x => x.ClientId == id)
-                    .AsEnumerable(),
-                Profiles = ApplicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false)
+                    .AsEnumerable()
             };
             ViewBag.ClientId = id;
             return PartialView(model);
@@ -508,10 +506,6 @@ namespace GR.Identity.Razor.Controllers
                 return Json(new { success = false, message = "Error on create role" });
             }
 
-            if (model.SelectedProfileId == null)
-            {
-                return Json(new { success = false, message = "Select profile" });
-            }
 
             var roleId = await ApplicationDbContext.Roles.AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Name == model.Name);
@@ -519,25 +513,6 @@ namespace GR.Identity.Razor.Controllers
             if (roleId == null)
             {
                 return Json(new { success = false, message = "Role not found!!!" });
-            }
-
-            foreach (var _ in model.SelectedProfileId)
-            {
-                var newRoleProfile = new RoleProfile
-                {
-                    ApplicationRoleId = roleId.Id,
-                    ProfileId = Guid.Parse(_)
-                };
-                try
-                {
-                    await ApplicationDbContext.AddAsync(newRoleProfile);
-                    await ApplicationDbContext.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-                    return Json(new { success = false, message = "Error on save!" });
-                }
             }
 
             if (model.SelectedPermissionId.Any())
@@ -584,19 +559,13 @@ namespace GR.Identity.Razor.Controllers
                 return NotFound();
             }
 
-            var roleProfilesId = await ApplicationDbContext.Set<RoleProfile>()
-                .Where(x => x.ApplicationRoleId == applicationRole.Id).Select(x => x.ProfileId.ToString())
-                .ToListAsync();
             var rolePermissionId = await ApplicationDbContext.Set<RolePermission>().Where(x => x.RoleId == id)
                 .Select(x => x.PermissionId.ToString()).ToListAsync();
 
             var model = new UpdateRoleViewModel
             {
-                Profiles = await ApplicationDbContext.Profiles.Where(x => x.IsDeleted == false)
-                    .ToListAsync(), // ApplicationDbContext.GetAll<Profile>(x => x.IsDeleted == false),
                 Id = applicationRole.Id,
                 Name = applicationRole.Name,
-                SelectedProfileId = roleProfilesId,
                 Title = applicationRole.Title,
                 IsDeleted = applicationRole.IsDeleted,
                 IsNoEditable = applicationRole.IsNoEditable,
@@ -631,29 +600,9 @@ namespace GR.Identity.Razor.Controllers
                 return Json(new { success = false, message = "Cant update role" });
             }
 
-            var roleProfilesId = ApplicationDbContext.Set<RoleProfile>()
-                .Where(x => x.ApplicationRoleId == applicationRole.Id);
-            ApplicationDbContext.RemoveRange(roleProfilesId);
-            await ApplicationDbContext.SaveChangesAsync();
-            if (model.SelectedProfileId == null)
-            {
-                return Json(new { success = false, message = "Select profile" });
-            }
-
             var role = await ApplicationDbContext.Roles.SingleOrDefaultAsync(m => m.Name == model.Name);
             if (role != null)
             {
-                foreach (var _ in model.SelectedProfileId)
-                {
-                    var newRoleProfile = new RoleProfile
-                    {
-                        ApplicationRoleId = role.Id,
-                        ProfileId = Guid.Parse(_)
-                    };
-                    await ApplicationDbContext.AddAsync(newRoleProfile);
-                    await ApplicationDbContext.SaveChangesAsync();
-                }
-
                 //Delete previous permissions
                 var rolePermissionId = ApplicationDbContext.Set<RolePermission>()
                     .Where(x => x.RoleId == applicationRole.Id);
@@ -884,9 +833,6 @@ namespace GR.Identity.Razor.Controllers
             try
             {
                 await RoleManager.DeleteAsync(applicationRole);
-                var roleProfilesId = ApplicationDbContext.Set<RoleProfile>()
-                    .Where(x => x.ApplicationRoleId == applicationRole.Id);
-                ApplicationDbContext.RemoveRange(roleProfilesId);
                 await ApplicationDbContext.SaveChangesAsync();
                 await _permissionService.RefreshCacheByRoleAsync(applicationRole.Name, true);
                 return Json(new { success = true, message = "Delete success" });

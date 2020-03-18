@@ -15,6 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\GR.Identity.Groups.Abstractions\GR.Identity.Groups.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Identity.Groups.Api\GR.Identity.Groups.Api.csproj" />
+    <ProjectReference Include="..\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
   </ItemGroup>
 </Project>

@@ -3,8 +3,10 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Events requires jQuery');
 }
 
-//Delete row from Jquery Table
-function DeleteData(object) {
+//------------------------------------------------------------------------------------//
+//									Ajax requests
+//------------------------------------------------------------------------------------//
+function invokeDeleteRowModal(object) {
 	swal({
 		title: object.alertText,
 		text: object.alertText,
@@ -26,12 +28,14 @@ function DeleteData(object) {
 					id: object.rowId
 				},
 				success: function (data) {
-					if (data.success) {
+					if (data.is_success) {
 						const oTable = $(`${object.tableId}`).DataTable();
 						oTable.draw();
 						swal("Deleted!", object.message, "success");
 					} else {
-						swal("Fail!", data.message, "error");
+						for (var error in data.error_keys) {
+							swal("Fail!", data.error_keys[error].message, "error");
+						}
 					}
 				},
 				error: function () {
@@ -42,9 +46,6 @@ function DeleteData(object) {
 	});
 }
 
-//------------------------------------------------------------------------------------//
-//									Ajax requests
-//------------------------------------------------------------------------------------//
 /**
  * Load data with ajax
  * @param {any} uri
@@ -701,20 +702,20 @@ class Validator {
 	 * Validate email
 	 * @param {any} email
 	 */
-    isValidEmail(email) {
-        return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
-    }
+	isValidEmail(email) {
+		return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
+	}
 
 	/**
 	 * Bind valdations to form
 	 * @param {any} formSelector
 	 */
-    reAttachValidationsRulesToForm(formSelector) {
-        var $form = $(formSelector);
-        $form.unbind();
-        $form.data("validator", null);
-        $.validator.unobtrusive.parse(document);
-    }
+	reAttachValidationsRulesToForm(formSelector) {
+		var $form = $(formSelector);
+		$form.unbind();
+		$form.data("validator", null);
+		$.validator.unobtrusive.parse(document);
+	}
 }
 
 //Jquery Extensions

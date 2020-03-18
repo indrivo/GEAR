@@ -1,4 +1,4 @@
-@model GR.Identity.Abstractions.AuthGroup
+@model GR.Identity.Groups.Abstractions.ViewModels.UpdateGroupViewModel
 @inject IStringLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["edit_group"];
@@ -23,8 +23,6 @@
                 </div>
             </div>
             @Html.HiddenFor(x => x.Id)
-            @Html.HiddenFor(x => x.Version)
-            @Html.HiddenFor(x => x.TenantId)
             <div class="row button-group">
                 <div class="col-lg-2 col-md-3">
                     <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>

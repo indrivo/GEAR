@@ -124,16 +124,18 @@ using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
 using GR.Forms;
-using GR.Identity.Data.Groups;
-using GR.Identity.Razor.Extensions;
 using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Identity.Groups.Abstractions.Extensions;
+using GR.Identity.Groups.Infrastructure;
+using GR.Identity.Groups.Infrastructure.Data;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
+using GR.Identity.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
@@ -194,7 +196,6 @@ namespace GR.Cms
 				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
@@ -205,6 +206,15 @@ namespace GR.Cms
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, MigrationsAssembly);
+
+
+			//---------------------------------------Groups Module-------------------------------------
+			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
+				.AddUserGroupModuleStorage<GroupsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//---------------------------------------Entity Module-------------------------------------
 			config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()

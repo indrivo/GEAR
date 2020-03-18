@@ -2,7 +2,6 @@ using GR.Core;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
-using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Data;
 using GR.Identity.Models.RolesViewModels;
 using GR.Identity.Models.UserViewModels;
@@ -67,25 +66,9 @@ namespace GR.Identity.Seeders
                 logger.LogInformation("Roles are synchronized with database");
             }
 
-            // Check and seed groups
-            if (entity.Profiles.Any())
-            {
-                foreach (var item in entity.Groups)
-                {
-                    if (context.AuthGroups.Any(x => x.Name.Equals(item.Name))) continue;
-                    item.Created = DateTime.Now;
-                    item.Changed = DateTime.Now;
-                    item.TenantId = GearSettings.TenantId;
-                    context.AuthGroups.Add(item);
-                    context.SaveChanges();
-                }
-                logger.LogInformation("Groups are synchronized with database");
-            }
-
             // Check and seed users
             if (entity.ApplicationUsers.Any())
             {
-                var group = context.AuthGroups.FirstOrDefault();
                 foreach (var user in entity.ApplicationUsers.Select(x => x.Adapt<GearUser>()).ToList())
                 {
                     var exists = await userManager.FindByNameAsync(user.UserName);
@@ -104,30 +87,9 @@ namespace GR.Identity.Seeders
                         await userManager.AddToRolesAsync(user, entity.ApplicationRoles.Select(x => x.Name));
                     }
 
-                    if (group != null)
-                    {
-                        var userGroup = new UserGroup
-                        {
-                            UserId = user.Id,
-                            AuthGroupId = group.Id,
-                            TenantId = GearSettings.TenantId
-                        };
-                        context.UserGroups.Add(userGroup);
-                    }
-                    context.SaveChanges();
+                    await context.PushAsync();
                 }
                 logger.LogInformation("System users are synchronized with database");
-            }
-            // Check and seed entities types
-            if (entity.Profiles.Any())
-            {
-                foreach (var item in entity.Profiles)
-                {
-                    if (context.Profiles.Any(x => x.ProfileName == item.ProfileName)) continue;
-                    item.TenantId = GearSettings.TenantId;
-                    context.Profiles.Add(item);
-                    context.SaveChanges();
-                }
             }
         }
 
@@ -142,16 +104,6 @@ namespace GR.Identity.Seeders
             /// List of system users
             /// </summary>
             public List<UserSeedViewModel> ApplicationUsers { get; set; }
-
-            /// <summary>
-            /// List of profiles
-            /// </summary>
-            public List<Profile> Profiles { get; set; }
-
-            /// <summary>s
-            /// List of groups
-            /// </summary>
-            public List<AuthGroup> Groups { get; set; }
         }
     }
 }

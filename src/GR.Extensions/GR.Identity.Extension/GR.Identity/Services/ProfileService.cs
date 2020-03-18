@@ -1,5 +1,4 @@
 using GR.Identity.Abstractions;
-using GR.Identity.Data;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -20,15 +19,13 @@ namespace GR.Identity.Services
     {
         #region DependencyInjection Private Fields
 
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<GearUser> _userManager;
 
         #endregion DependencyInjection Private Fields
 
-        public ProfileService(UserManager<GearUser> userManager, ApplicationDbContext context)
+        public ProfileService(UserManager<GearUser> userManager)
         {
             _userManager = userManager;
-            _context = context;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)

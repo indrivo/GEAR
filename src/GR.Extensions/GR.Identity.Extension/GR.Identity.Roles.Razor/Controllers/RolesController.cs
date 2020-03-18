@@ -4,7 +4,6 @@ using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Abstractions.Models;
-using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Abstractions.ViewModels.RoleViewModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using GR.Identity.Data.Permissions;
@@ -26,7 +25,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using GR.Core.Extensions;
 using GR.Core.Razor.BaseControllers;
 
 namespace GR.Identity.Roles.Razor.Controllers
@@ -98,7 +96,6 @@ namespace GR.Identity.Roles.Razor.Controllers
         {
             var model = new CreateRoleViewModel
             {
-                Profiles = await _applicationDbContext.Profiles.Where(x => x.IsDeleted == false).AsNoTracking().ToListAsync(),
                 Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync()
             };
 
@@ -117,14 +114,12 @@ namespace GR.Identity.Roles.Razor.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Profiles = await _applicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
                 model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
                 return View(model);
             }
 
             if (ApplicationRoleExists(model.Name))
             {
-                model.Profiles = await _applicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
                 model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
                 ModelState.AddModelError("", "Role with same name exist!");
                 return View(model);
@@ -149,7 +144,6 @@ namespace GR.Identity.Roles.Razor.Controllers
             });
             if (!result.Succeeded)
             {
-                model.Profiles = await _applicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
                 model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
                 foreach (var error in result.Errors)
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -160,36 +154,6 @@ namespace GR.Identity.Roles.Razor.Controllers
                 if (role == null)
                 {
                     return RedirectToAction(nameof(Index));
-                }
-
-                if (model.SelectedProfileId != null && model.SelectedProfileId.Any())
-                {
-                    var listOfRoles = new List<RoleProfile>();
-                    foreach (var _ in model.SelectedProfileId)
-                    {
-                        var newRoleProfile = new RoleProfile
-                        {
-                            ApplicationRoleId = role.Id,
-                            ProfileId = Guid.Parse(_)
-                        };
-                        listOfRoles.Add(newRoleProfile);
-                    }
-
-                    await _applicationDbContext.RoleProfiles.AddRangeAsync(listOfRoles);
-                }
-                else
-                {
-                    //Todo: Modify later !
-                    var profile = _applicationDbContext.Profiles.FirstOrDefault();
-                    if (profile != null)
-                    {
-                        var newRoleProfile = new RoleProfile
-                        {
-                            ApplicationRoleId = role.Id,
-                            ProfileId = profile.Id
-                        };
-                        await _applicationDbContext.RoleProfiles.AddAsync(newRoleProfile);
-                    }
                 }
 
                 if (model.SelectedPermissionId.Any())
@@ -262,8 +226,6 @@ namespace GR.Identity.Roles.Razor.Controllers
                 return Json(new { message = "Role is used!", success = false });
             }
 
-            var roleProfilesList = _applicationDbContext.RoleProfiles.AsNoTracking()
-                .Where(x => x.ApplicationRoleId.Equals(applicationRole.Id));
             var rolePermissionsList =
                 _applicationDbContext.RolePermissions.AsNoTracking().Where(x => x.RoleId.Equals(applicationRole.Id));
             if (await rolePermissionsList.AnyAsync())
@@ -277,20 +239,6 @@ namespace GR.Identity.Roles.Razor.Controllers
                 {
                     _logger.LogError(e.Message);
                     return Json(new { message = "Error on delete role permissions!", success = false });
-                }
-            }
-
-            if (await roleProfilesList.AnyAsync())
-            {
-                try
-                {
-                    _applicationDbContext.RoleProfiles.RemoveRange(roleProfilesList);
-                    await _applicationDbContext.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-                    return Json(new { message = "Error on delete role profiles!", success = false });
                 }
             }
 
@@ -334,19 +282,15 @@ namespace GR.Identity.Roles.Razor.Controllers
                 return NotFound();
             }
 
-            var roleProfilesId = await _applicationDbContext.RoleProfiles.Where(x => x.ApplicationRoleId == applicationRole.Id)
-                .Select(x => x.ProfileId.ToString()).ToListAsync();
             var rolePermissionId = await _applicationDbContext.RolePermissions.Where(x => x.RoleId == id)
                 .Select(x => x.PermissionId.ToString()).ToListAsync();
 
             var model = new UpdateRoleViewModel
             {
-                Profiles = _applicationDbContext.Profiles.Where(x => !x.IsDeleted).ToList(),
                 Id = applicationRole.Id,
                 ClientName = ConfigurationDbContext.Clients.FirstOrDefault(x => x.Id.Equals(applicationRole.ClientId))
                     ?.ClientName,
                 Name = applicationRole.Name,
-                SelectedProfileId = roleProfilesId,
                 Title = applicationRole.Title,
                 IsDeleted = applicationRole.IsDeleted,
                 IsNoEditable = applicationRole.IsNoEditable,
@@ -389,7 +333,6 @@ namespace GR.Identity.Roles.Razor.Controllers
             applicationRole.Changed = DateTime.Now;
             applicationRole.TenantId = model.TenantId;
 
-            model.Profiles = _applicationDbContext.Profiles.Where(x => x.IsDeleted == false);
             model.Permissions =
                 await _applicationDbContext.Permissions.Where(x => x.ClientId == applicationRole.ClientId).ToListAsync();
             var result = await _roleManager.UpdateAsync(applicationRole);
@@ -402,45 +345,10 @@ namespace GR.Identity.Roles.Razor.Controllers
             }
             else
             {
-                var roleProfilesId = _applicationDbContext.RoleProfiles.Where(x => x.ApplicationRoleId == applicationRole.Id);
-                try
-                {
-                    _applicationDbContext.RoleProfiles.RemoveRange(roleProfilesId);
-                    await _applicationDbContext.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-                    ModelState.AddModelError("", "Error on delete role profiles!");
-                    return View(model);
-                }
-
                 var role = await _applicationDbContext.Roles.SingleOrDefaultAsync(m => m.Name == model.Name);
                 if (role == null)
                 {
                     return RedirectToAction(nameof(Index));
-                }
-
-                if (model.SelectedProfileId != null)
-                {
-                    var roleProfileList = new List<RoleProfile>();
-                    foreach (var _ in model.SelectedProfileId)
-                    {
-                        roleProfileList.Add(new RoleProfile
-                        {
-                            ApplicationRoleId = role.Id,
-                            ProfileId = Guid.Parse(_)
-                        });
-                    }
-
-                    await _applicationDbContext.RoleProfiles.AddRangeAsync(roleProfileList);
-                    var dbResult = await _applicationDbContext.PushAsync();
-                    if (!dbResult.IsSuccess)
-                    {
-                        _logger.LogError(dbResult.Errors.SerializeAsJson());
-                        ModelState.AddModelError("", "Error on add role profile!");
-                        return View(model);
-                    }
                 }
 
                 //Delete previous permissions
