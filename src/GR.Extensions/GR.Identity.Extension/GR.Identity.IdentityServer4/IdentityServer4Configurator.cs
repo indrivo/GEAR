@@ -1,7 +1,7 @@
-using GR.Identity.Data.Permissions;
 using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using GR.Core.Helpers.Scopes;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using IdentityResource = IdentityServer4.Models.IdentityResource;
@@ -15,7 +15,7 @@ namespace GR.Identity.IdentityServer4
         {
             return new List<ApiResource>
             {
-                new ApiResource(BPMNServerConstants.StandarScopes.CORE, "Core web application")
+                new ApiResource(GearScopes.CORE, "Core web application")
             };
         }
 
@@ -58,7 +58,7 @@ namespace GR.Identity.IdentityServer4
                         IdentityServerConstants.StandardScopes.Address,
                         IdentityServerConstants.StandardScopes.Phone,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
-                        BPMNServerConstants.StandarScopes.CORE
+                        GearScopes.CORE
                     }
                 },
                 new Client
@@ -78,8 +78,7 @@ namespace GR.Identity.IdentityServer4
                     },
                     AllowedScopes =
                     {
-                        BPMNServerConstants.StandarScopes.BPMApi,
-                        BPMNServerConstants.StandarScopes.CORE
+                        GearScopes.CORE
                     }
                 }
             };

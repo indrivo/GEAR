@@ -1,8 +1,5 @@
 using GR.Core.Helpers;
-using GR.Identity.Abstractions.Models;
-using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Data;
-using GR.Identity.Data.Permissions;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Seeders;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -15,6 +12,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Permissions.Abstractions.Helpers;
+using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.IdentityServer4.Seeders
 {
@@ -25,8 +25,7 @@ namespace GR.Identity.IdentityServer4.Seeders
         {
             var clientUrls = new Dictionary<string, string>
             {
-                ["CORE"] = GetClientUrl(env, configuration, "CORE"),
-                ["BPMApi"] = GetClientUrl(env, configuration, "BPMApi")
+                ["CORE"] = GetClientUrl(env, configuration, "CORE")
             };
 
             //Seed clients
@@ -65,30 +64,8 @@ namespace GR.Identity.IdentityServer4.Seeders
             if (!applicationDbContext.Permissions.Any())
             {
                 var clients = context.Clients.ToList();
-                var permissionsList = (from item in PermissionsConstants.PermissionsList()
-                                       let permissionConfig = item.Split('_')
-                                       where permissionConfig.Length == 2
-                                       let client = clients.FirstOrDefault(x => x.ClientId.ToLower().Equals(permissionConfig[0].ToLower()))
-                                       select new Permission
-                                       {
-                                           Author = "System",
-                                           Created = DateTime.Now,
-                                           PermissionKey = item,
-                                           PermissionName = permissionConfig[1],
-                                           ClientId = client?.Id ?? 0,
-                                           Description = $"Permission for module {permissionConfig[0]}",
-                                           Changed = DateTime.Now
-                                       }).ToList();
-
-                try
-                {
-                    await applicationDbContext.Permissions.AddRangeAsync(permissionsList);
-                    await applicationDbContext.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                //Start seed permissions
+                await PermissionsInvoker.InvokeAsync();
 
                 var baseDirectory = AppContext.BaseDirectory;
                 var entity = JsonParser.ReadObjectDataFromJsonFile<ApplicationDbContextSeed.SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
@@ -111,8 +88,7 @@ namespace GR.Identity.IdentityServer4.Seeders
                                     new RolePermission
                                     {
                                         RoleId = x.Id,
-                                        PermissionId = o.Id,
-                                        PermissionCode = o.PermissionKey
+                                        PermissionId = o.Id
                                     }));
                             }
                             else
@@ -126,21 +102,13 @@ namespace GR.Identity.IdentityServer4.Seeders
                                         var rolePermission = new RolePermission
                                         {
                                             RoleId = x.Id,
-                                            PermissionId = permission?.Id ?? Guid.Empty,
-                                            PermissionCode = o
+                                            PermissionId = permission?.Id ?? Guid.Empty
                                         };
                                         return rolePermission;
                                     }));
                             }
                         });
-                    try
-                    {
-                        await applicationDbContext.SaveChangesAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex);
-                    }
+                    await applicationDbContext.PushAsync();
                 }
             }
         }

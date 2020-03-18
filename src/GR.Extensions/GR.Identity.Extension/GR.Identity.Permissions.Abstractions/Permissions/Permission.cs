@@ -1,7 +1,7 @@
-﻿using GR.Core;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using GR.Core;
 
-namespace GR.Identity.Abstractions.Models.Permmisions
+namespace GR.Identity.Permissions.Abstractions.Permissions
 {
     public class Permission : BaseModel
     {

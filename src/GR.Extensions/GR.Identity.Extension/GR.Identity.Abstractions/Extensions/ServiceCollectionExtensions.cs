@@ -3,6 +3,7 @@ using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Scopes;
 using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -72,7 +73,7 @@ namespace GR.Identity.Abstractions.Extensions
             services.AddAuthentication()
                 .AddJwtBearer(opts =>
                 {
-                    opts.Audience = "core";
+                    opts.Audience = GearScopes.CORE;
                     opts.Authority = uri;
                     opts.RequireHttpsMetadata = false;
                 });

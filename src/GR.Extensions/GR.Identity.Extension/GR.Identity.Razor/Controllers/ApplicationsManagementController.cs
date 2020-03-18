@@ -1,7 +1,5 @@
 using GR.Core;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models;
-using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Data;
 using GR.Identity.Extensions;
 using GR.Identity.Permissions.Abstractions;
@@ -24,7 +22,8 @@ using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Client = IdentityServer4.EntityFramework.Entities.Client;
+using GR.Core.Extensions;
+using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -83,99 +82,12 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult ApplicationList(DTParameters param)
+        public async Task<JsonResult> ApplicationList(DTParameters param)
         {
-            var filtered = GetApplicationClientsFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-                out var totalCount);
-            var finalResult = new DTResult<Client>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
-        }
-
-        /// <summary>
-        /// Get application list filtered
-        /// </summary>
-        /// <param name="search"></param>
-        /// <param name="sortOrder"></param>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="totalCount"></param>
-        /// <returns></returns>
-        private List<Client> GetApplicationClientsFiltered(string search, string sortOrder, int start, int length,
-            out int totalCount)
-        {
-            var result = ConfigurationDbContext.Clients.AsNoTracking()
-                .Where(p =>
-                    search == null || p.ClientName != null &&
-                    p.ClientName.ToLower().Contains(search.ToLower()) || p.Description != null &&
-                    p.Description.ToLower().Contains(search.ToLower()) || p.RedirectUris != null &&
-                    p.RedirectUris.ToString().ToLower().Contains(search.ToLower()) || p.ProtocolType != null &&
-                    p.ProtocolType.ToString().ToLower().Contains(search.ToLower())).ToList();
-            totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-            switch (sortOrder)
-            {
-                case "clientName":
-                    result = result.OrderBy(a => a.ClientName).ToList();
-                    break;
-
-                case "clientId":
-                    result = result.OrderBy(a => a.ClientId).ToList();
-                    break;
-
-                case "allowOfflineAccess":
-                    result = result.OrderBy(a => a.AllowOfflineAccess).ToList();
-                    break;
-
-                case "allowedGrantTypes":
-                    result = result.OrderBy(a => a.AllowedGrantTypes).ToList();
-                    break;
-
-                case "allowedScopes":
-                    result = result.OrderBy(a => a.AllowedScopes).ToList();
-                    break;
-
-                case "clientUri":
-                    result = result.OrderBy(a => a.ClientUri).ToList();
-                    break;
-
-                case "clientName DESC":
-                    result = result.OrderByDescending(a => a.ClientName).ToList();
-                    break;
-
-                case "clientId DESC":
-                    result = result.OrderByDescending(a => a.ClientId).ToList();
-                    break;
-
-                case "allowOfflineAccess DESC":
-                    result = result.OrderByDescending(a => a.AllowOfflineAccess).ToList();
-                    break;
-
-                case "allowedGrantTypes DESC":
-                    result = result.OrderByDescending(a => a.AllowedGrantTypes).ToList();
-                    break;
-
-                case "allowedScopes DESC":
-                    result = result.OrderByDescending(a => a.AllowedScopes).ToList();
-                    break;
-
-                case "clientUri DESC":
-                    result = result.OrderByDescending(a => a.ClientUri).ToList();
-                    break;
-
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
+            var result = await ConfigurationDbContext.Clients
+                .AsNoTracking()
+                .GetPagedAsDtResultAsync(param);
+            return Json(result);
         }
 
         /// <summary>
@@ -525,7 +437,6 @@ namespace GR.Identity.Razor.Controllers
                     {
                         var newRolePermission = new RolePermission
                         {
-                            PermissionCode = permission.PermissionKey,
                             RoleId = roleId.Id,
                             PermissionId = permission.Id
                         };
@@ -618,7 +529,6 @@ namespace GR.Identity.Razor.Controllers
                         {
                             var newRolePermission = new RolePermission
                             {
-                                PermissionCode = permission.PermissionKey,
                                 RoleId = id,
                                 PermissionId = permission.Id
                             };

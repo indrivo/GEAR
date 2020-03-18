@@ -1,9 +1,9 @@
-using GR.Core;
-using GR.Identity.Abstractions.Models.Permmisions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using GR.Core;
+using GR.Identity.Abstractions;
 
-namespace GR.Identity.Abstractions.Models
+namespace GR.Identity.Permissions.Abstractions.Permissions
 {
     /// <inheritdoc />
     /// <summary>
@@ -25,16 +25,6 @@ namespace GR.Identity.Abstractions.Models
         public GearRole Role { get; set; }
 
         public Permission Permission { get; set; }
-
-        /// <summary>
-        /// Represents a permission object represented as
-        /// a formatted string with the following format:
-        /// {Service:Module:Action}
-        /// e.g.
-        /// "Identity:Users:Create"
-        /// </summary>
-        [Required]
-        public string PermissionCode { get; set; }
 
         [Required]
         public Guid PermissionId { get; set; }

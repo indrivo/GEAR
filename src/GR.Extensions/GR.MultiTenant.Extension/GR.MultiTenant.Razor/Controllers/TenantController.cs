@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +10,6 @@ using GR.Core.Extensions;
 using GR.Entities.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
-using GR.Identity.Data.Permissions;
-using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.ViewModels;
 
@@ -63,7 +60,6 @@ namespace GR.MultiTenant.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityRead)]
         public IActionResult Index() => View();
 
         /// <summary>
@@ -79,7 +75,6 @@ namespace GR.MultiTenant.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
         public async Task<IActionResult> Create()
         {
             var model = new CreateTenantViewModel
@@ -95,7 +90,6 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
         public async Task<IActionResult> Create([Required]CreateTenantViewModel data)
         {
             if (!ModelState.IsValid)
@@ -125,7 +119,6 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
         public async Task<IActionResult> Edit(Guid id)
         {
             var response = Context.Tenants.FirstOrDefault(x => x.Id == id);
@@ -144,7 +137,6 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="callBack"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
         public async Task<IActionResult> Edit(EditTenantViewModel model, string callBack = null)
         {
             if (!ModelState.IsValid) return View(model);

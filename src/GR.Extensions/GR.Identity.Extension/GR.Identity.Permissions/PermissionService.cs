@@ -2,7 +2,6 @@
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Configurators;
-using GR.Identity.Permissions.Abstractions.Models;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Identity.Permissions.Abstractions.ViewModels;
 
 namespace GR.Identity.Permissions
 {
-    public class PermissionService<TContext> : IPermissionService where TContext : IIdentityContext
+    public class PermissionService<TContext> : IPermissionService where TContext : IPermissionsContext, IIdentityContext
     {
         #region Injectable
         /// <summary>

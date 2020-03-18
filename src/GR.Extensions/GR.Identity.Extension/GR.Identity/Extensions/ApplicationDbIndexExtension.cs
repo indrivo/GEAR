@@ -1,5 +1,5 @@
 ﻿using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.Permmisions;
+using GR.Identity.Permissions.Abstractions.Permissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Extensions

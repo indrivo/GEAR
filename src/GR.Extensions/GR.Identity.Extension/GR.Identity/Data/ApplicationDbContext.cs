@@ -3,17 +3,18 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Extensions;
 using GR.Identity.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using GR.Identity.Permissions.Abstractions;
+using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IIdentityContext
+    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IIdentityContext, IPermissionsContext
     {
         /// <summary>
         /// Schema

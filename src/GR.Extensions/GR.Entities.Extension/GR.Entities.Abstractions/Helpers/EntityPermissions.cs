@@ -1,6 +1,6 @@
 ﻿namespace GR.Entities.Abstractions.Helpers
 {
-    public static class EntityPermissions
+    public class EntityPermissions
     {
         public const string EntityCreate = "Core_EntityCreate";
         public const string EntityUpdate = "Core_EntityUpdate";

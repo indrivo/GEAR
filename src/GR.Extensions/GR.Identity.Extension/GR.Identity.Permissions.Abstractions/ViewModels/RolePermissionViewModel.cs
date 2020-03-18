@@ -1,8 +1,8 @@
-﻿using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.Permmisions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GR.Identity.Abstractions;
+using GR.Identity.Permissions.Abstractions.Permissions;
 
-namespace GR.Identity.Permissions.Abstractions.Models
+namespace GR.Identity.Permissions.Abstractions.ViewModels
 {
     public class RolePermissionViewModel : GearRole
     {

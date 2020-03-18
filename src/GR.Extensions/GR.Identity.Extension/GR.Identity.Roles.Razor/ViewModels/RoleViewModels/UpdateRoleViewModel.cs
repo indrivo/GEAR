@@ -1,7 +1,7 @@
-using GR.Identity.Abstractions.Models.Permmisions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Roles.Razor.ViewModels.RoleViewModels
 {

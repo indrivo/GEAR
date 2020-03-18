@@ -1,6 +1,6 @@
-﻿namespace GR.Calendar.Abstractions.Permissions
+﻿namespace GR.Calendar.Abstractions.Helpers
 {
-    public class CalendarPermissionsConstants
+    public class CalendarPermissions
     {
         public const string AddEvent = "Calendar_AddEvent";
         public const string UpdateEvent = "Calendar_UpdateEvent";

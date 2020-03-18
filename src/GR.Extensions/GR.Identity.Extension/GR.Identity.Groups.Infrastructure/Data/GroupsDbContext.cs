@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 using GR.Audit.Contexts;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Groups.Abstractions;
 using GR.Identity.Groups.Abstractions.Models;
 using Microsoft.AspNetCore.Identity;
@@ -58,10 +56,6 @@ namespace GR.Identity.Groups.Infrastructure.Data
         [NotMapped]
         public DbSet<Tenant> Tenants { get; set; }
         [NotMapped]
-        public DbSet<RolePermission> RolePermissions { get; set; }
-        [NotMapped]
-        public DbSet<Permission> Permissions { get; set; }
-        [NotMapped]
         public DbSet<Country> Countries { get; set; }
         [NotMapped]
         public DbSet<StateOrProvince> StateOrProvinces { get; set; }
@@ -99,8 +93,6 @@ namespace GR.Identity.Groups.Infrastructure.Data
                 builder.Ignore<GearRole>();
                 builder.Ignore<IdentityUserRole<Guid>>();
                 builder.Ignore<Tenant>();
-                builder.Ignore<RolePermission>();
-                builder.Ignore<Permission>();
                 builder.Ignore<Country>();
                 builder.Ignore<StateOrProvince>();
                 builder.Ignore<Address>();

@@ -1,6 +1,6 @@
 ﻿namespace GR.Processes.Abstractions.Helpers
 {
-    public static class ProcessesPermissions
+    public class ProcessesPermissions
     {
         public const string ProcessCreate = "Core_ProcessCreate";
         public const string ProcessUpdate = "Core_ProcessUpdate";

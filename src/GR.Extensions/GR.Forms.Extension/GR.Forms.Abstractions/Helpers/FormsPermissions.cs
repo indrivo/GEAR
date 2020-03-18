@@ -1,6 +1,6 @@
 ﻿namespace GR.Forms.Abstractions.Helpers
 {
-    public static class FormsPermissions
+    public class FormsPermissions
     {
         public const string FormCreate = "Core_FormCreate";
         public const string FormUpdate = "Core_FormUpdate";

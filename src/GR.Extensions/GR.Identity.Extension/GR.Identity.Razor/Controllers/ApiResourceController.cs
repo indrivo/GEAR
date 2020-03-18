@@ -1,6 +1,4 @@
 using GR.Core;
-using GR.Identity.Data.Permissions;
-using GR.Identity.Permissions.Abstractions.Attributes;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +13,6 @@ using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Tenant manipulation
-    /// </summary>
     [Authorize]
     public class ApiResourceController : Controller
     {
@@ -48,7 +42,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityRead)]
+
         public IActionResult Index()
         {
             return View();
@@ -146,7 +140,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
+
         public IActionResult Create() => View();
 
         /// <summary>
@@ -155,7 +149,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
+
         public async Task<IActionResult> Create(ApiResource model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -185,7 +179,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
+
         public async Task<IActionResult> Edit(int id)
         {
             var response = await Context.ApiResources.FirstOrDefaultAsync(x => x.Id == id);
@@ -203,7 +197,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
+
         public async Task<IActionResult> Edit(ApiResource model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -238,7 +232,6 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityDelete)]
         public JsonResult Delete(int? id)
         {
             if (!id.HasValue)

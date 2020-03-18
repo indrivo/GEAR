@@ -121,6 +121,7 @@ using System.Collections.Generic;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
+using GR.Calendar.Abstractions.Helpers;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
@@ -128,9 +129,14 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Entities.Abstractions.Helpers;
+using GR.Entities.Security.Abstractions.Models;
+using GR.Forms.Abstractions.Helpers;
+using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
+using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
 using GR.Identity.Razor.Extensions;
@@ -140,7 +146,9 @@ using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
 using GR.Procesess.Data;
 using GR.Procesess.Parsers;
+using GR.Process.Razor.Extensions;
 using GR.Processes.Abstractions.Extensions;
+using GR.Processes.Abstractions.Helpers;
 using Microsoft.Extensions.Logging;
 
 #endregion Usings
@@ -187,6 +195,8 @@ namespace GR.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
 				//.PasswordPolicy(options =>
 				//{
 				//	options.RequireDigit = true;
@@ -204,10 +214,12 @@ namespace GR.Cms
 				.AddIdentityRazorModule();
 
 			config.GearServices.AddAuthentication(Configuration)
-				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, MigrationsAssembly);
 
+			//----------------------------------Permissions Module-------------------------------------
+			config.GearServices.AddPermissionModule<PermissionService<ApplicationDbContext>>()
+				.MapPermissionsModuleToContext<ApplicationDbContext>();
 
 			//---------------------------------------Groups Module-------------------------------------
 			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
@@ -219,6 +231,8 @@ namespace GR.Cms
 
 			//---------------------------------------Entity Module-------------------------------------
 			config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<EntityPermissions>, EntityPermissions>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<EntityTypePermissions>, EntityTypePermissions>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
 				.AddEntityModuleStorage<EntitiesDbContext>(options =>
 				{
@@ -294,7 +308,9 @@ namespace GR.Cms
 				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
 
 			//------------------------------------Calendar Module-------------------------------------
-			config.GearServices.AddCalendarModule<CalendarManager>()
+			config.GearServices
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<CalendarPermissions>, CalendarPermissions>()
+				.AddCalendarModule<CalendarManager>()
 				.AddCalendarModuleStorage<CalendarDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -342,8 +358,9 @@ namespace GR.Cms
 				})
 				.AddTaskManagerRazorUIModule();
 
-			//-----------------------------------------Form Module-------------------------------------
+			//-----------------------------------------Forms Module-------------------------------------
 			config.GearServices.AddFormModule<FormDbContext>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<FormsPermissions>, FormsPermissions>()
 				.AddFormModuleStorage<FormDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -460,11 +477,13 @@ namespace GR.Cms
 
 			//------------------------------------Processes Module-------------------------------------
 			config.GearServices.AddProcessesModule<ProcessParser>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<ProcessesPermissions>, ProcessesPermissions>()
 				.AddProcessesModuleStorage<ProcessesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddProcessesRazorModule();
 
 		});
 	}

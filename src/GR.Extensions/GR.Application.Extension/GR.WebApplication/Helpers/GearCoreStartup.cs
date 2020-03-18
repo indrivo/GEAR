@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using GR.Identity.Data;
 using GR.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,7 @@ namespace GR.WebApplication.Helpers
         /// Migrations Assembly
         /// </summary>
         protected static readonly string MigrationsAssembly =
-            typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
+            typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name;
 
         protected GearCoreStartup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
