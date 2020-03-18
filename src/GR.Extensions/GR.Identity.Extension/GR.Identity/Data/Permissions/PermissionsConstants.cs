@@ -44,15 +44,6 @@ namespace GR.Identity.Data.Permissions
 
             #endregion Entity
 
-            #region Forms
-
-            public const string BpmFormCreate = "Core_FormCreate";
-            public const string BpmFormUpdate = "Core_FormUpdate";
-            public const string BpmFormRead = "Core_FormRead";
-            public const string BpmFormDelete = "Core_FormDelete";
-
-            #endregion Forms
-
             #region Tables
 
             public const string BpmTableCreate = "Core_TableCreate";
