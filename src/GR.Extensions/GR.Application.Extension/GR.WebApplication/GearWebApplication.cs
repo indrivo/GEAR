@@ -5,19 +5,17 @@ using System.IO;
 using System.Text;
 using GR.Core.Events;
 using GR.Core.Helpers;
-using GR.Identity.Data;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
 using GR.Entities.Data;
-using GR.Identity.Clients.Abstractions;
-using GR.Identity.Clients.Abstractions.Seeders;
+using GR.Identity.Clients.Abstractions.Helpers;
+using GR.Identity.Data;
 using GR.Logger.Extensions;
 using GR.UI.Menu.Data;
 using GR.WebApplication.Models;
@@ -66,11 +64,8 @@ namespace GR.WebApplication
                 .MigrateDbContext<PersistedGrantDbContext>()
                 .MigrateDbContext<ConfigurationDbContext>((context, services) =>
                 {
-                    var config = services.GetService<IConfiguration>();
-                    var env = services.GetService<IHostingEnvironment>();
-                    var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
-                    var configurator = new IdentityServer4Configurator();
-                    IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
+                    var configurator = new DefaultClientsConfigurator();
+                    ClientsSeeder.SeedAsync(services, configurator)
                         .Wait();
                 });
 

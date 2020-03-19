@@ -15,6 +15,13 @@ namespace GR.Core.Abstractions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         DbSet<T> SetEntity<T>() where T : class, IBaseModel;
+        
+        /// <summary>
+        /// Set entity
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
         /// <summary>
         /// Update db entity

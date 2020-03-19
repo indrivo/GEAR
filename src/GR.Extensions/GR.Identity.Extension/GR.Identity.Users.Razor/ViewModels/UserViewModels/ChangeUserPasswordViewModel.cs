@@ -26,8 +26,8 @@ namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
         /// New password
         /// </summary>
         [Required]
-        [StringLength(100, ErrorMessage = Resources.ValidationMessages.PASSWORD_STRING_LENGTH, MinimumLength = 6), DataType(DataType.Password)]
-        [RegularExpression(Resources.RegularExpressions.PASSWORD, ErrorMessage = Resources.ValidationMessages.PASSWORD_COMPLEXITY_MESSAGE)]
+        [StringLength(100, ErrorMessage = IdentityResources.ValidationMessages.PASSWORD_STRING_LENGTH, MinimumLength = 6), DataType(DataType.Password)]
+        [RegularExpression(IdentityResources.RegularExpressions.PASSWORD, ErrorMessage = IdentityResources.ValidationMessages.PASSWORD_COMPLEXITY_MESSAGE)]
         public string Password { get; set; }
 
         /// <summary>

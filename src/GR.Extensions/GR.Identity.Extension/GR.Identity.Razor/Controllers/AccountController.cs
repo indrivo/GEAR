@@ -46,6 +46,9 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
+        /// <summary>
+        /// Inject interaction service
+        /// </summary>
         private readonly IIdentityServerInteractionService _interactionService;
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace GR.Identity.Razor.Controllers
         private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
-        /// Inject accesor
+        /// Inject accessor
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccesor;
 
@@ -68,7 +71,11 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly ApplicationDbContext _applicationDbContext;
 
-        #endregion Private Dependency Injection Fields
+        #endregion
+
+        /// <summary>
+        /// Return url
+        /// </summary>
         private const string ReturnUrl = "ReturnUrl";
 
         public AccountController(

@@ -1,7 +1,8 @@
 @using GR.Identity.Abstractions
+@using GR.Identity.Clients.Abstractions
 
 @inject SignInManager<GearUser> SignInManager
-@inject IAppProvider AppProvider
+@inject IClientsService ClientsService
 
 @model GR.Identity.Razor.ViewModels.AccountViewModels.LoginViewModel
 

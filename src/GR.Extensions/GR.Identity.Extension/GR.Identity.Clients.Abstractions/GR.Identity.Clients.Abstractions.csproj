@@ -11,8 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
-    <ProjectReference Include="..\GR.Identity\GR.Identity.csproj" />
+    <ProjectReference Include="..\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

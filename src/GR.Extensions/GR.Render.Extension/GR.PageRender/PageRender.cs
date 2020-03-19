@@ -16,6 +16,7 @@ using GR.Entities.Data;
 using GR.Entities.Security.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Clients.Abstractions;
 using GR.MultiTenant.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Constants;
@@ -71,7 +72,7 @@ namespace GR.PageRender
         /// <summary>
         /// Inject app provider
         /// </summary>
-        private readonly IAppProvider _appProvider;
+        private readonly IClientsService _appProvider;
 
         /// <summary>
         /// Inject role access manager
@@ -79,7 +80,7 @@ namespace GR.PageRender
         private readonly IEntityRoleAccessService _entityRoleAccessService;
         #endregion
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessService entityRoleAccessService)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IClientsService appProvider, IEntityRoleAccessService entityRoleAccessService)
         {
             _context = context;
             _cacheService = cacheService;

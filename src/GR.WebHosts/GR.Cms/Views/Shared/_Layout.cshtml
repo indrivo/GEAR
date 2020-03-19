@@ -1,8 +1,8 @@
 @using GR.Forms.Razor.Extensions
-@using GR.Identity.Abstractions
+@using GR.Identity.Clients.Abstractions
 @using GR.Notifications.Razor.Extensions
 @using GR.PageRender.Abstractions.Helpers
-@inject IAppProvider AppProvider
+@inject IClientsService ClientsService
 
 <!DOCTYPE html>
 @{
@@ -17,7 +17,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>@ViewData["Title"] - @(await AppProvider.GetAppName("core"))</title>
+		<title>@ViewData["Title"] - @(await ClientsService.GetAppName("core"))</title>
 		<partial name="_BootstrapThemeStyles" />
 		@Html.IncludeFormsStylePlugins()
 		<layout-css-code layout-id="@layoutId"></layout-css-code>

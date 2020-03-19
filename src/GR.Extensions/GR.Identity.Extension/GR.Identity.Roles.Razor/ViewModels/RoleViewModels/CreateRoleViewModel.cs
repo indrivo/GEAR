@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Identity.Permissions.Abstractions.Permissions;
-using Client = IdentityServer4.EntityFramework.Entities.Client;
+using IdentityServer4.EntityFramework.Entities;
 
 namespace GR.Identity.Roles.Razor.ViewModels.RoleViewModels
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Interfaces;
 using Mapster;
 using Microsoft.EntityFrameworkCore.Internal;
 using ApiResource = IdentityServer4.Models.ApiResource;
@@ -27,9 +27,8 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// Get seed for clients
         /// </summary>
         /// <param name="clients"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.Client> GetSeedClients(this IEnumerable<Client> clients, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.Client> GetSeedClients(this IEnumerable<Client> clients)
         {
             //TODO: Replace with ToEntity() from AutoMapper extensions, the current version of AutoMapper and Identity.Server4 crash
             var index = 1;
@@ -143,9 +142,8 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// Get seed resources
         /// </summary>
         /// <param name="resources"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.IdentityResource> GetSeedResources(this IEnumerable<IdentityResource> resources, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.IdentityResource> GetSeedResources(this IEnumerable<IdentityResource> resources)
         {
             var resourceIndex = 1;
             foreach (var item in resources)
@@ -175,7 +173,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// <param name="apiResources"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.ApiResource> GetSeedApiResources(this IEnumerable<ApiResource> apiResources, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.ApiResource> GetSeedApiResources(this IEnumerable<ApiResource> apiResources, IConfigurationDbContext context)
         {
             var apiIndex = 1;
             var scopeIndex = context.ApiResources.Count() + 1;

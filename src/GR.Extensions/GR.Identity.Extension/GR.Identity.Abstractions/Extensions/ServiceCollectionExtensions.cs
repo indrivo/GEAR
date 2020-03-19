@@ -117,19 +117,6 @@ namespace GR.Identity.Abstractions.Extensions
         }
 
         /// <summary>
-        /// Add provider
-        /// </summary>
-        /// <typeparam name="TAppProvider"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddAppProvider<TAppProvider>(this IServiceCollection services)
-            where TAppProvider : class, IAppProvider
-        {
-            services.AddGearTransient<IAppProvider, TAppProvider>();
-            return services;
-        }
-
-        /// <summary>
         /// Register address service
         /// </summary>
         /// <typeparam name="TAddressService"></typeparam>

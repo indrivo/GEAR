@@ -132,6 +132,7 @@ using GR.Entities.Abstractions.Helpers;
 using GR.Forms.Abstractions.Helpers;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Clients.Abstractions.Extensions;
+using GR.Identity.Clients.Infrastructure;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
@@ -194,6 +195,7 @@ namespace GR.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>()
+				.AddAuthentication(Configuration)
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
 				//.PasswordPolicy(options =>
@@ -206,15 +208,15 @@ namespace GR.Cms
 				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
 				.RegisterLocationService<LocationService>()
 				.AddIdentityRazorModule();
 
-			config.GearServices.AddAuthentication(Configuration)
-				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, MigrationsAssembly);
+			//-----------------------------Identity Clients Module-------------------------------------
+			config.GearServices.AddIdentityClientsModule<GearUser>(Configuration, MigrationsAssembly)
+				.AddClientsProfileService<ProfileService>()
+				.RegisterClientsService<ClientsService>();
 
 			//----------------------------------Permissions Module-------------------------------------
 			config.GearServices.AddPermissionModule<PermissionService<ApplicationDbContext>>()

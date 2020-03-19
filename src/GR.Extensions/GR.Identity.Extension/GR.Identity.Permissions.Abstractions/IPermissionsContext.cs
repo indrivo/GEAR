@@ -1,11 +1,10 @@
-﻿using GR.Core.Abstractions;
-using GR.Identity.Abstractions.Models;
+﻿using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions.Permissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Permissions.Abstractions
 {
-    public interface IPermissionsContext : IDbContext
+    public interface IPermissionsContext : IIdentityContext
     {
         DbSet<RolePermission> RolePermissions { get; set; }
         DbSet<Permission> Permissions { get; set; }

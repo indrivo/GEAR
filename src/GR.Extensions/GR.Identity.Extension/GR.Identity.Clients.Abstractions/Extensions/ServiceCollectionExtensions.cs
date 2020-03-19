@@ -1,10 +1,10 @@
-﻿using GR.Identity.Abstractions;
+﻿using GR.Core.Extensions;
+using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Identity_IProfileService = IdentityServer4.Services.IProfileService;
-using Identity_ProfileService = GR.Identity.Services.ProfileService;
+using IProfileService = IdentityServer4.Services.IProfileService;
 
 namespace GR.Identity.Clients.Abstractions.Extensions
 {
@@ -17,12 +17,13 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// <param name="migrationsAssembly"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityServer(this IServiceCollection services, IConfiguration configuration,
+        public static IServiceCollection AddIdentityClientsModule<TUser>(this IServiceCollection services, IConfiguration configuration,
             string migrationsAssembly)
+            where TUser : GearUser
         {
             services.AddIdentityServer(x => x.IssuerUri = "null")
                 .AddDeveloperSigningCredential()
-                .AddAspNetIdentity<GearUser>()
+                .AddAspNetIdentity<TUser>()
                 .AddConfigurationStore(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
@@ -33,6 +34,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
                     options.ConfigureDbContext = builder => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
                 });
+
             return services;
         }
 
@@ -41,9 +43,24 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModuleProfileServices(this IServiceCollection services)
+        public static IServiceCollection AddClientsProfileService<TProfileService>(this IServiceCollection services)
+            where TProfileService : class, IProfileService
         {
-            services.AddTransient<Identity_IProfileService, Identity_ProfileService>();
+            services.AddTransient<IProfileService, TProfileService>();
+            return services;
+        }
+
+
+        /// <summary>
+        /// Add clients service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterClientsService<TService>(this IServiceCollection services)
+            where TService : class, IClientsService
+        {
+            services.AddGearTransient<IClientsService, TService>();
             return services;
         }
     }

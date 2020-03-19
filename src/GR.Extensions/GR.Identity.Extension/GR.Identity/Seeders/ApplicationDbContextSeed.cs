@@ -3,24 +3,27 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Data;
-using GR.Identity.Models.RolesViewModels;
-using GR.Identity.Models.UserViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Abstractions.ViewModels.SeedViewModels;
 
 namespace GR.Identity.Seeders
 {
     public class ApplicationDbContextSeed
     {
+        /// <summary>
+        /// Configuration path
+        /// </summary>
+        protected const string ConfigurationPath = "Configuration/IdentityConfiguration.json";
+
         /// <summary>
         /// Seed async all components
         /// </summary>
@@ -33,7 +36,7 @@ namespace GR.Identity.Seeders
             var roleManager = services.GetRequiredService<RoleManager<GearRole>>();
             var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ApplicationDbContextSeed));
             var baseDirectory = AppContext.BaseDirectory;
-            var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
+            var entity = JsonParser.ReadObjectDataFromJsonFile<IdentitySeedViewModel>(Path.Combine(baseDirectory, ConfigurationPath));
 
             var tenant = new Tenant
             {
@@ -91,19 +94,6 @@ namespace GR.Identity.Seeders
                 }
                 logger.LogInformation("System users are synchronized with database");
             }
-        }
-
-        public class SeedApplication
-        {
-            /// <summary>
-            /// List of system roles
-            /// </summary>
-            public List<RolesViewModel> ApplicationRoles { get; set; }
-
-            /// <summary>
-            /// List of system users
-            /// </summary>
-            public List<UserSeedViewModel> ApplicationUsers { get; set; }
         }
     }
 }

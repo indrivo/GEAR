@@ -19,7 +19,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
-using IdentityServer4.Extensions;
 
 namespace GR.Identity.Services
 {

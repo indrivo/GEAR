@@ -24,7 +24,6 @@ using GR.MultiTenant.Abstractions.Events.EventArgs;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
-using IdentityServer4.Extensions;
 
 namespace GR.MultiTenant.Razor.Controllers
 {

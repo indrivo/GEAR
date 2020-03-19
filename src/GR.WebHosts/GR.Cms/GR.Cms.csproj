@@ -73,6 +73,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files\GR.Files.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms.Razor\GR.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms\GR.Forms.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Infrastructure\GR.Identity.Clients.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Infrastructure\GR.Identity.Groups.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Razor\GR.Identity.Groups.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
