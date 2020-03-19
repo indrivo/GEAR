@@ -117,7 +117,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.TaskManager.Extension", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager.Abstractions", "src\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Abstractions\GR.TaskManager.Abstractions.csproj", "{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.IdentityServer4", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj", "{7DA6E746-5915-404A-92F8-1F6989C37CD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Clients.Abstractions", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj", "{7DA6E746-5915-404A-92F8-1F6989C37CD6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Email.Abstractions", "src\GR.Extensions\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj", "{7447A39F-9794-4FE1-B664-3BBE5F1F796E}"
 EndProject
@@ -257,7 +257,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.LdapAuth", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Roles.Razor", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Roles.Razor\GR.Identity.Roles.Razor.csproj", "{4AD4A550-3E6C-4453-A025-D7FEA1E992CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Razor.Users", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Users.Razor\GR.Identity.Users.Razor.csproj", "{A19141B5-44D4-4789-9157-C34718521F17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Users.Razor", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Users.Razor\GR.Identity.Users.Razor.csproj", "{A19141B5-44D4-4789-9157-C34718521F17}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Logger.Extension", "GR.Logger.Extension", "{67772CD9-5D26-40A4-8E04-B2EF02AB9B25}"
 EndProject
@@ -333,15 +333,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.PhoneVerificati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WorkFlows.Api", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows.Api\GR.WorkFlows.Api.csproj", "{E85A7BA3-3F77-4840-97B8-2AAB0A0EE7FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Profile.Api", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Api\GR.Identity.Profile.Api.csproj", "{62D6EF2C-38C7-4A5C-BC2C-655E538D0E19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Profile.Api", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Api\GR.Identity.Profile.Api.csproj", "{62D6EF2C-38C7-4A5C-BC2C-655E538D0E19}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Groups", "GR.Groups", "{D03DE444-0D34-478B-8404-241252B94CA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Groups.Abstractions", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Abstractions\GR.Identity.Groups.Abstractions.csproj", "{A932CAEA-A791-41DB-8650-36B36B20B5E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Groups.Abstractions", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Abstractions\GR.Identity.Groups.Abstractions.csproj", "{A932CAEA-A791-41DB-8650-36B36B20B5E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Groups.Infrastructure", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Infrastructure\GR.Identity.Groups.Infrastructure.csproj", "{92B90FA6-2AC6-41E7-ABE6-929102829961}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Groups.Infrastructure", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Infrastructure\GR.Identity.Groups.Infrastructure.csproj", "{92B90FA6-2AC6-41E7-ABE6-929102829961}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Groups.Api", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Api\GR.Identity.Groups.Api.csproj", "{0B4FF72B-C881-4FF1-808C-B4AB77E45605}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Groups.Api", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Api\GR.Identity.Groups.Api.csproj", "{0B4FF72B-C881-4FF1-808C-B4AB77E45605}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Clients", "GR.Clients", "{B5C1A5F5-0651-406E-B80E-3682CB9FF7CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1148,7 +1150,7 @@ Global
 		{5EE32D18-3642-4FC8-9439-DA12B76D3AC5} = {4B6C8C28-B2EC-4EDD-B6D8-F90B125CB109}
 		{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
 		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
-		{7DA6E746-5915-404A-92F8-1F6989C37CD6} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
+		{7DA6E746-5915-404A-92F8-1F6989C37CD6} = {B5C1A5F5-0651-406E-B80E-3682CB9FF7CF}
 		{7447A39F-9794-4FE1-B664-3BBE5F1F796E} = {F92D0E7F-047D-40E0-A39A-428205AC5DF3}
 		{1527D910-79DA-459F-9099-34CB1A15A45F} = {9083B567-B75A-4493-A7D8-4DED8C82FCDF}
 		{D1EE82DD-CA47-4511-9FA7-E4724A08D1B7} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
@@ -1260,6 +1262,7 @@ Global
 		{A932CAEA-A791-41DB-8650-36B36B20B5E1} = {D03DE444-0D34-478B-8404-241252B94CA3}
 		{92B90FA6-2AC6-41E7-ABE6-929102829961} = {D03DE444-0D34-478B-8404-241252B94CA3}
 		{0B4FF72B-C881-4FF1-808C-B4AB77E45605} = {D03DE444-0D34-478B-8404-241252B94CA3}
+		{B5C1A5F5-0651-406E-B80E-3682CB9FF7CF} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

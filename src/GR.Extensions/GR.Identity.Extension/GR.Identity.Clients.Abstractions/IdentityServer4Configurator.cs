@@ -1,13 +1,13 @@
-using IdentityServer4;
-using IdentityServer4.Models;
 using System.Collections.Generic;
 using GR.Core.Helpers.Scopes;
+using IdentityServer4;
+using IdentityServer4.Models;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using IdentityResource = IdentityServer4.Models.IdentityResource;
 using Secret = IdentityServer4.Models.Secret;
 
-namespace GR.Identity.IdentityServer4
+namespace GR.Identity.Clients.Abstractions
 {
     public class IdentityServer4Configurator
     {

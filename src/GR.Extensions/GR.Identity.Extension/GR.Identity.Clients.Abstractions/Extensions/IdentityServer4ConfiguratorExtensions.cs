@@ -1,15 +1,15 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
-using Mapster;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IdentityServer4.EntityFramework.DbContexts;
+using Mapster;
+using Microsoft.EntityFrameworkCore.Internal;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using identityModels = IdentityServer4.EntityFramework.Entities;
 using IdentityResource = IdentityServer4.Models.IdentityResource;
 
-namespace GR.Identity.IdentityServer4.Extensions
+namespace GR.Identity.Clients.Abstractions.Extensions
 {
     public static class IdentityServer4ConfiguratorExtensions
     {

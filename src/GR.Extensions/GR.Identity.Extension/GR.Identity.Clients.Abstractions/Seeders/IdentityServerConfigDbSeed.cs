@@ -1,11 +1,3 @@
-using GR.Core.Helpers;
-using GR.Identity.Data;
-using GR.Identity.IdentityServer4.Extensions;
-using GR.Identity.Seeders;
-using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,10 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Identity.Clients.Abstractions.Extensions;
+using GR.Identity.Data;
 using GR.Identity.Permissions.Abstractions.Helpers;
 using GR.Identity.Permissions.Abstractions.Permissions;
+using GR.Identity.Seeders;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace GR.Identity.IdentityServer4.Seeders
+namespace GR.Identity.Clients.Abstractions.Seeders
 {
     public static class IdentityServerConfigDbSeeder
     {

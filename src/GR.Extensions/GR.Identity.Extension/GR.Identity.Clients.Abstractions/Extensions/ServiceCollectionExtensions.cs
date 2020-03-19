@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Identity_IProfileService = IdentityServer4.Services.IProfileService;
 using Identity_ProfileService = GR.Identity.Services.ProfileService;
 
-namespace GR.Identity.IdentityServer4.Extensions
+namespace GR.Identity.Clients.Abstractions.Extensions
 {
     public static class ServiceCollectionExtensions
     {
