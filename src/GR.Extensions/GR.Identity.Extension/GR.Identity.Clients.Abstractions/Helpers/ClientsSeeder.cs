@@ -12,7 +12,6 @@ using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Helpers;
 using GR.Identity.Permissions.Abstractions.Permissions;
-using IdentityServer4.EntityFramework.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +29,7 @@ namespace GR.Identity.Clients.Abstractions.Helpers
         /// <returns></returns>
         public static async Task SeedAsync<TConfigurator>(IServiceProvider services, TConfigurator configurator) where TConfigurator : DefaultClientsConfigurator
         {
-            var context = services.GetRequiredService<IConfigurationDbContext>();
+            var context = services.GetRequiredService<IClientsContext>();
             var configuration = services.GetRequiredService<IConfiguration>();
             var permissionsContext = services.GetRequiredService<IPermissionsContext>();
 

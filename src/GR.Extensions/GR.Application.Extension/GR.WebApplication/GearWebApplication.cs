@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using GR.Core.Events;
 using GR.Core.Helpers;
-using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using GR.Core;
@@ -14,7 +13,6 @@ using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
 using GR.Entities.Data;
-using GR.Identity.Clients.Abstractions.Helpers;
 using GR.Identity.Data;
 using GR.Logger.Extensions;
 using GR.UI.Menu.Data;
@@ -60,14 +58,7 @@ namespace GR.WebApplication
             GlobalWebHost?
                 .MigrateDbContext<EntitiesDbContext>()
                 .MigrateDbContext<IdentityDbContext>()
-                .MigrateDbContext<MenuDbContext>()
-                .MigrateDbContext<PersistedGrantDbContext>()
-                .MigrateDbContext<ConfigurationDbContext>((context, services) =>
-                {
-                    var configurator = new DefaultClientsConfigurator();
-                    ClientsSeeder.SeedAsync(services, configurator)
-                        .Wait();
-                });
+                .MigrateDbContext<MenuDbContext>();
 
             SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
 

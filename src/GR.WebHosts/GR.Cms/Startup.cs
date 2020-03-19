@@ -179,8 +179,8 @@ namespace GR.Cms
 				config.Configuration = Configuration;
 			});
 
-			//-----------------------Page Module Custom url redirection-------------------------------------
 			app.UseUrlRewriteModule();
+			app.UseIdentityServer();
 		}
 
 		/// <summary>

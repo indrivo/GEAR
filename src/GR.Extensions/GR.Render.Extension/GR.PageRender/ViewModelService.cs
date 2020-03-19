@@ -362,20 +362,20 @@ namespace GR.PageRender
             }
 
             var viewModel = items.First().ViewModelId;
-            var fields = PagesContext.SetEntity<TItem>().Where(x => x.ViewModelId.Equals(viewModel)).ToList();
+            var fields = PagesContext.Set<TItem>().Where(x => x.ViewModelId.Equals(viewModel)).ToList();
 
             foreach (var prev in fields)
             {
                 var up = items.FirstOrDefault(x => x.Id.Equals(prev.Id));
                 if (up == null)
                 {
-                    PagesContext.SetEntity<TItem>().Remove(prev);
+                    PagesContext.Set<TItem>().Remove(prev);
                 }
                 else if (prev.Order != up.Order || prev.Name != up.Name)
                 {
                     prev.Name = up.Name;
                     prev.Order = up.Order;
-                    PagesContext.SetEntity<TItem>().Update(prev);
+                    PagesContext.Set<TItem>().Update(prev);
                 }
             }
 
@@ -388,7 +388,7 @@ namespace GR.PageRender
 
             if (news.Any())
             {
-                PagesContext.SetEntity<TItem>().AddRange(news);
+                PagesContext.Set<TItem>().AddRange(news);
             }
 
             await _cacheService.RemoveAsync($"{PrefixKey}_{viewModel}");

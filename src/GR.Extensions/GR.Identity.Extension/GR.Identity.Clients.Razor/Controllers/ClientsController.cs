@@ -526,7 +526,7 @@ namespace GR.Identity.Clients.Razor.Controllers
             if (role != null)
             {
                 //Delete previous permissions
-                var rolePermissionId = _applicationDbContext.SetEntity<RolePermission>()
+                var rolePermissionId = _applicationDbContext.Set<RolePermission>()
                     .Where(x => x.RoleId == applicationRole.Id);
                 _applicationDbContext.RolePermissions.RemoveRange(rolePermissionId);
                 await _applicationDbContext.SaveChangesAsync();

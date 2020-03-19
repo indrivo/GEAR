@@ -53,7 +53,7 @@ namespace GR.ECommerce.Razor.Controllers
         public override async Task<IActionResult> Edit([Required]Guid? id)
         {
             if (id == null) return NotFound();
-            var model = await Context.SetEntity<Category>().FirstOrDefaultAsync(x => x.Id == id);
+            var model = await Context.Set<Category>().FirstOrDefaultAsync(x => x.Id == id);
             if (model == null) return NotFound();
             var result = model.Adapt<ProductCategoryViewModel>();
             return View(AddDropdownItems(result));

@@ -1,8 +1,13 @@
 ﻿using System;
+using GR.Core;
+using GR.Core.Events;
+using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +49,21 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
                 });
+
+            services.AddGearSingleton<IClientsContext, TConfiguration>();
+            services.AddGearSingleton<IClientsPersistedGrantContext, TPersisted>();
+
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>()
+                    .MigrateDbContext<TPersisted>()
+                    .MigrateDbContext<TConfiguration>((context, servicesProvider) =>
+                    {
+                        var configurator = new DefaultClientsConfigurator();
+                        ClientsSeeder.SeedAsync(servicesProvider, configurator)
+                            .Wait();
+                    });
+            };
 
             return services;
         }

@@ -171,7 +171,7 @@ namespace GR.Identity.Permissions
                 return;
             }
 
-            var role = await _context.SetEntity<GearRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
+            var role = await _context.Set<GearRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
 
             if (role == null)
             {

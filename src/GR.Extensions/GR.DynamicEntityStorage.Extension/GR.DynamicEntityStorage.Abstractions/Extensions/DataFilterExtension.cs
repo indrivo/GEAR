@@ -78,7 +78,7 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
         public static List<T> FilterAbstractContext<T>(this IDbContext context, string search, string sortOrder, int start, int length,
             out int totalCount, Func<T, bool> dbSearch = null) where T : class, IBaseModel
         {
-            var rh = dbSearch != null ? context.SetEntity<T>().Where(dbSearch).ToList() : context.SetEntity<T>().ToList();
+            var rh = dbSearch != null ? context.Set<T>().Where(dbSearch).ToList() : context.Set<T>().ToList();
 
             var result = rh.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 

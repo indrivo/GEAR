@@ -181,8 +181,7 @@ namespace GR.WebApplication.Extensions
             //----------------------------------Origin Cors Usage-------------------------------------
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
 
-            app.UseAuthentication()
-                .UseIdentityServer();
+            app.UseAuthentication();
 
             //custom rules
             app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules);
