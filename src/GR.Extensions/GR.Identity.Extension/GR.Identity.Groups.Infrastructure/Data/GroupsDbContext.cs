@@ -86,6 +86,11 @@ namespace GR.Identity.Groups.Infrastructure.Data
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.GroupId);
 
+            builder.Entity<GearUser>()
+                .HasMany<UserGroup>()
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId);
+
 
             if (IsMigrationMode)
             {

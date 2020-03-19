@@ -34,6 +34,7 @@ namespace GR.Identity.Profile.Data
             builder.HasDefaultSchema(Schema);
 
             builder.Entity<ProfileModels.RoleProfile>().HasKey(ug => new { ug.RoleId, ug.ProfileId });
+            builder.Entity<ProfileModels.UserProfile>().HasKey(ug => new { ug.UserId, ug.RoleProfileId });
 
             builder.Entity<ProfileModels.Profile>()
                 .HasIndex(x => x.TenantId);

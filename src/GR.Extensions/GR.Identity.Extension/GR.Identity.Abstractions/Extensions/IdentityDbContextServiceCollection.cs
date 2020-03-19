@@ -17,8 +17,8 @@ namespace GR.Identity.Abstractions.Extensions
                     builder.UseSqlServer(connectionString, opts =>
                     {
                         opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                            IdentityConfig.DEFAULT_SCHEMA);
+                        //opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
+                        //    IdentityConfig.DEFAULT_SCHEMA);
                     });
                     break;
 
@@ -26,8 +26,8 @@ namespace GR.Identity.Abstractions.Extensions
                     builder.UseNpgsql(connectionString, opts =>
                     {
                         opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                            IdentityConfig.DEFAULT_SCHEMA);
+                        //opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
+                        //    IdentityConfig.DEFAULT_SCHEMA);
                     });
                     break;
 

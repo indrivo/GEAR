@@ -1,7 +1,9 @@
-﻿using GR.Core.Extensions;
+﻿using System;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IProfileService = IdentityServer4.Services.IProfileService;
@@ -14,25 +16,33 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// Add identity server
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="migrationsAssembly"></param>
         /// <param name="configuration"></param>
+        /// <param name="migrationsAssembly"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityClientsModule<TUser>(this IServiceCollection services, IConfiguration configuration,
-            string migrationsAssembly)
+        public static IServiceCollection AddIdentityClientsModule<TUser, TConfiguration, TPersisted>(this IServiceCollection services, IConfiguration configuration, string migrationsAssembly)
             where TUser : GearUser
+            where TConfiguration : ConfigurationDbContext<TConfiguration>, IClientsContext
+            where TPersisted : PersistedGrantDbContext<TPersisted>, IClientsPersistedGrantContext
         {
-            services.AddIdentityServer(x => x.IssuerUri = "null")
+            Action<DbContextOptionsBuilder> dbOptions = builder => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
+            services.AddIdentityServer(x =>
+                {
+                    x.IssuerUri = "null";
+                    x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+                })
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<TUser>()
-                .AddConfigurationStore(options =>
+                .AddConfigurationStore<TConfiguration>(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = builder => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
+                    options.ConfigureDbContext = dbOptions;
                 })
-                .AddOperationalStore(options =>
+                .AddOperationalStore<TPersisted>(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = builder => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
+                    options.ConfigureDbContext = dbOptions;
+                    options.EnableTokenCleanup = true;
+                    options.TokenCleanupInterval = 30;
                 });
 
             return services;
@@ -60,7 +70,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         public static IServiceCollection RegisterClientsService<TService>(this IServiceCollection services)
             where TService : class, IClientsService
         {
-            services.AddGearTransient<IClientsService, TService>();
+            services.AddTransient<IClientsService, TService>();
             return services;
         }
     }

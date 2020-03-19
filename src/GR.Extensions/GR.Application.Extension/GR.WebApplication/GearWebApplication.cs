@@ -59,7 +59,7 @@ namespace GR.WebApplication
 
             GlobalWebHost?
                 .MigrateDbContext<EntitiesDbContext>()
-                .MigrateDbContext<ApplicationDbContext>()
+                .MigrateDbContext<IdentityDbContext>()
                 .MigrateDbContext<MenuDbContext>()
                 .MigrateDbContext<PersistedGrantDbContext>()
                 .MigrateDbContext<ConfigurationDbContext>((context, services) =>

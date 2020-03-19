@@ -13,7 +13,7 @@ using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IPermissionsContext
+    public class IdentityDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IPermissionsContext
     {
         /// <summary>
         /// Schema
@@ -26,7 +26,7 @@ namespace GR.Identity.Data
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
             : base(options)
         {
         }
@@ -78,7 +78,7 @@ namespace GR.Identity.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             //seed countries
-            var countries = ApplicationDbContextSeeder.GetCountriesFromJsonFile();
+            var countries = IdentityDbContextSeeder.GetCountriesFromJsonFile();
             foreach (var country in countries)
             {
                 var cities = country.StatesOrProvinces;

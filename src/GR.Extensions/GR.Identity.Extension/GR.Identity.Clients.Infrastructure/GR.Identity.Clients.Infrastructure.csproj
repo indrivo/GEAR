@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Version>1.9.2</Version>
@@ -11,7 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace GR.Identity.Clients.Infrastructure
 
         private readonly UserManager<GearUser> _userManager;
 
-        #endregion DependencyInjection Private Fields
+        #endregion 
 
         public ProfileService(UserManager<GearUser> userManager)
         {
@@ -67,6 +67,7 @@ namespace GR.Identity.Clients.Infrastructure
                 }
 
                 context.IsActive =
+                    !user.IsDisabled ||
                     !user.LockoutEnabled ||
                     !user.LockoutEnd.HasValue ||
                     user.LockoutEnd <= DateTime.UtcNow;

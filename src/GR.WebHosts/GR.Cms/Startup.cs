@@ -117,6 +117,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
@@ -133,6 +134,7 @@ using GR.Forms.Abstractions.Helpers;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Clients.Infrastructure;
+using GR.Identity.Clients.Infrastructure.Data;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
@@ -194,7 +196,7 @@ namespace GR.Cms
 			config.CacheConfiguration.UseInMemoryCache = true;
 
 			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<ApplicationDbContext>()
+			config.GearServices.AddIdentityModule<IdentityDbContext>()
 				.AddAuthentication(Configuration)
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
@@ -207,20 +209,26 @@ namespace GR.Cms
 				//	options.RequireLowercase = false;
 				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
-				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
+				.AddIdentityModuleStorage<IdentityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
 				.RegisterLocationService<LocationService>()
 				.AddIdentityRazorModule();
 
 			//-----------------------------Identity Clients Module-------------------------------------
-			config.GearServices.AddIdentityClientsModule<GearUser>(Configuration, MigrationsAssembly)
+			var migrationsAssembly = typeof(GearUser).GetTypeInfo().Assembly.GetName().Name;
+			//Assembly.GetExecutingAssembly().GetName().Name
+			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration, migrationsAssembly)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>();
 
 			//----------------------------------Permissions Module-------------------------------------
-			config.GearServices.AddPermissionModule<PermissionService<ApplicationDbContext>>()
-				.MapPermissionsModuleToContext<ApplicationDbContext>();
+			config.GearServices.AddPermissionModule<PermissionService<IdentityDbContext>>()
+				.MapPermissionsModuleToContext<IdentityDbContext>();
 
 			//---------------------------------------Groups Module-------------------------------------
 			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
@@ -245,7 +253,7 @@ namespace GR.Cms
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
-			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
+			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, IdentityDbContext>>()
 				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -276,7 +284,7 @@ namespace GR.Cms
 				.RegisterProgramAssembly(typeof(Program));
 
 			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<IdentityDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>

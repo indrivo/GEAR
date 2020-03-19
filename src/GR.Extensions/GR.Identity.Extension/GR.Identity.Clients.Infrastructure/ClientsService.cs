@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using GR.Identity.Clients.Abstractions;
-using IdentityServer4.EntityFramework.Interfaces;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Clients.Infrastructure
@@ -8,7 +8,7 @@ namespace GR.Identity.Clients.Infrastructure
     public class ClientsService : IClientsService
     {
         #region Injectable
-        private readonly IConfigurationDbContext _configurationDbContext;
+        private readonly ConfigurationDbContext _configurationDbContext;
 
         #endregion
 
@@ -16,7 +16,7 @@ namespace GR.Identity.Clients.Infrastructure
         /// Constructor
         /// </summary>
         /// <param name="configurationDbContext"></param>
-        public ClientsService(IConfigurationDbContext configurationDbContext)
+        public ClientsService(ConfigurationDbContext configurationDbContext)
         {
             _configurationDbContext = configurationDbContext;
         }

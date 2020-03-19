@@ -69,7 +69,7 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject app context
         /// </summary>
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IdentityDbContext _identityDbContext;
 
         #endregion
 
@@ -85,10 +85,10 @@ namespace GR.Identity.Razor.Controllers
             IIdentityServerInteractionService interactionService,
             IUserManager<GearUser> userManager,
             IHttpContextAccessor httpContextAccesor,
-            ApplicationDbContext applicationDbContext)
+            IdentityDbContext identityDbContext)
         {
             _httpContextAccesor = httpContextAccesor;
-            _applicationDbContext = applicationDbContext;
+            _identityDbContext = identityDbContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -337,11 +337,11 @@ namespace GR.Identity.Razor.Controllers
         [NonAction]
         private async Task ClearUserClaims(GearUser user)
         {
-            var userClaims = await _applicationDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
+            var userClaims = await _identityDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
             if (userClaims.Any())
             {
-                _applicationDbContext.UserClaims.RemoveRange(userClaims);
-                await _applicationDbContext.SaveAsync();
+                _identityDbContext.UserClaims.RemoveRange(userClaims);
+                await _identityDbContext.SaveAsync();
             }
         }
 

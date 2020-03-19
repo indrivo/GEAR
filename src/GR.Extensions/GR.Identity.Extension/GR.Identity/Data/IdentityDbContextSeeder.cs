@@ -6,7 +6,7 @@ using System.IO;
 
 namespace GR.Identity.Data
 {
-    public static class ApplicationDbContextSeeder
+    public static class IdentityDbContextSeeder
     {
         /// <summary>
         /// Get countries

@@ -43,7 +43,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <summary>
         /// App Context
         /// </summary>
-        private readonly ApplicationDbContext _appContext;
+        private readonly IdentityDbContext _appContext;
 
         /// <summary>
         /// Inject Data Service
@@ -76,7 +76,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="formContext"></param>
         /// <param name="pagesContext"></param>
         /// <param name="viewModelService"></param>
-        public PageRenderController(ApplicationDbContext appContext,
+        public PageRenderController(IdentityDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
             IFormContext formContext, IDynamicPagesContext pagesContext, IViewModelService viewModelService)

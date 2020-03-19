@@ -20,11 +20,6 @@ namespace GR.Identity.Profile.Abstractions.Models
         /// Describe profile level
         /// </summary>
         public ProfileLevel ProfileLevel { get; set; }
-
-        /// <summary>
-        /// Reference to dynamic table
-        /// </summary>
-        public Guid TableId { get; set; }
     }
 
     public enum ProfileLevel

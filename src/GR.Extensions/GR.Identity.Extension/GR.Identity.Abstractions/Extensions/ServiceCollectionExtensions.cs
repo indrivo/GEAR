@@ -101,17 +101,13 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add identity storage
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="migrationsAssembly"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services,
-            IConfiguration configuration, string migrationsAssembly)
+        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TIdentityContext : DbContext, IIdentityContext
         {
             services.AddTransient<IIdentityContext, TIdentityContext>();
-            services.AddDbContext<TIdentityContext>(builder
-                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
-
+            services.AddDbContext<TIdentityContext>(options);
             services.RegisterAuditFor<IIdentityContext>("Identity module");
             return services;
         }
