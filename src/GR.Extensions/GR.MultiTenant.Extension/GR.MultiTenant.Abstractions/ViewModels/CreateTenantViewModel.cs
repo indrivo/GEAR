@@ -24,13 +24,11 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         public CreateTenantViewModel(Tenant tenant)
         {
             CountryId = tenant.CountryId;
-            Country = tenant.Country;
             Address = tenant.Address;
             Author = tenant.Author;
             Changed = tenant.Changed;
             Created = tenant.Created;
             CityId = tenant.CityId;
-            City = tenant.City;
             DateFormat = tenant.DateFormat;
             Description = tenant.Description;
             Id = tenant.Id;
@@ -55,12 +53,10 @@ namespace GR.MultiTenant.Abstractions.ViewModels
             Address = Address,
             MachineName = MachineName,
             Author = Author,
-            City = City,
             TimeZone = TimeZone,
             SiteWeb = SiteWeb,
             CityId = CityId,
             DateFormat = DateFormat,
-            Country = Country,
             IsDeleted = IsDeleted,
             Id = Id,
             ModifiedBy = ModifiedBy,

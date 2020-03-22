@@ -101,22 +101,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="SelectedCountryId" class="control-label"></label>
-                                <select class="form-control" asp-for="SelectedCountryId" asp-items="Model.CountrySelectListItems"></select>
-                                <span asp-validation-for="SelectedCountryId" class="text-danger"></span><br />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="SelectedCityId" class="control-label"></label>
-                                <select disabled="disabled" class="form-control" asp-for="SelectedCityId"></select>
-                                <span asp-validation-for="SelectedCityId" class="text-danger"></span><br />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label asp-for="AboutMe" class="control-label"></label>
@@ -200,44 +184,8 @@
 			$('#SelectedRoleId').select2({
 				placeholder: "@Localizer["sel_role"]"
 			});
-			$("#SelectedCountryId").select2();
-			$("#SelectedCityId").select2({
-				placeholder: {
-					id: '',
-					text: "@Localizer["system_select_city"]"
-				}
-			});
 		});
 		$('.dropify').dropify();
-    </script>
-
-    <script type="text/javascript">
-		const notification = new ToastNotifier();
-		$("#SelectedCountryId").change(function() {
-			const selectedValue = this.value;
-			const citySelect = $("#SelectedCityId");
-			if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
-				$.ajax({
-					type: "GET",
-					url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
-				}).done((response) => {
-					if (response.is_success) {
-						citySelect.empty();
-						citySelect.prop("disabled", false);
-						for (let city of response.result) {
-							citySelect.append(new Option(city.text, city.value, false, city.selected));
-						}
-					} else {
-						notification.notifyErrorList(response.error_keys);
-					}
-				}).fail(() => {
-					notify({ heading: "Error", text: window.translate("system_internal_error") });
-				});
-			} else {
-				citySelect.prop("disabled", true);
-				citySelect.empty();
-			}
-		});
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

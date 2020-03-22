@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
 using GR.Audit.Contexts;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Groups.Abstractions;
 using GR.Identity.Groups.Abstractions.Models;
@@ -52,17 +51,15 @@ namespace GR.Identity.Groups.Infrastructure.Data
         [NotMapped]
         public DbSet<IdentityUserRole<Guid>> UserRoles { get; set; }
         [NotMapped]
+        public virtual DbSet<IdentityUserLogin<Guid>> UserLogins { get; set; }
+        [NotMapped]
+        public virtual DbSet<IdentityRoleClaim<Guid>> RoleClaims { get; set; }
+        [NotMapped]
+        public virtual DbSet<IdentityUserToken<Guid>> UserTokens { get; set; }
+        [NotMapped]
         public DbSet<GearUser> Users { get; set; }
         [NotMapped]
         public DbSet<Tenant> Tenants { get; set; }
-        [NotMapped]
-        public DbSet<Country> Countries { get; set; }
-        [NotMapped]
-        public DbSet<StateOrProvince> StateOrProvinces { get; set; }
-        [NotMapped]
-        public DbSet<Address> Addresses { get; set; }
-        [NotMapped]
-        public DbSet<District> Districts { get; set; }
 
         #endregion
 
@@ -92,16 +89,26 @@ namespace GR.Identity.Groups.Infrastructure.Data
                 .HasForeignKey(x => x.UserId);
 
 
+            //Configure Identity table naming
+            builder.Entity<GearRole>().ToTable("Roles");
+            builder.Entity<GearUser>().ToTable("Users");
+            builder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+            builder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+            builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+            builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
+            builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+
+
             if (IsMigrationMode)
             {
                 builder.Ignore<GearUser>();
                 builder.Ignore<GearRole>();
-                builder.Ignore<IdentityUserRole<Guid>>();
                 builder.Ignore<Tenant>();
-                builder.Ignore<Country>();
-                builder.Ignore<StateOrProvince>();
-                builder.Ignore<Address>();
-                builder.Ignore<District>();
+                builder.Ignore<IdentityUserRole<Guid>>();
+                builder.Ignore<IdentityUserClaim<Guid>>();
+                builder.Ignore<IdentityUserLogin<Guid>>();
+                builder.Ignore<IdentityRoleClaim<Guid>>();
+                builder.Ignore<IdentityUserToken<Guid>>();
             }
         }
 

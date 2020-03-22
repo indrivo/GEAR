@@ -1,4 +1,5 @@
-﻿using GR.Core.Attributes;
+﻿using System;
+using GR.Core.Attributes;
 using GR.Identity.Abstractions.Helpers;
 using System.ComponentModel.DataAnnotations;
 
@@ -53,7 +54,7 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
         /// </summary>
         [Required(ErrorMessage = "The {0} field is required.")]
         [DisplayTranslate(Key = IdentityResources.Translations.CITY)]
-        public long CityId { get; set; }
+        public Guid CityId { get; set; }
 
         /// <summary>
         /// Country id, ex: MD

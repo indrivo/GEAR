@@ -1,6 +1,5 @@
 using GR.Audit.Contexts;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Extensions;
 using GR.Identity.Seeders;
@@ -39,15 +38,6 @@ namespace GR.Identity.Data
 
         #endregion
 
-        #region Address
-
-        public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
-        public virtual DbSet<Address> Addresses { get; set; }
-        public virtual DbSet<District> Districts { get; set; }
-
-        #endregion Address
-
         /// <summary>
         /// On model creating
         /// </summary>
@@ -64,28 +54,6 @@ namespace GR.Identity.Data
             builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
             builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
             builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
-
-            builder.Entity<Country>().HasKey(k => k.Id);
-            builder.Entity<StateOrProvince>().HasKey(k => k.Id);
-            builder.Entity<StateOrProvince>()
-                .Property(k => k.Id)
-                .ValueGeneratedOnAdd();
-
-            builder.Entity<StateOrProvince>().Property(x => x.Id);
-            builder.Entity<GearUser>()
-                .HasMany(x => x.Addresses)
-                .WithOne(x => x.ApplicationUser)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //seed countries
-            var countries = IdentityDbContextSeeder.GetCountriesFromJsonFile();
-            foreach (var country in countries)
-            {
-                var cities = country.StatesOrProvinces;
-                country.StatesOrProvinces = null;
-                builder.Entity<Country>().HasData(country);
-                builder.Entity<StateOrProvince>().HasData(cities);
-            }
 
             builder.RegisterIndexes();
         }

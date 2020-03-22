@@ -113,19 +113,6 @@ namespace GR.Identity.Abstractions.Extensions
         }
 
         /// <summary>
-        /// Register address service
-        /// </summary>
-        /// <typeparam name="TAddressService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
-            where TAddressService : class, IUserAddressService
-        {
-            services.AddGearTransient<IUserAddressService, TAddressService>();
-            return services;
-        }
-
-        /// <summary>
         /// Register events
         /// </summary>
         /// <param name="services"></param>
@@ -133,19 +120,6 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddIdentityModuleEvents(this IServiceCollection services)
         {
             IdentityEvents.RegisterEvents();
-            return services;
-        }
-
-        /// <summary>
-        /// Register location service
-        /// </summary>
-        /// <typeparam name="TLocationService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
-            where TLocationService : class, ILocationService
-        {
-            services.AddGearSingleton<ILocationService, TLocationService>();
             return services;
         }
     }

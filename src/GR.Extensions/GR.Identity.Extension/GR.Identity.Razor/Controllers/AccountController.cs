@@ -311,8 +311,8 @@ namespace GR.Identity.Razor.Controllers
                         IpAdress = _userManager.GetRequestIpAdress(),
                         UserId = user.Id,
                         Email = user.Email,
-                        FirstName = user.UserFirstName,
-                        LastName = user.UserLastName
+                        FirstName = user.FirstName,
+                        LastName = user.LastName
                     });
 
                     var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
@@ -454,8 +454,8 @@ namespace GR.Identity.Razor.Controllers
             {
                 UserId = user.Id,
                 Email = user.Email,
-                FirstName = user.UserFirstName,
-                LastName = user.UserLastName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 IpAdress = _userManager.GetRequestIpAdress()
             });
 

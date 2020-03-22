@@ -42,5 +42,19 @@ namespace GR.Identity.Profile.Abstractions.Extensions
             };
             return services;
         }
+
+
+        /// <summary>
+        /// Register address service
+        /// </summary>
+        /// <typeparam name="TAddressService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
+            where TAddressService : class, IUserAddressService
+        {
+            services.AddGearTransient<IUserAddressService, TAddressService>();
+            return services;
+        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Core.Attributes.Documentation;
-using GR.Entities.Abstractions.ViewModels.DynamicEntities;
+using GR.Core.Helpers.Global;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -11,9 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
 {
-    [Author("Lupei Nicolae", 1.1)]
-    [Author("Nirca Cristian", 1.2, "Add country and city, address")]
-    [Author("Lupei Nicolae", 1.3, "Fix non used address field, what cause exception on user create")]
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     public class CreateUserViewModel
     {
         public CreateUserViewModel()
@@ -21,8 +19,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
             Tenants = new HashSet<SelectListItem>();
             Roles = new HashSet<SelectListItem>();
             SelectedRoleId = new HashSet<Guid>();
-            Profiles = new HashSet<EntityViewModel>();
-            CountrySelectListItems = new HashSet<SelectListItem>();
         }
 
         [Display(Name = "First Name", Prompt = "first name")]
@@ -78,13 +74,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         [Required(AllowEmptyStrings = false, ErrorMessage = "Select a role for this user"),
          Display(Name = "User's Role")]
         public IEnumerable<Guid> SelectedRoleId { get; set; }
-
-        public IEnumerable<EntityViewModel> Profiles { get; set; }
-
-        [Display(Name = "Select country")] public string SelectedCountryId { get; set; }
-        public IEnumerable<SelectListItem> CountrySelectListItems { get; set; }
-
-        [Display(Name = "Select city")] public int? SelectedCityId { get; set; }
 
         /// <summary>
         /// User organization

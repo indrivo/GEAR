@@ -2,7 +2,10 @@
 using GR.Identity.Profile.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using GR.Identity.Profile.Abstractions.Models.AddressModels;
+using GR.Localization.Abstractions.Models.Countries;
 using ProfileModels = GR.Identity.Profile.Abstractions.Models;
 
 namespace GR.Identity.Profile.Data
@@ -15,6 +18,20 @@ namespace GR.Identity.Profile.Data
         /// </summary>
         public const string Schema = "Identity";
 
+        /// <summary>
+        /// Country Schema
+        /// </summary>
+        private const string CountrySchema = "Localization";
+
+        /// <summary>
+        /// Check if is migration mode
+        /// </summary>
+        public static bool IsMigrationMode { get; set; } = false;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="options"></param>
         public ProfileDbContext(DbContextOptions<ProfileDbContext> options) : base(options)
         {
         }
@@ -22,6 +39,18 @@ namespace GR.Identity.Profile.Data
         public virtual DbSet<ProfileModels.Profile> Profiles { get; set; }
         public virtual DbSet<ProfileModels.UserProfile> UserProfiles { get; set; }
         public virtual DbSet<ProfileModels.RoleProfile> RoleProfiles { get; set; }
+        public virtual DbSet<Address> UserAddresses { get; set; }
+
+        #region Ignore
+
+        [NotMapped]
+        public virtual DbSet<Country> Countries { get; set; }
+        [NotMapped]
+        public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
+        [NotMapped]
+        public virtual DbSet<District> Districts { get; set; }
+
+        #endregion
 
 
         /// <summary>
@@ -38,6 +67,17 @@ namespace GR.Identity.Profile.Data
 
             builder.Entity<ProfileModels.Profile>()
                 .HasIndex(x => x.TenantId);
+
+            builder.Entity<Country>().ToTable("Countries", CountrySchema);
+            builder.Entity<StateOrProvince>().ToTable("StateOrProvinces", CountrySchema);
+            builder.Entity<District>().ToTable("Districts", CountrySchema);
+
+            if (IsMigrationMode)
+            {
+                builder.Ignore<Country>();
+                builder.Ignore<StateOrProvince>();
+                builder.Ignore<District>();
+            }
         }
 
         /// <summary>

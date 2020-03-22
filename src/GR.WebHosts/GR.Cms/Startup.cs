@@ -65,11 +65,9 @@ using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions;
 using GR.Identity.Permissions.Abstractions.Extensions;
-using GR.Identity.Services;
 using GR.Install;
 using GR.Install.Abstractions.Extensions;
 using GR.Localization;
-using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
@@ -117,7 +115,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
@@ -131,6 +128,7 @@ using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
 using GR.Entities.Abstractions.Helpers;
 using GR.Forms.Abstractions.Helpers;
+using GR.Identity;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Clients.Infrastructure;
@@ -141,8 +139,12 @@ using GR.Identity.Groups.Infrastructure.Data;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
+using GR.Identity.Profile;
+using GR.Identity.Profile.Abstractions.Extensions;
+using GR.Identity.Profile.Data;
 using GR.Identity.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
+using GR.Localization.Data;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
@@ -152,6 +154,7 @@ using GR.Process.Razor.Extensions;
 using GR.Processes.Abstractions.Extensions;
 using GR.Processes.Abstractions.Helpers;
 using Microsoft.Extensions.Logging;
+using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 
 #endregion Usings
 
@@ -214,25 +217,30 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
-				.RegisterLocationService<LocationService>()
 				.AddIdentityRazorModule();
 
 			//-----------------------------Identity Clients Module-------------------------------------
-			var migrationsAssembly = typeof(GearUser).GetTypeInfo().Assembly.GetName().Name;
-			//Assembly.GetExecutingAssembly().GetName().Name
-			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration, migrationsAssembly)
+			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration, MigrationsAssembly)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>();
+
+			//---------------------------------------Groups Module-------------------------------------
+			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
+				.AddUserGroupModuleStorage<GroupsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//----------------------------------Permissions Module-------------------------------------
 			config.GearServices.AddPermissionModule<PermissionService<IdentityDbContext>>()
 				.MapPermissionsModuleToContext<IdentityDbContext>();
 
-			//---------------------------------------Groups Module-------------------------------------
-			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
-				.AddUserGroupModuleStorage<GroupsDbContext>(options =>
+			//---------------------------------------Profile Module-------------------------------------
+			config.GearServices.AddProfileModule<Identity.Profile.ProfileService>()
+				.AddUserAddressService<UserAddressService>()
+				.AddProfileModuleStorage<ProfileDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
@@ -296,13 +304,23 @@ namespace GR.Cms
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
-				.AddLocalizationModule<JsonFileLocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
-					new TranslationModuleOptions
-					{
-						Configuration = Configuration,
-						LocalizationProvider = LocalizationProvider.Yandex
-					})
-				.AddLocalizationRazorModule();
+				.AddLocalizationModule<JsonFileLocalizationService, JsonStringLocalizer>(
+					Configuration.GetSection(nameof(LocalizationConfig)))
+				.RegisterTranslationService<YandexTranslationProvider>(
+					Configuration.GetSection(nameof(LocalizationProviderSettings)))
+				//Only with DB provider
+				//.AddLocalizationModuleStorage<TranslationsDbContext>(options =>
+				//{
+				//	options.GetDefaultOptions(Configuration);
+				//	options.EnableSensitiveDataLogging();
+				//})
+				.AddLocalizationRazorModule()
+				.AddCountryModule<CountryService>()
+				.AddCountryModuleStorage<CountriesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//--------------------------------------Menu UI Module-------------------------------------
 			config.GearServices.AddMenuModule<MenuService>()

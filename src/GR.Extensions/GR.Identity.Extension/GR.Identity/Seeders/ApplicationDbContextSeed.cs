@@ -72,18 +72,14 @@ namespace GR.Identity.Seeders
             // Check and seed users
             if (entity.ApplicationUsers.Any())
             {
-                foreach (var user in entity.ApplicationUsers.Select(x => x.Adapt<GearUser>()).ToList())
+                foreach (var seedUser in entity.ApplicationUsers)
                 {
+                    var user = seedUser.Adapt<GearUser>();
                     var exists = await userManager.FindByNameAsync(user.UserName);
                     if (exists != null) continue;
-                    var hasher = new PasswordHasher<GearUser>();
-                    var passwordHash = hasher.HashPassword(user, user.Password);
-                    user.PasswordHash = passwordHash;
-                    user.Created = DateTime.Now;
-                    user.Changed = DateTime.Now;
                     user.AuthenticationType = AuthenticationType.Local;
                     user.TenantId = GearSettings.TenantId;
-                    var result = await userManager.CreateAsync(user);
+                    var result = await userManager.CreateAsync(user, seedUser.Password);
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
                     {

@@ -345,9 +345,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Groups.Api", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Clients", "GR.Clients", "{B5C1A5F5-0651-406E-B80E-3682CB9FF7CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Clients.Razor", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Razor\GR.Identity.Clients.Razor.csproj", "{607BC008-036D-4AED-89F8-87796E20FA6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Clients.Razor", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Razor\GR.Identity.Clients.Razor.csproj", "{607BC008-036D-4AED-89F8-87796E20FA6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Clients.Infrastructure", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Infrastructure\GR.Identity.Clients.Infrastructure.csproj", "{C3520934-DB41-4EF0-B10C-0461BA266999}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Clients.Infrastructure", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Infrastructure\GR.Identity.Clients.Infrastructure.csproj", "{C3520934-DB41-4EF0-B10C-0461BA266999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Localization.Api", "src\GR.Extensions\GR.Localization.Extension\GR.Localization.Api\GR.Localization.Api.csproj", "{84A18FBA-52A9-447B-B007-D97752B5E59E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Identity.Profile.Razor", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Razor\GR.Identity.Profile.Razor.csproj", "{B3037E95-B095-4445-8CD1-CACEACABE82A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1106,6 +1110,18 @@ Global
 		{C3520934-DB41-4EF0-B10C-0461BA266999}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3520934-DB41-4EF0-B10C-0461BA266999}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{C3520934-DB41-4EF0-B10C-0461BA266999}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{84A18FBA-52A9-447B-B007-D97752B5E59E}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3037E95-B095-4445-8CD1-CACEACABE82A}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1281,6 +1297,8 @@ Global
 		{B5C1A5F5-0651-406E-B80E-3682CB9FF7CF} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 		{607BC008-036D-4AED-89F8-87796E20FA6C} = {B5C1A5F5-0651-406E-B80E-3682CB9FF7CF}
 		{C3520934-DB41-4EF0-B10C-0461BA266999} = {B5C1A5F5-0651-406E-B80E-3682CB9FF7CF}
+		{84A18FBA-52A9-447B-B007-D97752B5E59E} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}
+		{B3037E95-B095-4445-8CD1-CACEACABE82A} = {1896A6F8-56E1-4C56-ACBB-C9350014EB85}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

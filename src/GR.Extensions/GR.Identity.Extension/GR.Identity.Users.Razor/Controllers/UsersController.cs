@@ -1,40 +1,35 @@
-using GR.Core;
-using GR.Core.Attributes;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
-using GR.Identity.Abstractions.Events;
-using GR.Identity.Abstractions.Events.EventArgs.Users;
-using GR.Identity.Abstractions.Models.AddressModels;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
-using GR.Identity.Permissions.Abstractions.Attributes;
-using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels;
-using GR.Identity.Razor.Users.ViewModels.UserViewModels;
-using GR.Notifications.Abstractions;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
+using GR.Core.Attributes;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Helpers;
+using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using GR.Identity.Permissions.Abstractions.Attributes;
+using GR.Identity.Razor.Users.ViewModels.UserViewModels;
 using GR.Identity.Users.Razor.ViewModels.UserViewModels;
-using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
+using GR.Notifications.Abstractions;
+using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
-namespace GR.Identity.Razor.Users.Controllers
+namespace GR.Identity.Users.Razor.Controllers
 {
     [Authorize]
     public class UsersController : BaseGearController
@@ -109,9 +104,9 @@ namespace GR.Identity.Razor.Users.Controllers
             var model = new CreateUserViewModel
             {
                 Roles = await GetRoleSelectListItemAsync(),
-                Tenants = await GetTenantsSelectListItemAsync(),
-                CountrySelectListItems = await GetCountrySelectList()
+                Tenants = await GetTenantsSelectListItemAsync()
             };
+
             return View(model);
         }
 
@@ -129,7 +124,6 @@ namespace GR.Identity.Razor.Users.Controllers
             {
                 model.Roles = await GetRoleSelectListItemAsync();
                 model.Tenants = await GetTenantsSelectListItemAsync();
-                model.CountrySelectListItems = await GetCountrySelectList();
                 return View(model);
             }
 
@@ -145,8 +139,8 @@ namespace GR.Identity.Razor.Users.Controllers
                 IsEditable = true,
                 TenantId = model.TenantId,
                 LastPasswordChanged = DateTime.Now,
-                UserFirstName = model.FirstName,
-                UserLastName = model.LastName,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
                 Birthday = model.Birthday ?? DateTime.MinValue,
                 AboutMe = model.AboutMe,
             };
@@ -170,7 +164,6 @@ namespace GR.Identity.Razor.Users.Controllers
 
                 model.Roles = await GetRoleSelectListItemAsync();
                 model.Tenants = await GetTenantsSelectListItemAsync();
-                model.CountrySelectListItems = await GetCountrySelectList();
                 return View(model);
             }
 
@@ -190,7 +183,6 @@ namespace GR.Identity.Razor.Users.Controllers
 
                     model.Roles = await GetRoleSelectListItemAsync();
                     model.Tenants = await GetTenantsSelectListItemAsync();
-                    model.CountrySelectListItems = await GetCountrySelectList();
                     return View(model);
                 }
             }
@@ -201,7 +193,6 @@ namespace GR.Identity.Razor.Users.Controllers
                 ModelState.AppendResultModelErrors(dbResult.Errors);
                 model.Roles = await GetRoleSelectListItemAsync();
                 model.Tenants = await GetTenantsSelectListItemAsync();
-                model.CountrySelectListItems = await GetCountrySelectList();
                 return View(model);
             }
 
@@ -348,8 +339,8 @@ namespace GR.Identity.Razor.Users.Controllers
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
                 Tenants = _identityContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
-                FirstName = applicationUser.UserFirstName,
-                LastName = applicationUser.UserLastName
+                FirstName = applicationUser.FirstName,
+                LastName = applicationUser.LastName
             };
             return View(model);
         }
@@ -418,8 +409,8 @@ namespace GR.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
-            user.UserFirstName = model.FirstName;
-            user.UserLastName = model.LastName;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
 
             if (model.UserPhotoUpdateFile != null)
             {
@@ -473,140 +464,6 @@ namespace GR.Identity.Razor.Users.Controllers
                 UserId = user.Id
             });
             return RedirectToAction(nameof(Index));
-        }
-
-        /// <summary>
-        /// Return list of State Or Provinces by country id
-        /// </summary>
-        /// <param name="countryId"></param>
-        /// <returns></returns>
-        [HttpGet, AllowAnonymous]
-        public virtual JsonResult GetCityByCountryId([Required] string countryId)
-        {
-            var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
-            if (string.IsNullOrEmpty(countryId))
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Country id is null"));
-                return Json(resultModel);
-            }
-
-            var citySelectList = _identityContext.StateOrProvinces
-                .AsNoTracking()
-                .Where(x => x.CountryId.Equals(countryId))
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList();
-            citySelectList.Insert(0, new SelectListItem("Select city", string.Empty));
-
-            resultModel.Result = citySelectList;
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
-
-        /// <summary>
-        /// User profile info
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public virtual async Task<IActionResult> Profile()
-        {
-            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                return NotFound();
-            }
-
-            var model = new UserProfileViewModel
-            {
-                UserId = currentUser.Id,
-                TenantId = currentUser.TenantId ?? Guid.Empty,
-                UserName = currentUser.UserName,
-                UserFirstName = currentUser.UserFirstName,
-                UserLastName = currentUser.UserLastName,
-                UserPhoneNumber = currentUser.PhoneNumber,
-                AboutMe = currentUser.AboutMe,
-                Birthday = currentUser.Birthday,
-                Email = currentUser.Email,
-                Roles = await _userManager.GetRolesAsync(currentUser)
-            };
-            return View(model);
-        }
-
-        /// <summary>
-        /// Get view for edit profile info
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public virtual async Task<IActionResult> EditProfile(Guid userId)
-        {
-            if (userId == Guid.Empty)
-            {
-                return NotFound();
-            }
-
-            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
-            if (currentUser == null)
-            {
-                return NotFound();
-            }
-
-            var model = new UserProfileEditViewModel
-            {
-                Id = currentUser.Id,
-                UserFirstName = currentUser.UserFirstName,
-                UserLastName = currentUser.UserLastName,
-                Birthday = currentUser.Birthday,
-                AboutMe = currentUser.AboutMe,
-                UserPhoneNumber = currentUser.PhoneNumber,
-            };
-            return PartialView("Partial/_EditProfilePartial", model);
-        }
-
-        /// <summary>
-        /// Update user profile info
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual async Task<JsonResult> EditProfile(UserProfileEditViewModel model)
-        {
-            var resultModel = new ResultModel();
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
-                return Json(resultModel);
-            }
-
-            currentUser.UserFirstName = model.UserFirstName;
-            currentUser.UserLastName = model.UserLastName;
-            currentUser.Birthday = model.Birthday;
-            currentUser.AboutMe = model.AboutMe;
-            currentUser.PhoneNumber = model.UserPhoneNumber;
-
-            var result = await _userManager.UpdateAsync(currentUser);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                return Json(resultModel);
-            }
-
-            foreach (var identityError in result.Errors)
-            {
-                resultModel.Errors.Add(new ErrorModel(identityError.Code, identityError.Description));
-            }
-
-            return Json(resultModel);
         }
 
         /// <summary>
@@ -896,362 +753,6 @@ namespace GR.Identity.Razor.Users.Controllers
             }
 
             return Json(true);
-        }
-
-        [HttpPost]
-        public virtual async Task<JsonResult> DeleteUserAddress(Guid? id)
-        {
-            var resultModel = new ResultModel();
-            if (!id.HasValue)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Null id"));
-                return Json(resultModel);
-            }
-
-            var currentAddress = await _identityContext.Addresses.FindAsync(id.Value);
-            if (currentAddress == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
-                return Json(resultModel);
-            }
-
-            currentAddress.IsDeleted = true;
-            var result = await _identityContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var error in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(error.Key, error.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
-
-        [HttpGet]
-        public virtual PartialViewResult UserPasswordChange()
-        {
-            return PartialView("Partial/_ChangePassword");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
-        {
-            var resultModel = new ResultModel();
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Invalid model" });
-                return Json(resultModel);
-            }
-
-            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return Json(resultModel);
-            }
-
-            var result = await _userManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
-                {
-                    Email = currentUser.Email,
-                    UserName = currentUser.UserName,
-                    UserId = currentUser.Id,
-                    Password = model.Password
-                });
-                return Json(resultModel);
-            }
-
-            resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Error on change password" });
-            return Json(resultModel);
-        }
-
-        #region Partial Views
-
-        [HttpGet]
-        public virtual async Task<IActionResult> UserOrganizationPartial(Guid? tenantId)
-        {
-            if (!tenantId.HasValue)
-            {
-                return NotFound();
-            }
-
-            var tenant = await _identityContext.Tenants.FindAsync(tenantId);
-            if (tenant == null)
-            {
-                return NotFound();
-            }
-
-            var model = new UserProfileTenantViewModel
-            {
-                Name = tenant.Name,
-                TenantId = tenant.TenantId,
-                Description = tenant.Description,
-                Address = tenant.Address,
-                SiteWeb = tenant.SiteWeb
-            };
-            return PartialView("Partial/_OrganizationPartial", model);
-        }
-
-        [HttpGet]
-        public virtual IActionResult UserAddressPartial(Guid? userId)
-        {
-            if (!userId.HasValue)
-            {
-                return NotFound();
-            }
-
-            var addressList = _identityContext.Addresses
-                .AsNoTracking()
-                .Where(x => x.ApplicationUserId.Equals(userId.Value) && x.IsDeleted == false)
-                .Include(x => x.Country)
-                .Include(x => x.StateOrProvince)
-                .Include(x => x.District)
-                .Select(address => new UserProfileAddressViewModel
-                {
-                    Id = address.Id,
-                    AddressLine1 = address.AddressLine1,
-                    AddressLine2 = address.AddressLine2,
-                    Phone = address.Phone,
-                    ContactName = address.ContactName,
-                    District = address.District.Name,
-                    Country = address.Country.Name,
-                    City = address.StateOrProvince.Name,
-                    IsPrimary = address.IsDefault,
-                    ZipCode = address.ZipCode,
-                })
-                .ToList();
-
-            return PartialView("Partial/_AddressListPartial", addressList);
-        }
-
-        [HttpGet]
-        public virtual PartialViewResult ChangeUserPasswordPartial()
-        {
-            return PartialView("Partial/_ChangePasswordPartial");
-        }
-
-        [HttpGet]
-        public virtual async Task<IActionResult> AddUserProfileAddress()
-        {
-            var model = new AddUserProfileAddressViewModel
-            {
-                CountrySelectListItems = await GetCountrySelectList()
-            };
-            return PartialView("Partial/_AddUserProfileAddress", model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
-        {
-            var resultModel = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
-                return Json(resultModel);
-            }
-
-            var address = new Address
-            {
-                AddressLine1 = model.AddressLine1,
-                AddressLine2 = model.AddressLine2,
-                Created = DateTime.Now,
-                ContactName = model.ContactName,
-                ZipCode = model.ZipCode,
-                Phone = model.Phone,
-                CountryId = model.SelectedCountryId,
-                StateOrProvinceId = model.SelectedStateOrProvinceId,
-                ApplicationUser = currentUser,
-                IsDefault = model.IsDefault
-            };
-
-            if (model.IsDefault)
-            {
-                _identityContext.Addresses
-                    .Where(x => x.ApplicationUserId.Equals(currentUser.Id))
-                    .ToList().ForEach(b => b.IsDefault = false);
-            }
-
-            await _identityContext.Addresses.AddAsync(address);
-            var result = await _identityContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var resultError in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
-
-        [HttpGet]
-        public virtual async Task<IActionResult> EditUserProfileAddress(Guid? addressId)
-        {
-            if (!addressId.HasValue)
-            {
-                return NotFound();
-            }
-
-            var currentAddress = await _identityContext.Addresses
-                .FirstOrDefaultAsync(x => x.Id.Equals(addressId.Value));
-            var cityBySelectedCountry = await _identityContext.StateOrProvinces
-                .AsNoTracking()
-                .Where(x => x.CountryId.Equals(currentAddress.CountryId))
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToListAsync();
-            if (currentAddress == null)
-            {
-                return NotFound();
-            }
-
-            var model = new EditUserProfileAddressViewModel
-            {
-                Id = currentAddress.Id,
-                CountrySelectListItems = await GetCountrySelectList(),
-                AddressLine1 = currentAddress.AddressLine1,
-                AddressLine2 = currentAddress.AddressLine2,
-                Phone = currentAddress.Phone,
-                ContactName = currentAddress.ContactName,
-                ZipCode = currentAddress.ZipCode,
-                SelectedCountryId = currentAddress.CountryId,
-                SelectedStateOrProvinceId = currentAddress.StateOrProvinceId,
-                SelectedStateOrProvinceSelectListItems = cityBySelectedCountry,
-                IsDefault = currentAddress.IsDefault
-            };
-            return PartialView("Partial/_EditUserProfileAddress", model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual async Task<JsonResult> EditUserProfileAddress(EditUserProfileAddressViewModel model)
-        {
-            var resultModel = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentAddress = await _identityContext.Addresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
-            if (currentAddress == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
-                return Json(resultModel);
-            }
-
-            if (model.IsDefault)
-            {
-                _identityContext.Addresses
-                    .Where(x => x.ApplicationUserId.Equals(currentAddress.ApplicationUserId))
-                    .ToList().ForEach(b => b.IsDefault = false);
-            }
-
-            currentAddress.CountryId = model.SelectedCountryId;
-            currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
-            currentAddress.AddressLine1 = model.AddressLine1;
-            currentAddress.AddressLine2 = model.AddressLine2;
-            currentAddress.ContactName = model.ContactName;
-            currentAddress.Phone = model.Phone;
-            currentAddress.ZipCode = model.ZipCode;
-            currentAddress.IsDefault = model.IsDefault;
-            currentAddress.Changed = DateTime.Now;
-
-            _identityContext.Update(currentAddress);
-            var result = await _identityContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var resultError in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
-
-        #endregion Partial Views
-
-        [HttpPost]
-        public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)
-        {
-            var resultModel = new ResultModel();
-            if (file == null || file.Length == 0)
-            {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image not found" });
-                return Json(resultModel);
-            }
-
-            var currentUser = (await _customUserManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return Json(resultModel);
-            }
-
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                currentUser.UserPhoto = memoryStream.ToArray();
-            }
-
-            var result = await _userManager.UpdateAsync(currentUser);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = false;
-            foreach (var error in result.Errors)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = error.Code, Message = error.Description });
-            }
-
-            return Json(resultModel);
-        }
-
-        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
-        {
-            var countrySelectList = await _identityContext.Countries
-                .AsNoTracking()
-                .Select(x => new SelectListItem
-                {
-                    Text = x.Name,
-                    Value = x.Id
-                }).ToListAsync();
-
-            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
-
-            return countrySelectList;
         }
 
         /// <summary>

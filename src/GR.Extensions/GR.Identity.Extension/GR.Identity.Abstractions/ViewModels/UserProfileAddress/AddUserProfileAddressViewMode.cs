@@ -1,4 +1,5 @@
-﻿using GR.Core.Attributes;
+﻿using System;
+using GR.Core.Attributes;
 using GR.Identity.Abstractions.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 
         [Required(ErrorMessage = "The {0} field is required.")]
         [DisplayTranslate(Key = IdentityResources.Translations.CITY)]
-        public long SelectedStateOrProvinceId { get; set; }
+        public Guid SelectedStateOrProvinceId { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]
         [StringLength(450)]

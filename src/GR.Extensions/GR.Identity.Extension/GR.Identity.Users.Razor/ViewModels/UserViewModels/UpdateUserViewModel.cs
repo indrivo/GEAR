@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
-using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -17,7 +16,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
             Roles = new HashSet<GearRole>();
             Tenants = new HashSet<Tenant>();
             SelectedRoleId = new HashSet<string>();
-            Profiles = new HashSet<EntityViewModel>();
         }
 
         [Display(Name = "First Name", Prompt = "first name")]
@@ -51,8 +49,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
 
         [Required, EmailAddress] public string Email { get; set; }
 
-        public IEnumerable<EntityViewModel> Profiles { get; set; }
-
         public string ProfilesJson { get; set; }
         [Display(Name = "User Photo")] public byte[] UserPhoto { get; set; }
         [Display(Name = "User Photo")] public IFormFile UserPhotoUpdateFile { get; set; }
@@ -60,6 +56,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         /// <summary>
         /// Authentication Type
         /// </summary>
-        public AuthenticationType AuthenticationType { get; set; }
+        public AuthenticationType AuthenticationType { get; set; } = AuthenticationType.Local;
     }
 }

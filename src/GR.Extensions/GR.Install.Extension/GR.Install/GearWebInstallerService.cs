@@ -136,8 +136,8 @@ namespace GR.Install
             {
                 superUser.UserName = model.SysAdminProfile.UserName;
                 superUser.Email = model.SysAdminProfile.Email;
-                superUser.UserFirstName = model.SysAdminProfile.FirstName;
-                superUser.UserLastName = model.SysAdminProfile.LastName;
+                superUser.FirstName = model.SysAdminProfile.FirstName;
+                superUser.LastName = model.SysAdminProfile.LastName;
 
                 var hasher = new PasswordHasher<GearUser>();
                 var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);

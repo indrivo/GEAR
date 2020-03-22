@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Views\UsersProfile\Partial\_AddressListPartial.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_AddUserProfileAddress.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_ChangePassword.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_ChangePasswordPartial.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_EditProfilePartial.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_EditUserProfileAddress.cshtml" />
+    <None Remove="Views\UsersProfile\Partial\_OrganizationPartial.cshtml" />
+    <None Remove="Views\UsersProfile\Profile.cshtml" />
+    <None Remove="Views\_ViewImports.cshtml" />
+    <None Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\UsersProfile\Partial\_AddressListPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_AddUserProfileAddress.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_ChangePassword.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_ChangePasswordPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_EditProfilePartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_EditUserProfileAddress.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Partial\_OrganizationPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\UsersProfile\Profile.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\_ViewImports.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GR.Identity.Profile.Api\GR.Identity.Profile.Api.csproj" />
+  </ItemGroup>
+
+</Project>

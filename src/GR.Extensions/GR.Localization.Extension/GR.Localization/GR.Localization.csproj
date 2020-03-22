@@ -13,10 +13,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Configuration\countries.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Configuration\countries.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="YandexTranslateCoreSdk" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
   </ItemGroup>

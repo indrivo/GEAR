@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions.Models;
 
 namespace GR.Orders.Abstractions.ViewModels.CheckoutViewModels

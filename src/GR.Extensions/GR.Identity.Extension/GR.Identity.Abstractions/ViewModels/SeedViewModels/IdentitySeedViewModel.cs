@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using GR.Identity.Abstractions.ViewModels.RoleViewModels;
-using GR.Identity.Models.UserViewModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Identity.Abstractions.ViewModels.SeedViewModels
 {
