@@ -4,7 +4,7 @@ using GR.Identity.Permissions.Abstractions.Configurators;
 
 namespace GR.Identity.Permissions.Abstractions.Helpers
 {
-    public static class PermissionsInvoker
+    public static class PermissionsProvider
     {
         /// <summary>
         /// Configurators

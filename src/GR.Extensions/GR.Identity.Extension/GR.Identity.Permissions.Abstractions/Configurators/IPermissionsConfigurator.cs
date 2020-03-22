@@ -8,8 +8,8 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
     public interface IPermissionsConfigurator
     {
         event EventHandler<PermissionsSeedEventsArgs> OnPermissionsSeedComplete;
-        IEnumerable<string> Permissions { get; }
-        IEnumerable<string> GetModulePermissionsFromTargetModule();
+        Dictionary<string, string> Permissions { get; }
+        Dictionary<string, string> GetModulePermissionsFromTargetModule();
         Task SeedAsync();
     }
 }

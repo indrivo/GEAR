@@ -61,7 +61,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
             where TPermissionsConstants : class
         {
             var instance = Activator.CreateInstance<TConfiguration>();
-            PermissionsInvoker.Configurators.Enqueue(instance);
+            PermissionsProvider.Configurators.Enqueue(instance);
             return services;
         }
     }

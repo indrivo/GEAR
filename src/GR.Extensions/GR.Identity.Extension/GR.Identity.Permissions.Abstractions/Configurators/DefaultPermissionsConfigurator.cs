@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Identity.Permissions.Abstractions.Permissions;
+using Microsoft.EntityFrameworkCore;
 using Activator = System.Activator;
 
 namespace GR.Identity.Permissions.Abstractions.Configurators
@@ -16,6 +17,11 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
     public class DefaultPermissionsConfigurator<TPermissionsConstants> : IPermissionsConfigurator
         where TPermissionsConstants : class
     {
+        /// <summary>
+        /// Module permissions
+        /// </summary>
+        private readonly Dictionary<string, string> _permissions;
+
         /// <summary>
         /// Inject context
         /// </summary>
@@ -26,23 +32,20 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// </summary>
         public event EventHandler<PermissionsSeedEventsArgs> OnPermissionsSeedComplete;
 
-        protected DefaultPermissionsConfigurator()
+        public DefaultPermissionsConfigurator()
         {
             OnPermissionsSeedComplete += (sender, args) =>
             {
                 Debug.WriteLine("Permissions are seed");
             };
-        }
 
-        /// <summary>
-        /// Module permissions
-        /// </summary>
-        private IEnumerable<string> _permissions { get; set; } = new List<string>();
+            _permissions = GetModulePermissionsFromTargetModule();
+        }
 
         /// <summary>
         /// Permissions
         /// </summary>
-        public virtual IEnumerable<string> Permissions => _permissions.ToList();
+        public virtual Dictionary<string, string> Permissions => _permissions;
 
         /// <summary>
         /// Inject identity context
@@ -64,12 +67,12 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// Get module permissions
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<string> GetModulePermissionsFromTargetModule()
+        public Dictionary<string, string> GetModulePermissionsFromTargetModule()
         {
             var fieldInfo = typeof(TPermissionsConstants).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var o = Activator.CreateInstance<TPermissionsConstants>();
-            var permissions = fieldInfo.Select(_ => _.GetValue(o).ToString()).ToList();
-            _permissions = permissions;
+            var permissions = fieldInfo
+                .ToDictionary(k => k.Name, v => v.GetValue(o).ToString());
             return permissions;
         }
 
@@ -79,17 +82,15 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// <returns></returns>
         public virtual async Task SeedAsync()
         {
-            var permissions = GetModulePermissionsFromTargetModule();
-
-            foreach (var permission in permissions)
+            foreach (var permission in Permissions)
             {
-                var permissionConfig = permission.Split('_');
+                if (await Context.Permissions.AnyAsync(x => x.PermissionKey == permission.Key)) continue;
                 await Context.Permissions.AddAsync(new Permission
                 {
-                    PermissionKey = permission,
-                    PermissionName = permissionConfig[1],
+                    PermissionKey = permission.Key,
+                    PermissionName = permission.Value,
                     ClientId = 1,
-                    Description = $"Permission for module {permissionConfig[0]}"
+                    Description = $"Permission for module {permission.Key}"
                 });
             }
 

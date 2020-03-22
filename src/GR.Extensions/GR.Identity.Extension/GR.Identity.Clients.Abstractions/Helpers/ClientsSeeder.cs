@@ -91,7 +91,7 @@ namespace GR.Identity.Clients.Abstractions.Helpers
             {
                 var clients = context.Clients.ToList();
                 //Start seed permissions
-                await PermissionsInvoker.InvokeAsync();
+                await PermissionsProvider.InvokeAsync();
 
                 var baseDirectory = AppContext.BaseDirectory;
                 var entity = JsonParser.ReadObjectDataFromJsonFile<IdentitySeedViewModel>(Path.Combine(baseDirectory, IdentityResources.Configuration.DEFAULT_FILE_PATH));
