@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using GR.Identity.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Localization.Abstractions.Models.Countries;
 using ProfileModels = GR.Identity.Profile.Abstractions.Models;
@@ -64,6 +65,7 @@ namespace GR.Identity.Profile.Data
 
             builder.Entity<ProfileModels.RoleProfile>().HasKey(ug => new { ug.RoleId, ug.ProfileId });
             builder.Entity<ProfileModels.UserProfile>().HasKey(ug => new { ug.UserId, ug.RoleProfileId });
+            builder.Entity<ProfileModels.UserProfile>().HasIndex(x => x.UserId);
 
             builder.Entity<ProfileModels.Profile>()
                 .HasIndex(x => x.TenantId);
@@ -71,12 +73,20 @@ namespace GR.Identity.Profile.Data
             builder.Entity<Country>().ToTable("Countries", CountrySchema);
             builder.Entity<StateOrProvince>().ToTable("StateOrProvinces", CountrySchema);
             builder.Entity<District>().ToTable("Districts", CountrySchema);
+            builder.Entity<Address>().HasIndex(x => x.CountryId);
+            builder.Entity<Address>().HasIndex(x => x.StateOrProvinceId);
+            builder.Entity<Address>().HasIndex(x => x.DistrictId);
+            builder.Entity<Address>().HasIndex(x => x.UserId);
+
+            builder.Entity<GearUser>().ToTable("Users", Schema);
 
             if (IsMigrationMode)
             {
                 builder.Ignore<Country>();
                 builder.Ignore<StateOrProvince>();
                 builder.Ignore<District>();
+
+                builder.Ignore<GearUser>();
             }
         }
 

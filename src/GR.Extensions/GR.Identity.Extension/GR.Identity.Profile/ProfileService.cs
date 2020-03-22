@@ -17,7 +17,5 @@ namespace GR.Identity.Profile
         {
             _profileContext = profileContext;
         }
-
-
     }
 }
