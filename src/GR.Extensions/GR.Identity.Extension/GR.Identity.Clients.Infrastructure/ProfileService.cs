@@ -67,6 +67,7 @@ namespace GR.Identity.Clients.Infrastructure
                 }
 
                 context.IsActive =
+                    !user.IsPasswordExpired() ||
                     !user.IsDisabled ||
                     !user.LockoutEnabled ||
                     !user.LockoutEnd.HasValue ||

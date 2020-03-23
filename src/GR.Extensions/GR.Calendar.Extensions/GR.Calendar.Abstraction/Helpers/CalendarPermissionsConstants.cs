@@ -2,9 +2,9 @@
 {
     public class CalendarPermissions
     {
-        public const string AddEvent = "Calendar_AddEvent";
-        public const string UpdateEvent = "Calendar_UpdateEvent";
-        public const string DeleteEvent = "Calendar_DeleteEvent";
-        public const string ReadEvents = "Calendar_ReadEvents";
+        public const string CalendarAddEvent = "Calendar_AddEvent";
+        public const string CalendarUpdateEvent = "Calendar_UpdateEvent";
+        public const string CalendarDeleteEvent = "Calendar_DeleteEvent";
+        public const string CalendarReadEvents = "Calendar_ReadEvents";
     }
 }

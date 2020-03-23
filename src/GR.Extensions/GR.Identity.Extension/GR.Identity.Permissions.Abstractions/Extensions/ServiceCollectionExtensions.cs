@@ -45,7 +45,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         public static IServiceCollection MapPermissionsModuleToContext<TContext>(this IServiceCollection services)
             where TContext : DbContext, IPermissionsContext, IIdentityContext
         {
-            services.AddGearTransient<IPermissionsContext, TContext>();
+            services.AddGearSingleton<IPermissionsContext, TContext>();
             return services;
         }
 

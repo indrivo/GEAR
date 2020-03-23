@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Identity.Permissions.Abstractions.Permissions;
-using Microsoft.EntityFrameworkCore;
 using Activator = System.Activator;
 
 namespace GR.Identity.Permissions.Abstractions.Configurators
@@ -84,11 +83,11 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         {
             foreach (var permission in Permissions)
             {
-                if (await Context.Permissions.AnyAsync(x => x.PermissionKey == permission.Key)) continue;
+                if (Context.Permissions.Any(x => x.PermissionKey == permission.Key)) continue;
                 await Context.Permissions.AddAsync(new Permission
                 {
-                    PermissionKey = permission.Key,
-                    PermissionName = permission.Value,
+                    PermissionKey = permission.Value,
+                    PermissionName = permission.Key,
                     ClientId = 1,
                     Description = $"Permission for module {permission.Key}"
                 });

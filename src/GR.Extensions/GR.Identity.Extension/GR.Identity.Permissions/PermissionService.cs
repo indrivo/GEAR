@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Identity.Permissions.Abstractions.ViewModels;
 
 namespace GR.Identity.Permissions
@@ -208,6 +209,7 @@ namespace GR.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
+            if (roles.Contains(GlobalResources.Roles.ADMINISTRATOR)) return true;
             var data = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await SetOrResetPermissionsOnCacheAsync();
             try
             {

@@ -30,13 +30,9 @@ namespace GR.Identity.Data
         {
         }
 
-        #region Permissions Store
-
         public virtual DbSet<Tenant> Tenants { get; set; }
         public virtual DbSet<RolePermission> RolePermissions { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
-
-        #endregion
 
         /// <summary>
         /// On model creating

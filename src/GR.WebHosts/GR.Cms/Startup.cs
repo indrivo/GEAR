@@ -515,7 +515,6 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddProcessesRazorModule();
-
 		});
 	}
 }

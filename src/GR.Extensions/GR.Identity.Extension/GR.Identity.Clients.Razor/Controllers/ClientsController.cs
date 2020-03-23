@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions;
+using GR.Identity.Clients.Abstractions;
 using GR.Identity.Clients.Abstractions.ViewModels.ApiClientViewModels;
 using GR.Identity.Clients.Abstractions.ViewModels.PermissionViewModels;
 using GR.Identity.Permissions.Abstractions;
@@ -14,7 +15,6 @@ using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Permissions.Abstractions.Permissions;
 using GR.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using GR.Notifications.Abstractions;
-using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +35,7 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// <summary>
         /// Inject configuration context
         /// </summary>
-        private readonly ConfigurationDbContext _configurationDbContext;
+        private readonly IClientsContext _configurationDbContext;
 
         /// <summary>
         /// Inject identity context
@@ -67,7 +67,7 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// <param name="roleManager"></param>
         /// <param name="logger"></param>
         /// <param name="permissionService"></param>
-        public ClientsController(ConfigurationDbContext configurationDbContext,
+        public ClientsController(IClientsContext configurationDbContext,
             IPermissionsContext applicationDbContext, RoleManager<GearRole> roleManager,
             ILogger<ClientsController> logger, IPermissionService permissionService)
         {
@@ -172,7 +172,7 @@ namespace GR.Identity.Clients.Razor.Controllers
                 }
 
                 _configurationDbContext.Clients.Add(parsed);
-                _configurationDbContext.SaveChanges();
+                await _configurationDbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -271,7 +271,7 @@ namespace GR.Identity.Clients.Razor.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<JsonResult> GeneralInfoPartialView(int id, ApiClientGeneralViewModel model)
         {
             if (!ModelState.IsValid)
@@ -285,9 +285,12 @@ namespace GR.Identity.Clients.Razor.Controllers
                 return Json(false);
             }
 
+            client.ClientName = model.ClientName;
+            client.Description = model.Description;
+            client.ClientUri = model.ClientUri;
+            _configurationDbContext.Clients.Update(client);
             try
             {
-                _configurationDbContext.Entry(client).CurrentValues.SetValues(model);
                 await _configurationDbContext.SaveChangesAsync();
                 return Json(true);
             }
