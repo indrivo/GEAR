@@ -33,30 +33,6 @@ namespace GR.Identity.Profile.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TrackAudits",
-                schema: "Identity",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    DatabaseContextName = table.Column<string>(nullable: true),
-                    UserName = table.Column<string>(nullable: true),
-                    TrackEventType = table.Column<int>(nullable: false),
-                    RecordId = table.Column<Guid>(nullable: false),
-                    TypeFullName = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrackAudits", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserAddresses",
                 schema: "Identity",
                 columns: table => new
@@ -106,35 +82,6 @@ namespace GR.Identity.Profile.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TrackAuditDetails",
-                schema: "Identity",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    TrackAuditId = table.Column<Guid>(nullable: false),
-                    PropertyName = table.Column<string>(nullable: true),
-                    PropertyType = table.Column<string>(nullable: true),
-                    Value = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrackAuditDetails", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TrackAuditDetails_TrackAudits_TrackAuditId",
-                        column: x => x.TrackAuditId,
-                        principalSchema: "Identity",
-                        principalTable: "TrackAudits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserProfiles",
                 schema: "Identity",
                 columns: table => new
@@ -167,12 +114,6 @@ namespace GR.Identity.Profile.Migrations
                 schema: "Identity",
                 table: "RoleProfiles",
                 column: "ProfileId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TrackAuditDetails_TrackAuditId",
-                schema: "Identity",
-                table: "TrackAuditDetails",
-                column: "TrackAuditId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddresses_CountryId",
@@ -214,19 +155,11 @@ namespace GR.Identity.Profile.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TrackAuditDetails",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
                 name: "UserAddresses",
                 schema: "Identity");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
-                name: "TrackAudits",
                 schema: "Identity");
 
             migrationBuilder.DropTable(

@@ -141,7 +141,6 @@ namespace GR.WebApplication
                     ModulesProvider.Bind(conf);
                 })
                 .Build();
-
             return GlobalWebHost;
         }
 

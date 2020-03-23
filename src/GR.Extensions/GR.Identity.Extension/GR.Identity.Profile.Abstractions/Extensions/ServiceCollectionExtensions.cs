@@ -34,7 +34,8 @@ namespace GR.Identity.Profile.Abstractions.Extensions
         public static IServiceCollection AddProfileModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, IProfileContext
         {
-            services.AddScopedContextFactory<IProfileContext, TContext>();
+            services.AddGearTransient<IProfileContext, TContext>();
+            services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("Profile module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {

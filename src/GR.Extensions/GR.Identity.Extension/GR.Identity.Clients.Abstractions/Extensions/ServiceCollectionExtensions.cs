@@ -22,13 +22,14 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <param name="migrationsAssembly"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityClientsModule<TUser, TConfiguration, TPersisted>(this IServiceCollection services, IConfiguration configuration, string migrationsAssembly)
+        public static IServiceCollection AddIdentityClientsModule<TUser, TConfiguration, TPersisted>(this IServiceCollection services, IConfiguration configuration)
             where TUser : GearUser
             where TConfiguration : ConfigurationDbContext<TConfiguration>, IClientsContext
             where TPersisted : PersistedGrantDbContext<TPersisted>, IClientsPersistedGrantContext
         {
+            var migrationsAssembly = typeof(TConfiguration).Assembly.GetName().Name;
+
             void DbOptions(DbContextOptionsBuilder builder) => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
             services.AddIdentityServer(x =>
                 {

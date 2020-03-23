@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
+using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.ViewModels.SeedViewModels;
 
@@ -19,11 +20,6 @@ namespace GR.Identity.Seeders
 {
     public class ApplicationDbContextSeed
     {
-        /// <summary>
-        /// Configuration path
-        /// </summary>
-        protected const string ConfigurationPath = "Configuration/IdentityConfiguration.json";
-
         /// <summary>
         /// Seed async all components
         /// </summary>
@@ -36,7 +32,8 @@ namespace GR.Identity.Seeders
             var roleManager = services.GetRequiredService<RoleManager<GearRole>>();
             var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ApplicationDbContextSeed));
             var baseDirectory = AppContext.BaseDirectory;
-            var entity = JsonParser.ReadObjectDataFromJsonFile<IdentitySeedViewModel>(Path.Combine(baseDirectory, ConfigurationPath));
+            var data = JsonParser.ReadObjectDataFromJsonFile<IdentitySeedViewModel>(Path.Combine(baseDirectory,
+                IdentityResources.Configuration.DEFAULT_FILE_PATH));
 
             var tenant = new Tenant
             {
@@ -51,12 +48,12 @@ namespace GR.Identity.Seeders
             await context.Tenants.AddAsync(tenant);
             await context.PushAsync();
 
-            if (entity == null) return;
+            if (data == null) return;
 
             // Check and seed system roles
-            if (entity.ApplicationRoles.Any())
+            if (data.ApplicationRoles.Any())
             {
-                foreach (var role in entity.ApplicationRoles)
+                foreach (var role in data.ApplicationRoles)
                 {
                     var exists = await roleManager.RoleExistsAsync(role.Name);
                     if (exists) continue;
@@ -70,9 +67,9 @@ namespace GR.Identity.Seeders
             }
 
             // Check and seed users
-            if (entity.ApplicationUsers.Any())
+            if (data.ApplicationUsers.Any())
             {
-                foreach (var seedUser in entity.ApplicationUsers)
+                foreach (var seedUser in data.ApplicationUsers)
                 {
                     var user = seedUser.Adapt<GearUser>();
                     var exists = await userManager.FindByNameAsync(user.UserName);
@@ -81,9 +78,9 @@ namespace GR.Identity.Seeders
                     user.TenantId = GearSettings.TenantId;
                     var result = await userManager.CreateAsync(user, seedUser.Password);
                     if (!result.Succeeded) continue;
-                    if (entity.ApplicationRoles.Any())
+                    if (data.ApplicationRoles.Any())
                     {
-                        await userManager.AddToRolesAsync(user, entity.ApplicationRoles.Select(x => x.Name));
+                        await userManager.AddToRolesAsync(user, data.ApplicationRoles.Select(x => x.Name));
                     }
 
                     await context.PushAsync();

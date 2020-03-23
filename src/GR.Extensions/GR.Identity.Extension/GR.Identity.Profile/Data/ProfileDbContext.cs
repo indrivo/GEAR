@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using GR.Audit.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Localization.Abstractions.Models.Countries;
@@ -87,6 +88,9 @@ namespace GR.Identity.Profile.Data
                 builder.Ignore<District>();
 
                 builder.Ignore<GearUser>();
+
+                builder.Ignore<TrackAudit>();
+                builder.Ignore<TrackAuditDetails>();
             }
         }
 

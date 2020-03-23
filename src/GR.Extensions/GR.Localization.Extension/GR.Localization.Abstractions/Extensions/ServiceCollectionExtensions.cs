@@ -95,7 +95,8 @@ namespace GR.Localization.Abstractions.Extensions
         public static IServiceCollection AddCountryModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, ICountryContext
         {
-            services.AddScopedContextFactory<ICountryContext, TContext>();
+            services.AddTransient<ICountryContext, TContext>();
+            services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("Countries module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {

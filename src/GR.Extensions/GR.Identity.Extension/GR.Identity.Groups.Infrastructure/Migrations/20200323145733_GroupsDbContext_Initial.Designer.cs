@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GR.Identity.Groups.Infrastructure.Migrations
 {
     [DbContext(typeof(GroupsDbContext))]
-    [Migration("20200322110600_GroupsDbContext_Initial")]
+    [Migration("20200323145733_GroupsDbContext_Initial")]
     partial class GroupsDbContext_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,72 +21,6 @@ namespace GR.Identity.Groups.Infrastructure.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAudit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("DatabaseContextName");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("RecordId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("TrackEventType");
-
-                    b.Property<string>("TypeFullName");
-
-                    b.Property<string>("UserName");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TrackAudits");
-                });
-
-            modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAuditDetails", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("PropertyName");
-
-                    b.Property<string>("PropertyType");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<Guid>("TrackAuditId");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackAuditId");
-
-                    b.ToTable("TrackAuditDetails");
-                });
 
             modelBuilder.Entity("GR.Identity.Groups.Abstractions.Models.Group", b =>
                 {
@@ -172,14 +106,6 @@ namespace GR.Identity.Groups.Infrastructure.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("UserGroups");
-                });
-
-            modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAuditDetails", b =>
-                {
-                    b.HasOne("GR.Audit.Abstractions.Models.TrackAudit")
-                        .WithMany("AuditDetailses")
-                        .HasForeignKey("TrackAuditId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GR.Identity.Groups.Abstractions.Models.GroupPermission", b =>

@@ -39,11 +39,8 @@ namespace GR.Core.Extensions
             using (var scope = webHost.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 var logger = services.GetRequiredService<ILogger<TContext>>();
-
-                var context = services.GetService<TContext>();
-
+                var context = services.GetRequiredService<TContext>();
                 try
                 {
                     logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);

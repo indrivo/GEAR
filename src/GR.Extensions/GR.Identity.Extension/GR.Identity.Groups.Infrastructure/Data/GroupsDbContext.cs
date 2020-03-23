@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -92,15 +93,39 @@ namespace GR.Identity.Groups.Infrastructure.Data
             //Configure Identity table naming
             builder.Entity<GearRole>().ToTable("Roles");
             builder.Entity<GearUser>().ToTable("Users");
-            builder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
-            builder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
-            builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
-            builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
-            builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+            builder.Entity<IdentityUserRole<Guid>>(x =>
+            {
+                x.ToTable("UserRoles");
+                x.HasKey(k => new { k.UserId, k.RoleId });
+            });
 
+            builder.Entity<IdentityUserClaim<Guid>>(x =>
+            {
+                x.ToTable("UserClaims");
+            });
+
+            builder.Entity<IdentityUserLogin<Guid>>(x =>
+            {
+                x.ToTable("UserLogins");
+                x.HasKey(k => new { k.LoginProvider, k.ProviderKey });
+            });
+
+            builder.Entity<IdentityRoleClaim<Guid>>(x =>
+            {
+                x.ToTable("RoleClaims");
+            });
+
+            builder.Entity<IdentityUserToken<Guid>>(x =>
+            {
+                x.ToTable("UserTokens");
+                x.HasKey(v => new { v.Name, v.UserId, v.LoginProvider });
+            });
 
             if (IsMigrationMode)
             {
+                builder.Ignore<TrackAudit>();
+                builder.Ignore<TrackAuditDetails>();
+
                 builder.Ignore<GearUser>();
                 builder.Ignore<GearRole>();
                 builder.Ignore<Tenant>();

@@ -37,7 +37,8 @@ namespace GR.Identity.Groups.Abstractions.Extensions
         public static IServiceCollection AddUserGroupModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, IGroupContext
         {
-            services.AddDbContext<IGroupContext, TContext>(options);
+            services.AddGearTransient<IGroupContext, TContext>();
+            services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("User Groups module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {

@@ -1,9 +1,15 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions.Helpers;
+using GR.Identity.Abstractions.ViewModels.SeedViewModels;
 using GR.Install.Abstractions;
 using GR.Install.Abstractions.Models;
 using GR.WebApplication;
@@ -58,14 +64,19 @@ namespace GR.Install.Razor.Controllers
             var (provider, connectionString) = _configuration.GetConnectionStringInfo();
             model.DataBaseType = provider;
             model.DatabaseConnectionString = connectionString;
+            var baseDirectory = AppContext.BaseDirectory;
+            var data = JsonParser.ReadObjectDataFromJsonFile<IdentitySeedViewModel>(Path.Combine(baseDirectory,
+                IdentityResources.Configuration.DEFAULT_FILE_PATH));
+            var user = data.ApplicationUsers.FirstOrDefault();
+            if (user == null) throw new Exception();
             model.SysAdminProfile = new SetupProfileModel
             {
                 FirstName = "admin",
-                Email = "admin@admin.com",
+                Email = user.Email,
                 LastName = "admin",
-                Password = "admin",
-                ConfirmPassword = "admin",
-                UserName = "admin"
+                Password = user.Password,
+                ConfirmPassword = user.Password,
+                UserName = user.UserName
             };
 
             model.Organization = new SetupOrganizationViewModel

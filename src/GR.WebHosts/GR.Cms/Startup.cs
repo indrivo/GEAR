@@ -222,7 +222,7 @@ namespace GR.Cms
 				.AddIdentityRazorModule();
 
 			//-----------------------------Identity Clients Module-------------------------------------
-			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration, MigrationsAssembly)
+			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>();
 

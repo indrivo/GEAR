@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,11 +31,14 @@ namespace GR.Identity.Clients.Abstractions.Helpers
             var context = services.GetRequiredService<IClientsContext>();
             var configuration = services.GetRequiredService<IConfiguration>();
             var permissionsContext = services.GetRequiredService<IPermissionsContext>();
-            var clientsSection = configuration.GetSection(ClientResources.WebClientsSection);
-            var sectionClients = clientsSection.Get<Dictionary<string, object>>();
-            var clientUrls = sectionClients
-                .ToDictionary(sectionClient => sectionClient.Key,
-                    sectionClient => GetClientUrl(configuration, sectionClient.Key));
+            var clientsSection = configuration.GetSection(ClientResources.WebClientsSection)
+                .GetChildren()
+                .Select(x => x.Key)
+                .ToList();
+
+            var clientUrls = clientsSection
+                .ToDictionary(sectionClient => sectionClient,
+                    sectionClient => GetClientUrl(configuration, sectionClient));
 
             //Seed clients
             if (!context.Clients.Any())

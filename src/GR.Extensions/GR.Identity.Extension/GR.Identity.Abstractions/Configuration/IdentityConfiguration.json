@@ -33,9 +33,8 @@
     {
       "Email": "admin@admin.com",
       "UserName": "admin",
-      "Password": "admin",
-      "IsEditable": false,
-      "Author": "System"
+      "Password": "Adm!n.2020",
+      "IsEditable": false
     }
   ]
 }
