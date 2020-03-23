@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace GR.Identity.Data
 {
-    public class IdentityDbContextFactory : IDesignTimeDbContextFactory<IdentityDbContext>
+    public class IdentityDbContextFactory : IDesignTimeDbContextFactory<GearIdentityDbContext>
     {
         /// <inheritdoc />
         /// <summary>
@@ -11,9 +11,9 @@ namespace GR.Identity.Data
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public IdentityDbContext CreateDbContext(string[] args)
+        public GearIdentityDbContext CreateDbContext(string[] args)
         {
-            return DbContextFactory<IdentityDbContext, IdentityDbContext>.CreateFactoryDbContext();
+            return DbContextFactory<GearIdentityDbContext, GearIdentityDbContext>.CreateFactoryDbContext();
         }
     }
 }

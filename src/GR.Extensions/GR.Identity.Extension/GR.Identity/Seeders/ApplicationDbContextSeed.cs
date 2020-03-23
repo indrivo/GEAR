@@ -30,7 +30,7 @@ namespace GR.Identity.Seeders
         /// <param name="context"></param>
         /// <param name="services"></param>
         /// <returns></returns>
-        public async Task SeedAsync(IdentityDbContext context, IServiceProvider services)
+        public async Task SeedAsync(GearIdentityDbContext context, IServiceProvider services)
         {
             var userManager = services.GetRequiredService<UserManager<GearUser>>();
             var roleManager = services.GetRequiredService<RoleManager<GearRole>>();

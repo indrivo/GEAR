@@ -29,7 +29,7 @@ namespace GR.WebApplication.Helpers
         /// Migrations Assembly
         /// </summary>
         protected static readonly string MigrationsAssembly =
-            typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name;
+            typeof(GearIdentityDbContext).GetTypeInfo().Assembly.GetName().Name;
 
         protected GearCoreStartup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {

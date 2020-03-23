@@ -17,9 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Configuration\countries.json">
+    <EmbeddedResource Include="Configuration\countries.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Modules.Extension\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
   </ItemGroup>
 

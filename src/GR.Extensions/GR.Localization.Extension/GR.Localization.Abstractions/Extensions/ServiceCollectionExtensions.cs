@@ -27,12 +27,14 @@ namespace GR.Localization.Abstractions.Extensions
         /// Add localization
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="section"></param>
         /// <returns></returns>
         public static IServiceCollection AddLocalizationModule<TService, TStringLocalizer>(this IServiceCollection services, IConfigurationSection section)
             where TService : class, ILocalizationService
             where TStringLocalizer : class, IStringLocalizer
         {
             Arg.NotNull(services, nameof(AddLocalizationModule));
+
             services.AddTransient<ILocalizationService, TService>();
             services.AddTransient<IStringLocalizer, TStringLocalizer>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();

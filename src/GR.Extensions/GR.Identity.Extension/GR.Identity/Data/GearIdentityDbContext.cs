@@ -12,7 +12,7 @@ using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Data
 {
-    public class IdentityDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IPermissionsContext
+    public class GearIdentityDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IPermissionsContext
     {
         /// <summary>
         /// Schema
@@ -25,7 +25,7 @@ namespace GR.Identity.Data
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
+        public GearIdentityDbContext(DbContextOptions<GearIdentityDbContext> options)
             : base(options)
         {
         }

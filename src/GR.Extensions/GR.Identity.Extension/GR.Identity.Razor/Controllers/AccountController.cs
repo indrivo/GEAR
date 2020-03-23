@@ -69,7 +69,7 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject app context
         /// </summary>
-        private readonly IdentityDbContext _identityDbContext;
+        private readonly GearIdentityDbContext _identityDbContext;
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace GR.Identity.Razor.Controllers
             IIdentityServerInteractionService interactionService,
             IUserManager<GearUser> userManager,
             IHttpContextAccessor httpContextAccesor,
-            IdentityDbContext identityDbContext)
+            GearIdentityDbContext identityDbContext)
         {
             _httpContextAccesor = httpContextAccesor;
             _identityDbContext = identityDbContext;

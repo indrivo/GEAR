@@ -32,6 +32,9 @@ namespace GR.Localization.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
+
+            builder.Entity<Language>().HasKey(x => x.Identifier);
+            builder.Entity<Translation>().HasKey(x => x.Key);
         }
 
         public override Task InvokeSeedAsync(IServiceProvider services)

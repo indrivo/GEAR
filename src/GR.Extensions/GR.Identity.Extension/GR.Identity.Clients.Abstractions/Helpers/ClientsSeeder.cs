@@ -32,9 +32,8 @@ namespace GR.Identity.Clients.Abstractions.Helpers
             var context = services.GetRequiredService<IClientsContext>();
             var configuration = services.GetRequiredService<IConfiguration>();
             var permissionsContext = services.GetRequiredService<IPermissionsContext>();
-
-
-            var sectionClients = configuration.GetSection(ClientResources.WebClientsSection).Get<Dictionary<string, object>>();
+            var clientsSection = configuration.GetSection(ClientResources.WebClientsSection);
+            var sectionClients = clientsSection.Get<Dictionary<string, object>>();
             var clientUrls = sectionClients
                 .ToDictionary(sectionClient => sectionClient.Key,
                     sectionClient => GetClientUrl(configuration, sectionClient.Key));
@@ -61,14 +60,7 @@ namespace GR.Identity.Clients.Abstractions.Helpers
                 var resources = configurator.GetResources().GetSeedResources();
                 await context.IdentityResources.AddRangeAsync(resources);
 
-                try
-                {
-                    await context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
+                await context.PushAsync();
             }
 
             //Seed api resources
@@ -76,14 +68,7 @@ namespace GR.Identity.Clients.Abstractions.Helpers
             {
                 var apiResources = configurator.GetApiResources().GetSeedApiResources(context);
                 context.ApiResources.AddRange(apiResources);
-                try
-                {
-                    await context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
+                await context.PushAsync();
             }
 
             //Seed permissions

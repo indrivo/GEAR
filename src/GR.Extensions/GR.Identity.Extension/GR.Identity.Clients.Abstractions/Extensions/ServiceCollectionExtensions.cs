@@ -29,7 +29,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
             where TConfiguration : ConfigurationDbContext<TConfiguration>, IClientsContext
             where TPersisted : PersistedGrantDbContext<TPersisted>, IClientsPersistedGrantContext
         {
-            Action<DbContextOptionsBuilder> dbOptions = builder => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
+            void DbOptions(DbContextOptionsBuilder builder) => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
             services.AddIdentityServer(x =>
                 {
                     x.IssuerUri = "null";
@@ -40,12 +40,12 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                 .AddConfigurationStore<TConfiguration>(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = dbOptions;
+                    options.ConfigureDbContext = DbOptions;
                 })
                 .AddOperationalStore<TPersisted>(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = dbOptions;
+                    options.ConfigureDbContext = DbOptions;
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
                 });

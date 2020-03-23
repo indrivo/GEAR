@@ -127,6 +127,7 @@ using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
 using GR.Entities.Abstractions.Helpers;
+using GR.Files.Razor.Extensions;
 using GR.Forms.Abstractions.Helpers;
 using GR.Identity;
 using GR.Identity.Abstractions.Helpers;
@@ -199,7 +200,7 @@ namespace GR.Cms
 			config.CacheConfiguration.UseInMemoryCache = true;
 
 			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<IdentityDbContext>()
+			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
 				.AddAuthentication(Configuration)
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
@@ -212,7 +213,7 @@ namespace GR.Cms
 				//	options.RequireLowercase = false;
 				//})
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
-				.AddIdentityModuleStorage<IdentityDbContext>(options =>
+				.AddIdentityModuleStorage<GearIdentityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
@@ -234,8 +235,8 @@ namespace GR.Cms
 				});
 
 			//----------------------------------Permissions Module-------------------------------------
-			config.GearServices.AddPermissionModule<PermissionService<IdentityDbContext>>()
-				.MapPermissionsModuleToContext<IdentityDbContext>();
+			config.GearServices.AddPermissionModule<PermissionService<GearIdentityDbContext>>()
+				.MapPermissionsModuleToContext<GearIdentityDbContext>();
 
 			//---------------------------------------Profile Module-------------------------------------
 			config.GearServices.AddProfileModule<Identity.Profile.ProfileService>()
@@ -261,7 +262,7 @@ namespace GR.Cms
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
-			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, IdentityDbContext>>()
+			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, GearIdentityDbContext>>()
 				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -292,7 +293,7 @@ namespace GR.Cms
 				.RegisterProgramAssembly(typeof(Program));
 
 			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<IdentityDbContext, GearRole, GearUser>, GearRole>()
+			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
@@ -376,6 +377,9 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				}, Configuration);
+
+			//Register files razor provider 
+			config.GearServices.AddFilesRazorModule();
 			//------------------------------------Task Module-------------------------------------
 			config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
