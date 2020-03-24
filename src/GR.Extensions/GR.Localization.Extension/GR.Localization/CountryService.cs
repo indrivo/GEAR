@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Cache.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -18,6 +20,8 @@ namespace GR.Localization
     [Author(Authors.LUPEI_NICOLAE, 1.1, "Base implementation of country service")]
     public class CountryService : ICountryService
     {
+        const string Key = "gear-country-info-key";
+
         #region Injectable
 
         /// <summary>
@@ -25,11 +29,16 @@ namespace GR.Localization
         /// </summary>
         private readonly ICountryContext _context;
 
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
         #endregion 
 
-        public CountryService(ICountryContext context)
+        public CountryService(ICountryContext context, ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -194,6 +203,84 @@ namespace GR.Localization
             _context.StateOrProvinces
                 .Update(city);
             return await _context.PushAsync();
+        }
+
+        /// <summary>
+        /// Get country info
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoAsync()
+        {
+            var cacheData = await _cacheService.GetAsync<List<CountryInfoViewModel>>(Key);
+            if (cacheData?.Any() ?? false) return new SuccessResultModel<ICollection<CountryInfoViewModel>>(cacheData);
+            var path = Path.Combine(AppContext.BaseDirectory, "Configuration/countries-source.json");
+            var data = JsonParser.ReadArrayDataFromJsonFile<ICollection<CountryInfoViewModel>>(path)?.ToList();
+            await _cacheService.SetAsync(Key, data);
+            return new SuccessResultModel<ICollection<CountryInfoViewModel>>(data);
+        }
+
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByNameAsync(string name)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.Name.Contains(name))
+                .ToList();
+            return request;
+        }
+
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByIsoCodeAsync(string code)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.Alpha2Code == code || x.Alpha3Code == code)
+                .ToList();
+            return request;
+        }
+
+        /// <summary>
+        /// Search by ISO 4217 currency code
+        /// </summary>
+        /// <param name="currency"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByIsoCurrencyAsync(string currency)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.Currencies.Any(y => y.Code.Equals(currency)))
+                .ToList();
+            return request;
+        }
+
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByCapitalCityAsync(string capital)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.Capital.Equals(capital))
+                .ToList();
+            return request;
+        }
+
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByCallingCodeAsync(string callingCode)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.CallingCodes.Any(c => c == callingCode))
+                .ToList();
+            return request;
+        }
+
+        /// <summary>
+        /// Search by region: Africa, Americas, Asia, Europe, Oceania
+        /// </summary>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByRegionAsync(string region)
+        {
+            var request = await GetCountriesInfoAsync();
+            if (!request.IsSuccess) return request;
+            request.Result = request.Result.Where(x => x.Region.Equals(region))
+                .ToList();
+            return request;
         }
     }
 }

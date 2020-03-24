@@ -77,5 +77,53 @@ namespace GR.Localization.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateCityAsync(StateOrProvince model);
+
+        /// <summary>
+        /// Get countries info
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoAsync();
+
+        /// <summary>
+        /// Search by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByNameAsync(string name);
+
+        /// <summary>
+        /// Search by iso code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByIsoCodeAsync(string code);
+
+        /// <summary>
+        /// Search by currency
+        /// </summary>
+        /// <param name="currency"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByIsoCurrencyAsync(string currency);
+
+        /// <summary>
+        /// Search by capital
+        /// </summary>
+        /// <param name="capital"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByCapitalCityAsync(string capital);
+
+        /// <summary>
+        /// Search by calling code
+        /// </summary>
+        /// <param name="callingCode"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByCallingCodeAsync(string callingCode);
+
+        /// <summary>
+        /// Search by region: Africa, Americas, Asia, Europe, Oceania
+        /// </summary>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByRegionAsync(string region);
     }
 }

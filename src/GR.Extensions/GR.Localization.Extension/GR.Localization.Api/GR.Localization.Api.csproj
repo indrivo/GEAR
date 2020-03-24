@@ -12,16 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Configuration\countries-source.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Configuration\countries-source.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />

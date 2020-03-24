@@ -7,6 +7,7 @@ v.1.9.3 - Lupei Nicolae
 * create permissions configurations for some modules
 * create identity.clients module from identityServer4
 * create custom contexts for identityServer4 and custom registration
+* add menu initializers
 
 
 v.1.9.2 - Lupei Nicolae 16 March 2020
