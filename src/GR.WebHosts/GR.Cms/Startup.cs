@@ -134,6 +134,7 @@ using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Clients.Infrastructure;
 using GR.Identity.Clients.Infrastructure.Data;
+using GR.Identity.Clients.Razor.Extensions;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
@@ -222,9 +223,12 @@ namespace GR.Cms
 				.AddIdentityRazorModule();
 
 			//-----------------------------Identity Clients Module-------------------------------------
-			config.GearServices.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(Configuration)
+			config.GearServices
+				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(
+					Configuration)
 				.AddClientsProfileService<ProfileService>()
-				.RegisterClientsService<ClientsService>();
+				.RegisterClientsService<ClientsService>()
+				.AddApiClientsRazorModule();
 
 			//---------------------------------------Groups Module-------------------------------------
 			config.GearServices.AddUserGroupModule<GroupService, GearUser>()

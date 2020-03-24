@@ -10,10 +10,10 @@ using GR.Identity.Abstractions;
 using GR.Identity.Clients.Abstractions;
 using GR.Identity.Clients.Abstractions.ViewModels.ApiClientViewModels;
 using GR.Identity.Clients.Abstractions.ViewModels.PermissionViewModels;
+using GR.Identity.Clients.Razor.ViewModels.RoleViewModels;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Permissions.Abstractions.Permissions;
-using GR.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using GR.Notifications.Abstractions;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
@@ -82,6 +82,7 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// Index
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -263,7 +264,6 @@ namespace GR.Identity.Clients.Razor.Controllers
                 Id = appClient.Id,
                 ClientName = appClient.ClientName,
                 Description = appClient.Description,
-                //ClientId = appClient.ClientId,
                 ClientUri = appClient.ClientUri
             };
 
@@ -313,55 +313,11 @@ namespace GR.Identity.Clients.Razor.Controllers
         }
 
         [HttpPost]
-        public JsonResult RolesList(int? id, DTParameters param)
+        public async Task<JsonResult> RolesList(int? id, DTParameters param)
         {
-            var filtered = GetRolesFiltered(id, param.Search.Value, param.SortOrder, param.Start, param.Length,
-                out var totalCount);
-
-            var finalResult = new DTResult<GearRole>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-            return Json(finalResult);
-        }
-
-        private List<GearRole> GetRolesFiltered(int? id, string search, string sortOrder, int start, int length,
-            out int totalCount)
-        {
-            var result = _applicationDbContext.Roles.AsNoTracking().ToList().Where(x =>
-                x.ClientId == id && (search == null || x.Name != null &&
-                                     x.Name.ToLower().Contains(search.ToLower()) || x.Title != null &&
-                                     x.Title.ToLower().Contains(search.ToLower()))).ToList();
-            totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-            switch (sortOrder)
-            {
-                case "name":
-                    result = result.OrderBy(a => a.Name).ToList();
-                    break;
-
-                case "title":
-                    result = result.OrderBy(a => a.Title).ToList();
-                    break;
-
-                case "name DESC":
-                    result = result.OrderByDescending(a => a.Name).ToList();
-                    break;
-
-                case "title DESC":
-                    result = result.OrderByDescending(a => a.Title).ToList();
-                    break;
-
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
+            var filtered = await _roleManager.Roles.Where(x => x.ClientId.Equals(id))
+                .GetPagedAsDtResultAsync(param);
+            return Json(filtered);
         }
 
         /// <summary>
