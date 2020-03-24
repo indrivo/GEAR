@@ -16,6 +16,7 @@ namespace GR.Localization.Razor.Extensions
         /// <returns></returns>
         public static IServiceCollection AddLocalizationRazorModule(this IServiceCollection services)
         {
+            services.ConfigureOptions(typeof(LocalizationRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
                 GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
