@@ -31,11 +31,6 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
         public string AddressLine2 { get; set; }
 
         [StringLength(450)]
-        [Display(Name = "City", Prompt = "city")]
-        [DisplayTranslate(Key = IdentityResources.Translations.CITY)]
-        public string City { get; set; }
-
-        [StringLength(450)]
         [Required]
         [Display(Name = "Zip Code", Prompt = "zip code")]
         [DisplayTranslate(Key = IdentityResources.Translations.ZIP_CODE)]
@@ -43,12 +38,12 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 
         [Required(ErrorMessage = "The {0} field is required.")]
         [DisplayTranslate(Key = IdentityResources.Translations.CITY)]
-        public Guid SelectedStateOrProvinceId { get; set; }
+        public Guid CityId { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]
         [StringLength(450)]
         [DisplayTranslate(Key = IdentityResources.Translations.COUNTRY)]
-        public string SelectedCountryId { get; set; }
+        public string CountryId { get; set; }
 
         [Required]
         [DisplayTranslate(Key = IdentityResources.Translations.IS_DEFAULT)]

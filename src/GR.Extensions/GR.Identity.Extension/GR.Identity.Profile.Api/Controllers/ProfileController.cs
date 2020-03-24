@@ -75,8 +75,8 @@ namespace GR.Identity.Profile.Api.Controllers
                 ContactName = model.ContactName,
                 ZipCode = model.ZipCode,
                 Phone = model.Phone,
-                CountryId = model.SelectedCountryId,
-                StateOrProvinceId = model.SelectedStateOrProvinceId,
+                CountryId = model.CountryId,
+                StateOrProvinceId = model.CityId,
                 User = currentUser,
                 IsDefault = model.IsDefault
             };
@@ -147,60 +147,6 @@ namespace GR.Identity.Profile.Api.Controllers
 
             return Json(resultModel);
         }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual async Task<JsonResult> EditUserProfileAddress(EditUserProfileAddressViewModel model)
-        {
-            var resultModel = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentAddress = await _profileContext.UserAddresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
-            if (currentAddress == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
-                return Json(resultModel);
-            }
-
-            if (model.IsDefault)
-            {
-                _profileContext.UserAddresses
-                    .Where(x => x.UserId.Equals(currentAddress.UserId))
-                    .ToList().ForEach(b => b.IsDefault = false);
-            }
-
-            currentAddress.CountryId = model.SelectedCountryId;
-            currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
-            currentAddress.AddressLine1 = model.AddressLine1;
-            currentAddress.AddressLine2 = model.AddressLine2;
-            currentAddress.ContactName = model.ContactName;
-            currentAddress.Phone = model.Phone;
-            currentAddress.ZipCode = model.ZipCode;
-            currentAddress.IsDefault = model.IsDefault;
-            currentAddress.Changed = DateTime.Now;
-
-            _profileContext.Update(currentAddress);
-            var result = await _profileContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var resultError in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
-
 
         [HttpPost]
         public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)

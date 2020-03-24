@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GR.Identity.Profile.Api.Controllers
 {
     [Authorize]
-    public class UserAddressController : Controller
+    public class UserAddressController : BaseGearController
     {
         #region Injectable
 
@@ -32,8 +33,8 @@ namespace GR.Identity.Profile.Api.Controllers
         /// Get user addresses
         /// </summary>
         /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Address>>))]
+        [HttpGet, Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<Address>>))]
         public async Task<JsonResult> GetUserAddresses() => Json(await _addressService.GetUserAddressesAsync());
 
         /// <summary>
@@ -41,8 +42,8 @@ namespace GR.Identity.Profile.Api.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
+        [HttpPost, Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Guid>))]
         public async Task<JsonResult> AddNewAddress(AddNewAddressViewModel model)
         {
             return !ModelState.IsValid ? Json(new ResultModel<Guid>().AttachModelState(ModelState))
@@ -54,8 +55,21 @@ namespace GR.Identity.Profile.Api.Controllers
         /// </summary>
         /// <param name="addressId"></param>
         /// <returns></returns>
-        [HttpDelete, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [HttpDelete, Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteAddress(Guid? addressId) => Json(await _addressService.DeleteAddressAsync(addressId));
+
+        /// <summary>
+        /// Update address
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> UpdateUserAddress(EditUserProfileAddressViewModel model)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            return await JsonAsync(_addressService.UpdateUserAddressAsync(model));
+        }
     }
 }

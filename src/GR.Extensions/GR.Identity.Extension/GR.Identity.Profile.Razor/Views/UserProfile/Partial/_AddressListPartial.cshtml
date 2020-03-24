@@ -5,7 +5,7 @@
         <span class="d-flex align-items-center">
             @Localizer["user_address_list"]
         </span>
-        <a asp-controller="Users" asp-action="AddUserProfileAddress" asp-route-userId="" data-target="#modal-container" data-toggle="modal" class="btn btn-outline-primary  ml-auto">@Localizer["user_add_new_address"]</a>
+        <a asp-controller="UserProfile" asp-action="AddUserProfileAddress" asp-route-userId="" data-target="#modal-container" data-toggle="modal" class="btn btn-outline-primary  ml-auto">@Localizer["user_add_new_address"]</a>
     </div>
     <div class="card-body">
         @if (Model != null && Model.Any())
@@ -22,7 +22,7 @@
                             }
                         </span>
                         <div class="btn-group ml-auto" role="group">
-                            <a asp-controller="Users" asp-action="EditUserProfileAddress" asp-route-addressId="@address.Id" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white ">@Localizer["edit"]</a>
+                            <a asp-controller="UserProfile" asp-action="EditUserProfileAddress" asp-route-addressId="@address.Id" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white ">@Localizer["edit"]</a>
                             <button asp-route-addressId="@address.Id" class="btn btn-danger text-white" onclick="deleteUserAddress('@address.Id')">@Localizer["delete"]</button>
                         </div>
                     </div>
@@ -82,13 +82,13 @@
 				if (result.value) {
 					$.ajax({
 						type: "POST",
-						url: "@Url.Action("DeleteUserAddress", "Users")",
+						url: "@Url.Action("DeleteUserAddress", "UserProfile")",
 						data: { id: addressId },
 						success: (data) => {
 							if (data.is_success) {
 								$.ajax({
 									method: 'GET',
-									url: `@Url.Action("UserAddressPartial", "Users")?userId=${$("#userId").val()}`,
+									url: `@Url.Action("UserAddressPartial", "UserProfile")?userId=${$("#userId").val()}`,
 									success: (partialViewHtml) => {
 										$("#addresList").html(partialViewHtml);
 									},

@@ -42,5 +42,12 @@ namespace GR.Identity.Profile.Abstractions
         /// <param name="addressId"></param>
         /// <returns></returns>
         Task<ResultModel<Address>> GetAddressByIdAsync(Guid? addressId);
+
+        /// <summary>
+        /// Update user address
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateUserAddressAsync(EditUserProfileAddressViewModel model);
     }
 }

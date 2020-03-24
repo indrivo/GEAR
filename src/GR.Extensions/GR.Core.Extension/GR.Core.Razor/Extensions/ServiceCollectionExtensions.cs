@@ -103,8 +103,7 @@ namespace GR.Core.Razor.Extensions
                 {
                     b.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                        .AllowAnyHeader();
                 });
             });
 

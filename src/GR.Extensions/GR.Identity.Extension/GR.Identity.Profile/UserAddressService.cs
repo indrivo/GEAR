@@ -87,6 +87,43 @@ namespace GR.Identity.Profile
         }
 
         /// <summary>
+        /// Update user address
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateUserAddressAsync(EditUserProfileAddressViewModel model)
+        {
+            var resultModel = new ResultModel();
+            var currentAddress = await _context.UserAddresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            if (currentAddress == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
+                return resultModel;
+            }
+
+            if (model.IsDefault)
+            {
+                _context.UserAddresses
+                    .Where(x => x.UserId.Equals(currentAddress.UserId))
+                    .ToList().ForEach(b => b.IsDefault = false);
+            }
+
+            currentAddress.CountryId = model.CountryId;
+            currentAddress.StateOrProvinceId = model.CityId;
+            currentAddress.AddressLine1 = model.AddressLine1;
+            currentAddress.AddressLine2 = model.AddressLine2;
+            currentAddress.ContactName = model.ContactName;
+            currentAddress.Phone = model.Phone;
+            currentAddress.ZipCode = model.ZipCode;
+            currentAddress.IsDefault = model.IsDefault;
+            currentAddress.Changed = DateTime.Now;
+
+            _context.Update(currentAddress);
+            var result = await _context.PushAsync();
+            return result;
+        }
+
+        /// <summary>
         /// Delete address
         /// </summary>
         /// <param name="id"></param>

@@ -1,6 +1,6 @@
 @model GR.Identity.Abstractions.ViewModels.UserProfileAddress.EditUserProfileAddressViewModel
 
-<form asp-controller="Users" asp-action="EditUserProfileAddress" name="EditUserProfileAddress" id="EditUserProfileAddress" autocomplete="off" method="post">
+<form asp-controller="UserAddress" asp-action="UpdateUserAddress" name="EditUserProfileAddress" id="EditUserProfileAddress" autocomplete="off" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="modal-header px-4">
         <h5 class="modal-title" id="exampleModalLabel">@Localizer["edit_address"]</h5>
@@ -20,14 +20,14 @@
             <span asp-validation-for="Phone" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <JTranslateLabel asp-for="SelectedCountryId"></JTranslateLabel>
-            <select class="form-control" asp-for="SelectedCountryId" asp-items="Model.CountrySelectListItems"></select>
-            <span asp-validation-for="SelectedCountryId" class="text-danger"></span>
+            <JTranslateLabel asp-for="CountryId"></JTranslateLabel>
+            <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
+            <span asp-validation-for="CountryId" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <JTranslateLabel asp-for="SelectedStateOrProvinceId"></JTranslateLabel>
-            <select class="form-control" asp-for="SelectedStateOrProvinceId" asp-items="Model.SelectedStateOrProvinceSelectListItems"></select>
-            <span asp-validation-for="SelectedStateOrProvinceId" class="text-danger"></span>
+            <JTranslateLabel asp-for="CityId"></JTranslateLabel>
+            <select class="form-control" asp-for="CityId" asp-items="Model.SelectedStateOrProvinceSelectListItems"></select>
+            <span asp-validation-for="CityId" class="text-danger"></span>
         </div>
         <div class="form-group">
             <JTranslateLabel asp-for="AddressLine1"></JTranslateLabel>
@@ -71,7 +71,7 @@
 					new ToastNotifier().notify({ icon: "success", heading: "Success" });
 					$.ajax({
 						method: 'GET',
-						url: `@Url.Action("UserAddressPartial", "Users")?userId=${$("#userId").val()}`,
+						url: `@Url.Action("UserAddressPartial", "UserProfile")?userId=${$("#userId").val()}`,
 						success: (result) => {
 							$("#addresList").html(result);
 						},
@@ -92,19 +92,19 @@
 	});
 </script>
 <script type="text/javascript">
-    $("#SelectedCountryId").change(function() {
+    $("#CountryId").change(function() {
         const selectedValue = this.value;
-        const citySelect = $("#SelectedStateOrProvinceId");
-        if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
+        const citySelect = $("#CityId");
+        if ($("#CountryId").prop('selectedIndex') > 0) {
             $.ajax({
                 type: "GET",
-                url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
+                url: `@Url.Action("GetCitiesByCountry", "CountryApi")/?countryId=${selectedValue}`
             }).done((response) => {
                 if (response.is_success) {
                     citySelect.empty();
                     citySelect.prop("disabled", false);
                     for (let city of response.result) {
-                        citySelect.append(new Option(city.text, city.value, false, city.selected));
+                        citySelect.append(new Option(city.name, city.id, false, city.selected));
                     }
                 } else {
                     notification.notifyErrorList(response.error_keys);

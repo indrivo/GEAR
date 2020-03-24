@@ -61,13 +61,13 @@
                         <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["profile"]</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a asp-controller="Users" asp-action="UserOrganizationPartial" asp-route-tenantId="@Model.TenantId" class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" role="tab" aria-controls="organization" data-target="#organization" aria-selected="false">@Localizer["organization"]</a>
+                        <a asp-controller="UserProfile" asp-action="UserOrganizationPartial" asp-route-tenantId="@Model.TenantId" class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" role="tab" aria-controls="organization" data-target="#organization" aria-selected="false">@Localizer["organization"]</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a asp-controller="Users" asp-action="ChangeUserPasswordPartial" class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" role="tab" aria-controls="changePassword" aria-selected="false" data-target="#changePassword">@Localizer["system_user_change_password"]</a>
+                        <a asp-controller="UserProfile" asp-action="ChangeUserPasswordPartial" class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" role="tab" aria-controls="changePassword" aria-selected="false" data-target="#changePassword">@Localizer["system_user_change_password"]</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a asp-controller="Users" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">@Localizer["user_address_list"]</a>
+                        <a asp-controller="UserProfile" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">@Localizer["user_address_list"]</a>
                     </li>
                 </ul>
             </div>
@@ -92,7 +92,7 @@
                         <p>
                             <span class="weight-400">@Localizer["description"] : </span><span class="text-muted">@Model.AboutMe</span>
                         </p>
-                        <a asp-controller="Users" asp-action="EditProfile" asp-route-userId="@Model.UserId" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white mt-4">@Localizer["profile_edit"]</a>
+                        <a asp-controller="UserProfile" asp-action="EditProfilePartial" asp-route-userId="@Model.UserId" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white mt-4">@Localizer["profile_edit"]</a>
                     </div>
                     <div class="tab-pane fade " id="organization" role="tabpanel"></div>
                     <div class="tab-pane fade " id="changePassword" role="tabpanel"></div>

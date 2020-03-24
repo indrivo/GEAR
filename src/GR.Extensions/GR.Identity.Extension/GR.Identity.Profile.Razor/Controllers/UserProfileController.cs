@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,13 +8,15 @@ using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using GR.Localization.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Profile.Razor.Controllers
 {
-    public class UsersProfileController : BaseGearController
+    [Authorize]
+    public class UserProfileController : BaseGearController
     {
         #region Injectable
 
@@ -41,7 +42,7 @@ namespace GR.Identity.Profile.Razor.Controllers
 
         #endregion
 
-        public UsersProfileController(IUserManager<GearUser> userManager, IIdentityContext identityContext, IProfileContext profileContext, ICountryService countryService)
+        public UserProfileController(IUserManager<GearUser> userManager, IIdentityContext identityContext, IProfileContext profileContext, ICountryService countryService)
         {
             _userManager = userManager;
             _identityContext = identityContext;
@@ -55,7 +56,7 @@ namespace GR.Identity.Profile.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Profile()
+        public virtual async Task<IActionResult> Index()
         {
             var currentUser = (await _userManager.GetCurrentUserAsync()).Result;
             if (currentUser == null)
@@ -140,11 +141,12 @@ namespace GR.Identity.Profile.Razor.Controllers
             return PartialView("Partial/_AddressListPartial", addressList);
         }
 
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public virtual PartialViewResult ChangeUserPasswordPartial()
-        {
-            return PartialView("Partial/_ChangePasswordPartial");
-        }
+        public virtual PartialViewResult ChangeUserPasswordPartial() => PartialView("Partial/_ChangePasswordPartial");
 
         [HttpGet]
         public virtual async Task<IActionResult> AddUserProfileAddress()
@@ -155,22 +157,6 @@ namespace GR.Identity.Profile.Razor.Controllers
             };
             return PartialView("Partial/_AddUserProfileAddress", model);
         }
-
-        private async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
-        {
-            var select = new SelectListItem("Select country", "");
-            var countryRequest = await _countryService.GetAllCountriesAsync();
-            if (!countryRequest.IsSuccess) return new List<SelectListItem>
-            {
-                select
-            };
-            return countryRequest.Result.Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id
-            });
-        }
-
 
         [HttpGet]
         public virtual async Task<IActionResult> EditUserProfileAddress(Guid? addressId)
@@ -204,8 +190,8 @@ namespace GR.Identity.Profile.Razor.Controllers
                 Phone = currentAddress.Phone,
                 ContactName = currentAddress.ContactName,
                 ZipCode = currentAddress.ZipCode,
-                SelectedCountryId = currentAddress.CountryId,
-                SelectedStateOrProvinceId = currentAddress.StateOrProvinceId,
+                CountryId = currentAddress.CountryId,
+                CityId = currentAddress.StateOrProvinceId,
                 SelectedStateOrProvinceSelectListItems = cityBySelectedCountry,
                 IsDefault = currentAddress.IsDefault
             };
@@ -244,10 +230,27 @@ namespace GR.Identity.Profile.Razor.Controllers
             return PartialView("Partial/_EditProfilePartial", model);
         }
 
-        [HttpGet]
-        public virtual PartialViewResult UserPasswordChangePartialView()
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Get country list
+        /// </summary>
+        /// <returns></returns>
+        private async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
         {
-            return PartialView("Partial/_ChangePasswordPartialView");
+            var select = new SelectListItem("Select country", "");
+            var countryRequest = await _countryService.GetAllCountriesAsync();
+            if (!countryRequest.IsSuccess) return new List<SelectListItem>
+            {
+                select
+            };
+            return countryRequest.Result.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id
+            });
         }
 
         #endregion

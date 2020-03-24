@@ -176,6 +176,7 @@ namespace GR.WebApplication.Extensions
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
 
             //----------------------------------Origin Cors Usage-------------------------------------

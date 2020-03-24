@@ -1,9 +1,9 @@
-﻿using GR.Identity.Abstractions.Enums;
-using GR.Identity.Abstractions.Helpers;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Helpers;
 
-namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
+namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
 {
     public sealed class ChangeUserPasswordViewModel
     {

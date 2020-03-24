@@ -45,6 +45,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar.Providers.Outlook\GR.Calendar.Providers.Outlook.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar.Razor\GR.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard.Razor\GR.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard\GR.Dashboard.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
@@ -84,6 +85,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Api\GR.Identity.PhoneVerification.Api.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Infrastructure\GR.Identity.PhoneVerification.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Api\GR.Identity.Profile.Api.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Razor\GR.Identity.Profile.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile\GR.Identity.Profile.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Razor\GR.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />

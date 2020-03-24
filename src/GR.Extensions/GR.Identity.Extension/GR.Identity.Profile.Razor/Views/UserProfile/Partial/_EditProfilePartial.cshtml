@@ -1,6 +1,6 @@
 @model GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels.UserProfileEditViewModel
 
-<form asp-controller="Users" asp-action="EditProfile" name="EditProfile" id="EditProfile" autocomplete="off" method="post">
+<form asp-controller="UserProfile" asp-action="EditProfilePartial" name="EditProfile" id="EditProfile" autocomplete="off" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="modal-header px-4">
         <h5 class="modal-title" id="exampleModalLabel">@Localizer["profile_edit"]</h5>

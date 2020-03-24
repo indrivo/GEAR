@@ -49,7 +49,8 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.ConfigureDbContext = DbOptions;
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
-                });
+                })
+                .AddConfigurationStoreCache();
 
             services.AddGearSingleton<IClientsContext, TConfiguration>();
             services.AddGearSingleton<IClientsPersistedGrantContext, TPersisted>();
