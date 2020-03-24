@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GR.Core;
 using GR.UI.Menu.Abstractions.Helpers;
 
 namespace GR.Localization.Razor.Helpers
@@ -16,7 +17,11 @@ namespace GR.Localization.Razor.Helpers
                     ParentMenuItemId = MenuResources.MenuItems.ConfigurationItem,
                     Name = "Localization",
                     Translate = "localization",
-                    Href = MenuResources.MenuItems.None
+                    Href = MenuResources.MenuItems.None,
+                    AllowedRoles = new List<string>
+                    {
+                        GlobalResources.Roles.ADMINISTRATOR
+                    }
                 },
                 new MenuItemConfig
                 {
@@ -24,7 +29,11 @@ namespace GR.Localization.Razor.Helpers
                     ParentMenuItemId = LocalizationRazorResources.Menu.LocalizationItem,
                     Name = "Languages",
                     Translate = "languages",
-                    Href = "/Localization/GetLanguages"
+                    Href = "/Localization/GetLanguages",
+                    AllowedRoles = new List<string>
+                    {
+                        GlobalResources.Roles.ADMINISTRATOR
+                    }
                 },
                 new MenuItemConfig
                 {
@@ -32,7 +41,21 @@ namespace GR.Localization.Razor.Helpers
                     ParentMenuItemId = LocalizationRazorResources.Menu.LocalizationItem,
                     Name = "Keys",
                     Href = "/Localization",
-                    Translate = "keys"
+                    Translate = "keys",
+                    AllowedRoles = new List<string>
+                    {
+                        GlobalResources.Roles.ADMINISTRATOR
+                    }
+                },
+                new MenuItemConfig(LocalizationRazorResources.Menu.Countries)
+                {
+                    ParentMenuItemId = LocalizationRazorResources.Menu.LocalizationItem,
+                    Name = "Countries",
+                    Href = "/Countries",
+                    AllowedRoles = new List<string>
+                    {
+                        GlobalResources.Roles.ADMINISTRATOR
+                    }
                 }
             }
         };

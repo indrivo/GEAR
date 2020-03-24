@@ -9,7 +9,7 @@ namespace GR.Localization.Razor.Controllers
 {
     [Authorize]
     [Roles(GlobalResources.Roles.ADMINISTRATOR)]
-    public class CountryController : Controller
+    public class CountriesController : Controller
     {
         #region Injectable
 
@@ -20,7 +20,7 @@ namespace GR.Localization.Razor.Controllers
 
         #endregion Injectable
 
-        public CountryController(ICountryService locationService)
+        public CountriesController(ICountryService locationService)
         {
             _locationService = locationService;
         }
@@ -30,7 +30,7 @@ namespace GR.Localization.Razor.Controllers
         /// Get countries View
         /// </summary>
         /// <returns></returns>
-        public IActionResult Countries()
+        public IActionResult Index()
         {
             return View();
         }
