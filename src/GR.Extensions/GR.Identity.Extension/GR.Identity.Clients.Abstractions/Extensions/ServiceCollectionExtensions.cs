@@ -23,7 +23,8 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityClientsModule<TUser, TConfiguration, TPersisted>(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddIdentityClientsModule<TUser, TConfiguration, TPersisted, TClientsConfiguration>(this IServiceCollection services, IConfiguration configuration)
+            where TClientsConfiguration : DefaultClientsConfigurator
             where TUser : GearUser
             where TConfiguration : ConfigurationDbContext<TConfiguration>, IClientsContext
             where TPersisted : PersistedGrantDbContext<TPersisted>, IClientsPersistedGrantContext
@@ -61,7 +62,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     .MigrateDbContext<TPersisted>()
                     .MigrateDbContext<TConfiguration>((context, servicesProvider) =>
                     {
-                        var configurator = new DefaultClientsConfigurator();
+                        var configurator = Activator.CreateInstance<TClientsConfiguration>();
                         ClientsSeeder.SeedAsync(servicesProvider, configurator)
                             .Wait();
                     });

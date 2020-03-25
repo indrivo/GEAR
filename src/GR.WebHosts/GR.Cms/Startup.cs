@@ -115,6 +115,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using GR.Backup.Razor.Extensions;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
@@ -223,9 +224,8 @@ namespace GR.Cms
 				.AddIdentityRazorModule();
 
 			//-----------------------------Identity Clients Module-------------------------------------
-			config.GearServices
-				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext>(
-					Configuration)
+			config.GearServices //DefaultClientsConfigurator
+				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext, ClientsConfigurator>(Configuration)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>()
 				.AddApiClientsRazorModule();
@@ -336,8 +336,10 @@ namespace GR.Cms
 				});
 
 			//------------------------------Database backup Module-------------------------------------
-			config.GearServices.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
-				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
+			config.GearServices
+				.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
+				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>()
+				.AddBackupRazorModule();
 
 			//------------------------------------Calendar Module-------------------------------------
 			config.GearServices

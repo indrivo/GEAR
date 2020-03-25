@@ -63,6 +63,13 @@ namespace GR.UI.Menu.Helpers
                 },
                 new MenuItemConfig
                 {
+                    Id = MenuResources.MenuItems.DatabaseItem,
+                    ParentMenuItemId = MenuResources.MenuItems.ConfigurationItem,
+                    Name = "Database",
+                    Href = "#"
+                },
+                new MenuItemConfig
+                {
                     Id = MenuResources.MenuItems.AppsItem,
                     Name = "Apps",
                     Href = "#",

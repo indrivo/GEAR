@@ -25,6 +25,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions.Helpers;
+using GR.Identity.Clients.Abstractions;
 using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Roles.Razor.Controllers
@@ -36,7 +37,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// <summary>
         /// Inject configuration db context
         /// </summary>
-        private ConfigurationDbContext ConfigurationDbContext { get; }
+        private IClientsContext ConfigurationDbContext { get; }
 
         /// <summary>
         /// Inject sign in manager
@@ -80,7 +81,7 @@ namespace GR.Identity.Roles.Razor.Controllers
 
         #endregion
 
-        public RolesController(SignInManager<GearUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext, IIdentityContext applicationDbContext, RoleManager<GearRole> roleManager, IUserManager<GearUser> userManager, INotify<GearRole> notify, IPermissionsContext permissionsContext)
+        public RolesController(SignInManager<GearUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, IClientsContext configurationDbContext, IIdentityContext applicationDbContext, RoleManager<GearRole> roleManager, IUserManager<GearUser> userManager, INotify<GearRole> notify, IPermissionsContext permissionsContext)
         {
             _signInManager = signInManager;
             _logger = logger;
