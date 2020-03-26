@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GR.Core.Helpers.Scopes;
 using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -37,7 +38,7 @@ namespace GR.Cms
 				},
 				new Client
 				{
-					ClientId = "xamarin",
+					ClientId = "xamarin interactive",
 					ClientName = "Gear Xamarin OpenId Client",
 					AllowedGrantTypes = GrantTypes.Hybrid,                    
                     //Used to retrieve the access token on the back channel.
@@ -59,6 +60,25 @@ namespace GR.Cms
                     AllowOfflineAccess = true,
 					AllowAccessTokensViaBrowser = true
 				},
+				new Client
+				{
+					ClientId = "xamarin password",
+					ClientName = "Gear Password OpenId Client",
+					AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+					ClientSecrets =
+					{
+						new Secret("secret".Sha256())
+					},
+					AllowedScopes =
+					{
+						IdentityServerConstants.StandardScopes.OpenId,
+						IdentityServerConstants.StandardScopes.Profile,
+						IdentityServerConstants.StandardScopes.OfflineAccess,
+						GearScopes.CORE
+					},
+					AllowOfflineAccess = true,
+					AllowAccessTokensViaBrowser = true
+				}
 			});
 			return def;
 		}

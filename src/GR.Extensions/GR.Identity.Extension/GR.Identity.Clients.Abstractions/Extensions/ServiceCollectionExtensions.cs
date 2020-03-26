@@ -34,7 +34,6 @@ namespace GR.Identity.Clients.Abstractions.Extensions
             void DbOptions(DbContextOptionsBuilder builder) => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
             services.AddIdentityServer(x =>
                 {
-                    x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
                 .AddDeveloperSigningCredential()

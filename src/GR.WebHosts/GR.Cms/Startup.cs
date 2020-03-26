@@ -185,8 +185,8 @@ namespace GR.Cms
 				config.Configuration = Configuration;
 			});
 
-			app.UseUrlRewriteModule();
 			app.UseIdentityServer();
+			app.UseUrlRewriteModule();
 		}
 
 		/// <summary>
@@ -203,7 +203,6 @@ namespace GR.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
-				.AddAuthentication(Configuration)
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
 				//.PasswordPolicy(options =>
@@ -225,10 +224,12 @@ namespace GR.Cms
 
 			//-----------------------------Identity Clients Module-------------------------------------
 			config.GearServices //DefaultClientsConfigurator
-				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext, ClientsConfigurator>(Configuration)
+				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext,
+					ClientsConfigurator>(Configuration)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>()
-				.AddApiClientsRazorModule();
+				.AddApiClientsRazorModule()
+				.AddAuthentication(Configuration);
 
 			//---------------------------------------Groups Module-------------------------------------
 			config.GearServices.AddUserGroupModule<GroupService, GearUser>()

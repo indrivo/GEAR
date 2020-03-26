@@ -72,11 +72,11 @@ namespace GR.Identity.Abstractions.Extensions
 
             services.AddAuthentication()
                 .AddJwtBearer(opts =>
-                {
-                    opts.Audience = GearScopes.CORE;
-                    opts.Authority = uri;
-                    opts.RequireHttpsMetadata = false;
-                });
+               {
+                   opts.Audience = GearScopes.CORE;
+                   opts.Authority = uri;
+                   opts.RequireHttpsMetadata = false;
+               });
             return services;
         }
 
