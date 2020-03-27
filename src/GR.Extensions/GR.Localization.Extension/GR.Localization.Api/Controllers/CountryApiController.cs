@@ -12,13 +12,11 @@ using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models.Countries;
 using GR.Localization.Abstractions.ViewModels.CountryViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Localization.Api.Controllers
 {
-    [Authorize]
-    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity, Roles = GlobalResources.Roles.ADMINISTRATOR)]
     [Route("api/country/[action]")]
     public class CountryApiController : BaseGearController
     {

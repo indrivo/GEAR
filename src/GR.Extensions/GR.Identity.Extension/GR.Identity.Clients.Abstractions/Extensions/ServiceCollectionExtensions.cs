@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -29,12 +30,25 @@ namespace GR.Identity.Clients.Abstractions.Extensions
             where TConfiguration : ConfigurationDbContext<TConfiguration>, IClientsContext
             where TPersisted : PersistedGrantDbContext<TPersisted>, IClientsPersistedGrantContext
         {
+            var configurator = Activator.CreateInstance<TClientsConfiguration>();
             var migrationsAssembly = typeof(TConfiguration).Assembly.GetName().Name;
 
             void DbOptions(DbContextOptionsBuilder builder) => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
-            services.AddIdentityServer(x =>
+            var clientsSection = configuration.GetSection(ClientResources.WebClientsSection)
+                .GetChildren()
+                .Select(x => x.Key)
+                .ToList();
+
+            var clientUrls = clientsSection
+                .ToDictionary(sectionClient => sectionClient,
+                    sectionClient => ClientsSeeder.GetClientUrl(configuration, sectionClient));
+
+            services.AddIdentityServer(options =>
                 {
-                    x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+                    options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+                    options.Events.RaiseSuccessEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseErrorEvents = true;
                 })
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<TUser>()
@@ -50,7 +64,11 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
                 })
-                .AddConfigurationStoreCache();
+                .AddInMemoryIdentityResources(configurator.GetResources())
+                .AddInMemoryApiResources(configurator.GetApiResources())
+                .AddInMemoryClients(configurator.GetClients(clientUrls));
+                //.AddConfigurationStoreCache();
+                //.AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
 
             services.AddGearSingleton<IClientsContext, TConfiguration>();
             services.AddGearSingleton<IClientsPersistedGrantContext, TPersisted>();
@@ -61,7 +79,6 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     .MigrateDbContext<TPersisted>()
                     .MigrateDbContext<TConfiguration>((context, servicesProvider) =>
                     {
-                        var configurator = Activator.CreateInstance<TClientsConfiguration>();
                         ClientsSeeder.SeedAsync(servicesProvider, configurator)
                             .Wait();
                     });

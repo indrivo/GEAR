@@ -222,14 +222,17 @@ namespace GR.Cms
 				.AddIdentityModuleEvents()
 				.AddIdentityRazorModule();
 
+			//-----------------------------Authentification Module-------------------------------------
+			config.GearServices.AddAuthentication(Configuration);
+
+
 			//-----------------------------Identity Clients Module-------------------------------------
 			config.GearServices //DefaultClientsConfigurator
 				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext,
 					ClientsConfigurator>(Configuration)
 				.AddClientsProfileService<ProfileService>()
 				.RegisterClientsService<ClientsService>()
-				.AddApiClientsRazorModule()
-				.AddAuthentication(Configuration);
+				.AddApiClientsRazorModule();
 
 			//---------------------------------------Groups Module-------------------------------------
 			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
@@ -342,7 +345,7 @@ namespace GR.Cms
 				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>()
 				.AddBackupRazorModule();
 
-			//------------------------------------Calendar Module-------------------------------------
+			//------------------------------------Calendar Module------------------------------------ -
 			config.GearServices
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<CalendarPermissions>, CalendarPermissions>()
 				.AddCalendarModule<CalendarManager>()

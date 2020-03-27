@@ -596,7 +596,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// Change user roles
         /// </summary>
         /// <returns></returns>
-        [Roles(GlobalResources.Roles.ADMINISTRATOR, "Company Administrator")]
+        [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR, "Company Administrator")]
         [HttpPost]
         [Produces("application/json", Type = typeof(ResultModel))]
         [Route("api/[controller]/[action]")]

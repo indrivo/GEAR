@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.MultiTenants;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -80,7 +81,8 @@ namespace GR.Identity.Clients.Infrastructure
             var claims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
-                new Claim(JwtClaimTypes.Name, user.UserName)
+                new Claim(JwtClaimTypes.Name, user.UserName),
+                new Claim(nameof(Tenant), user.TenantId.ToString())
             };
 
             if (!userManager.SupportsUserRole) return claims;

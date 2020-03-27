@@ -64,20 +64,27 @@ namespace GR.Cms
 				{
 					ClientId = "xamarin password",
 					ClientName = "Gear Password OpenId Client",
-					AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-					ClientSecrets =
+					AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
+					AccessTokenType = AccessTokenType.Jwt,
+					AccessTokenLifetime = 3600,
+					IdentityTokenLifetime = 3600,
+					UpdateAccessTokenClaimsOnRefresh = true,
+					SlidingRefreshTokenLifetime = 30,
+					AllowOfflineAccess = true,
+					RefreshTokenExpiration = TokenExpiration.Absolute,
+					RefreshTokenUsage = TokenUsage.OneTimeOnly,
+					AlwaysSendClientClaims = true,
+					ClientSecrets=  new List<Secret>
 					{
 						new Secret("secret".Sha256())
 					},
-					AllowedScopes =
-					{
+					AllowedScopes = {
 						IdentityServerConstants.StandardScopes.OpenId,
 						IdentityServerConstants.StandardScopes.Profile,
+						IdentityServerConstants.StandardScopes.Email,
 						IdentityServerConstants.StandardScopes.OfflineAccess,
 						GearScopes.CORE
-					},
-					AllowOfflineAccess = true,
-					AllowAccessTokensViaBrowser = true
+					}
 				}
 			});
 			return def;

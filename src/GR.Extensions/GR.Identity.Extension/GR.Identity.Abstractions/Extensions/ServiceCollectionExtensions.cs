@@ -69,13 +69,13 @@ namespace GR.Identity.Abstractions.Extensions
         {
             var authority = configuration.GetSection("WebClients").GetSection("CORE");
             var uri = authority.GetValue<string>("uri");
-
             services.AddAuthentication()
-                .AddJwtBearer(opts =>
+                .AddJwtBearer("Bearer", opts =>
                {
                    opts.Audience = GearScopes.CORE;
                    opts.Authority = uri;
                    opts.RequireHttpsMetadata = false;
+                   opts.SaveToken = true;
                });
             return services;
         }

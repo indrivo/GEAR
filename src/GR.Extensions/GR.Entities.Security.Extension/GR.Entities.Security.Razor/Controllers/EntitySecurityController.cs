@@ -18,7 +18,7 @@ using GR.Identity.Abstractions.Helpers.Attributes;
 namespace GR.Entities.Security.Razor.Controllers
 {
     [Authorize]
-    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
     public class EntitySecurityController : BaseGearController
     {
         #region Injectable
@@ -75,7 +75,7 @@ namespace GR.Entities.Security.Razor.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Roles(GlobalResources.Roles.USER)]
+        [GearAuthorize(GlobalResources.Roles.USER)]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<string>>))]
         public async Task<JsonResult> GetEntityPermissionsForCurrentUser([Required]Guid entityId)

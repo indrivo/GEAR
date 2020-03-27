@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GR.Localization.Razor.Controllers
 {
     [Authorize]
-    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
     public class CountriesController : Controller
     {
         #region Injectable
