@@ -11,7 +11,8 @@ using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Profile.Abstractions;
+using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Paypal.Abstractions;
@@ -114,8 +115,8 @@ namespace GR.Paypal
                 return new ResponsePaypal { Message = "No access token", IsSuccess = false };
             }
 
-            var fullName = user?.UserFirstName != null && user.UserLastName != null
-                ? $"{user.UserFirstName} {user.UserLastName}"
+            var fullName = user?.FirstName != null && user.LastName != null
+                ? $"{user.FirstName} {user.LastName}"
                 : user?.UserName;
 
             var shippingAddress = new ShippingAddress

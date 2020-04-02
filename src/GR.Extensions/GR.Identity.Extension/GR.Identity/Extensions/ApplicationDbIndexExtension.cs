@@ -1,6 +1,5 @@
 ﻿using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.Permmisions;
-using GR.Identity.Abstractions.Models.UserProfiles;
+using GR.Identity.Permissions.Abstractions.Permissions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Extensions
@@ -18,12 +17,6 @@ namespace GR.Identity.Extensions
                 .HasIndex(x => x.TenantId);
 
             builder.Entity<GearRole>()
-                .HasIndex(x => x.TenantId);
-
-            builder.Entity<AuthGroup>()
-               .HasIndex(x => x.TenantId);
-
-            builder.Entity<Profile>()
                 .HasIndex(x => x.TenantId);
 
             builder.Entity<Permission>()

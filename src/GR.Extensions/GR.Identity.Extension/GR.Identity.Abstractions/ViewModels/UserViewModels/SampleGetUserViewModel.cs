@@ -13,8 +13,8 @@ namespace GR.Identity.Abstractions.ViewModels.UserViewModels
             if (user == null) return;
             Id = user.Id;
             UserName = user.UserName;
-            FirstName = user.UserFirstName;
-            LastName = user.UserLastName;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
             Email = user.Email;
         }
 

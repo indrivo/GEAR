@@ -1,20 +1,14 @@
-using GR.Identity.Abstractions.Models.Permmisions;
-using GR.Identity.Abstractions.Models.UserProfiles;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Client = IdentityServer4.EntityFramework.Entities.Client;
+using GR.Identity.Permissions.Abstractions.Permissions;
+using IdentityServer4.EntityFramework.Entities;
 
 namespace GR.Identity.Roles.Razor.ViewModels.RoleViewModels
 {
     public class CreateRoleViewModel
     {
-        public IEnumerable<Profile> Profiles { get; set; }
-
         [Required, StringLength(50)]
         public string Name { get; set; }
-
-        [Display(Name = "User's profiles")]
-        public List<string> SelectedProfileId { get; set; }
 
         public bool IsDeleted { get; set; }
 

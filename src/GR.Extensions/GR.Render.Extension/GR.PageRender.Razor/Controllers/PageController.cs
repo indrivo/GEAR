@@ -572,20 +572,20 @@ namespace GR.PageRender.Razor.Controllers
             }
 
             var pageId = items.FirstOrDefault()?.PageId;
-            var pageScripts = _pagesContext.SetEntity<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
+            var pageScripts = _pagesContext.Set<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
 
             foreach (var prev in pageScripts)
             {
                 var up = items.FirstOrDefault(x => x.Id.Equals(prev.Id));
                 if (up == null)
                 {
-                    _pagesContext.SetEntity<TItem>().Remove(prev);
+                    _pagesContext.Set<TItem>().Remove(prev);
                 }
                 else if (prev.Order != up.Order || prev.Script != up.Script)
                 {
                     prev.Script = up.Script;
                     prev.Order = up.Order;
-                    _pagesContext.SetEntity<TItem>().Update(prev);
+                    _pagesContext.Set<TItem>().Update(prev);
                 }
             }
 
@@ -598,7 +598,7 @@ namespace GR.PageRender.Razor.Controllers
 
             if (news.Any())
             {
-                _pagesContext.SetEntity<TItem>().AddRange(news);
+                _pagesContext.Set<TItem>().AddRange(news);
             }
 
             try

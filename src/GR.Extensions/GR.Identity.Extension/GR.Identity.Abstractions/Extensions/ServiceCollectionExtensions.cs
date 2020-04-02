@@ -3,6 +3,7 @@ using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Scopes;
 using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,14 +69,14 @@ namespace GR.Identity.Abstractions.Extensions
         {
             var authority = configuration.GetSection("WebClients").GetSection("CORE");
             var uri = authority.GetValue<string>("uri");
-
             services.AddAuthentication()
-                .AddJwtBearer(opts =>
-                {
-                    opts.Audience = "core";
-                    opts.Authority = uri;
-                    opts.RequireHttpsMetadata = false;
-                });
+                .AddJwtBearer("Bearer", opts =>
+               {
+                   opts.Audience = GearScopes.CORE;
+                   opts.Authority = uri;
+                   opts.RequireHttpsMetadata = false;
+                   opts.SaveToken = true;
+               });
             return services;
         }
 
@@ -100,60 +101,14 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add identity storage
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="migrationsAssembly"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services,
-            IConfiguration configuration, string migrationsAssembly)
+        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TIdentityContext : DbContext, IIdentityContext
         {
             services.AddTransient<IIdentityContext, TIdentityContext>();
-            services.AddDbContext<TIdentityContext>(builder
-                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
-
+            services.AddDbContext<TIdentityContext>(options);
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-            return services;
-        }
-
-        /// <summary>
-        /// Add provider
-        /// </summary>
-        /// <typeparam name="TAppProvider"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddAppProvider<TAppProvider>(this IServiceCollection services)
-            where TAppProvider : class, IAppProvider
-        {
-            services.AddGearTransient<IAppProvider, TAppProvider>();
-            return services;
-        }
-
-        /// <summary>
-        /// Register address service
-        /// </summary>
-        /// <typeparam name="TAddressService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
-            where TAddressService : class, IUserAddressService
-        {
-            services.AddGearTransient<IUserAddressService, TAddressService>();
-            return services;
-        }
-
-        /// <summary>
-        /// Register group repository
-        /// </summary>
-        /// <typeparam name="TGroupRepository"></typeparam>
-        /// <typeparam name="TContext"></typeparam>
-        /// <typeparam name="TUser"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
-            where TGroupRepository : class, IGroupRepository<TContext, TUser>
-            where TContext : DbContext where TUser : IdentityUser<Guid>
-        {
-            services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;
         }
 
@@ -165,19 +120,6 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddIdentityModuleEvents(this IServiceCollection services)
         {
             IdentityEvents.RegisterEvents();
-            return services;
-        }
-
-        /// <summary>
-        /// Register location service
-        /// </summary>
-        /// <typeparam name="TLocationService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
-            where TLocationService : class, ILocationService
-        {
-            services.AddGearSingleton<ILocationService, TLocationService>();
             return services;
         }
     }

@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/loader-installer.css" />
 
     <style>
+
         .select-error {
             color: red;
         }
@@ -109,7 +110,7 @@
                                                                     <label class="control-label">User Name</label>
                                                                     <input asp-for="SysAdminProfile.UserName" class="form-control">
                                                                     <span asp-validation-for="SysAdminProfile.UserName" class="text-danger"></span>
-                                                                    <small class="form-control-feedback"> This is user name of user </small>
+                                                                    <small>@Localizer["username_info"]</small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -120,6 +121,9 @@
                                                                     <input asp-for="SysAdminProfile.Email" class="form-control">
                                                                     <span asp-validation-for="SysAdminProfile.Email" class="text-danger"></span>
                                                                     <small class="form-control-feedback"> This is email of user </small>
+                                                                    <small>
+                                                                        @Localizer["email_info1"] <br />@Localizer["email_info2"]
+                                                                    </small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -127,9 +131,17 @@
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label class="control-label">Password</label>
-                                                                    <input asp-for="SysAdminProfile.Password" value="admin" class="form-control">
+                                                                    <div class="input-group">
+                                                                        <input asp-for="SysAdminProfile.Password" value="@Model.SysAdminProfile.Password" class="form-control" />
+                                                                        <div class="input-group-append">
+                                                                            <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                                                <span class="fa fa-eye-slash icon"></span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
                                                                     <span asp-validation-for="SysAdminProfile.Password" class="text-danger"></span>
-                                                                    <small class="form-control-feedback"> This is password of user </small>
+                                                                    <small>@Localizer["pass_info1"]</small><br />
+                                                                    <small>@Localizer["pass_info2"]</small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -137,9 +149,15 @@
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label class="control-label">Confirm Password</label>
-                                                                    <input asp-for="SysAdminProfile.ConfirmPassword" value="admin" class="form-control">
+                                                                    <div class="input-group">
+                                                                        <input asp-for="SysAdminProfile.ConfirmPassword" value="@Model.SysAdminProfile.ConfirmPassword" class="form-control" />
+                                                                        <div class="input-group-append">
+                                                                            <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                                                <span class="fa fa-eye-slash icon"></span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
                                                                     <span asp-validation-for="SysAdminProfile.ConfirmPassword" class="text-danger"></span>
-                                                                    <small class="form-control-feedback"> This is passowrd of user </small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -147,7 +165,7 @@
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <label class="control-label">First Name</label>
-                                                                    <input asp-for="SysAdminProfile.FirstName" value="admin" class="form-control">
+                                                                    <input asp-for="SysAdminProfile.FirstName" class="form-control">
                                                                     <span asp-validation-for="SysAdminProfile.FirstName" class="text-danger"></span>
                                                                     <small class="form-control-feedback"> This is first name of user </small>
                                                                 </div>
@@ -184,62 +202,6 @@
                                                             <!--/span-->
                                                         </div>
                                                         <!--/row-->
-
-                                                        <h3 class="box-title m-t-40">Super admin Address</h3>
-                                                        <hr>
-                                                        <div class="row">
-                                                            <div class="col-md-12 ">
-                                                                <div class="form-group">
-                                                                    <label>Street</label>
-                                                                    <input asp-for="SysAdminProfile.Street" class="form-control">
-                                                                    <span asp-validation-for="SysAdminProfile.Street" class="text-danger"></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>City</label>
-                                                                    <input asp-for="SysAdminProfile.City" class="form-control">
-                                                                    <span asp-validation-for="SysAdminProfile.City" class="text-danger"></span>
-                                                                </div>
-                                                            </div>
-                                                            <!--/span-->
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>State</label>
-                                                                    <input asp-for="SysAdminProfile.State" class="form-control">
-                                                                    <span asp-validation-for="SysAdminProfile.State" class="text-danger"></span>
-                                                                </div>
-                                                            </div>
-                                                            <!--/span-->
-                                                        </div>
-                                                        <!--/row-->
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>Postal Code</label>
-                                                                    <input asp-for="SysAdminProfile.PostalCode" class="form-control">
-                                                                    <span asp-validation-for="SysAdminProfile.PostalCode" class="text-danger"></span>
-                                                                </div>
-                                                            </div>
-                                                            <!--/span-->
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>Country</label>
-                                                                    <select asp-for="SysAdminProfile.Country" class="form-control custom-select">
-                                                                        <option>--Select your Country--</option>
-                                                                        <option>Moldova</option>
-                                                                        <option>Romania</option>
-                                                                        <option>India</option>
-                                                                        <option>Sri Lanka</option>
-                                                                        <option>USA</option>
-                                                                    </select>
-                                                                    <span asp-validation-for="SysAdminProfile.Country" class="text-danger"></span>
-                                                                </div>
-                                                            </div>
-                                                            <!--/span-->
-                                                        </div>
                                                         <h3 class="box-title m-t-40">Default Organization</h3>
                                                         <hr>
                                                         <div class="row">
@@ -342,10 +304,21 @@
     <script src="~/assets/js/core.js"></script>
     <script type="text/javascript" src="/themes/admin/js/admin-theme-script.js"></script>
     <script>
-		$("#setupForm").on("submit", function () {
+        $("#setupForm").on("submit", function () {
 			$("#submitButton").toggle();
 			$(".lds-ring").toggle();
 		});
+    			$(".toggle-password").on("click",
+				function() {
+					const target = $(this).closest(".input-group").find("input");
+					if (target.attr("type") === "password") {
+						target.attr("type", "text");
+						$(this).find("span").removeClass("fa-eye-slash").addClass("fa-eye");
+					} else {
+						target.attr("type", "password");
+						$(this).find("span").removeClass("fa-eye").addClass("fa-eye-slash");
+					}
+				});
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>

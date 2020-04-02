@@ -1,5 +1,4 @@
 ﻿using GR.Core.Helpers;
-using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -100,13 +99,6 @@ namespace GR.Identity.Abstractions
         /// <param name="editableStatus"></param>
         /// <returns></returns>
         Task<ResultModel> SetEditableStatusForUserAsync(Guid? userId, bool editableStatus);
-
-        /// <summary>
-        /// Get user addresses
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId);
 
         /// <summary>
         /// Filter valid roles

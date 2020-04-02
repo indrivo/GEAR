@@ -7,14 +7,14 @@
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<IsPackable>false</IsPackable>
 	<LangVersion>7.3</LangVersion>
-	<Version>1.9.2</Version>
+	<Version>1.9.3</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Indrivo</Company>
 	<Product>Gear</Product>
-	<Description>BPMN</Description>
+	<Description>Web project that is responsible for coupling all modules</Description>
 	<Copyright>Indrivo 2019</Copyright>
-	<FileVersion>1.9.2</FileVersion>
-	<AssemblyVersion>1.9.2</AssemblyVersion>
+	<FileVersion>1.9.3</FileVersion>
+	<AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,6 +45,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar.Providers.Outlook\GR.Calendar.Providers.Outlook.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar.Razor\GR.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard.Razor\GR.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard\GR.Dashboard.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
@@ -73,11 +74,19 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files\GR.Files.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms.Razor\GR.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms\GR.Forms.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Infrastructure\GR.Identity.Clients.Infrastructure.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Razor\GR.Identity.Clients.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Api\GR.Identity.Groups.Api.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Infrastructure\GR.Identity.Groups.Infrastructure.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Razor\GR.Identity.Groups.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.LdapAuth\GR.Identity.LdapAuth.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Permissions\GR.Identity.Permissions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Api\GR.Identity.PhoneVerification.Api.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Infrastructure\GR.Identity.PhoneVerification.Infrastructure.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Api\GR.Identity.Profile.Api.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Razor\GR.Identity.Profile.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile\GR.Identity.Profile.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Razor\GR.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />
@@ -89,6 +98,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Process.Razor\GR.Process.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Processes\GR.Procesess.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender\GR.PageRender.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic.Razor\GR.Report.Dynamic.Razor.csproj" />
@@ -102,9 +112,6 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows\GR.WorkFlows.csproj" />
   </ItemGroup>
   <ItemGroup>
-	<Content Update="fileSettings.json">
-	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	</Content>
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>

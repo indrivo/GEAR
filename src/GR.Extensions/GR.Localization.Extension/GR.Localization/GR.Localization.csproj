@@ -7,17 +7,34 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Gear localization module with redis cache</Description>
-    <Version>1.9.2</Version>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <Version>1.9.3</Version>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Configuration\countries-source.json" />
+    <None Remove="Configuration\countries.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\countries-source.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\countries.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="YandexTranslateCoreSdk" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Modules.Extension\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
   </ItemGroup>
 

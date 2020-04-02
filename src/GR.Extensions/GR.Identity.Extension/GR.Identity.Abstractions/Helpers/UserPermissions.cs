@@ -1,6 +1,6 @@
 ﻿namespace GR.Identity.Abstractions.Helpers
 {
-    public static class UserPermissions
+    public class UserPermissions
     {
         public const string UserCreate = "Core_UserCreate";
         public const string UserRead = "Core_UserRead";

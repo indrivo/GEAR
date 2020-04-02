@@ -10,11 +10,11 @@ namespace GR.Core.Abstractions
     public interface IDbContext
     {
         /// <summary>
-        /// Set entity for work
+        /// Set entity
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        DbSet<T> SetEntity<T>() where T : class, IBaseModel;
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
         /// <summary>
         /// Update db entity

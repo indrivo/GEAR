@@ -176,13 +176,13 @@ namespace GR.WebApplication.Extensions
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
 
             //----------------------------------Origin Cors Usage-------------------------------------
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
 
-            app.UseAuthentication()
-                .UseIdentityServer();
+            app.UseAuthentication();
 
             //custom rules
             app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules);

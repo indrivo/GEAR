@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.9.2</Version>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <Version>1.9.3</Version>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GR.Identity.Extension\GR.Identity.Profile.Abstractions\GR.Identity.Profile.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Constants;
@@ -65,7 +65,8 @@ namespace GR.Entities.Abstractions
         protected virtual IEnumerable<SynchronizeTableViewModel> GetEntitiesFromContext(Type context)
         {
             var result = new List<SynchronizeTableViewModel>();
-            var props = context.GetProperties().Where(x => x.PropertyType.IsGenericType).ToList();
+            var props = context.GetProperties()
+                .Where(x => x.PropertyType.IsGenericType).ToList();
 
             foreach (var prop in props)
             {
@@ -89,12 +90,9 @@ namespace GR.Entities.Abstractions
             var baseProps = BaseModel.GetPropsName().ToList();
             var entity = prop.PropertyType.GenericTypeArguments[0];
 
-            if (entity.Name == "ApplicationUser")
-            {
-                entity = typeof(IdentityUser);
-            }
+            //Exclude context not mapped entities
+            if (Attribute.IsDefined(prop, typeof(NotMappedAttribute))) return null;
 
-            //if (entity.BaseType != typeof(BaseModel) || entity.BaseType != typeof(ExtendedModel)) continue;
             result.Name = prop.Name;
             result.IsStaticFromEntityFramework = true;
             result.IsSystem = true;

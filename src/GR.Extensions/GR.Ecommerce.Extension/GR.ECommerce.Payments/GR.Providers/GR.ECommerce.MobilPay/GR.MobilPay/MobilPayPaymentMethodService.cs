@@ -9,7 +9,8 @@ using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Profile.Abstractions;
+using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.MobilPay.Abstractions;
 using GR.MobilPay.Abstractions.Helpers;
 using GR.MobilPay.Abstractions.Models;
@@ -132,8 +133,8 @@ namespace GR.MobilPay
                 invoice.Currency = order.Currency?.Code;
                 invoice.Details = $"#{orderId}";
 
-                billing.FirstName = user?.UserFirstName;
-                billing.LastName = user?.UserLastName;
+                billing.FirstName = user?.FirstName;
+                billing.LastName = user?.LastName;
                 billing.Email = user?.Email;
                 billing.MobilPhone = address.Phone;
                 billing.Address = address.AddressLine1;

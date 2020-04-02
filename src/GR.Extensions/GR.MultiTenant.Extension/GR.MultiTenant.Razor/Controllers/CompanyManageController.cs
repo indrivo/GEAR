@@ -24,7 +24,6 @@ using GR.MultiTenant.Abstractions.Events.EventArgs;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
-using IdentityServer4.Extensions;
 
 namespace GR.MultiTenant.Razor.Controllers
 {
@@ -191,8 +190,8 @@ namespace GR.MultiTenant.Razor.Controllers
             {
                 Email = data.Email,
                 UserName = data.UserName,
-                UserFirstName = data.FirstName,
-                UserLastName = data.LastName,
+                FirstName = data.FirstName,
+                LastName = data.LastName,
                 AuthenticationType = AuthenticationType.Local,
                 EmailConfirmed = false,
                 IsEditable = true

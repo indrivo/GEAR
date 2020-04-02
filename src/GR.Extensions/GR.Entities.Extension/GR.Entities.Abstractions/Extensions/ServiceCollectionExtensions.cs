@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Events;
 using GR.Entities.Abstractions.Helpers;
@@ -26,8 +27,7 @@ namespace GR.Entities.Abstractions.Extensions
             where TEntityRepository : class, IEntityService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IEntityContext, TEntityContext>();
-            IoC.RegisterTransientService<IEntityContext, TEntityContext>();
+            services.AddGearTransient<IEntityContext, TEntityContext>();
 
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {

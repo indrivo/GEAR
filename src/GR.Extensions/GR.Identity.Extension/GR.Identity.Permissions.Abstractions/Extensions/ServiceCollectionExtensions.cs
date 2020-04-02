@@ -5,6 +5,10 @@ using GR.Core.Helpers;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using GR.Core.Extensions;
+using GR.Identity.Abstractions;
+using GR.Identity.Permissions.Abstractions.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Permissions.Abstractions.Extensions
 {
@@ -15,7 +19,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPermissionService<TPermissionService>(this IServiceCollection services) where TPermissionService : class, IPermissionService
+        public static IServiceCollection AddPermissionModule<TPermissionService>(this IServiceCollection services) where TPermissionService : class, IPermissionService
         {
             services.AddTransient<IPermissionService, TPermissionService>();
             IoC.RegisterTransientService<IPermissionService, TPermissionService>();
@@ -33,6 +37,19 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Map permissions module
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection MapPermissionsModuleToContext<TContext>(this IServiceCollection services)
+            where TContext : DbContext, IPermissionsContext, IIdentityContext
+        {
+            services.AddGearSingleton<IPermissionsContext, TContext>();
+            return services;
+        }
+
+        /// <summary>
         /// Register permissions for module
         /// </summary>
         /// <typeparam name="TConfiguration"></typeparam>
@@ -43,13 +60,8 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
             where TConfiguration : DefaultPermissionsConfigurator<TPermissionsConstants>
             where TPermissionsConstants : class
         {
-            SystemEvents.Database.OnSeed += async (sender, args) =>
-            {
-                var instance = Activator.CreateInstance<TConfiguration>();
-                await instance.SeedAsync();
-                instance.PermissionsSeedComplete();
-            };
-
+            var instance = Activator.CreateInstance<TConfiguration>();
+            PermissionsProvider.Configurators.Enqueue(instance);
             return services;
         }
     }

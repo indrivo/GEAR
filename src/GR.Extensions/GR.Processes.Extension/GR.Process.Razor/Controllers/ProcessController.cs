@@ -10,30 +10,39 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using GR.Core;
 using GR.Core.Helpers;
-using GR.Identity.Data;
-using GR.Procesess.Abstraction;
-using GR.Procesess.Data;
-using GR.Procesess.Models;
+using GR.Core.Razor.BaseControllers;
+using GR.Identity.Abstractions;
 using GR.Process.Razor.ViewModels.ProcessViewModels;
+using GR.Processes.Abstractions;
+using GR.Processes.Abstractions.Models;
 
 namespace GR.Process.Razor.Controllers
 {
-    public class ProcessController : Controller
+    public class ProcessController : BaseGearController
     {
+        #region Injectable
+
         /// <summary>
         /// Inject process parser
         /// </summary>
         private readonly IProcessParser _processParser;
 
-        private ProcessesDbContext Context { get; }
-
+        /// <summary>
+        /// Context
+        /// </summary>
+        private IProcessesDbContext Context { get; }
 
         /// <summary>
         /// Inject logger
         /// </summary>
         private readonly ILogger<ProcessController> _logger;
 
-        private readonly ApplicationDbContext _applicationDbContext;
+        /// <summary>
+        /// Inject identity context
+        /// </summary>
+        private readonly IIdentityContext _applicationDbContext;
+
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -42,8 +51,8 @@ namespace GR.Process.Razor.Controllers
         /// <param name="logger"></param>
         /// <param name="applicationDbContext"></param>
         /// <param name="processParser"></param>
-        public ProcessController(ProcessesDbContext context,
-            ILogger<ProcessController> logger, ApplicationDbContext applicationDbContext, IProcessParser processParser)
+        public ProcessController(IProcessesDbContext context,
+            ILogger<ProcessController> logger, IIdentityContext applicationDbContext, IProcessParser processParser)
         {
             Context = context;
             _logger = logger;
@@ -97,7 +106,7 @@ namespace GR.Process.Razor.Controllers
                 {
                     process.ProcessSchema = newProcessDiagram;
                 }
-                await Context.AddRangeAsync(processes);
+                await Context.Processes.AddRangeAsync(processes);
                 await Context.SaveChangesAsync();
             }
             catch (Exception e)

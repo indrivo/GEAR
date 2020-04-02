@@ -46,6 +46,9 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
+        /// <summary>
+        /// Inject interaction service
+        /// </summary>
         private readonly IIdentityServerInteractionService _interactionService;
 
         /// <summary>
@@ -59,16 +62,20 @@ namespace GR.Identity.Razor.Controllers
         private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
-        /// Inject accesor
+        /// Inject accessor
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccesor;
 
         /// <summary>
         /// Inject app context
         /// </summary>
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly GearIdentityDbContext _identityDbContext;
 
-        #endregion Private Dependency Injection Fields
+        #endregion
+
+        /// <summary>
+        /// Return url
+        /// </summary>
         private const string ReturnUrl = "ReturnUrl";
 
         public AccountController(
@@ -78,10 +85,10 @@ namespace GR.Identity.Razor.Controllers
             IIdentityServerInteractionService interactionService,
             IUserManager<GearUser> userManager,
             IHttpContextAccessor httpContextAccesor,
-            ApplicationDbContext applicationDbContext)
+            GearIdentityDbContext identityDbContext)
         {
             _httpContextAccesor = httpContextAccesor;
-            _applicationDbContext = applicationDbContext;
+            _identityDbContext = identityDbContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -304,8 +311,8 @@ namespace GR.Identity.Razor.Controllers
                         IpAdress = _userManager.GetRequestIpAdress(),
                         UserId = user.Id,
                         Email = user.Email,
-                        FirstName = user.UserFirstName,
-                        LastName = user.UserLastName
+                        FirstName = user.FirstName,
+                        LastName = user.LastName
                     });
 
                     var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
@@ -330,11 +337,11 @@ namespace GR.Identity.Razor.Controllers
         [NonAction]
         private async Task ClearUserClaims(GearUser user)
         {
-            var userClaims = await _applicationDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
+            var userClaims = await _identityDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
             if (userClaims.Any())
             {
-                _applicationDbContext.UserClaims.RemoveRange(userClaims);
-                await _applicationDbContext.SaveAsync();
+                _identityDbContext.UserClaims.RemoveRange(userClaims);
+                await _identityDbContext.SaveAsync();
             }
         }
 
@@ -447,8 +454,8 @@ namespace GR.Identity.Razor.Controllers
             {
                 UserId = user.Id,
                 Email = user.Email,
-                FirstName = user.UserFirstName,
-                LastName = user.UserLastName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 IpAdress = _userManager.GetRequestIpAdress()
             });
 

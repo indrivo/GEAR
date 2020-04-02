@@ -191,7 +191,7 @@ namespace GR.Core.Extensions
             where TEntity : class, IBaseModel, IBase<Guid>
         {
             if (!id.HasValue) return new InvalidParametersResultModel();
-            var dbObject = await self.SetEntity<TEntity>()
+            var dbObject = await self.Set<TEntity>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (dbObject == null) return new NotFoundResultModel();
@@ -211,7 +211,7 @@ namespace GR.Core.Extensions
             where TEntity : class, IBaseModel, IBase<Guid>
         {
             if (!id.HasValue) return new InvalidParametersResultModel();
-            var dbObject = await self.SetEntity<TEntity>()
+            var dbObject = await self.Set<TEntity>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (dbObject == null) return new NotFoundResultModel();
@@ -231,7 +231,7 @@ namespace GR.Core.Extensions
             where TEntity : class, IBaseModel, IBase<Guid>
         {
             if (!id.HasValue) return new InvalidParametersResultModel();
-            var dbObject = await self.SetEntity<TEntity>()
+            var dbObject = await self.Set<TEntity>()
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(id));
             if (dbObject == null) return new NotFoundResultModel();

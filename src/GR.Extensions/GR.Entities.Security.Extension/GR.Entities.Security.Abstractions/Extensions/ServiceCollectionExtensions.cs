@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using GR.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;

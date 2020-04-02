@@ -42,11 +42,6 @@ namespace GR.Report.Dynamic.Data
             builder.HasDefaultSchema(Schema);
         }
 
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel
-        {
-            return Set<T>();
-        }
-
         /// <summary>
         /// Seed data 
         /// </summary>
