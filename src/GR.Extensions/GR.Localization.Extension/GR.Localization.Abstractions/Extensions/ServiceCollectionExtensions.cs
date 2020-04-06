@@ -98,7 +98,7 @@ namespace GR.Localization.Abstractions.Extensions
             services.AddTransient<ICountryContext, TContext>();
             services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("Countries module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };
@@ -117,7 +117,7 @@ namespace GR.Localization.Abstractions.Extensions
         {
             services.AddScopedContextFactory<ILocalizationContext, TContext>();
             services.RegisterAuditFor<TContext>("Localization module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };

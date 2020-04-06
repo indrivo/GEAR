@@ -66,7 +66,7 @@ namespace GR.Documents.Abstractions.Extensions
         {
             services.AddDbContext<TDocumentContext>(storageOptions);
             IoC.RegisterTransientService<IDocumentContext, TDocumentContext>();
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TDocumentContext>();
             };

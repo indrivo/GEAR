@@ -41,7 +41,7 @@ namespace GR.UI.Menu.Abstractions.Extensions
             services.AddScopedContextFactory<IMenuDbContext, TMenuContext>();
             services.RegisterAuditFor<IMenuDbContext>($"{nameof(Menu)} module");
 
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TMenuContext>();
             };

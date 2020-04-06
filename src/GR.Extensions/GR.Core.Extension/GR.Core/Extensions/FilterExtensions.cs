@@ -96,7 +96,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => t.GetPropertyValue(property).ToString().Contains(value.ToString()));
+            return source.Where(t => t.GetStringPropertyValue(property).Contains(value.ToString()));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => t.GetPropertyValue(property).ToString().StartsWith(value));
+            return source.Where(t => t.GetStringPropertyValue(property).StartsWith(value));
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => !t.GetPropertyValue(property).ToString().StartsWith(value));
+            return source.Where(t => !t.GetStringPropertyValue(property).StartsWith(value));
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => t.GetPropertyValue(property).ToString().EndsWith(value));
+            return source.Where(t => t.GetStringPropertyValue(property).EndsWith(value));
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => !t.GetPropertyValue(property).ToString().EndsWith(value));
+            return source.Where(t => !t.GetStringPropertyValue(property).EndsWith(value));
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => t.GetPropertyValue(property).ToString() == value.ToString());
+            return source.Where(t => t.GetStringPropertyValue(property) == value.ToString());
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace GR.Core.Extensions
             if (property.IsNullOrEmpty() || value == null)
                 return source;
 
-            return source.Where(t => t.GetPropertyValue(property).ToString() != value.ToString());
+            return source.Where(t => t.GetStringPropertyValue(property) != value.ToString());
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace GR.Core.Extensions
         private static readonly Func<object, string, IEnumerable<string>, bool> MatchRegEx =
             delegate (object o, string regExp, IEnumerable<string> props)
             {
-                var values = props.Select(x => o.GetPropertyValue(x).ToString()).ToList();
+                var values = props.Select(x => o.GetPropertyValue(x)?.ToString()).ToList();
                 return values.Any(c => Regex.Match(c, regExp).Success);
             };
 
@@ -291,7 +291,7 @@ namespace GR.Core.Extensions
         private static readonly Func<object, string, IEnumerable<string>, bool> FindExpression =
             delegate (object o, string exp, IEnumerable<string> props)
             {
-                var values = props.Select(x => o.GetPropertyValue(x).ToString()).ToList();
+                var values = props.Select(o.GetStringPropertyValue).ToList();
                 return values.Any(c => c.Contains(exp));
             };
 

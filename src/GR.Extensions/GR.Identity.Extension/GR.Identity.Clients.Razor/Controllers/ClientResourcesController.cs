@@ -22,15 +22,21 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// </summary>
         private readonly IClientsContext _context;
 
+        /// <summary>
+        /// Inject clients service
+        /// </summary>
+        private readonly IClientsService _clientsService;
+
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public ClientResourcesController(IClientsContext context)
+        public ClientResourcesController(IClientsContext context, IClientsService clientsService)
         {
             _context = context;
+            _clientsService = clientsService;
         }
 
         /// <summary>
@@ -43,8 +49,6 @@ namespace GR.Identity.Clients.Razor.Controllers
         {
             return View();
         }
-
-
 
         /// <summary>
         /// Get list
@@ -63,7 +67,6 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-
         public IActionResult Create() => View();
 
         /// <summary>
@@ -72,7 +75,6 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-
         public async Task<IActionResult> Create(ApiResource model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -102,16 +104,11 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-
         public async Task<IActionResult> Edit(int id)
         {
-            var response = await _context.ApiResources.FirstOrDefaultAsync(x => x.Id == id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            return View(response);
+            var response = await _clientsService.FindApiResourceByIdAsync(id);
+            if (!response.IsSuccess) return NotFound();
+            return View(response.Result);
         }
 
         /// <summary>
@@ -120,32 +117,12 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-
         public async Task<IActionResult> Edit(ApiResource model)
         {
             if (!ModelState.IsValid) return View(model);
-            var data = await _context.ApiResources.FirstOrDefaultAsync(x => x.Id == model.Id);
-            if (data == null)
-            {
-                ModelState.AddModelError("fail", "No api resource found!");
-                return View(model);
-            }
-
-            data.Name = model.Name;
-            data.Enabled = model.Enabled;
-            data.Description = model.Description;
-            try
-            {
-                _context.ApiResources.Update(data);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-                ModelState.AddModelError("fail", e.ToString());
-            }
-
+            var updateResult = await _clientsService.UpdateApiResourceAsync(model);
+            if (updateResult.IsSuccess) return RedirectToAction(nameof(Index));
+            ModelState.AppendResultModelErrors(updateResult.Errors);
             return View(model);
         }
 

@@ -120,6 +120,7 @@ using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
 using GR.Calendar.Abstractions.Helpers;
+using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
@@ -132,6 +133,7 @@ using GR.Files.Razor.Extensions;
 using GR.Forms.Abstractions.Helpers;
 using GR.Identity;
 using GR.Identity.Abstractions.Helpers;
+using GR.Identity.Abstractions.Helpers.PasswordPolicies;
 using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Clients.Infrastructure;
 using GR.Identity.Clients.Infrastructure.Data;
@@ -151,6 +153,7 @@ using GR.Localization.Data;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
+using GR.Notifications.Hub.Hubs;
 using GR.Procesess.Data;
 using GR.Procesess.Parsers;
 using GR.Process.Razor.Extensions;
@@ -178,15 +181,16 @@ namespace GR.Cms
 		/// <param name="app"></param>
 		public override void Configure(IApplicationBuilder app)
 		{
+			app.UseUrlRewriteModule();
 			app.UseGearWebApp(config =>
 			{
-				config.AppName = "Web APP";
+				config.AppName = "Gear";
 				config.HostingEnvironment = HostingEnvironment;
 				config.Configuration = Configuration;
 			});
 
 			app.UseIdentityServer();
-			app.UseUrlRewriteModule();
+			app.UseNotificationsHub<GearNotificationHub>();
 		}
 
 		/// <summary>
@@ -195,24 +199,20 @@ namespace GR.Cms
 		/// <param name="services"></param>
 		/// <returns></returns>
 		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
-			services.RegisterGearWebApp(config =>
+			services.RegisterGearWebApp(Configuration, HostingEnvironment, config =>
 		{
-			config.Configuration = Configuration;
-			config.HostingEnvironment = HostingEnvironment;
+			//------------------------------Global Config----------------------------------------
 			config.CacheConfiguration.UseInMemoryCache = true;
 
-			//------------------------------Identity Module-------------------------------------
+
+			//------------------------------Theme Config------------------------------------------
+			config.GearServices.RegisterDefaultThemeRazorModule();
+
+			//------------------------------Identity Module----------------------------------------
 			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
-				//.PasswordPolicy(options =>
-				//{
-				//	options.RequireDigit = true;
-				//	options.RequiredLength = 6;
-				//	options.RequireNonAlphanumeric = false;
-				//	options.RequireUppercase = false;
-				//	options.RequireLowercase = false;
-				//})
+				.PasswordPolicy(new DefaultPasswordPolicy())
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<GearIdentityDbContext>(options =>
 				{
@@ -222,8 +222,8 @@ namespace GR.Cms
 				.AddIdentityModuleEvents()
 				.AddIdentityRazorModule();
 
-			//-----------------------------Authentification Module-------------------------------------
-			config.GearServices.AddAuthentication(Configuration);
+			//-----------------------------Authentication Module-------------------------------------
+			config.GearServices.AddAuthentication<AuthorizeService>();
 
 
 			//-----------------------------Identity Clients Module-------------------------------------
@@ -309,6 +309,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterNotificationsHubModule<CommunicationHub>()
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
@@ -390,6 +391,7 @@ namespace GR.Cms
 
 			//Register files razor provider 
 			config.GearServices.AddFilesRazorModule();
+
 			//------------------------------------Task Module-------------------------------------
 			config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
@@ -489,7 +491,6 @@ namespace GR.Cms
 				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
 
 			//------------------------------------ Documents Module -----------------------------------
-
 			config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

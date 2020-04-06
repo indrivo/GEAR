@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4.EntityFramework.Interfaces;
+using IdentityServer4.EntityFramework.Mappers;
 using Mapster;
 using Microsoft.EntityFrameworkCore.Internal;
 using ApiResource = IdentityServer4.Models.ApiResource;
@@ -42,7 +43,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     Created = DateTime.Now,
                     AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime,
                     AccessTokenLifetime = client.AccessTokenLifetime,
-                    AccessTokenType = client.AccessTokenLifetime,
+                    AccessTokenType = (int)client.AccessTokenType,
                     AllowAccessTokensViaBrowser = client.AllowAccessTokensViaBrowser,
                     AllowOfflineAccess = client.AllowOfflineAccess,
                     AllowPlainTextPkce = client.AllowPlainTextPkce,

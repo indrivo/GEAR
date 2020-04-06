@@ -220,12 +220,12 @@ namespace GR.Identity.Profile.Razor.Controllers
 
             var model = new UserProfileEditViewModel
             {
-                Id = currentUser.Id,
                 FirstName = currentUser.FirstName,
                 LastName = currentUser.LastName,
                 Birthday = currentUser.Birthday,
                 AboutMe = currentUser.AboutMe,
                 PhoneNumber = currentUser.PhoneNumber,
+                Email = currentUser.Email
             };
             return PartialView("Partial/_EditProfilePartial", model);
         }

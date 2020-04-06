@@ -28,6 +28,7 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
         /// Primary address
         /// </summary>
         [StringLength(450)]
+        [Required]
         [Display(Name = "Address Line 1")]
         [DisplayTranslate(Key = IdentityResources.Translations.ADDRESS_LINE1)]
         public string AddressLine1 { get; set; }
@@ -45,7 +46,7 @@ namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
         /// </summary>
         [StringLength(450)]
         [Required]
-        [Display(Name = "Zip Code", Prompt = "zip code")]
+        [Display(Name = "Zip Code")]
         [DisplayTranslate(Key = IdentityResources.Translations.ZIP_CODE)]
         public string ZipCode { get; set; }
 

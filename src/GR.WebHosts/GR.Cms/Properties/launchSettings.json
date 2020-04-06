@@ -39,6 +39,12 @@
         "ASPNETCORE_ENVIRONMENT": "Stage"
       },
       "applicationUrl": "http://localhost:9099/"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true
     }
   }
 }

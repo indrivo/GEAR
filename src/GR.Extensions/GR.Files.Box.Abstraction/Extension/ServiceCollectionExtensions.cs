@@ -30,7 +30,7 @@ namespace GR.Files.Box.Abstraction.Extension
             services.AddDbContext<TFileBoxContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<IFileBoxContext>("File box module");
             services.ConfigureWritable<List<FileBoxSettingsViewModel>>(configuration.GetSection("FileBoxSettings"));
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TFileBoxContext>();
             };

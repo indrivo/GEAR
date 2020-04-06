@@ -81,9 +81,9 @@
 			}).then((result) => {
 				if (result.value) {
 					$.ajax({
-						type: "POST",
-						url: "@Url.Action("DeleteUserAddress", "UserProfile")",
-						data: { id: addressId },
+						type: "DELETE",
+						url: "@Url.Action("DeleteAddress", "UserAddress")",
+                        data: { addressId: addressId },
 						success: (data) => {
 							if (data.is_success) {
 								$.ajax({

@@ -60,7 +60,7 @@ namespace GR.ECommerce.Abstractions.Extensions
         where TContext : DbContext, ICommerceContext
         {
             services.AddDbContext<TContext>(storageOptions);
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };

@@ -38,7 +38,7 @@ namespace GR.Files.Abstraction.Extension
             services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<TFileContext>("Physic File module");
             services.ConfigureWritable<List<FileSettingsViewModel>>(configuration.GetSection("FileSettings"));
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TFileContext>();
             };

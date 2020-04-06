@@ -38,5 +38,10 @@ namespace GR.Core
         /// This property value is used for cookie name and redis reserved key
         /// </summary>
         public string MachineIdentifier { get; set; }
+
+        /// <summary>
+        /// Get entry uri
+        /// </summary>
+        public Uri EntryUri { get; set; }
     }
 }

@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Linq;
 using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Scopes;
 using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Helpers.PasswordPolicies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Identity.Abstractions.Extensions
@@ -58,25 +63,87 @@ namespace GR.Identity.Abstractions.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Password policy
+        /// </summary>
+        /// <typeparam name="TPasswordPolicy"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="passwordPolicy"></param>
+        /// <returns></returns>
+        public static IServiceCollection PasswordPolicy<TPasswordPolicy>(this IServiceCollection services, TPasswordPolicy passwordPolicy = null)
+            where TPasswordPolicy : PasswordPolicy
+        {
+            if (passwordPolicy == null)
+                passwordPolicy = new DefaultPasswordPolicy() as TPasswordPolicy;
+            // Configure Identity
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password = passwordPolicy?.Policy(options.Password);
+            });
+
+            return services;
+        }
 
         /// <summary>
         /// Add authentication
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services)
+            where TAuthorizeService : class, IAuthorizeService
         {
-            var authority = configuration.GetSection("WebClients").GetSection("CORE");
-            var uri = authority.GetValue<string>("uri");
-            services.AddAuthentication()
+            services.AddGearTransient<IAuthorizeService, TAuthorizeService>();
+            var authorityUri = GearApplication.SystemConfig.EntryUri.ToString();
+
+            var hostingEnvironment = services
+                .BuildServiceProvider()
+                .GetRequiredService<IHostingEnvironment>();
+            var isDevelopment = hostingEnvironment.IsDevelopment();
+
+            services.AddAuthentication(options =>
+                {
+                    //options.DefaultScheme = "gear";
+                    //options.DefaultAuthenticateScheme = "gear";
+                })
+                .AddPolicyScheme("gear", "Authorization Bearer or Identity.Application", options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                        if (authHeader?.StartsWith("Bearer ") ?? false)
+                        {
+                            return JwtBearerDefaults.AuthenticationScheme;
+                        }
+
+                        return IdentityConstants.ApplicationScheme;
+                    };
+                })
                 .AddJwtBearer("Bearer", opts =>
-               {
-                   opts.Audience = GearScopes.CORE;
-                   opts.Authority = uri;
-                   opts.RequireHttpsMetadata = false;
-                   opts.SaveToken = true;
-               });
+                {
+                    opts.Audience = GearScopes.CORE;
+                    opts.Authority = authorityUri;
+                    opts.RequireHttpsMetadata = false;
+                    opts.SaveToken = true;
+                });
+                //.AddCookie(options =>
+                //{
+                //    options.Cookie.HttpOnly = true;
+                //    options.Cookie.SecurePolicy = isDevelopment
+                //        ? CookieSecurePolicy.None
+                //        : CookieSecurePolicy.Always;
+                //    options.Cookie.SameSite = SameSiteMode.Lax;
+                //});
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = $".AspNet{GearApplication.SystemConfig.MachineIdentifier}";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = isDevelopment
+                    ? CookieSecurePolicy.None
+                    : CookieSecurePolicy.Always;
+            });
+
             return services;
         }
 

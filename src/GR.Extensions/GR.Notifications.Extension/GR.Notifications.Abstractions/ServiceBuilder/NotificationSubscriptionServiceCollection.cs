@@ -2,14 +2,14 @@
 
 namespace GR.Notifications.Abstractions.ServiceBuilder
 {
-    public interface INotificationSubscriptionServiceCollection
+    public interface INotificationServiceCollection
     {
         IServiceCollection Services { get; set; }
     }
 
-    public class NotificationSubscriptionServiceCollection : INotificationSubscriptionServiceCollection
+    public class NotificationServiceCollection : INotificationServiceCollection
     {
-        public NotificationSubscriptionServiceCollection(IServiceCollection services)
+        public NotificationServiceCollection(IServiceCollection services)
         {
             Services = services;
         }

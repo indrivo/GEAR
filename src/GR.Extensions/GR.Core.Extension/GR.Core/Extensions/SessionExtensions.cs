@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace GR.Identity.PhoneVerification.Api.Extensions
+namespace GR.Core.Extensions
 {
     public static class SessionExtensions
     {

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
@@ -15,6 +17,7 @@ using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
+using GR.Notifications.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +35,7 @@ namespace GR.Identity
         /// </summary>
         protected readonly Collection<string> DefaultRoles = new Collection<string> {
             GlobalResources.Roles.USER,
-            GlobalResources.Roles.ANONIMOUS_USER
+            GlobalResources.Roles.ANONYMOUS_USER
         };
 
         #endregion
@@ -62,14 +65,20 @@ namespace GR.Identity
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        /// <summary>
+        /// Inject communication hub
+        /// </summary>
+        private readonly ICommunicationHub _hub;
+
         #endregion
 
-        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext)
+        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext, ICommunicationHub hub)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             RoleManager = roleManager;
             IdentityContext = identityContext;
+            _hub = hub;
         }
 
         /// <summary>
@@ -100,12 +109,24 @@ namespace GR.Identity
         public virtual async Task<ResultModel<GearUser>> GetCurrentUserAsync()
         {
             var result = new ResultModel<GearUser>();
-            if (_httpContextAccessor.HttpContext == null)
+            if (_httpContextAccessor.HttpContext == null || !_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
                 result.Errors.Add(new ErrorModel("", "Unauthorized user"));
                 return result;
             }
-            var user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+
+            GearUser user;
+
+            var nameIdentifierClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (nameIdentifierClaim != null)
+            {
+                user = await UserManager.FindByIdAsync(nameIdentifierClaim.Value);
+                result.IsSuccess = user != null;
+                result.Result = user;
+                return result;
+            }
+
+            user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             result.IsSuccess = user != null;
             result.Result = user;
             return result;
@@ -434,5 +455,100 @@ namespace GR.Identity
         public virtual bool IsCurrentUser(Guid id)
             => _httpContextAccessor.HttpContext.User.IsAuthenticated()
                && id.Equals(_httpContextAccessor.HttpContext.User.Identity.Name.ToGuid());
+
+
+        /// <summary>
+        /// Get user image
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<byte[]>> GetUserImageAsync(Guid? userId)
+        {
+            if (userId == null)
+            {
+                return new InvalidParametersResultModel<byte[]>();
+            }
+
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+
+            if (user == null) return new NotFoundResultModel<byte[]>();
+            if (user.UserPhoto == null)
+            {
+                return new SuccessResultModel<byte[]>(GetUserDefaultImage());
+            }
+
+            return new SuccessResultModel<byte[]>(user.UserPhoto);
+        }
+
+        /// <summary>
+        /// Get users with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<UserListItemViewModel>> GetAllUsersWithPaginationAsync(DTParameters parameters)
+        {
+            var filtered = await IdentityContext.Users.GetPagedAsDtResultAsync(parameters);
+
+            var usersList = filtered.Data.Select(async o =>
+            {
+                var sessions = _hub.GetSessionsCountByUserId(o.Id);
+                var roles = await UserManager.GetRolesAsync(o);
+                var org = await IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
+                return new UserListItemViewModel
+                {
+                    Id = o.Id,
+                    UserName = o.UserName,
+                    CreatedDate = o.Created.ToShortDateString(),
+                    CreatedBy = o.Author,
+                    ModifiedBy = o.ModifiedBy,
+                    Changed = o.Changed.ToShortDateString(),
+                    Roles = roles,
+                    Sessions = sessions,
+                    AuthenticationType = o.AuthenticationType.ToString(),
+                    LastLogin = o.LastLogin,
+                    Organization = org?.Name
+                };
+            }).Select(x => x.Result);
+
+            var finalResult = new DTResult<UserListItemViewModel>
+            {
+                Draw = filtered.Draw,
+                Data = usersList.ToList(),
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
+            };
+
+            return finalResult;
+        }
+        #region Helpers
+
+        /// <summary>
+        /// Get default user image
+        /// </summary>
+        /// <returns></returns>
+        private static byte[] GetUserDefaultImage()
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
+            if (!File.Exists(path))
+                return default;
+
+            try
+            {
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var binary = new BinaryReader(stream))
+                {
+                    var data = binary.ReadBytes((int)stream.Length);
+                    return data;
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return default;
+        }
+
+        #endregion
     }
 }

@@ -11,9 +11,9 @@ namespace GR.Core
             public const string ADMINISTRATOR = "Administrator";
 
             /// <summary>
-            /// Anonimous User role
+            /// Anonymous User role
             /// </summary>
-            public const string ANONIMOUS_USER = "Anonymous User";
+            public const string ANONYMOUS_USER = "Anonymous User";
 
             /// <summary>
             /// User role
@@ -32,6 +32,13 @@ namespace GR.Core
             /// Is email format
             /// </summary>
             public const string EMAIL = @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
+        }
+
+        public struct Environments
+        {
+            public const string RELEASE = "Release";
+            public const string DEVELOPMENT = "Development";
+            public const string STAGE = "Stage";
         }
     }
 }

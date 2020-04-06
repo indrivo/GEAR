@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
-using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
 using GR.Entities.Data;
@@ -78,7 +77,7 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IConfigurationRoot BuildConfiguration()
         {
-            InitAppsettingsFiles();
+            InitAppSettingsFiles();
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -92,15 +91,15 @@ namespace GR.WebApplication
         }
 
         /// <summary>
-        /// Init appsettings files
+        /// Init app settings files
         /// </summary>
         [Conditional("DEBUG")]
-        public static void InitAppsettingsFiles()
+        public static void InitAppSettingsFiles()
         {
             //System env
             var envPaths = new List<string>
             {
-                "Development", "Stage", string.Empty
+                GlobalResources.Environments.DEVELOPMENT, GlobalResources.Environments.STAGE, string.Empty
             };
 
             var fails = 0;
@@ -141,6 +140,7 @@ namespace GR.WebApplication
                     ModulesProvider.Bind(conf);
                 })
                 .Build();
+
             return GlobalWebHost;
         }
 
@@ -158,7 +158,7 @@ namespace GR.WebApplication
                 .MigrateDbContext<GearIdentityDbContext>()
                 .MigrateDbContext<MenuDbContext>();
 
-            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
+            SystemEvents.Database.MigrateAll(EventArgs.Empty);
 
             return GlobalWebHost;
         }

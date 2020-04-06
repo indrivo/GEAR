@@ -42,6 +42,12 @@ namespace GR.Cache.Extensions
                 opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
             });
 
+            services.AddHealthChecks()
+                .AddRedis(redisConfig.Host, name: "redis-cache", tags: new[]
+                {
+                    "cache", "redis", "gear"
+                });
+
             services.AddSingleton<IRedisConnection, TRedisConnection>();
             IoC.RegisterSingletonService<IRedisConnection, TRedisConnection>();
             return services;

@@ -25,7 +25,7 @@ namespace GR.Report.Abstractions
         /// </summary>
         /// <param name="folderName"></param>
         /// <returns></returns>
-        ResultModel<bool> CreateFolder(string folderName);
+        ResultModel<Guid> CreateFolder(string folderName);
 
         /// <summary>
         /// Get folder by id
@@ -39,7 +39,7 @@ namespace GR.Report.Abstractions
         /// </summary>
         /// <param name="folderModel"></param>
         /// <returns></returns>
-        ResultModel<bool> EditFolder(DynamicReportFolderViewModel folderModel);
+        ResultModel<Guid> EditFolder(DynamicReportFolderViewModel folderModel);
 
         /// <summary>
         /// Delete folder by id
@@ -58,14 +58,14 @@ namespace GR.Report.Abstractions
         /// </summary>
         /// <param name="reportModel"></param>
         /// <returns></returns>
-        ResultModel<bool> CreateReport(DynamicReportViewModel reportModel);
+        ResultModel<Guid> CreateReport(DynamicReportViewModel reportModel);
 
         /// <summary>
         /// Edit Report
         /// </summary>
         /// <param name="reportModel"></param>
         /// <returns></returns>
-        ResultModel<bool> EditReport(DynamicReportViewModel reportModel);
+        ResultModel<Guid> EditReport(DynamicReportViewModel reportModel);
 
         /// <summary>
         /// Get report by id

@@ -1,4 +1,4 @@
-namespace GR.Identity.Razor.ViewModels.AccountViewModels
+namespace GR.Identity.Abstractions.ViewModels.AccountViewModels
 {
     public class LogoutViewModel
     {

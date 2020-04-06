@@ -52,7 +52,7 @@ namespace GR.Calendar.Abstractions.Extensions
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
             configuration.Services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
                 {
                     GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
                 };

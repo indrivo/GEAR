@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace GR.Core.Helpers
@@ -29,20 +29,39 @@ namespace GR.Core.Helpers
         [JsonProperty("result")]
         public virtual T Result { get; set; }
 
-        [JsonIgnore]
-        public Guid? KeyEntity { get; set; }
-
         /// <summary>
         /// To base
         /// </summary>
         /// <returns></returns>
-        public ResultModel ToBase() => new ResultModel
+        public virtual ResultModel ToBase() => new ResultModel
         {
             IsSuccess = IsSuccess,
             Result = Result,
-            Errors = Errors,
-            KeyEntity = KeyEntity
+            Errors = Errors
         };
+
+        /// <summary>
+        /// Add error
+        /// </summary>
+        /// <param name="error"></param>
+        public virtual void AddError(string error) => Errors?.Add(new ErrorModel(string.Empty, error));
+
+        /// <summary>
+        /// Add error
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="error"></param>
+        public virtual void AddError(string key, string error) => Errors?.Add(new ErrorModel(key, error));
+
+        /// <summary>
+        /// Has error code
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
+        public virtual bool HasErrorCode(string errorCode)
+        {
+            return Errors?.Any(x => x.Key.Equals(errorCode)) ?? false;
+        }
 
         /// <summary>
         /// Adapt

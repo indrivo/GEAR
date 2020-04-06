@@ -55,11 +55,6 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         };
 
         /// <summary>
-        /// Signlar configuration
-        /// </summary>
-        public virtual SignlarConfiguration SignlarConfiguration { get; set; } = new SignlarConfiguration();
-
-        /// <summary>
         /// Swagger configuration
         /// </summary>
         public virtual SwaggerServicesConfiguration SwaggerServicesConfiguration { get; set; } = new SwaggerServicesConfiguration();
@@ -81,11 +76,6 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// Use in memory cache
         /// </summary>
         public bool UseInMemoryCache { get; set; } = true;
-    }
-
-    public sealed class SignlarConfiguration
-    {
-        public bool UseDefaultConfiguration { get; set; } = true;
     }
 
     public sealed class SwaggerServicesConfiguration

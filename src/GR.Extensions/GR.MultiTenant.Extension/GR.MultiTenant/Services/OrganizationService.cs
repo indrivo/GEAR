@@ -249,7 +249,7 @@ namespace GR.MultiTenant.Services
                     .Where(x => roles.Contains(x.Id))
                     .Select(x => x.Name)
                     .ToListAsync();
-                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.ANONYMOUS_USER);
                 userRoles.Add(GlobalResources.Roles.USER);
                 var userResult = await _userManager.UserManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
@@ -340,7 +340,7 @@ namespace GR.MultiTenant.Services
             var rolesToExclude = new HashSet<string>
             {
                 GlobalResources.Roles.ADMINISTRATOR,
-                GlobalResources.Roles.ANONIMOUS_USER
+                GlobalResources.Roles.ANONYMOUS_USER
             };
 
             var roles = await _userManager.RoleManager.Roles

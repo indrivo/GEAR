@@ -55,7 +55,7 @@ namespace GR.Entities.Data
                     Changed = DateTime.Now,
                     Created = DateTime.Now,
                     IsSystem = true,
-                    Author = GlobalResources.Roles.ANONIMOUS_USER,
+                    Author = GlobalResources.Roles.ANONYMOUS_USER,
                     MachineName = GearSettings.DEFAULT_ENTITY_SCHEMA,
                     Name = GearSettings.DEFAULT_ENTITY_SCHEMA,
                     TenantId = GearSettings.TenantId

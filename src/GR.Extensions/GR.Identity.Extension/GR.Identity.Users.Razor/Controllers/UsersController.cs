@@ -8,18 +8,18 @@ using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.ErrorCodes;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Helpers;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.LdapAuth.Abstractions;
 using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions.Abstractions.Attributes;
-using GR.Identity.Razor.Users.ViewModels.UserViewModels;
 using GR.Identity.Users.Razor.ViewModels.UserViewModels;
-using GR.Notifications.Abstractions;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -543,127 +543,24 @@ namespace GR.Identity.Users.Razor.Controllers
         /// <summary>
         /// Load user with ajax
         /// </summary>
-        /// <param name="hub"></param>
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadUsers([FromServices] ICommunicationHub hub, DTParameters param)
+        [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
+        public async Task<JsonResult> LoadUsers(DTParameters param)
         {
-            var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-                out var totalCount);
-
-            var usersList = filtered.Select(async o =>
-            {
-                var sessions = hub.GetSessionsCountByUserId(o.Id);
-                var roles = await _userManager.GetRolesAsync(o);
-                var org = await _identityContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
-                return new UserListItemViewModel
-                {
-                    Id = o.Id,
-                    UserName = o.UserName,
-                    CreatedDate = o.Created.ToShortDateString(),
-                    CreatedBy = o.Author,
-                    ModifiedBy = o.ModifiedBy,
-                    Changed = o.Changed.ToShortDateString(),
-                    Roles = roles,
-                    Sessions = sessions,
-                    AuthenticationType = o.AuthenticationType.ToString(),
-                    LastLogin = o.LastLogin,
-                    Organization = org?.Name
-                };
-            }).Select(x => x.Result);
-
-            var finalResult = new DTResult<UserListItemViewModel>
-            {
-                Draw = param.Draw,
-                Data = usersList.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
+            var data = await _customUserManager.GetAllUsersWithPaginationAsync(param);
+            return Json(data);
         }
 
         /// <summary>
-        /// Get application users list filtered
-        /// </summary>
-        /// <param name="search"></param>
-        /// <param name="sortOrder"></param>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="totalCount"></param>
-        /// <returns></returns>
-        [NonAction]
-        private List<GearUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
-            out int totalCount)
-        {
-            var result = _identityContext.Users.AsNoTracking()
-                .Where(p =>
-                    search == null || p.Email != null &&
-                    p.Email.ToLower().Contains(search.ToLower()) || p.UserName != null &&
-                    p.UserName.ToLower().Contains(search.ToLower()) ||
-                    p.ModifiedBy != null && p.ModifiedBy.ToLower().Contains(search.ToLower())).ToList();
-            totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-            switch (sortOrder)
-            {
-                case "email":
-                    result = result.OrderBy(a => a.Email).ToList();
-                    break;
-
-                case "created":
-                    result = result.OrderBy(a => a.Created).ToList();
-                    break;
-
-                case "userName":
-                    result = result.OrderBy(a => a.UserName).ToList();
-                    break;
-
-                case "author":
-                    result = result.OrderBy(a => a.Author).ToList();
-                    break;
-
-                case "changed":
-                    result = result.OrderBy(a => a.Changed).ToList();
-                    break;
-
-                case "email DESC":
-                    result = result.OrderByDescending(a => a.Email).ToList();
-                    break;
-
-                case "created DESC":
-                    result = result.OrderByDescending(a => a.Created).ToList();
-                    break;
-
-                case "userName DESC":
-                    result = result.OrderByDescending(a => a.UserName).ToList();
-                    break;
-
-                case "author DESC":
-                    result = result.OrderByDescending(a => a.Author).ToList();
-                    break;
-
-                case "changed DESC":
-                    result = result.OrderByDescending(a => a.Changed).ToList();
-                    break;
-
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
-        }
-
-        /// <summary>
-        ///     Get user by id
+        /// Get user by id
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [Route("api/[controller]/[action]")]
         [HttpGet]
+        [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult GetUserById([Required] Guid userId)
         {
@@ -681,54 +578,20 @@ namespace GR.Identity.Users.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult GetImage(Guid id)
+        public async Task<IActionResult> GetImage(Guid id)
         {
-            if (id == Guid.Empty)
+            var imageRequest = await _customUserManager.GetUserImageAsync(id);
+            if (imageRequest.IsSuccess)
+            {
+                return File(imageRequest.Result, "image/jpg");
+            }
+
+            if (imageRequest.HasErrorCode(ResultModelCodes.NotFound))
             {
                 return NotFound();
             }
 
-            try
-            {
-                var photo = _identityContext.Users.SingleOrDefault(x => x.Id == id);
-                if (photo?.UserPhoto != null) return File(photo.UserPhoto, "image/jpg");
-                var def = GetDefaultImage();
-                if (def == null) return NotFound();
-                return File(def, "image/jpg");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return NotFound();
-        }
-
-        /// <summary>
-        /// Get default user image
-        /// </summary>
-        /// <returns></returns>
-        private static byte[] GetDefaultImage()
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
-            if (!System.IO.File.Exists(path))
-                return default;
-
-            try
-            {
-                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var binary = new BinaryReader(stream))
-                {
-                    var data = binary.ReadBytes((int)stream.Length);
-                    return data;
-                }
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-            }
-
-            return default;
+            return BadRequest();
         }
 
         /// <summary>

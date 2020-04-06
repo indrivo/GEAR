@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -8,6 +7,7 @@ using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,14 +34,6 @@ namespace GR.Identity.Clients.Abstractions.Extensions
             var migrationsAssembly = typeof(TConfiguration).Assembly.GetName().Name;
 
             void DbOptions(DbContextOptionsBuilder builder) => builder.RegisterIdentityStorage(configuration, migrationsAssembly);
-            var clientsSection = configuration.GetSection(ClientResources.WebClientsSection)
-                .GetChildren()
-                .Select(x => x.Key)
-                .ToList();
-
-            var clientUrls = clientsSection
-                .ToDictionary(sectionClient => sectionClient,
-                    sectionClient => ClientsSeeder.GetClientUrl(configuration, sectionClient));
 
             services.AddIdentityServer(options =>
                 {
@@ -50,7 +42,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
                 })
-                .AddDeveloperSigningCredential()
+                .AddCertificate()
                 .AddAspNetIdentity<TUser>()
                 .AddConfigurationStore<TConfiguration>(options =>
                 {
@@ -64,16 +56,15 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
                 })
-                .AddInMemoryIdentityResources(configurator.GetResources())
-                .AddInMemoryApiResources(configurator.GetApiResources())
-                .AddInMemoryClients(configurator.GetClients(clientUrls));
-                //.AddConfigurationStoreCache();
-                //.AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
+                .AddResourceStore<CustomResourceStore>()
+                .AddClientStore<CustomClientStore>();
+            //.AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
 
+            services.AddTransient<ICorsPolicyService, CustomCorsPolicyService>();
             services.AddGearSingleton<IClientsContext, TConfiguration>();
             services.AddGearSingleton<IClientsPersistedGrantContext, TPersisted>();
 
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>()
                     .MigrateDbContext<TPersisted>()
@@ -85,6 +76,29 @@ namespace GR.Identity.Clients.Abstractions.Extensions
             };
 
             return services;
+        }
+
+        /// <summary>
+        /// Add certificate to identity server configuration
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static IIdentityServerBuilder AddCertificate(this IIdentityServerBuilder builder)
+        {
+            var hostingEnvironment = builder.Services
+                .BuildServiceProvider()
+                .GetRequiredService<IHostingEnvironment>();
+            var isDevelopment = hostingEnvironment.IsDevelopment();
+            if (isDevelopment)
+            {
+                builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                builder.AddSigningCredential(CertificateHelper.Get());
+            }
+
+            return builder;
         }
 
         /// <summary>
