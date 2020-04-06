@@ -15,7 +15,7 @@ namespace GR.Notifications.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static INotificationSubscriptionServiceCollection AddNotificationRazorUIModule(this INotificationSubscriptionServiceCollection services)
+        public static INotificationServiceCollection AddNotificationRazorUIModule(this INotificationServiceCollection services)
         {
             services.Services.ConfigureOptions(typeof(NotificationRazorFileConfiguration));
 

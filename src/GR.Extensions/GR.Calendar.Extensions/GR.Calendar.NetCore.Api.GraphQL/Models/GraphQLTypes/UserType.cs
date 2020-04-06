@@ -10,7 +10,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
     {
         public UserType(ICalendarDbContext dbContext)
         {
-            Field(x => x.Id, type: typeof(IdGraphType), nullable: false).Description("User id");
+            Field(x => x.Id, type: typeof(IdGraphType)).Description("User id");
             Field(x => x.Email).Description("User email");
             Field("FirstName", x => x.FirstName);
             Field("LastName", x => x.LastName);

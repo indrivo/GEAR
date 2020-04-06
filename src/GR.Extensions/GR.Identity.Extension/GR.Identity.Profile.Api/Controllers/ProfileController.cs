@@ -8,18 +8,17 @@ using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Profile.Api.Controllers
 {
-    [Authorize]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("api/[controller]/[action]")]
     public class ProfileController : BaseGearController
     {
@@ -49,7 +48,7 @@ namespace GR.Identity.Profile.Api.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
         {
             var resultModel = new ResultModel();
@@ -110,42 +109,11 @@ namespace GR.Identity.Profile.Api.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public virtual async Task<JsonResult> EditProfile(UserProfileEditViewModel model)
         {
-            var resultModel = new ResultModel();
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentUser = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
-                return Json(resultModel);
-            }
-
-            currentUser.FirstName = model.FirstName;
-            currentUser.LastName = model.LastName;
-            currentUser.Birthday = model.Birthday;
-            currentUser.AboutMe = model.AboutMe;
-            currentUser.PhoneNumber = model.PhoneNumber;
-
-            var result = await _userManager.UserManager.UpdateAsync(currentUser);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                return Json(resultModel);
-            }
-
-            foreach (var identityError in result.Errors)
-            {
-                resultModel.Errors.Add(new ErrorModel(identityError.Code, identityError.Description));
-            }
-
-            return Json(resultModel);
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            return await JsonAsync(_profileService.UpdateBaseUserProfileAsync(model));
         }
 
         [HttpPost]
@@ -191,7 +159,7 @@ namespace GR.Identity.Profile.Api.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
         {
             var resultModel = new ResultModel();

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
+namespace GR.Identity.Abstractions.ViewModels.UserViewModels
 {
     public class UserListItemViewModel
     {

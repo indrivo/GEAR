@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Exceptions;
@@ -12,11 +9,8 @@ using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
-using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models.Config;
-using GR.Notifications.Abstractions.Extensions;
-using GR.Notifications.Hub.Hubs;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
@@ -31,6 +25,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using GR.Core.Helpers.ConnectionStrings;
+using GR.Core.Razor.Extensions;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace GR.WebApplication.Extensions
 {
@@ -40,14 +41,22 @@ namespace GR.WebApplication.Extensions
         /// Register gear app
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="hostingEnvironment"></param>
         /// <param name="configAction"></param>
+        /// <param name="conf"></param>
         /// <returns></returns>
-        public static IServiceProvider RegisterGearWebApp(this IServiceCollection services, Action<GearServiceCollectionConfig> configAction)
+        public static IServiceProvider RegisterGearWebApp(this IServiceCollection services, IConfiguration conf, IHostingEnvironment hostingEnvironment, Action<GearServiceCollectionConfig> configAction)
         {
+            IoC.Container.Register(Component.For<IConfiguration>().Instance(conf));
+            IoC.Container.Register(Component.For<IHostingEnvironment>().Instance(hostingEnvironment));
+
             var configuration = new GearServiceCollectionConfig
             {
-                GearServices = services
+                GearServices = services,
+                HostingEnvironment = hostingEnvironment,
+                Configuration = conf
             };
+
             configAction(configuration);
 
             //Register system config
@@ -71,9 +80,6 @@ namespace GR.WebApplication.Extensions
             services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddUrlHelper();
-
-            //Register core razor
-            services.RegisterCoreRazorModule();
 
             //Use compression
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
@@ -115,18 +121,24 @@ namespace GR.WebApplication.Extensions
                 options.ErrorResponses = configuration.ApiVersioningOptions.ErrorResponses;
             });
 
-            //--------------------------------------SignalR Module-------------------------------------
-            if (configuration.SignlarConfiguration.UseDefaultConfiguration)
-                services.RegisterNotificationsHubModule<CommunicationHub>();
-
+            //----------------------------------------Health Check-------------------------------------
+            services.AddHealthChecks();
+            services.AddDatabaseHealth();
+            //services.AddSeqHealth();
+            services.AddHealthChecksUI("health-gear-database", setup =>
+            {
+                setup.SetEvaluationTimeInSeconds((int)TimeSpan.FromMinutes(2).TotalSeconds);
+                setup.AddHealthCheckEndpoint(GearApplication.SystemConfig.MachineIdentifier, $"{GearApplication.SystemConfig.EntryUri}hc");
+            });
 
             //--------------------------------------Swagger Module-------------------------------------
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
                 services.AddSwaggerModule(configuration.Configuration);
 
             //Register memory cache
-            var cacheService = configuration.BuildGearServices.GetService<IMemoryCache>();
-            IoC.Container.Register(Component.For<IMemoryCache>().Instance(cacheService));
+            IoC.Container.Register(Component
+                .For<IMemoryCache>()
+                .Instance(configuration.BuildGearServices.GetService<IMemoryCache>()));
 
             return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
@@ -182,6 +194,7 @@ namespace GR.WebApplication.Extensions
             //----------------------------------Origin Cors Usage-------------------------------------
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
 
+            app.UseCookiePolicy();
             app.UseAuthentication();
 
             //custom rules
@@ -208,12 +221,14 @@ namespace GR.WebApplication.Extensions
             //--------------------------------------Use compression-------------------------------------
             if (configuration.UseResponseCompression && configuration.HostingEnvironment.IsProduction()) app.UseResponseCompression();
 
-
-            //---------------------------------------SignalR Usage-------------------------------------
-            if (configuration.SignlarAppConfiguration.UseDefaultSignlarConfiguration)
+            //---------------------------------------Heath Check---------------------------------------
+            app.UseHealthChecks("/hc", new HealthCheckOptions()
             {
-                app.UseNotificationsHub<GearNotificationHub>(configuration.SignlarAppConfiguration.Path);
-            }
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            app.UseHealthChecksUI();
 
             return new GearAppBuilder(app.ApplicationServices);
         }
@@ -260,10 +275,50 @@ namespace GR.WebApplication.Extensions
                     name: "default",
                     template: singleTenantTemplate,
                     defaults: singleTenantTemplate
-                //constraints: new { tenant = new TenantRouteConstraint() }
                 );
             });
             return app;
+        }
+
+        /// <summary>
+        /// Add database health
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDatabaseHealth(this IServiceCollection services)
+        {
+            var (dbType, connection) = DbUtil.GetConnectionString(IoC.Resolve<IConfiguration>());
+            var builder = services.AddHealthChecks();
+            switch (dbType)
+            {
+                case DbProviderType.MsSqlServer:
+                    builder.AddSqlServer(connection, name: "db-MSSQL", tags: new[] { "db", "sql", "sqlserver" });
+                    break;
+                case DbProviderType.PostgreSql:
+                    builder.AddNpgSql(connection, name: "db-POSTGRESQL", tags: new[] { "db", "sql", "postgres" });
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Add seq health check
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSeqHealth(this IServiceCollection services)
+        {
+            var builder = services.AddHealthChecks();
+            var configurator = IoC.Resolve<IConfiguration>();
+            builder.AddSeqPublisher(setup =>
+            {
+                setup.ApiKey = configurator.GetValue<string>("Logging:Seq:ApiKey");
+                setup.Endpoint = configurator.GetValue<string>("Logging:Seq:ServerUrl");
+            }, "SEQ-logger");
+            return services;
         }
     }
 }

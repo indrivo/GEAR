@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="2.2.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.Publisher.Seq" Version="2.2.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="2.2.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.35" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
@@ -32,8 +36,6 @@
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
     <ProjectReference Include="..\..\GR.Modules.Extension\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Hub\GR.Notifications.Hub.csproj" />
-    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
   </ItemGroup>

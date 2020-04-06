@@ -242,3 +242,8 @@ wwwroot/lib/
 /obj
 /bin
 /dist
+
+
+# Seq ignore databases
+healthchecksdb
+health-gear-database

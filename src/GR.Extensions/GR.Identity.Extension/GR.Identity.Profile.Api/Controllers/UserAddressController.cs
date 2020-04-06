@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Identity.Profile.Api.Controllers
 {
-    [Authorize]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     public class UserAddressController : BaseGearController
     {
         #region Injectable

@@ -1,4 +1,5 @@
-﻿using GR.Core.Extensions;
+﻿using System;
+using GR.Core.Extensions;
 
 namespace GR.Core.Helpers
 {
@@ -9,6 +10,14 @@ namespace GR.Core.Helpers
             return obj?.GetType()
                 .GetProperty(name.Trim().FirstCharToUpper())
                 ?.GetValue(obj, null);
+        }
+
+
+        public static string GetStringPropertyValue(this object obj, string name)
+        {
+            return obj?.GetType()
+                .GetProperty(name.Trim().FirstCharToUpper())
+                ?.GetValue(obj, null)?.ToString() ?? string.Empty;
         }
     }
 }

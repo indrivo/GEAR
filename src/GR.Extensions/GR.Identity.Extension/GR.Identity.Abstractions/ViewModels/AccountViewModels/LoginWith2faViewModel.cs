@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GR.Identity.Razor.ViewModels.AccountViewModels
+namespace GR.Identity.Abstractions.ViewModels.AccountViewModels
 {
     public class LoginWith2faViewModel
     {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
@@ -12,11 +11,12 @@ using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models.Countries;
 using GR.Localization.Abstractions.ViewModels.CountryViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Localization.Api.Controllers
 {
-    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity, Roles = GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("api/country/[action]")]
     public class CountryApiController : BaseGearController
     {
@@ -154,6 +154,7 @@ namespace GR.Localization.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfo()
             => await JsonAsync(_countryService.GetCountriesInfoAsync());
@@ -164,6 +165,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="name"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByName(string name)
             => await JsonAsync(_countryService.GetCountriesInfoByNameAsync(name));
@@ -175,6 +177,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="code"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByIsoCode(string code)
             => await JsonAsync(_countryService.GetCountriesInfoByIsoCodeAsync(code));
@@ -185,6 +188,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="currency"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByIsoCurrency(string currency)
             => await JsonAsync(_countryService.GetCountriesInfoByIsoCurrencyAsync(currency));
@@ -196,6 +200,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="capital"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByCapital(string capital)
             => await JsonAsync(_countryService.GetCountriesInfoByCapitalCityAsync(capital));
@@ -206,6 +211,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="callingCode"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByCallingCode(string callingCode)
             => await JsonAsync(_countryService.GetCountriesInfoByCallingCodeAsync(callingCode));
@@ -217,6 +223,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="region"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<CountryInfoViewModel>>))]
         public async Task<JsonResult> GetCountriesInfoByRegion(string region)
             => await JsonAsync(_countryService.GetCountriesInfoByRegionAsync(region));

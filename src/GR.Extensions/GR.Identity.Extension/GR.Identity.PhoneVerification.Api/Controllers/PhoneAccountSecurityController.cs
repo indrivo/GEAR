@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.PhoneVerification.Abstractions;
 using GR.Identity.PhoneVerification.Abstractions.Helpers.Enums;
 using GR.Identity.PhoneVerification.Abstractions.ViewModels;
-using GR.Identity.PhoneVerification.Api.Extensions;
-using GR.Identity.PhoneVerification.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GR.Identity.PhoneVerification.Api.Controllers
 {
-    [Authorize]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("/api/[controller]/[action]"), Produces("application/json")]
     public sealed class PhoneAccountSecurityController : BaseGearController
     {

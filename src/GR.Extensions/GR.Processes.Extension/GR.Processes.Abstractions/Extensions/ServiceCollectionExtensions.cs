@@ -37,7 +37,7 @@ namespace GR.Processes.Abstractions.Extensions
             Arg.NotNull(options, nameof(AddProcessesModuleStorage));
             services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<IProcessesDbContext>("Processes module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };

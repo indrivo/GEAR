@@ -21,7 +21,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
             Field(x => x.ModifiedBy).Description("Event author");
             Field(x => x.Created).Description("Event author");
             Field(x => x.Changed).Description("Event author");
-            Field(x => x.Organizer, type: typeof(IdGraphType), nullable: false).Description("Organizer id");
+            Field(x => x.Organizer, type: typeof(IdGraphType)).Description("Organizer id");
             Field<UserType>("organizerInfo", resolve: ctx => userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(ctx.Source.Organizer)).Result);
             Field<ListGraphType<EventMemberType>>("InvitedUsers",
                 resolve: context => dbContext.EventMembers.Where(x => x.EventId.Equals(context.Source.Id)).ToListAsync().Result);

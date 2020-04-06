@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -29,7 +29,12 @@ namespace GR.Identity.Clients.Infrastructure
             _userManager = userManager;
         }
 
-        public async Task GetProfileDataAsync(ProfileDataRequestContext context)
+        /// <summary>
+        /// Get profile data
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public virtual async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
             var subjectId = subject.Claims.FirstOrDefault(claim => claim.Type == "sub")?.Value;
@@ -38,11 +43,16 @@ namespace GR.Identity.Clients.Infrastructure
                 throw new ArgumentException("Invalid subject id", nameof(subjectId));
 
             var user = await _userManager.FindByIdAsync(subjectId);
-            var claims = GetUserClaims(user, _userManager).ToList();
+            var claims = GetUserClaims(user, context).ToList();
             context.IssuedClaims = claims;
         }
 
-        public async Task IsActiveAsync(IsActiveContext context)
+        /// <summary>
+        /// Check if is active
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public virtual async Task IsActiveAsync(IsActiveContext context)
         {
             var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
             var subjectId = subject.Claims.FirstOrDefault(claim => claim.Type == JwtClaimTypes.Subject)?.Value;
@@ -76,18 +86,41 @@ namespace GR.Identity.Clients.Infrastructure
             }
         }
 
-        private static IEnumerable<Claim> GetUserClaims(GearUser user, UserManager<GearUser> userManager)
+        /// <summary>
+        /// Get user claims
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<Claim> GetUserClaims(GearUser user, ProfileDataRequestContext context)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
                 new Claim(JwtClaimTypes.Name, user.UserName),
-                new Claim(nameof(Tenant), user.TenantId.ToString())
+                new Claim(GearClaimTypes.Tenant, user.TenantId?.ToString() ?? string.Empty),
+                new Claim(GearClaimTypes.UserPhotoUrl, $"/Users/GetImage?id={user.Id}")
             };
+            var identityRequestResources = context.RequestedResources?.IdentityResources?.Select(x => x.Name).ToList() ?? new List<string>();
+            if (identityRequestResources.Contains("email"))
+            {
+                claims.Add(new Claim("mail", user.Email ?? string.Empty));
+            }
 
-            if (!userManager.SupportsUserRole) return claims;
+            if (identityRequestResources.Contains("phone"))
+            {
+                claims.Add(new Claim("phone", user.PhoneNumber ?? string.Empty));
+            }
 
-            var roles = userManager.GetRolesAsync(user).Result;
+            if (identityRequestResources.Contains("profile"))
+            {
+                claims.Add(new Claim(GearClaimTypes.FirstName, user.FirstName ?? string.Empty));
+                claims.Add(new Claim(GearClaimTypes.LastName, user.LastName ?? string.Empty));
+            }
+
+            if (!_userManager.SupportsUserRole) return claims;
+
+            var roles = _userManager.GetRolesAsync(user).Result;
             claims.AddRange(roles.Select(role => new Claim(JwtClaimTypes.Role, role)));
 
             return claims;

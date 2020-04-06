@@ -50,9 +50,9 @@ namespace GR.Report.Dynamic
 
         #region Report Folders
 
-        public ResultModel<bool> CreateFolder(string folderName)
+        public virtual ResultModel<Guid> CreateFolder(string folderName)
         {
-            if (string.IsNullOrWhiteSpace(folderName)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<bool>();
+            if (string.IsNullOrWhiteSpace(folderName)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<Guid>();
 
             try
             {
@@ -66,15 +66,15 @@ namespace GR.Report.Dynamic
                 };
                 _context.DynamicReportsFolders.Add(folder);
                 _context.SaveChanges();
-                return new ResultModel<bool>
+                return new ResultModel<Guid>
                 {
                     IsSuccess = true,
-                    KeyEntity = folder.Id
+                    Result = folder.Id
                 };
             }
             catch
             {
-                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<bool>();
+                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<Guid>();
             }
         }
 
@@ -93,23 +93,22 @@ namespace GR.Report.Dynamic
             return new ResultModel<DynamicReportFolderViewModel>
             {
                 IsSuccess = true,
-                KeyEntity = reportFolder.Id,
                 Result = new DynamicReportFolderViewModel(reportFolder.Id, reportFolder.Name)
             };
         }
 
 
-        public ResultModel<bool> EditFolder(DynamicReportFolderViewModel folderModel)
+        public virtual ResultModel<Guid> EditFolder(DynamicReportFolderViewModel folderModel)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(folderModel.Name)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<bool>();
+                if (string.IsNullOrWhiteSpace(folderModel.Name)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<Guid>();
 
                 var entity = _context.DynamicReportsFolders.First(x => x.Id == folderModel.Id);
 
                 if (entity == null)
                 {
-                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<Guid>();
                 }
 
                 entity.Name = folderModel.Name;
@@ -117,15 +116,15 @@ namespace GR.Report.Dynamic
                 entity.Changed = DateTime.Now;
                 _context.DynamicReportsFolders.Update(entity);
                 _context.SaveChanges();
-                return new ResultModel<bool>
+                return new ResultModel<Guid>
                 {
                     IsSuccess = true,
-                    KeyEntity = entity.Id
+                    Result = entity.Id
                 };
             }
             catch
             {
-                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<bool>();
+                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<Guid>();
             }
         }
 
@@ -156,7 +155,7 @@ namespace GR.Report.Dynamic
             var dbResult = await _context.SaveAsync();
 
             if (dbResult.IsSuccess.Negate()) return ResultMessagesEnum.FolderNotDeleted.ToErrorModel();
-            dbResult.KeyEntity = folderId;
+            dbResult.Result = folderId;
             return dbResult;
         }
 
@@ -197,17 +196,17 @@ namespace GR.Report.Dynamic
             return finalResult;
         }
 
-        public ResultModel<bool> CreateReport(DynamicReportViewModel reportModel)
+        public virtual ResultModel<Guid> CreateReport(DynamicReportViewModel reportModel)
         {
             try
             {
-                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<Guid>();
 
                 var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
 
                 if (reportFolder == null)
                 {
-                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<Guid>();
                 }
 
                 var reportDb = new DynamicReport()
@@ -222,15 +221,15 @@ namespace GR.Report.Dynamic
 
                 _context.DynamicReports.Add(reportDb);
                 _context.SaveChanges();
-                return new ResultModel<bool>
+                return new ResultModel<Guid>
                 {
                     IsSuccess = true,
-                    KeyEntity = reportModel.Id
+                    Result = reportModel.Id
                 };
             }
             catch
             {
-                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<bool>();
+                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<Guid>();
             }
         }
 
@@ -239,24 +238,24 @@ namespace GR.Report.Dynamic
         /// Create Report
         /// </summary>
         /// <param name="reportModel"></param>
-        public ResultModel<bool> EditReport(DynamicReportViewModel reportModel)
+        public virtual ResultModel<Guid> EditReport(DynamicReportViewModel reportModel)
         {
             try
             {
-                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<Guid>();
 
                 var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
 
                 if (reportFolder == null)
                 {
-                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<Guid>();
                 }
 
                 var report = _context.DynamicReports.First(x => x.Id == reportModel.Id);
 
                 if (report == null)
                 {
-                    return ResultMessagesEnum.ReportNotFound.ToErrorModel<bool>();
+                    return ResultMessagesEnum.ReportNotFound.ToErrorModel<Guid>();
                 }
 
                 report.Name = reportModel.Name;
@@ -267,15 +266,15 @@ namespace GR.Report.Dynamic
                 report.DynamicReportFolderId = reportModel.DynamicReportFolder.Id;
                 _context.Update(report);
                 _context.SaveChanges();
-                return new ResultModel<bool>
+                return new ResultModel<Guid>
                 {
                     IsSuccess = true,
-                    KeyEntity = report.Id
+                    Result = report.Id
                 };
             }
             catch
             {
-                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<bool>();
+                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<Guid>();
             }
         }
 

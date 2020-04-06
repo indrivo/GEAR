@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
 
 namespace GR.Identity.Abstractions
 {
@@ -158,5 +159,19 @@ namespace GR.Identity.Abstractions
         /// <param name="id"></param>
         /// <returns></returns>
         bool IsCurrentUser(Guid id);
+
+        /// <summary>
+        /// Get user image as bytes
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<byte[]>> GetUserImageAsync(Guid? userId);
+
+        /// <summary>
+        /// Get all users with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<DTResult<UserListItemViewModel>> GetAllUsersWithPaginationAsync(DTParameters parameters);
     }
 }

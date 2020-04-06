@@ -37,7 +37,7 @@ namespace GR.Report.Abstractions.Extensions
             services.AddDbContext<TReportContext>(options);
             services.AddScopedContextFactory<IReportContext, TReportContext>();
             services.RegisterAuditFor<IReportContext>($"{nameof(Report)} module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TReportContext>();
             };

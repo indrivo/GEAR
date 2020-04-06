@@ -15,15 +15,16 @@
 	<Copyright>Indrivo 2019</Copyright>
 	<FileVersion>1.9.3</FileVersion>
 	<AssemblyVersion>1.9.3</AssemblyVersion>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
+	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+	<DockerfileContext>..\..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.1.0" />
 	<PackageReference Include="Microsoft.AspNetCore.All" />
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
+	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
 	<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" PrivateAssets="All" />
-	<PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
-	<PackageReference Include="Microsoft.Extensions.HealthChecks.SqlServer" Version="1.0.0" />
 	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +47,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar.Razor\GR.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Core.Extension\GR.Core.UI.Razor.DefaultTheme\GR.Core.UI.Razor.DefaultTheme.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard.Razor\GR.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard\GR.Dashboard.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
@@ -95,6 +97,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Hub\GR.Notifications.Hub.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Process.Razor\GR.Process.Razor.csproj" />

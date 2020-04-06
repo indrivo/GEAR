@@ -42,7 +42,7 @@ namespace GR.Identity.Seeders
                 MachineName = GearSettings.DEFAULT_ENTITY_SCHEMA,
                 Created = DateTime.Now,
                 Changed = DateTime.Now,
-                Author = GlobalResources.Roles.ANONIMOUS_USER
+                Author = GlobalResources.Roles.ANONYMOUS_USER
             };
 
             await context.Tenants.AddAsync(tenant);

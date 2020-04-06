@@ -4,18 +4,18 @@ using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
 using GR.Identity.Groups.Abstractions;
 using GR.Identity.Groups.Abstractions.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Groups.Abstractions.Helpers;
 using GR.Identity.Groups.Abstractions.ViewModels;
 using GR.Identity.Permissions.Abstractions.Attributes;
 
 namespace GR.Identity.Groups.Api.Controllers
 {
-    [Authorize]
+    [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("api/groups/[action]")]
     public class GroupsApiController : BaseGearController
     {

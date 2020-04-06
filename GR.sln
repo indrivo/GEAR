@@ -359,6 +359,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Modules.Infrastructure",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Modules.Api", "src\GR.Extensions\GR.Modules.Extension\GR.Modules.Api\GR.Modules.Api.csproj", "{AEEA719C-AF53-4333-8D83-F97683873641}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Core.UI.Razor.DefaultTheme", "src\GR.Extensions\GR.Core.Extension\GR.Core.UI.Razor.DefaultTheme\GR.Core.UI.Razor.DefaultTheme.csproj", "{739DA4DE-766D-420C-BC86-95F3B3552DF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1140,6 +1142,12 @@ Global
 		{AEEA719C-AF53-4333-8D83-F97683873641}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AEEA719C-AF53-4333-8D83-F97683873641}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{AEEA719C-AF53-4333-8D83-F97683873641}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1320,6 +1328,7 @@ Global
 		{09B5615C-5FB2-4A06-BE2E-BA0EFBDEE45A} = {4A766A45-58C9-4CB2-BEB9-520FE4A87798}
 		{19267013-236D-4309-91B9-F5BE3BA7FCA2} = {4A766A45-58C9-4CB2-BEB9-520FE4A87798}
 		{AEEA719C-AF53-4333-8D83-F97683873641} = {4A766A45-58C9-4CB2-BEB9-520FE4A87798}
+		{739DA4DE-766D-420C-BC86-95F3B3552DF6} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

@@ -132,13 +132,13 @@ namespace GR.Core.Events
             /// <summary>
             /// On seed event
             /// </summary>
-            public static event EventHandler<DatabaseMigrateEventArgs> OnMigrate;
+            public static event EventHandler<System.EventArgs> OnAllMigrate;
 
             /// <summary>
             /// Invoke seed event
             /// </summary>
             /// <param name="e"></param>
-            public static void Migrate(DatabaseMigrateEventArgs e) => InvokeEvent(null, OnMigrate, e, nameof(OnMigrate));
+            public static void MigrateAll(System.EventArgs e) => InvokeEvent(null, OnAllMigrate, e, nameof(OnAllMigrate));
 
             /// <summary>
             /// On seed event

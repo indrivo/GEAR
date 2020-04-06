@@ -42,7 +42,7 @@ namespace GR.TaskManager.Abstractions.Extensions
             services.AddScopedContextFactory<ITaskManagerContext, TTaskManagerContext>();
             services.AddDbContext<TTaskManagerContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<ITaskManagerContext>($"{nameof(TaskManager)} module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TTaskManagerContext>();
             };

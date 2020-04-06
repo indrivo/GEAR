@@ -255,88 +255,76 @@ Notificator.prototype.getCurrentUser = function () {
 //								External Connections
 //------------------------------------------------------------------------------------//
 
-    $(document).ready(function () {
-        const notificator = new Notificator();
-        if (location.href.indexOf("Account/Login") !== -1) return;
-        if (typeof signalR === 'undefined') return;
-        notificator.getCurrentUser().then(user => {
-            initExternalConnections(user);
-        }).catch(err => {
-            console.warn(err);
+$(document).ready(function () {
+    const notificator = new Notificator();
+    if (location.href.indexOf("Account/Login") !== -1) return;
+    if (typeof signalR === 'undefined') return;
+    initExternalConnections();
+
+    function initExternalConnections() {
+        const connPromise = new Promise((resolve, reject) => {
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("/rtn", { transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling })
+                .build();
+            //Time for one connection
+            //connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
+            resolve(connection);
         });
 
 
-        function initExternalConnections(user) {
-            const connPromise = new Promise((resolve, reject) => {
-                var connection = new signalR.HubConnectionBuilder()
-                    .withUrl("/rtn", signalR.HttpTransportType.LongPolling)
-                    .build();
-                //Time for one connection
-                //connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
-                resolve(connection);
-            });
+        connPromise.then(connection => {
 
+            //On receive notification
+            connection.on("SendClientNotification",
+                (notification) => {
+                    const date = new Date(notification.created);
+                    notification.created = moment(date).format("DD.MM.YYYY");
+                    notificator.addNewNotificationToContainer(notification);
+                });
 
-            connPromise.then(connection => {
-
-                //On receive notification
-                connection.on("SendClientNotification",
-                    (notification) => {
-                        const date = new Date(notification.created);
-                        notification.created = moment(date).format("DD.MM.YYYY");
-                        notificator.addNewNotificationToContainer(notification);
+            //Start connection
+            connection.start().then(() => {
+                $(window).bind("beforeunload",
+                    function () {
+                        connection.stop();
                     });
+            });
+        }).catch(function (err) {
+            //On error
+        });
 
-                if (!user.is_success) {
-                    throw "User not authorized!";
-                }
-                //Start connection
-                connection.start().then(() => {
-                    if (user && user.is_success) {
-                        connection.invoke("OnLoad", user.result.id)
-                            .catch(err => console.error(err.toString()));
-                        $(window).bind("beforeunload",
-                            function () {
-                                connection.stop();
-                            });
-                    }
-                });
-            }).catch(function (err) {
-                //On error
+        connPromise.then(() => {
+            var loadUserNotifications = new Promise((resolve, reject) => {
+                loadNotifications();
             });
 
-            connPromise.then(() => {
-                var loadUserNotifications = new Promise((resolve, reject) => {
-                    loadNotifications();
-                });
-
-                Promise.all([loadUserNotifications]).then(function (values) {
-                    $("#clearNotificationsEvent").on("click",
-                        function () {
-                            $("#notificationList .notifications").html(null);
-                            $("#notificationAlarm").hide();
-                            const notificator = new Notificator();
-                            notificator.clearNotificationsOnCurrentUser();
-                        });
-                });
-            });
-        };
-
-        /**
-         * Show notifications on page load
-         */
-        function loadNotifications() {
-            notificator.getAllNotifications(1, 10, true).then(data => {
-                if (!data) return;
-                if (data.is_success) {
-                    $.each(data.result.notifications, (i, notification) => {
-                        notificator.addNewNotificationToContainer(notification);
+            Promise.all([loadUserNotifications]).then(function (values) {
+                $("#clearNotificationsEvent").on("click",
+                    function () {
+                        $("#notificationList .notifications").html(null);
+                        $("#notificationAlarm").hide();
+                        const notificator = new Notificator();
+                        notificator.clearNotificationsOnCurrentUser();
                     });
-                    const loaderClassString = 'notification-loader';
-                    const loaderClass = `.${loaderClassString}`;
-                    $('#notificationList').find(loaderClass).fadeOut();
-                    setTimeout(function () { $('#notificationList').find(loaderClass).remove(); }, 400);
-                }
             });
-        }
-    });
+        });
+    };
+
+    /**
+     * Show notifications on page load
+     */
+    function loadNotifications() {
+        notificator.getAllNotifications(1, 10, true).then(data => {
+            if (!data) return;
+            if (data.is_success) {
+                $.each(data.result.notifications, (i, notification) => {
+                    notificator.addNewNotificationToContainer(notification);
+                });
+                const loaderClassString = 'notification-loader';
+                const loaderClass = `.${loaderClassString}`;
+                $('#notificationList').find(loaderClass).fadeOut();
+                setTimeout(function () { $('#notificationList').find(loaderClass).remove(); }, 400);
+            }
+        });
+    }
+});

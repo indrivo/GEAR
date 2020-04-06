@@ -51,7 +51,7 @@ namespace GR.Forms.Abstractions.Extensions
             Arg.NotNull(options, nameof(AddFormModuleStorage));
             services.AddDbContext<TFormContext>(options);
             services.RegisterAuditFor<IFormContext>("Form module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TFormContext>();
             };

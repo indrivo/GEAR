@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using GR.Cache.Abstractions.Models;
 using GR.Cache.Exceptions;
 using GR.Core;
 using Microsoft.AspNetCore.Hosting;
@@ -20,7 +21,7 @@ namespace GR.Cache.Helpers
         /// <summary>
         /// Options
         /// </summary>
-        private readonly IOptions<RedisConnectionConfig> _redisConnectionOptions;
+        private readonly IOptions<CacheConfiguration> _redisConnectionOptions;
 
         /// <summary>
         /// Connection
@@ -38,7 +39,7 @@ namespace GR.Cache.Helpers
         /// <param name="systemOptions"></param>
         /// <param name="environment"></param>
         /// <param name="redisConnectionOptions"></param>
-        public RedisConnection(IOptions<SystemConfig> systemOptions, IHostingEnvironment environment, IOptions<RedisConnectionConfig> redisConnectionOptions)
+        public RedisConnection(IOptions<SystemConfig> systemOptions, IHostingEnvironment environment, IOptions<CacheConfiguration> redisConnectionOptions)
         {
             if (redisConnectionOptions.Value == null) throw new InvalidCacheConfigurationException();
             _preKey = $"{systemOptions.Value.MachineIdentifier}.{environment.EnvironmentName}@";

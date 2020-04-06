@@ -1,17 +1,12 @@
-﻿using GR.Core;
-using GR.Core.Extensions;
+﻿using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Events;
-using GR.Identity.Abstractions.Events.EventArgs.Authorization;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
 using GR.Identity.Razor.Extensions;
-using GR.Identity.Razor.ViewModels.AccountViewModels;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
@@ -24,10 +19,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Identity.Abstractions.ViewModels.AccountViewModels;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -67,9 +62,9 @@ namespace GR.Identity.Razor.Controllers
         private readonly IHttpContextAccessor _httpContextAccesor;
 
         /// <summary>
-        /// Inject app context
+        /// Inject authorize service
         /// </summary>
-        private readonly GearIdentityDbContext _identityDbContext;
+        private readonly IAuthorizeService _authorizeService;
 
         #endregion
 
@@ -85,10 +80,10 @@ namespace GR.Identity.Razor.Controllers
             IIdentityServerInteractionService interactionService,
             IUserManager<GearUser> userManager,
             IHttpContextAccessor httpContextAccesor,
-            GearIdentityDbContext identityDbContext)
+            IAuthorizeService authorizeService)
         {
             _httpContextAccesor = httpContextAccesor;
-            _identityDbContext = identityDbContext;
+            _authorizeService = authorizeService;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -271,79 +266,21 @@ namespace GR.Identity.Razor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData[ReturnUrl] = returnUrl == Url.Action("LocalLogout")
+            ViewData[ReturnUrl] = returnUrl == Url.Action("Logout")
                 ? Url.Action("Index", "Home")
                 : returnUrl;
 
             if (!ModelState.IsValid) return View(model);
-
-            var user = _userManager.UserManager.Users.FirstOrDefault(x => x.UserName == model.Email);
-            if (user != null)
+            var authResult = await _authorizeService.LoginAsync(model);
+            if (authResult.IsSuccess)
             {
-                if (user.IsDeleted)
-                {
-                    ModelState.AddModelError(string.Empty, "User is disabled by admin.");
-                    return View(model);
-                }
-
-                if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
-                {
-                    ModelState.AddModelError(string.Empty,
-                        "Password has been expired, you need to change the password");
-                    return View(model);
-                }
-
-                await ClearUserClaims(user);
-                var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,
-                        false);
-
-                if (result.Succeeded)
-                {
-                    user.LastLogin = DateTime.Now;
-                    await _userManager.UserManager.UpdateAsync(user);
-                    //Sync permissions to claims
-                    //await user.RefreshClaims(_applicationDbContext, _signInManager);
-                    _logger.LogInformation("User logged in.");
-
-                    IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
-                    {
-                        IpAdress = _userManager.GetRequestIpAdress(),
-                        UserId = user.Id,
-                        Email = user.Email,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName
-                    });
-
-                    var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
-
-                    await _userManager.UserManager.AddClaimAsync(user, claim);
-                    return RedirectToLocal(returnUrl);
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return View(model);
+                return RedirectToLocal(returnUrl);
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid credentials!");
+            ModelState.AppendResultModelErrors(authResult.Errors);
             return View(model);
         }
 
-        /// <summary>
-        /// Clear user claims
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        [NonAction]
-        private async Task ClearUserClaims(GearUser user)
-        {
-            var userClaims = await _identityDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
-            if (userClaims.Any())
-            {
-                _identityDbContext.UserClaims.RemoveRange(userClaims);
-                await _identityDbContext.SaveAsync();
-            }
-        }
 
         /// <summary>
         /// Handle logout page post-back
@@ -427,40 +364,10 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> LocalLogout([FromServices] IUserManager<GearUser> manager)
+        public async Task<JsonResult> LocalLogout()
         {
-            var result = new ResultModel();
-            var userReq = await manager.GetCurrentUserAsync();
-            if (!userReq.IsSuccess)
-            {
-                result.Errors.Add(new ErrorModel(nameof(AuthorizationFailure), "Error on logout!!"));
-                return Json(result);
-            }
-
-            var user = userReq.Result;
-
-            try
-            {
-                await _signInManager.SignOutAsync();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-                result.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
-                return Json(result);
-            }
-
-            IdentityEvents.Authorization.UserLogout(new UserLogOutEventArgs
-            {
-                UserId = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                IpAdress = _userManager.GetRequestIpAdress()
-            });
-
-            result.IsSuccess = true;
-            return Json(result);
+            var logoutRequest = await _authorizeService.LogoutAsync();
+            return Json(logoutRequest);
         }
 
         /// <summary>
@@ -579,12 +486,8 @@ namespace GR.Identity.Razor.Controllers
         [AllowAnonymous]
         public async Task<JsonResult> GetCurrentUser()
         {
-            var user = await _userManager.UserManager.GetUserAsync(User);
-            return Json(new ResultModel
-            {
-                IsSuccess = user != null,
-                Result = user
-            });
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            return Json(userRequest);
         }
 
         /// <summary>
@@ -697,15 +600,6 @@ namespace GR.Identity.Razor.Controllers
         public IActionResult Lockout()
         {
             return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            return RedirectToAction("Index", "Home");
         }
 
         #region Helpers

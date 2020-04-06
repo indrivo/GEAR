@@ -5,6 +5,7 @@ using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using Microsoft.Extensions.Configuration;
 
 namespace GR.Core
 {
@@ -12,6 +13,13 @@ namespace GR.Core
                                         "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
+        /// <summary>
+        /// Get system config
+        /// </summary>
+        private static SystemConfig PrivateSystemConfig { get; set; }
+        public static SystemConfig SystemConfig =>
+            PrivateSystemConfig ?? (PrivateSystemConfig = IoC.Resolve<IConfiguration>().GetSection("SystemConfig").Get<SystemConfig>());
+
         /// <summary>
         /// Background task queue
         /// </summary>

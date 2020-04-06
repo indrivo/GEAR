@@ -44,11 +44,6 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public GearAppFileConfiguration AppFileConfiguration { get; set; } = new GearAppFileConfiguration();
 
         /// <summary>
-        /// Signlar configuration
-        /// </summary>
-        public SignlarAppConfiguration SignlarAppConfiguration { get; set; } = new SignlarAppConfiguration();
-
-        /// <summary>
         /// Custom map rules
         /// </summary>
         public virtual Dictionary<string, Action<HttpContext>> CustomMapRules { get; set; } = new Dictionary<string, Action<HttpContext>>();
@@ -64,15 +59,5 @@ namespace GR.WebApplication.Helpers.AppConfigurations
     {
         public bool UseDefaultFiles { get; set; } = true;
         public bool UseStaticFile { get; set; } = true;
-    }
-
-    public sealed class SignlarAppConfiguration
-    {
-        public bool UseDefaultSignlarConfiguration { get; set; } = true;
-
-        /// <summary>
-        /// Path route
-        /// </summary>
-        public string Path { get; set; } = "/rtn";
     }
 }

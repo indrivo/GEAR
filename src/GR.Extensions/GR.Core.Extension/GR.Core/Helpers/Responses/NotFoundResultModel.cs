@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GR.Core.Helpers.ErrorCodes;
 
 namespace GR.Core.Helpers.Responses
 {
@@ -6,7 +7,7 @@ namespace GR.Core.Helpers.Responses
     {
         public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
         {
-            new ErrorModel(string.Empty, "Entry not found")
+            new ErrorModel(ResultModelCodes.NotFound, "Entry not found")
         };
     }
 
@@ -14,7 +15,7 @@ namespace GR.Core.Helpers.Responses
     {
         public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
         {
-            new ErrorModel(string.Empty, "Entry not found")
+            new ErrorModel(ResultModelCodes.NotFound, "Entry not found")
         };
     }
 }

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using GR.Identity.PhoneVerification.Abstractions.Helpers.Enums;
 
-namespace GR.Identity.PhoneVerification.Api.ViewModels
+namespace GR.Identity.PhoneVerification.Abstractions.ViewModels
 {
     public class PhoneVerificationRequestModel
     {
