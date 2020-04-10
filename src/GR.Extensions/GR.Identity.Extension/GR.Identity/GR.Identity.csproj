@@ -5,27 +5,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.2</Version>
+    <Version>1.9.3</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
     <IncludeBuildOutput>true</IncludeBuildOutput>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Configuration\countries.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Content Include="Configuration\countries.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.4" />
@@ -34,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
   </ItemGroup>

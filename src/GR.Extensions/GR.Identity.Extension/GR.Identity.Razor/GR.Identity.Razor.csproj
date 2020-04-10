@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.2</Version>
+    <Version>1.9.3</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="IdentityServer4" Version="2.5.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
@@ -31,17 +32,15 @@
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Groups.Razor\GR.Identity.Groups.Razor.csproj" />
-    <ProjectReference Include="..\GR.Identity.Razor.Users\GR.Identity.Razor.Users.csproj" />
+    <ProjectReference Include="..\GR.Identity.Users.Razor\GR.Identity.Users.Razor.csproj" />
     <ProjectReference Include="..\GR.Identity.Roles.Razor\GR.Identity.Roles.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Update="Views\Account\ResetPassword.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\ApiResource\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
 </Project>

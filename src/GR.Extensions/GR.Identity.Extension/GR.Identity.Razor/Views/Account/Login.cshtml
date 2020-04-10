@@ -1,9 +1,10 @@
 @using GR.Identity.Abstractions
+@using GR.Identity.Clients.Abstractions
 
 @inject SignInManager<GearUser> SignInManager
-@inject IAppProvider AppProvider
+@inject IClientsService ClientsService
 
-@model GR.Identity.Razor.ViewModels.AccountViewModels.LoginViewModel
+@model GR.Identity.Abstractions.ViewModels.AccountViewModels.LoginViewModel
 
 @{
     Layout = null;
@@ -15,10 +16,10 @@
     <meta name="viewport" content="width=device-width" />
     <title>@Localizer["system_log_in"]</title>
 
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
-    <link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
 </head>
 <body>
     <!-- ============================================================== -->
@@ -32,37 +33,34 @@
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
-    <section id="wrapper" class="login-register login-sidebar" style="background-image: url(../images/background/login-register.jpg);">
-        <div class="login-box card">
-            <div class="card-body">
-                <form class="form-horizontal form-material" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                    <a href="javascript:void(0)" class="text-center db">
-                        <img src="~/images/logo-icon.png" alt="Home" /><br />@(await AppProvider.GetAppName("core"))
-                    </a>
+    <section id="wrapper" class="login-register login-sidebar d-flex">
+        <div class="login-box col-12 col-md-8 col-lg-7 col-xl-5 col-xlg-4 p-3 p-md-5 mx-lg-5 my-lg-4">
+            <a href="/" class="text-center db">
 
-                    <div class="form-group mt-4">
-                        <div class="col-xs-12">
-                            <input class="form-control" asp-for="Email" placeholder="@Localizer["system_auth_username"]">
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
+            </a>
+
+            <h2 class="mt-5 pt-5 fw-600">@Localizer["system_auth_welcome_back"]</h2>
+            <form class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
+                <div class="form-content px-2">
+                    <div class="form-group mt-5">
+                        <label for="username">@Localizer["email"]</label>
+                        <input id="username" class="form-control" asp-for="UserName" placeholder="Ex: John">
+                        <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control" asp-for="Password" placeholder="@Localizer["system_auth_password"]">
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
+                    <div class="form-group mb-2">
+                        <label for="username">@Localizer["system_auth_password"]</label>
+                        <input class="form-control" asp-for="Password">
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <div class="checkbox checkbox-primary pull-left p-t-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-group mb-0">
+                            <div class="checkbox checkbox-primary p-t-0">
                                 <input id="checkbox-signup" asp-for="RememberMe">
                                 <label for="checkbox-signup"> @Localizer["system_auth_remenber_me"]</label>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">Forgot password ?</button>
+                        <div class="form-group mb-0">
+                            <button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">@Localizer["forgot_password"]</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -70,91 +68,70 @@
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         </div>
                     </div>
-                    <div class="form-group text-center mt-2">
+                </div>
+                <div class="position-absolute bottom-buttons">
+                    <div class="form-group mb-3 text-center mt-2">
                         <div class="col-xs-12">
-                            <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">@Localizer["system_log_in"]</button>
+                            <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">@Localizer["system_log_in"]</button>
                         </div>
                     </div>
-                </form>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 mt-1 text-center">
-                        <div class="social">
-                            @{
-                                var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-                                if (loginProviders.Any())
-                                {
-                                    <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                                        <div>
-                                            <p>
-                                                @foreach (var provider in loginProviders)
-                                                {
-                                                    switch (provider.Name)
-                                                    {
-                                                        case "Facebook":
-                                                            <button class="btn btn-facebook waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
-                                                                <i aria-hidden="true" class="fa fa-facebook"></i>
+                    <div class="row">
+                        @*<div class="col-xs-12 col-sm-12 col-md-12 mt-1 text-center">
+                                <div class="social">
+                                    @{
+                                        var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+                                        if (loginProviders.Any())
+                                        {
+                                            <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                                                <div>
+                                                    <p>
+                                                        @foreach (var provider in loginProviders)
+                                                        {
+                                                            <button class="btn btn-outline-primary w-100" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
+                                                                Login with @provider.Name
                                                             </button>
-                                                            break;
-                                                        case "Google":
-                                                            <button class="btn btn-googleplus waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
-                                                                <i aria-hidden="true" class="fa fa-google-plus"></i>
-                                                            </button>
-                                                            break;
-                                                        case "LinkedIn":
-                                                            <button class="btn btn-linkedin waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
-                                                                <i aria-hidden="true" class="fa fa-linkedin"></i>
-                                                            </button>
-                                                            break;
-                                                        default:
-                                                            <button class="btn btn-default btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
-                                                                <i aria-hidden="true" class="fa fa-soccer-ball-o"></i>
-                                                            </button>
-                                                            break;
-                                                    }
-                                                }
-                                            </p>
-                                        </div>
-                                    </form>
-                                }
-                            }
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </form>
+                                        }
+                                    }
+                                </div>
+                            </div>*@
+                        @*<div class="form-group mb-0">
+                                <div class="col-sm-12 text-center">
+                                    <p>
+                                        Don't have an account?
+                                        <a asp-action="Register" class="text-primary ml-2">
+                                            <b>Sign Up</b>
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>*@
+                        <div class="row position-absolute" style="bottom: 0">
+                            <ul id="languages"></ul>
                         </div>
                     </div>
                 </div>
-                @*<div class="form-group mb-0">
-                        <div class="col-sm-12 text-center">
-                            <p>
-                                Don't have an account?
-                                <a asp-action="Register" class="text-primary ml-2">
-                                    <b>Sign Up</b>
-                                </a>
-                            </p>
-                        </div>
-                    </div>*@
-                <div class="row position-absolute" style="bottom: 0">
-                    <ul id="languages"></ul>
-                </div>
-            </div>
+            </form>
         </div>
+        <div class="image-area col" style="background-image: url(../images/public/home-background.svg);
+    background-color: hsla(220, 92%, 41%, 0.1);"></div>
     </section>
 
     <div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog " role="document">
             <form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
-                <div class="modal-header">
-                    <div class="modal-title" id="exampleModalLabel">Forgot Your Password ?</div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body">
+                    <h4 class="mb-3">Forgot Your Password ?</h4>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input required="required" type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+                        <input required="required" type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Ex: ExpertCompanyOIL@gmail.com">
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                    <div class="modal-actions d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary mr-2" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -166,32 +143,12 @@
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/tether/js/tether.min.js"></script>
     <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
-    <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
     <script src="~/themes/admin/js/admin-theme-script.js"></script>
     <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
     <script src="~/assets/js/core.js" asp-append-version="true"></script>
-    <script>
-
-        $(document).ready(() => {
-            const localizer = new Localizer();
-            window.loadAsync("/Localization/GetLanguagesAsJson").then(x => {
-                var langBlock = $("#languages");
-                $.each(x,
-                    function (index, item) {
-                        langBlock.append(`<li style="list-style-type: none;">
-                                        <i class="flag-icon flag-icon-${localizer.adaptIdentifier(item.identifier)}"></i>
-                                        <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
-                                    </li>`);
-                    });
-                langBlock.find("li a").on("click",
-                    function () {
-                        localStorage.removeItem("hasLoadedTranslations");
-                    });
-            });
-        });
-    </script>
 
     <script type="text/javascript">
         const notification = new ToastNotifier();

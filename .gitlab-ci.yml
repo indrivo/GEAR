@@ -1,6 +1,7 @@
+image: mcr.microsoft.com/dotnet/core/sdk:2.2.402
+
 stages:
   - test
-  - deploy_to_server
   - deploy_to_nuget
 
 cache:
@@ -9,23 +10,11 @@ cache:
 test_projects:
   stage: test
   script:
-    - dotnet clean
+    - dotnet clean ./GR.sln
     - dotnet build ./GR.sln
     - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
 
-deploy_to_server_job:
-  stage: deploy_to_server
-  only:
-    - develop
-  environment:
-    name: APP
-  before_script:
-    - pushd "./src/GR.WebHosts/GR.Cms"
-    - dotnet restore
-  script:
-    - dotnet publish -c Release -o ./dist
-
-deploy_to_nuget_job:
+#deploy_to_nuget_job:
   stage: deploy_to_nuget
   only: 
     - master

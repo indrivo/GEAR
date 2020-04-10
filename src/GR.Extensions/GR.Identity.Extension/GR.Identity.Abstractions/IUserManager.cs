@@ -1,11 +1,11 @@
 ﻿using GR.Core.Helpers;
-using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
 
 namespace GR.Identity.Abstractions
 {
@@ -102,13 +102,6 @@ namespace GR.Identity.Abstractions
         Task<ResultModel> SetEditableStatusForUserAsync(Guid? userId, bool editableStatus);
 
         /// <summary>
-        /// Get user addresses
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId);
-
-        /// <summary>
         /// Filter valid roles
         /// </summary>
         /// <param name="rolesIds"></param>
@@ -166,5 +159,19 @@ namespace GR.Identity.Abstractions
         /// <param name="id"></param>
         /// <returns></returns>
         bool IsCurrentUser(Guid id);
+
+        /// <summary>
+        /// Get user image as bytes
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<byte[]>> GetUserImageAsync(Guid? userId);
+
+        /// <summary>
+        /// Get all users with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<DTResult<UserListItemViewModel>> GetAllUsersWithPaginationAsync(DTParameters parameters);
     }
 }

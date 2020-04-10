@@ -151,9 +151,9 @@ namespace GR.UI.Menu
         public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
-            if (!userRoles.Any() || !userRoles.Contains(GlobalResources.Roles.ANONIMOUS_USER))
+            if (!userRoles.Any() || !userRoles.Contains(GlobalResources.Roles.ANONYMOUS_USER))
             {
-                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.ANONYMOUS_USER);
             }
 
             try

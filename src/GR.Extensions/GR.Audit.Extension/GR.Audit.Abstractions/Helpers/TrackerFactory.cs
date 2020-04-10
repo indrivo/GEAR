@@ -33,7 +33,7 @@ namespace GR.Audit.Abstractions.Helpers
             {
                 if (ContextAccessor == null) return;
 
-                var currentUsername = ContextAccessor?.HttpContext?.User?.Identity?.Name ?? GlobalResources.Roles.ANONIMOUS_USER;
+                var currentUsername = ContextAccessor?.HttpContext?.User?.Identity?.Name ?? GlobalResources.Roles.ANONYMOUS_USER;
                 var tenantId = ContextAccessor?.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == "tenant")?.Value.ToGuid()
                                ?? GearSettings.TenantId;
 

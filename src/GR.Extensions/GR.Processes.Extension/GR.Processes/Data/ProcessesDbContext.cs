@@ -1,11 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using GR.Audit.Contexts;
-using GR.Core.Helpers.DbContexts;
-using GR.Procesess.Models;
+using Microsoft.EntityFrameworkCore;
 using GR.Processes.Abstractions;
+using GR.Processes.Abstractions.Models;
 
 namespace GR.Procesess.Data
 {
@@ -90,20 +88,6 @@ namespace GR.Procesess.Data
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
-        }
-    }
-
-    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ProcessesDbContext>
-    {
-        /// <inheritdoc />
-        /// <summary>
-        /// For creating migrations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public ProcessesDbContext CreateDbContext(string[] args)
-        {
-            return DbContextFactory<ProcessesDbContext, ProcessesDbContext>.CreateFactoryDbContext();
         }
     }
 }

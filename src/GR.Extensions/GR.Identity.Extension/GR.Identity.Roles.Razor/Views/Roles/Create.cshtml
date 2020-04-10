@@ -45,13 +45,6 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label asp-for="SelectedProfileId" class="control-label"></label>
-                            <select asp-for="SelectedProfileId" asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
-                            <span asp-validation-for="SelectedProfileId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
                             <label asp-for="ClientId" class="control-label"></label>
                             <select asp-for="ClientId" asp-items="@(new SelectList(Model.Clients, "Id", "ClientId", null))" class="form-control">
                                 <option>--Select Client--</option>
@@ -95,10 +88,6 @@
 @section Scripts {
     <script type="text/javascript" language="javascript">
 		$(document).ready(function() {
-			$('#SelectedProfileId').select2({
-				allowClear: false,
-				placeholder: "Select a profile..."
-			});
 			$('#SelectedPermissionId').select2({
 				allowClear: true,
 				placeholder: "Select a permission..."

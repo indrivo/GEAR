@@ -76,7 +76,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
                 return View(model);
             }
 
-            await Context.SetEntity<TEntity>().AddAsync(model);
+            await Context.Set<TEntity>().AddAsync(model);
             var dbResult = await Context.PushAsync();
             if (dbResult.IsSuccess)
             {
@@ -96,7 +96,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         public virtual async Task<IActionResult> Edit([Required]Guid? id)
         {
             if (id == null) return NotFound();
-            var model = await Context.SetEntity<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
+            var model = await Context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
             if (model == null) return NotFound();
             return View(model.Adapt<TViewModel>());
         }

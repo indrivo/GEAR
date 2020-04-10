@@ -58,8 +58,7 @@ namespace GR.Core.Helpers.Pagination
                 PageSize = PageSize,
                 RowCount = RowCount,
                 IsSuccess = IsSuccess,
-                Errors = Errors,
-                KeyEntity = KeyEntity
+                Errors = Errors
             };
         }
     }

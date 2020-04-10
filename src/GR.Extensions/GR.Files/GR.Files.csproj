@@ -4,9 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>GR.Files</AssemblyName>
     <RootNamespace>GR.Files</RootNamespace>
-    <Version>1.9.2</Version>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <Version>1.9.3</Version>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

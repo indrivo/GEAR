@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using GR.Core.Abstractions;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs.Database;
@@ -34,16 +35,15 @@ namespace GR.Core.Extensions
 
         public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : DbContext
         {
+            var watch = new Stopwatch();
+            watch.Start();
             var underK8S = webHost.IsInKubernetes();
 
             using (var scope = webHost.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 var logger = services.GetRequiredService<ILogger<TContext>>();
-
-                var context = services.GetService<TContext>();
-
+                var context = services.GetRequiredService<TContext>();
                 try
                 {
                     logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
@@ -67,11 +67,12 @@ namespace GR.Core.Extensions
                         //apply to transient exceptions
                         // Note that this is NOT applied when running some orchestrator (let the orchestrator to recreate the failing service)
                         retry.Execute(() => InvokeSeeder(seeder, context, services));
-
+                        watch.Stop();
                         SystemEvents.Database.MigrateComplete(new DatabaseMigrateEventArgs
                         {
                             DbContext = context,
-                            ContextName = context.GetType().Name
+                            ContextName = context.GetType().Name,
+                            ElapsedMilliseconds = watch.ElapsedMilliseconds
                         });
                     }
 
@@ -83,6 +84,7 @@ namespace GR.Core.Extensions
                     if (underK8S) throw;          // Rethrow under k8s because we rely on k8s to re-run the pod
                 }
             }
+            watch.Stop();
 
             return webHost;
         }

@@ -47,7 +47,7 @@ namespace GR.Documents.Razor.Controllers
                 Value = s.Id.ToString(),
             }).ToList();
            
-            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.FirstOrDefault(x=> x.Code == 1).Id;
+            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.FirstOrDefault(x=> x.Code == 1)?.Id;
 
             return View();
         }

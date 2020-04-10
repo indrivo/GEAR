@@ -276,7 +276,7 @@ namespace GR.Identity.LdapAuth
                 new LdapAttribute("sAMAccountName", user.Name),
                 new LdapAttribute("userPrincipalName", user.Name),
                 new LdapAttribute("unicodePwd",
-                    Convert.ToBase64String(Encoding.Unicode.GetBytes($"\"{user.Password}\""))),
+                    Convert.ToBase64String(Encoding.Unicode.GetBytes($"\"{password}\""))),
                 new LdapAttribute("userAccountControl", user.MustChangePasswordOnNextLogon ? "544" : "512"),
                 new LdapAttribute("givenName", user.FirstName),
                 new LdapAttribute("sn", user.LastName),

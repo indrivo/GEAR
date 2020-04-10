@@ -34,7 +34,9 @@ namespace GR.PageRender.Razor.Helpers
             "/Localization",
             "/favicon",
             "/images",
-            "/rtn"
+            "/rtn",
+            "/hc",
+            "/healthchecks-ui"
         };
 
         /// <summary>

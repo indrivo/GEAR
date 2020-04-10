@@ -60,17 +60,14 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
-using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.LdapAuth;
 using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions;
 using GR.Identity.Permissions.Abstractions.Extensions;
-using GR.Identity.Services;
 using GR.Install;
 using GR.Install.Abstractions.Extensions;
 using GR.Localization;
-using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
@@ -92,8 +89,6 @@ using GR.PageRender.Razor.Extensions;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
-using GR.Procesess.Data;
-using GR.Process.Razor.Extensions;
 using GR.Report.Abstractions.Extensions;
 using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
@@ -120,25 +115,52 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using GR.Backup.Razor.Extensions;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
+using GR.Calendar.Abstractions.Helpers;
+using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
-using GR.Identity.Data.Groups;
-using GR.Identity.Razor.Extensions;
 using GR.Localization.Razor.Extensions;
 using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.Entities.Abstractions.Helpers;
+using GR.Files.Razor.Extensions;
+using GR.Forms.Abstractions.Helpers;
+using GR.Identity;
+using GR.Identity.Abstractions.Helpers;
+using GR.Identity.Abstractions.Helpers.PasswordPolicies;
+using GR.Identity.Clients.Abstractions.Extensions;
+using GR.Identity.Clients.Infrastructure;
+using GR.Identity.Clients.Infrastructure.Data;
+using GR.Identity.Clients.Razor.Extensions;
+using GR.Identity.Groups.Abstractions.Extensions;
+using GR.Identity.Groups.Infrastructure;
+using GR.Identity.Groups.Infrastructure.Data;
+using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
+using GR.Identity.Profile;
+using GR.Identity.Profile.Abstractions.Extensions;
+using GR.Identity.Profile.Data;
+using GR.Identity.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
+using GR.Localization.Data;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
+using GR.Notifications.Hub.Hubs;
+using GR.Procesess.Data;
+using GR.Procesess.Parsers;
+using GR.Process.Razor.Extensions;
+using GR.Processes.Abstractions.Extensions;
+using GR.Processes.Abstractions.Helpers;
 using Microsoft.Extensions.Logging;
+using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 
 #endregion Usings
 
@@ -159,15 +181,16 @@ namespace GR.Cms
 		/// <param name="app"></param>
 		public override void Configure(IApplicationBuilder app)
 		{
+			app.UseUrlRewriteModule();
 			app.UseGearWebApp(config =>
 			{
-				config.AppName = "Web APP";
+				config.AppName = "Gear";
 				config.HostingEnvironment = HostingEnvironment;
 				config.Configuration = Configuration;
 			});
 
-			//-----------------------Page Module Custom url redirection-------------------------------------
-			app.UseUrlRewriteModule();
+			app.UseIdentityServer();
+			app.UseNotificationsHub<GearNotificationHub>();
 		}
 
 		/// <summary>
@@ -176,38 +199,66 @@ namespace GR.Cms
 		/// <param name="services"></param>
 		/// <returns></returns>
 		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
-			services.RegisterGearWebApp(config =>
+			services.RegisterGearWebApp(Configuration, HostingEnvironment, config =>
 		{
-			config.Configuration = Configuration;
-			config.HostingEnvironment = HostingEnvironment;
+			//------------------------------Global Config----------------------------------------
 			config.CacheConfiguration.UseInMemoryCache = true;
 
-			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<ApplicationDbContext>()
-				//.PasswordPolicy(options =>
-				//{
-				//	options.RequireDigit = true;
-				//	options.RequiredLength = 6;
-				//	options.RequireNonAlphanumeric = false;
-				//	options.RequireUppercase = false;
-				//	options.RequireLowercase = false;
-				//})
+
+			//------------------------------Theme Config------------------------------------------
+			config.GearServices.RegisterDefaultThemeRazorModule();
+
+			//------------------------------Identity Module----------------------------------------
+			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
+				.PasswordPolicy(new DefaultPasswordPolicy())
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
-				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
-				.AddAppProvider<AppProvider>()
-				.AddUserAddressService<UserAddressService>()
+				.AddIdentityModuleStorage<GearIdentityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
 				.AddIdentityModuleEvents()
-				.RegisterLocationService<LocationService>()
 				.AddIdentityRazorModule();
 
-			config.GearServices.AddAuthentication(Configuration)
-				.AddPermissionService<PermissionService<ApplicationDbContext>>()
-				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, MigrationsAssembly);
+			//-----------------------------Authentication Module-------------------------------------
+			config.GearServices.AddAuthentication<AuthorizeService>();
+
+
+			//-----------------------------Identity Clients Module-------------------------------------
+			config.GearServices //DefaultClientsConfigurator
+				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext,
+					ClientsConfigurator>(Configuration)
+				.AddClientsProfileService<ProfileService>()
+				.RegisterClientsService<ClientsService>()
+				.AddApiClientsRazorModule();
+
+			//---------------------------------------Groups Module-------------------------------------
+			config.GearServices.AddUserGroupModule<GroupService, GearUser>()
+				.AddUserGroupModuleStorage<GroupsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
+			//----------------------------------Permissions Module-------------------------------------
+			config.GearServices.AddPermissionModule<PermissionService<GearIdentityDbContext>>()
+				.MapPermissionsModuleToContext<GearIdentityDbContext>();
+
+			//---------------------------------------Profile Module-------------------------------------
+			config.GearServices.AddProfileModule<Identity.Profile.ProfileService>()
+				.AddUserAddressService<UserAddressService>()
+				.AddProfileModuleStorage<ProfileDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//---------------------------------------Entity Module-------------------------------------
 			config.GearServices.AddEntityModule<EntitiesDbContext, EntityService>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<EntityPermissions>, EntityPermissions>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<EntityTypePermissions>, EntityTypePermissions>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
 				.AddEntityModuleStorage<EntitiesDbContext>(options =>
 				{
@@ -219,7 +270,7 @@ namespace GR.Cms
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
-			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, ApplicationDbContext>>()
+			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, GearIdentityDbContext>>()
 				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -250,7 +301,7 @@ namespace GR.Cms
 				.RegisterProgramAssembly(typeof(Program));
 
 			//-------------------------------Notification Module-------------------------------------
-			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
@@ -258,17 +309,28 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterNotificationsHubModule<CommunicationHub>()
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
-				.AddLocalizationModule<JsonFileLocalizationService, YandexTranslationProvider, JsonStringLocalizer>(
-					new TranslationModuleOptions
-					{
-						Configuration = Configuration,
-						LocalizationProvider = LocalizationProvider.Yandex
-					})
-				.AddLocalizationRazorModule();
+				.AddLocalizationModule<JsonFileLocalizationService, JsonStringLocalizer>(
+					Configuration.GetSection(nameof(LocalizationConfig)))
+				.RegisterTranslationService<YandexTranslationProvider>(
+					Configuration.GetSection(nameof(LocalizationProviderSettings)))
+				//Only with DB provider
+				//.AddLocalizationModuleStorage<TranslationsDbContext>(options =>
+				//{
+				//	options.GetDefaultOptions(Configuration);
+				//	options.EnableSensitiveDataLogging();
+				//})
+				.AddLocalizationRazorModule()
+				.AddCountryModule<CountryService>()
+				.AddCountryModuleStorage<CountriesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//--------------------------------------Menu UI Module-------------------------------------
 			config.GearServices.AddMenuModule<MenuService>()
@@ -279,19 +341,15 @@ namespace GR.Cms
 				});
 
 			//------------------------------Database backup Module-------------------------------------
-			config.GearServices.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
-				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>();
+			config.GearServices
+				.RegisterDatabaseBackupRunnerModule<PostGreSqlBackupSettings, PostGreBackupService>(Configuration)
+				.RegisterDatabaseBackgroundService<BackupTimeService<PostGreSqlBackupSettings>>()
+				.AddBackupRazorModule();
 
-			//------------------------------------Processes Module-------------------------------------
-			config.GearServices.AddProcessesModule()
-			.AddDbContext<ProcessesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			});
-
-			//------------------------------------Calendar Module-------------------------------------
-			config.GearServices.AddCalendarModule<CalendarManager>()
+			//------------------------------------Calendar Module------------------------------------ -
+			config.GearServices
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<CalendarPermissions>, CalendarPermissions>()
+				.AddCalendarModule<CalendarManager>()
 				.AddCalendarModuleStorage<CalendarDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -330,6 +388,10 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				}, Configuration);
+
+			//Register files razor provider 
+			config.GearServices.AddFilesRazorModule();
+
 			//------------------------------------Task Module-------------------------------------
 			config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
@@ -339,8 +401,9 @@ namespace GR.Cms
 				})
 				.AddTaskManagerRazorUIModule();
 
-			//-----------------------------------------Form Module-------------------------------------
+			//-----------------------------------------Forms Module-------------------------------------
 			config.GearServices.AddFormModule<FormDbContext>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<FormsPermissions>, FormsPermissions>()
 				.AddFormModuleStorage<FormDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -428,7 +491,6 @@ namespace GR.Cms
 				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
 
 			//------------------------------------ Documents Module -----------------------------------
-
 			config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -455,6 +517,15 @@ namespace GR.Cms
 			//-------------------------- Phone verification Module ----------------------------------
 			config.GearServices.AddPhoneVerificationModule<Authy>();
 
+			//------------------------------------Processes Module-------------------------------------
+			config.GearServices.AddProcessesModule<ProcessParser>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<ProcessesPermissions>, ProcessesPermissions>()
+				.AddProcessesModuleStorage<ProcessesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddProcessesRazorModule();
 		});
 	}
 }

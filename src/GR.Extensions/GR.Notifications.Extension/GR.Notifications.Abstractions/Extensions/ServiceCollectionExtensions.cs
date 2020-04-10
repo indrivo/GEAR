@@ -37,11 +37,11 @@ namespace GR.Notifications.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModule<TRepository>(this IServiceCollection services)
+        public static INotificationServiceCollection AddNotificationSubscriptionModule<TRepository>(this IServiceCollection services)
             where TRepository : class, INotificationSubscriptionService
         {
             services.AddGearScoped<INotificationSubscriptionService, TRepository>();
-            return new NotificationSubscriptionServiceCollection(services);
+            return new NotificationServiceCollection(services);
         }
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModuleStorage<TContext>(this INotificationSubscriptionServiceCollection services, Action<DbContextOptionsBuilder> options)
+        public static INotificationServiceCollection AddNotificationSubscriptionModuleStorage<TContext>(this INotificationServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, INotificationSubscriptionsDbContext
         {
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationSubscriptionsDbContext, TContext>();
             services.Services.RegisterAuditFor<INotificationSubscriptionsDbContext>($"{nameof(Notification)} module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };
@@ -70,7 +70,7 @@ namespace GR.Notifications.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static INotificationSubscriptionServiceCollection AddNotificationModuleEvents(this INotificationSubscriptionServiceCollection services)
+        public static INotificationServiceCollection AddNotificationModuleEvents(this INotificationServiceCollection services)
         {
             SystemEvents.Application.OnEvent += (obj, args) =>
            {

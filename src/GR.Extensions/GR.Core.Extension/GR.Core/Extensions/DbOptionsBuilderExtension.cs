@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using GR.Core.Helpers.ConnectionStrings;
 
@@ -20,12 +21,18 @@ namespace GR.Core.Extensions
             {
                 case DbProviderType.MsSqlServer:
                     {
-                        options.UseSqlServer(connection);
+                        options.UseSqlServer(connection, sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
+                        });
                     }
                     break;
                 case DbProviderType.PostgreSql:
                     {
-                        options.UseNpgsql(connection);
+                        options.UseNpgsql(connection, sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
+                        });
                     }
                     break;
             }

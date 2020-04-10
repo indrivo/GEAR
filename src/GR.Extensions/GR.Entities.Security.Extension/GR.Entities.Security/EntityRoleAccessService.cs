@@ -216,7 +216,7 @@ namespace GR.Entities.Security
                 EntityAccessType.FullControl
             };
             var user = await _userManager.GetCurrentUserAsync();
-            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONYMOUS_USER };
             if (user.IsSuccess) roles = _userManager.GetRolesFromClaims();
 
             return await GetPermissionsAsync(roles, entityId);
@@ -237,7 +237,7 @@ namespace GR.Entities.Security
             if (!tableRequest.IsSuccess) return defResult;
             var table = tableRequest.Result;
             var user = await _userManager.GetCurrentUserAsync();
-            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONYMOUS_USER };
             if (user.IsSuccess) roles = _userManager.GetRolesFromClaims();
 
             return await GetPermissionsAsync(roles, table.Id);
@@ -251,7 +251,7 @@ namespace GR.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(GearUser user, Guid entityId)
         {
-            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONYMOUS_USER };
             if (user != null)
             {
                 roles = _userManager.GetRolesFromClaims();

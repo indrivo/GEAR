@@ -51,7 +51,7 @@ namespace GR.Dashboard.Abstractions.Extensions
             Arg.NotNull(configuration.Services, nameof(AddDashboardModuleStorage));
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<IDashboardDbContext, TDbContext>();
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
             };

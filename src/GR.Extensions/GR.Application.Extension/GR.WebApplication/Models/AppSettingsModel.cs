@@ -31,10 +31,7 @@ namespace GR.WebApplication.Models
             /// Logging
             /// </summary>
             public Logging Logging { get; set; } = new Logging();
-            /// <summary>
-            /// Health Check
-            /// </summary>
-            public HealthCheck HealthCheck { get; set; } = new HealthCheck();
+
             /// <summary>
             /// Localization Config
             /// </summary>
@@ -79,12 +76,6 @@ namespace GR.WebApplication.Models
         {
             public bool IncludeScopes { get; set; }
             public LogLevel LogLevel { get; set; }
-        }
-
-        public sealed class HealthCheck
-        {
-            public int Timeout { get; set; }
-            public string Path { get; set; }
         }
 
         public sealed class Credentials

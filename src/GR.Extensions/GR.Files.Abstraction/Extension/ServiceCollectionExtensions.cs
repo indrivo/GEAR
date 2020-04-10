@@ -23,6 +23,14 @@ namespace GR.Files.Abstraction.Extension
             return services;
         }
 
+        /// <summary>
+        /// Add file module storage
+        /// </summary>
+        /// <typeparam name="TFileContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IServiceCollection AddFileModuleStorage<TFileContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options, IConfiguration configuration)
             where TFileContext : DbContext, IFileContext
         {
@@ -30,7 +38,7 @@ namespace GR.Files.Abstraction.Extension
             services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<TFileContext>("Physic File module");
             services.ConfigureWritable<List<FileSettingsViewModel>>(configuration.GetSection("FileSettings"));
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TFileContext>();
             };

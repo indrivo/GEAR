@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Linq;
 using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Scopes;
 using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Helpers.PasswordPolicies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Identity.Abstractions.Extensions
@@ -57,25 +63,87 @@ namespace GR.Identity.Abstractions.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Password policy
+        /// </summary>
+        /// <typeparam name="TPasswordPolicy"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="passwordPolicy"></param>
+        /// <returns></returns>
+        public static IServiceCollection PasswordPolicy<TPasswordPolicy>(this IServiceCollection services, TPasswordPolicy passwordPolicy = null)
+            where TPasswordPolicy : PasswordPolicy
+        {
+            if (passwordPolicy == null)
+                passwordPolicy = new DefaultPasswordPolicy() as TPasswordPolicy;
+            // Configure Identity
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password = passwordPolicy?.Policy(options.Password);
+            });
+
+            return services;
+        }
 
         /// <summary>
         /// Add authentication
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services)
+            where TAuthorizeService : class, IAuthorizeService
         {
-            var authority = configuration.GetSection("WebClients").GetSection("CORE");
-            var uri = authority.GetValue<string>("uri");
+            services.AddGearTransient<IAuthorizeService, TAuthorizeService>();
+            var authorityUri = GearApplication.SystemConfig.EntryUri.ToString();
 
-            services.AddAuthentication()
-                .AddJwtBearer(opts =>
+            var hostingEnvironment = services
+                .BuildServiceProvider()
+                .GetRequiredService<IHostingEnvironment>();
+            var isDevelopment = hostingEnvironment.IsDevelopment();
+
+            services.AddAuthentication(options =>
                 {
-                    opts.Audience = "core";
-                    opts.Authority = uri;
+                    //options.DefaultScheme = "gear";
+                    //options.DefaultAuthenticateScheme = "gear";
+                })
+                .AddPolicyScheme("gear", "Authorization Bearer or Identity.Application", options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                        if (authHeader?.StartsWith("Bearer ") ?? false)
+                        {
+                            return JwtBearerDefaults.AuthenticationScheme;
+                        }
+
+                        return IdentityConstants.ApplicationScheme;
+                    };
+                })
+                .AddJwtBearer("Bearer", opts =>
+                {
+                    opts.Audience = GearScopes.CORE;
+                    opts.Authority = authorityUri;
                     opts.RequireHttpsMetadata = false;
+                    opts.SaveToken = true;
                 });
+                //.AddCookie(options =>
+                //{
+                //    options.Cookie.HttpOnly = true;
+                //    options.Cookie.SecurePolicy = isDevelopment
+                //        ? CookieSecurePolicy.None
+                //        : CookieSecurePolicy.Always;
+                //    options.Cookie.SameSite = SameSiteMode.Lax;
+                //});
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = $".AspNet{GearApplication.SystemConfig.MachineIdentifier}";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = isDevelopment
+                    ? CookieSecurePolicy.None
+                    : CookieSecurePolicy.Always;
+            });
+
             return services;
         }
 
@@ -100,60 +168,14 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add identity storage
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="migrationsAssembly"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services,
-            IConfiguration configuration, string migrationsAssembly)
+        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TIdentityContext : DbContext, IIdentityContext
         {
             services.AddTransient<IIdentityContext, TIdentityContext>();
-            services.AddDbContext<TIdentityContext>(builder
-                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
-
+            services.AddDbContext<TIdentityContext>(options);
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-            return services;
-        }
-
-        /// <summary>
-        /// Add provider
-        /// </summary>
-        /// <typeparam name="TAppProvider"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddAppProvider<TAppProvider>(this IServiceCollection services)
-            where TAppProvider : class, IAppProvider
-        {
-            services.AddGearTransient<IAppProvider, TAppProvider>();
-            return services;
-        }
-
-        /// <summary>
-        /// Register address service
-        /// </summary>
-        /// <typeparam name="TAddressService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
-            where TAddressService : class, IUserAddressService
-        {
-            services.AddGearTransient<IUserAddressService, TAddressService>();
-            return services;
-        }
-
-        /// <summary>
-        /// Register group repository
-        /// </summary>
-        /// <typeparam name="TGroupRepository"></typeparam>
-        /// <typeparam name="TContext"></typeparam>
-        /// <typeparam name="TUser"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
-            where TGroupRepository : class, IGroupRepository<TContext, TUser>
-            where TContext : DbContext where TUser : IdentityUser<Guid>
-        {
-            services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;
         }
 
@@ -165,19 +187,6 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddIdentityModuleEvents(this IServiceCollection services)
         {
             IdentityEvents.RegisterEvents();
-            return services;
-        }
-
-        /// <summary>
-        /// Register location service
-        /// </summary>
-        /// <typeparam name="TLocationService"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
-            where TLocationService : class, ILocationService
-        {
-            services.AddGearSingleton<ILocationService, TLocationService>();
             return services;
         }
     }

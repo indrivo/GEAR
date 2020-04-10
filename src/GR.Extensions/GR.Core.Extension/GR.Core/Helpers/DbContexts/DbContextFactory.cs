@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,9 +30,26 @@ namespace GR.Core.Helpers.DbContexts
 
     public static class DbContextFactory<TDbContext, TBaseDbContext> where TBaseDbContext : DbContext where TDbContext : TBaseDbContext
     {
-        public static TDbContext CreateFactoryDbContext()
+        public static TDbContext CreateFactoryDbContext(params object[] parameters)
         {
-            var context = (TDbContext)Activator.CreateInstance(typeof(TDbContext), DbContextFactoryBuilder.BuildOptions<TBaseDbContext>());
+            var buildParameters = new List<object>
+            {
+                DbContextFactoryBuilder.BuildOptions<TBaseDbContext>()
+            };
+
+            buildParameters.AddRange(parameters);
+
+            TDbContext context = null;
+
+            try
+            {
+                context = (TDbContext)Activator.CreateInstance(typeof(TDbContext), buildParameters.ToArray());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
             return context;
         }
     }

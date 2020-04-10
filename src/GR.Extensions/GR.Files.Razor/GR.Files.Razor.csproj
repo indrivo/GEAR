@@ -2,16 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.9.2</Version>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <Version>1.9.3</Version>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Configuration\fileSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\fileSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\GR.Files.Abstraction\GR.Files.Abstraction.csproj" />
     <ProjectReference Include="..\GR.Files.Box.Abstraction\GR.Files.Box.Abstraction.csproj" />
     <ProjectReference Include="..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace GR.Logger.Razor.Controllers
 {
     [Authorize]
-    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
     public class LogsController : Controller
     {
         #region Injectable

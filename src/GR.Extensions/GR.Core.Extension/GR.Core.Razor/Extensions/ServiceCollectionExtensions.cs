@@ -14,17 +14,6 @@ namespace GR.Core.Razor.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Register core razor module
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterCoreRazorModule(this IServiceCollection services)
-        {
-            services.ConfigureOptions(typeof(CoreRazorFileConfiguration));
-            return services;
-        }
-
-        /// <summary>
         /// Add swagger
         /// </summary>
         /// <param name="services"></param>
@@ -103,8 +92,7 @@ namespace GR.Core.Razor.Extensions
                 {
                     b.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                        .AllowAnyHeader();
                 });
             });
 

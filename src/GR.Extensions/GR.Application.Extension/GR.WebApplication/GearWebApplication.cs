@@ -5,20 +5,16 @@ using System.IO;
 using System.Text;
 using GR.Core.Events;
 using GR.Core.Helpers;
-using GR.Identity.Data;
-using GR.Identity.IdentityServer4;
-using GR.Identity.IdentityServer4.Seeders;
-using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
-using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
 using GR.Entities.Data;
+using GR.Identity.Data;
 using GR.Logger.Extensions;
+using GR.Modules.Abstractions.Helpers;
 using GR.UI.Menu.Data;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
@@ -52,34 +48,6 @@ namespace GR.WebApplication
         public static void InitModulesMigrations() => Migrate();
 
         /// <summary>
-        /// Migrate Web host extension
-        /// </summary>
-        /// <returns></returns>
-        private static IWebHost Migrate()
-        {
-            AppState.InstallOnProgress = true;
-
-            GlobalWebHost?
-                .MigrateDbContext<EntitiesDbContext>()
-                .MigrateDbContext<ApplicationDbContext>()
-                .MigrateDbContext<MenuDbContext>()
-                .MigrateDbContext<PersistedGrantDbContext>()
-                .MigrateDbContext<ConfigurationDbContext>((context, services) =>
-                {
-                    var config = services.GetService<IConfiguration>();
-                    var env = services.GetService<IHostingEnvironment>();
-                    var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
-                    var configurator = new IdentityServer4Configurator();
-                    IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
-                        .Wait();
-                });
-
-            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
-
-            return GlobalWebHost;
-        }
-
-        /// <summary>
         /// Run application
         /// </summary>
         /// <param name="args"></param>
@@ -109,13 +77,12 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IConfigurationRoot BuildConfiguration()
         {
-            InitAppsettingsFiles();
+            InitAppSettingsFiles();
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("fileSettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -124,15 +91,15 @@ namespace GR.WebApplication
         }
 
         /// <summary>
-        /// Init appsettings files
+        /// Init app settings files
         /// </summary>
         [Conditional("DEBUG")]
-        public static void InitAppsettingsFiles()
+        public static void InitAppSettingsFiles()
         {
             //System env
             var envPaths = new List<string>
             {
-                "Development", "Stage", string.Empty
+                GlobalResources.Environments.DEVELOPMENT, GlobalResources.Environments.STAGE, string.Empty
             };
 
             var fails = 0;
@@ -170,14 +137,31 @@ namespace GR.WebApplication
                 .UseStartup<TStartUp>()
                 .ConfigureAppConfiguration((hostingContext, conf) =>
                 {
-                    var path = Path.Combine(AppContext.BaseDirectory, "translationSettings.json");
-                    conf.AddJsonFile(path, true, true);
+                    ModulesProvider.Bind(conf);
                 })
                 .Build();
 
             return GlobalWebHost;
         }
 
+
+        /// <summary>
+        /// Migrate Web host extension
+        /// </summary>
+        /// <returns></returns>
+        private static IWebHost Migrate()
+        {
+            AppState.InstallOnProgress = true;
+
+            GlobalWebHost?
+                .MigrateDbContext<EntitiesDbContext>()
+                .MigrateDbContext<GearIdentityDbContext>()
+                .MigrateDbContext<MenuDbContext>();
+
+            SystemEvents.Database.MigrateAll(EventArgs.Empty);
+
+            return GlobalWebHost;
+        }
         #endregion
     }
 }

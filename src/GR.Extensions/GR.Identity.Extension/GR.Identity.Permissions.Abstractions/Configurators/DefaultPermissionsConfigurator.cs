@@ -7,29 +7,44 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Permissions.Abstractions.Permissions;
 using Activator = System.Activator;
 
 namespace GR.Identity.Permissions.Abstractions.Configurators
 {
-    public abstract class DefaultPermissionsConfigurator<TPermissionsConstants> where TPermissionsConstants : class
+    public class DefaultPermissionsConfigurator<TPermissionsConstants> : IPermissionsConfigurator
+        where TPermissionsConstants : class
     {
+        /// <summary>
+        /// Module permissions
+        /// </summary>
+        private readonly Dictionary<string, string> _permissions;
+
+        /// <summary>
+        /// Inject context
+        /// </summary>
+        protected IPermissionsContext Context => IoC.Resolve<IPermissionsContext>();
+
         /// <summary>
         /// On permissions seed
         /// </summary>
         public event EventHandler<PermissionsSeedEventsArgs> OnPermissionsSeedComplete;
 
-        protected DefaultPermissionsConfigurator()
+        public DefaultPermissionsConfigurator()
         {
             OnPermissionsSeedComplete += (sender, args) =>
             {
                 Debug.WriteLine("Permissions are seed");
             };
+
+            _permissions = GetModulePermissionsFromTargetModule();
         }
 
         /// <summary>
-        /// Module permissions
+        /// Permissions
         /// </summary>
-        private IEnumerable<string> Permissions { get; set; } = new List<string>();
+        public virtual Dictionary<string, string> Permissions => _permissions;
 
         /// <summary>
         /// Inject identity context
@@ -39,11 +54,11 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// <summary>
         /// Trigger
         /// </summary>
-        public void PermissionsSeedComplete()
+        protected virtual void PermissionsSeedComplete()
         {
             OnPermissionsSeedComplete?.Invoke(this, new PermissionsSeedEventsArgs
             {
-                Permissions = Permissions
+                Permissions = _permissions
             });
         }
 
@@ -51,12 +66,12 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// Get module permissions
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<string> GetModulePermissionsFromTargetModule()
+        public Dictionary<string, string> GetModulePermissionsFromTargetModule()
         {
             var fieldInfo = typeof(TPermissionsConstants).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var o = Activator.CreateInstance<TPermissionsConstants>();
-            var permissions = fieldInfo.Select(_ => _.GetValue(o).ToString()).ToList();
-            Permissions = permissions;
+            var permissions = fieldInfo
+                .ToDictionary(k => k.Name, v => v.GetValue(o).ToString());
             return permissions;
         }
 
@@ -64,6 +79,27 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// Seed data async
         /// </summary>
         /// <returns></returns>
-        public abstract Task SeedAsync();
+        public virtual async Task SeedAsync()
+        {
+            foreach (var permission in Permissions)
+            {
+                if (Context.Permissions.Any(x => x.PermissionKey == permission.Key)) continue;
+                await Context.Permissions.AddAsync(new Permission
+                {
+                    PermissionKey = permission.Value,
+                    PermissionName = permission.Key,
+                    ClientId = 1,
+                    Description = $"Permission for module {permission.Key}"
+                });
+            }
+
+            var dbResponse = await Context.PushAsync();
+            if (dbResponse.IsSuccess)
+                PermissionsSeedComplete();
+            else
+            {
+                Console.WriteLine(dbResponse);
+            }
+        }
     }
 }

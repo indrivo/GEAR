@@ -2,7 +2,6 @@
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Configurators;
-using GR.Identity.Permissions.Abstractions.Models;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core;
+using GR.Identity.Permissions.Abstractions.ViewModels;
 
 namespace GR.Identity.Permissions
 {
-    public class PermissionService<TContext> : IPermissionService where TContext : IIdentityContext
+    public class PermissionService<TContext> : IPermissionService where TContext : IPermissionsContext, IIdentityContext
     {
         #region Injectable
         /// <summary>
@@ -171,7 +172,7 @@ namespace GR.Identity.Permissions
                 return;
             }
 
-            var role = await _context.SetEntity<GearRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
+            var role = await _context.Set<GearRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
 
             if (role == null)
             {
@@ -208,6 +209,7 @@ namespace GR.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
+            if (roles.Contains(GlobalResources.Roles.ADMINISTRATOR)) return true;
             var data = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await SetOrResetPermissionsOnCacheAsync();
             try
             {

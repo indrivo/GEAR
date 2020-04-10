@@ -7,5 +7,7 @@ namespace GR.Core.Events.EventArgs.Database
         public virtual DbContext DbContext { get; set; }
 
         public virtual string ContextName { get; set; }
+
+        public virtual long ElapsedMilliseconds { get; set; }
     }
 }

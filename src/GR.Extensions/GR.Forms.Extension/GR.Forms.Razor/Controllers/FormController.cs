@@ -5,23 +5,23 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Cache.Abstractions;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using GR.Cache.Abstractions;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models;
 using GR.Forms.Razor.ViewModels.FormsViewModels;
-using GR.Identity.Data.Permissions;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Entities.Abstractions;
 using GR.Forms.Abstractions;
+using GR.Forms.Abstractions.Helpers;
 using GR.Forms.Abstractions.Models.FormModels;
 using GR.Forms.Abstractions.ViewModels.FormViewModels;
 using GR.Identity.Permissions.Abstractions.Attributes;
@@ -181,7 +181,7 @@ namespace GR.Forms.Razor.Controllers
         /// Get by page
         /// </summary>
         /// <returns></returns>
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmFormRead)]
+        [AuthorizePermission(FormsPermissions.FormRead)]
         public IActionResult Index()
         {
             return View();

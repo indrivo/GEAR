@@ -1,14 +1,15 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
-using GR.Procesess.Abstraction;
 using GR.Procesess.Extensions;
-using GR.Procesess.Models;
-using GR.Procesess.Models.ParserModels;
-using GR.Procesess.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using GR.Identity.Abstractions;
+using GR.Processes.Abstractions;
+using GR.Processes.Abstractions.Helpers;
+using GR.Processes.Abstractions.Models;
+using GR.Processes.Abstractions.Models.ParserModels;
+using GR.Processes.Abstractions.ViewModels;
 
 namespace GR.Procesess.Parsers
 {

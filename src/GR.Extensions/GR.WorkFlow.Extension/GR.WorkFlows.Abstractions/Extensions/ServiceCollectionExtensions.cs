@@ -48,7 +48,7 @@ namespace GR.WorkFlows.Abstractions.Extensions
             services.AddScopedContextFactory<IWorkFlowContext, TContext>();
             services.AddDbContext<TContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<IWorkFlowContext>($"{nameof(WorkFlow)} module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };

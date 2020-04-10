@@ -20,6 +20,7 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Localization.Abstractions;
 using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
@@ -67,6 +68,11 @@ namespace GR.MultiTenant.Services
         /// </summary>
         private readonly ICommunicationHub _hub;
 
+        /// <summary>
+        /// Inject country service
+        /// </summary>
+        private readonly ICountryService _countryService;
+
         #endregion
 
         /// <summary>
@@ -79,8 +85,9 @@ namespace GR.MultiTenant.Services
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
         /// <param name="hub"></param>
+        /// <param name="countryService"></param>
         public OrganizationService(IIdentityContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub)
+            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub, ICountryService countryService)
         {
             _context = context;
             _userManager = userManager;
@@ -89,6 +96,7 @@ namespace GR.MultiTenant.Services
             _urlHelper = urlHelper;
             _localizer = localizer;
             _hub = hub;
+            _countryService = countryService;
         }
 
         /// <inheritdoc />
@@ -200,7 +208,6 @@ namespace GR.MultiTenant.Services
         {
             Arg.NotNull(user, nameof(GetUserOrganization));
             return _context.Tenants
-                .Include(x => x.Country)
                 .FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
 
@@ -242,7 +249,7 @@ namespace GR.MultiTenant.Services
                     .Where(x => roles.Contains(x.Id))
                     .Select(x => x.Name)
                     .ToListAsync();
-                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.ANONYMOUS_USER);
                 userRoles.Add(GlobalResources.Roles.USER);
                 var userResult = await _userManager.UserManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
@@ -333,7 +340,7 @@ namespace GR.MultiTenant.Services
             var rolesToExclude = new HashSet<string>
             {
                 GlobalResources.Roles.ADMINISTRATOR,
-                GlobalResources.Roles.ANONIMOUS_USER
+                GlobalResources.Roles.ANONYMOUS_USER
             };
 
             var roles = await _userManager.RoleManager.Roles
@@ -435,17 +442,23 @@ namespace GR.MultiTenant.Services
         /// <returns></returns>
         public virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectListAsync()
         {
-            var countrySelectList = await _context.Countries
-                .AsNoTracking()
+            var selectInfoItem = new SelectListItem(_localizer["system_select_country"], string.Empty);
+            var countriesRequest = await _countryService.GetAllCountriesAsync();
+            if (!countriesRequest.IsSuccess)
+            {
+                return new List<SelectListItem> { selectInfoItem };
+            }
+
+            var countrySelectList = countriesRequest.Result
                 .Select(x => new SelectListItem
                 {
                     Text = x.Name,
                     Value = x.Id
                 })
                 .OrderBy(x => x.Text)
-                .ToListAsync();
+                .ToList();
 
-            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
+            countrySelectList.Insert(0, selectInfoItem);
 
             return countrySelectList;
         }

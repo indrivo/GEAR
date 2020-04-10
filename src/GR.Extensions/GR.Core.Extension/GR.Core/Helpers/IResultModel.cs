@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GR.Core.Helpers
 {
@@ -24,7 +23,5 @@ namespace GR.Core.Helpers
         /// </summary>
 
         T Result { get; set; }
-
-        Guid? KeyEntity { get; set; }
     }
 }

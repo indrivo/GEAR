@@ -65,7 +65,7 @@
 				"orderMulti": false, // for disable multiple column at once
 				"destroy": true,
 				"ajax": {
-					"url": '@Url.Action("GroupsList")',
+					"url": '@Url.Action("GetGroupList", "GroupsApi")',
 					"type": "POST"
 				},
 				"columns": [
@@ -104,13 +104,13 @@
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
 				tableId: "#groupTable",
-				urlForDelete: '@Url.Action("Delete")',
+				urlForDelete: '@Url.Action("RemoveGroupPermanently", "GroupsApi")',
 				type: "warning",
 				onDeleteSuccess: "Group has been deleted.",
 				onDeleteFail: "Something wrong",
 				onServerNoResponse: "Api not respond or not have permissions."
 			};
-			DeleteData(object);
+			invokeDeleteRowModal(object);
 		}
     </script>
 }

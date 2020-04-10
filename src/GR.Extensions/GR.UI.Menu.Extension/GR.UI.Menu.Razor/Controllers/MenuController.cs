@@ -21,7 +21,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace GR.UI.Menu.Razor.Controllers
 {
     [Authorize]
-    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
+    [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
     public class MenuController : BaseGearController
     {
         #region Injectable

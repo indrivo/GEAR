@@ -29,25 +29,12 @@
       "Author": "System"
     }
   ],
-  "Groups": [
-    {
-      "Name": "Administrators",
-      "Author": "System"
-    }
-  ],
   "ApplicationUsers": [
     {
       "Email": "admin@admin.com",
       "UserName": "admin",
-      "Password": "admin",
-      "IsEditable": false,
-      "Author": "System"
-    }
-  ],
-  "Profiles": [
-    {
-      "ProfileName": "Profile",
-      "IsSystem": true
+      "Password": "Adm!n.2020",
+      "IsEditable": false
     }
   ]
 }

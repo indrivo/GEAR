@@ -3,14 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.9.2</Version>
+    <Version>1.9.3</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <AssemblyName>GR.Procesess</AssemblyName>
     <RootNamespace>GR.Procesess</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
-    <FileVersion>1.9.2</FileVersion>
-    <AssemblyVersion>1.9.2</AssemblyVersion>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
 
   </PropertyGroup>
   <ItemGroup>
@@ -19,7 +19,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Processes.Abstractions\GR.Processes.Abstractions.csproj" />
   </ItemGroup>
 </Project>

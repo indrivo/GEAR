@@ -37,13 +37,6 @@ namespace GR.Audit.Contexts
         public virtual DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
 
         /// <summary>
-        /// Set
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
-
-        /// <summary>
         /// Save changes
         /// </summary>
         /// <returns></returns>

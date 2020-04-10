@@ -40,7 +40,7 @@ namespace GR.PageRender.Abstractions.Extensions
             services.AddDbContext<TPageContext>(options);
             services.RegisterAuditFor<IDynamicPagesContext>("Page module");
 
-            SystemEvents.Database.OnMigrate += (sender, args) =>
+            SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TPageContext>();
             };
