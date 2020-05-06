@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using GR.Localization.Abstractions;
@@ -122,7 +121,6 @@ namespace GR.Identity.Profile.Razor.Controllers
                 .Where(x => x.UserId.Equals(userId.Value) && x.IsDeleted == false)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
-                .Include(x => x.District)
                 .Select(address => new UserProfileAddressViewModel
                 {
                     Id = address.Id,
@@ -130,7 +128,6 @@ namespace GR.Identity.Profile.Razor.Controllers
                     AddressLine2 = address.AddressLine2,
                     Phone = address.Phone,
                     ContactName = address.ContactName,
-                    District = address.District.Name,
                     Country = address.Country.Name,
                     City = address.StateOrProvince.Name,
                     IsPrimary = address.IsDefault,

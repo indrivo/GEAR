@@ -1,4 +1,27 @@
-v.1.9.3 - Lupei Nicolae
+v.1.9.4 - Lupei Nicolae May 2020
+* add user activity module
+* add phone verification module
+* bug fixing
+* add new extensions
+* fix pagination extension
+* refact core
+* add new events for modules
+* refact identity modules
+* add model validator
+* add new validation attributes
+* refact naming
+* add auth for notification hub
+* add support for external devices to hub
+* add error prevent with custom message on json api
+* add support for multiple authentification types simultaneous
+* add database for ip tracking
+* add helper for parse and validate phone numbers
+* add 2factor auth service with phone number
+* fix user address service
+* use and create mappers for dto
+* add api for user
+
+v.1.9.3 - Lupei Nicolae April 2020
 * separe groups module from identity
 * separe user profile module from identity
 * separe permissions from identity

@@ -24,7 +24,7 @@ namespace GR.Core.Helpers.Templates
             var result = new ResultModel<string>();
             if (string.IsNullOrEmpty(templateName)) throw new ArgumentNullException($"{nameof(templateName)} is null");
             var path = $"Templates/{templateName}.{templateType.ToString().ToLower()}_template";
-             Templates.TryGetValue(path, out var template);
+            Templates.TryGetValue(path, out var template);
             if (!template.IsNullOrEmpty())
             {
                 result.IsSuccess = true;
@@ -32,9 +32,13 @@ namespace GR.Core.Helpers.Templates
                 return result;
             }
 
+            var filePath = Path.Combine(AppContext.BaseDirectory, path);
+            if (!File.Exists(filePath)) return result
+                .AddError("Template not found");
+
             try
             {
-                result.Result = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, path));
+                result.Result = File.ReadAllText(filePath);
                 result.IsSuccess = true;
 
                 Templates.TryAdd(path, result.Result);

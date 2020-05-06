@@ -15,66 +15,64 @@ namespace GR.Identity.Profile.Abstractions.Models.AddressModels
         /// Contact name
         /// </summary>
         [StringLength(450)]
-        public string ContactName { get; set; }
+        public virtual string ContactName { get; set; }
 
         /// <summary>
         /// PHONE number
         /// </summary>
         [StringLength(450)]
-        public string Phone { get; set; }
+        public virtual string Phone { get; set; }
 
         /// <summary>
         /// Primary address
         /// </summary>
         [StringLength(450)]
-        public string AddressLine1 { get; set; }
+        public virtual string AddressLine1 { get; set; }
 
         /// <summary>
         /// Second address
         /// </summary>
         [StringLength(450)]
-        public string AddressLine2 { get; set; }
+        public virtual string AddressLine2 { get; set; }
 
         /// <summary>
         /// Zip code
         /// </summary>
         [StringLength(450)]
-        public string ZipCode { get; set; }
-
-        /// <summary>
-        /// District
-        /// </summary>
-        public Guid? DistrictId { get; set; }
-
-        public District District { get; set; }
+        public virtual string ZipCode { get; set; }
 
         /// <summary>
         /// Reference to cities
         /// </summary>
         [Required(ErrorMessage = "The {0} field is required.")]
-        public Guid StateOrProvinceId { get; set; }
+        public virtual Guid StateOrProvinceId { get; set; }
 
-        public StateOrProvince StateOrProvince { get; set; }
+        public virtual StateOrProvince StateOrProvince { get; set; }
 
         /// <summary>
         /// Reference to countries
         /// </summary>
         [Required(ErrorMessage = "The {0} field is required.")]
         [StringLength(450)]
-        public string CountryId { get; set; }
+        public virtual string CountryId { get; set; }
 
-        public Country Country { get; set; }
+        public virtual Country Country { get; set; }
 
         /// <summary>
         /// Reference to Users
         /// </summary>
-        public GearUser User { get; set; }
+        public virtual GearUser User { get; set; }
 
-        public Guid UserId { get; set; }
+        public virtual Guid UserId { get; set; }
 
         /// <summary>
         /// Represent default user address
         /// </summary>
-        public bool IsDefault { get; set; }
+        public virtual bool IsDefault { get; set; }
+
+        /// <summary>
+        /// Region
+        /// </summary>
+        public virtual string Region { get; set; }
     }
 }

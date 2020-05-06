@@ -51,7 +51,7 @@ namespace GR.Calendar.Abstractions.Models.ViewModels
         public Guid? TenantId { get; set; }
     }
 
-    public sealed class CalendarUserViewModel : SampleGetUserViewModel
+    public sealed class CalendarUserViewModel : UserInfoViewModel
     {
         public CalendarUserViewModel(GearUser user) : base(user) { }
         public EventAcceptance Acceptance { get; set; } = EventAcceptance.Tentative;

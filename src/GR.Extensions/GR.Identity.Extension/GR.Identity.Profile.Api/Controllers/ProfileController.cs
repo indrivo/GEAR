@@ -1,23 +1,20 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
+using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Events;
-using GR.Identity.Abstractions.Events.EventArgs.Users;
+using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers.Attributes;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
-using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Identity.Profile.Api.Controllers
 {
+    [JsonApiExceptionFilter]
     [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("api/[controller]/[action]")]
     public class ProfileController : BaseGearController
@@ -30,77 +27,20 @@ namespace GR.Identity.Profile.Api.Controllers
         private readonly IProfileService _profileService;
 
         /// <summary>
-        /// Inject profile context
-        /// </summary>
-        private readonly IProfileContext _profileContext;
-
-        /// <summary>
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
         #endregion
 
-        public ProfileController(IProfileService profileService, IUserManager<GearUser> userManager, IProfileContext profileContext)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="profileService"></param>
+        /// <param name="userManager"></param>
+        public ProfileController(IProfileService profileService, IUserManager<GearUser> userManager)
         {
             _profileService = profileService;
             _userManager = userManager;
-            _profileContext = profileContext;
-        }
-
-        [HttpPost]
-       
-        public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
-        {
-            var resultModel = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
-                return Json(resultModel);
-            }
-
-            var currentUser = (await _userManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
-                return Json(resultModel);
-            }
-
-            var address = new Address
-            {
-                AddressLine1 = model.AddressLine1,
-                AddressLine2 = model.AddressLine2,
-                Created = DateTime.Now,
-                ContactName = model.ContactName,
-                ZipCode = model.ZipCode,
-                Phone = model.Phone,
-                CountryId = model.CountryId,
-                StateOrProvinceId = model.CityId,
-                User = currentUser,
-                IsDefault = model.IsDefault
-            };
-
-            if (model.IsDefault)
-            {
-                _profileContext.UserAddresses
-                    .Where(x => x.UserId.Equals(currentUser.Id))
-                    .ToList().ForEach(b => b.IsDefault = false);
-            }
-
-            await _profileContext.UserAddresses.AddAsync(address);
-            var result = await _profileContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var resultError in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
         }
 
         /// <summary>
@@ -109,15 +49,21 @@ namespace GR.Identity.Profile.Api.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-       
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public virtual async Task<JsonResult> EditProfile(UserProfileEditViewModel model)
         {
             if (!ModelState.IsValid) return JsonModelStateErrors();
             return await JsonAsync(_profileService.UpdateBaseUserProfileAsync(model));
         }
 
+        /// <summary>
+        /// Upload uer photo
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [HttpPost]
-        public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> UploadUserPhoto([Required]IFormFile file)
         {
             var resultModel = new ResultModel();
             if (file == null || file.Length == 0)
@@ -149,83 +95,31 @@ namespace GR.Identity.Profile.Api.Controllers
             }
 
             resultModel.IsSuccess = false;
-            foreach (var error in result.Errors)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = error.Code, Message = error.Description });
-            }
-
+            resultModel.AppendIdentityErrors(result.Errors);
             return Json(resultModel);
         }
 
-
+        /// <summary>
+        /// Remove user photo
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
-       
-        public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
-        {
-            var resultModel = new ResultModel();
-            if (!ModelState.IsValid)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Invalid model" });
-                return Json(resultModel);
-            }
-
-            var currentUser = (await _userManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return Json(resultModel);
-            }
-
-            var result = await _userManager.UserManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
-                {
-                    Email = currentUser.Email,
-                    UserName = currentUser.UserName,
-                    UserId = currentUser.Id,
-                    Password = model.Password
-                });
-                return Json(resultModel);
-            }
-
-            resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Error on change password" });
-            return Json(resultModel);
-        }
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveUserPhoto()
+            => await JsonAsync(_userManager.RemoveUserPhotoAsync());
 
 
+        /// <summary>
+        /// Change password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
-        public virtual async Task<JsonResult> DeleteUserAddress(Guid? id)
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> UserPasswordChange([Required]ChangePasswordViewModel model)
         {
-            var resultModel = new ResultModel();
-            if (!id.HasValue)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Null id"));
-                return Json(resultModel);
-            }
-
-            var currentAddress = await _profileContext.UserAddresses.FindAsync(id.Value);
-            if (currentAddress == null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
-                return Json(resultModel);
-            }
-
-            currentAddress.IsDeleted = true;
-            var result = await _profileContext.PushAsync();
-            if (!result.IsSuccess)
-            {
-                foreach (var error in result.Errors)
-                {
-                    resultModel.Errors.Add(new ErrorModel(error.Key, error.Message));
-                }
-
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            return await JsonAsync(_userManager.ChangeUserPasswordAsync(model.CurrentPassword, model.Password));
         }
     }
 }

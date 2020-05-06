@@ -110,7 +110,7 @@
 </div>
 
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalLabel">@Localizer["iso_crop_the_image"]</h5>
@@ -178,7 +178,7 @@
 						cropper = new Cropper(image,
 							{
 								aspectRatio: 1,
-								viewMode: 3
+								viewMode: 2
 							});
 					}).on('hidden.bs.modal',
 					function() {
@@ -206,7 +206,7 @@
 								var formData = new FormData();
 
 								formData.append('file', blob, 'avatar.jpg');
-								$.ajax('@Url.Action("UploadUserPhoto", "Users")',
+								$.ajax('@Url.Action("UploadUserPhoto", "Profile")',
 									{
 										method: 'POST',
 										data: formData,

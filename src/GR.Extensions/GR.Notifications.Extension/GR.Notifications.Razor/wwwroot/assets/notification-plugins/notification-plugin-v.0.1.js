@@ -3,7 +3,7 @@
  *
  * v1.0.0
  *
- * License: MIT Soft-Tehnica Srl
+ * License: MIT Indrivo
  * Author: Lupei Nicolae
  */
 
@@ -37,6 +37,10 @@ Notificator.prototype.addNewNotificationToContainer = function (notification) {
     this.registerOpenNotificationEvent();
 };
 
+/**
+ * Append to container
+ * @param {any} notification
+ */
 Notificator.prototype.appendNotificationToContainer = function (notification) {
     const template = this.createNotificationBodyContainer(notification);
     $("#notificationList .notifications").append(template);
@@ -119,6 +123,32 @@ Notificator.prototype.getAllNotifications = function () {
         });
     }).catch(err => {
         console.warn(err);
+    });
+};
+
+/**
+ * Get all notifications
+ * @param {any} page
+ * @param {any} perPage
+ * @param {any} onlyUnread
+ */
+Notificator.prototype.getAllNotifications = function (page, perPage, onlyUnread) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
+            method: "get",
+            data: {
+                page,
+                perPage,
+                onlyUnread
+            },
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
     });
 };
 
@@ -250,6 +280,76 @@ Notificator.prototype.getCurrentUser = function () {
     });
 };
 
+/**
+ * On int
+ */
+Notificator.prototype.init = function () {
+    const self = this;
+    self.getAllNotifications(1, 5, true).then(data => {
+        if (!data) return;
+        if (data.is_success) {
+            $.each(data.result.notifications, (i, notification) => {
+                self.addNewNotificationToContainer(notification);
+            });
+            const loaderClassString = 'notification-loader';
+            const loaderClass = `.${loaderClassString}`;
+            $('#notificationList').find(loaderClass).fadeOut();
+            setTimeout(function () { $('#notificationList').find(loaderClass).remove(); }, 400);
+
+            $("#clearNotificationsEvent").on("click",
+                function () {
+                    $("#notificationList .notifications").html(null);
+                    $("#notificationAlarm").hide();
+                    self.clearNotificationsOnCurrentUser();
+                });
+        }
+    });
+};
+
+/**
+ * On receive notification
+ * @param {any} notification
+ */
+Notificator.prototype.onReceiveNotification = function (notification) {
+    const date = new Date(notification.created);
+    notification.created = moment(date).format("DD.MM.YYYY hh:mm:ss A");
+    this.addNewNotificationToContainer(notification);
+};
+
+/**
+ * Ajax request
+ * @param {any} requestUrl
+ * @param {any} requestType
+ * @param {any} requestData
+ */
+Notificator.prototype.ajaxRequest = (requestUrl, requestType, requestData) => {
+    const baseUrl = '/api/Notifications';
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: baseUrl + requestUrl,
+            type: requestType,
+            data: requestData,
+            success: (data) => {
+                if (Array.isArray(data)) {
+                    resolve(data);
+                }
+                else {
+                    if (data.is_success) {
+                        resolve(data.result);
+                    } else if (!data.is_success) {
+                        reject(data.error_keys);
+                    } else {
+                        resolve(data);
+                    }
+                }
+            },
+            error: (e) => {
+                reject(e);
+            }
+        });
+    });
+}
+
 
 //------------------------------------------------------------------------------------//
 //								External Connections
@@ -257,6 +357,8 @@ Notificator.prototype.getCurrentUser = function () {
 
 $(document).ready(function () {
     const notificator = new Notificator();
+
+    //Disable on login page
     if (location.href.indexOf("Account/Login") !== -1) return;
     if (typeof signalR === 'undefined') return;
     initExternalConnections();
@@ -271,15 +373,12 @@ $(document).ready(function () {
             resolve(connection);
         });
 
-
         connPromise.then(connection => {
 
             //On receive notification
             connection.on("SendClientNotification",
                 (notification) => {
-                    const date = new Date(notification.created);
-                    notification.created = moment(date).format("DD.MM.YYYY");
-                    notificator.addNewNotificationToContainer(notification);
+                    notificator.onReceiveNotification(notification);
                 });
 
             //Start connection
@@ -293,38 +392,9 @@ $(document).ready(function () {
             //On error
         });
 
+        //init module
         connPromise.then(() => {
-            var loadUserNotifications = new Promise((resolve, reject) => {
-                loadNotifications();
-            });
-
-            Promise.all([loadUserNotifications]).then(function (values) {
-                $("#clearNotificationsEvent").on("click",
-                    function () {
-                        $("#notificationList .notifications").html(null);
-                        $("#notificationAlarm").hide();
-                        const notificator = new Notificator();
-                        notificator.clearNotificationsOnCurrentUser();
-                    });
-            });
+            notificator.init();
         });
     };
-
-    /**
-     * Show notifications on page load
-     */
-    function loadNotifications() {
-        notificator.getAllNotifications(1, 10, true).then(data => {
-            if (!data) return;
-            if (data.is_success) {
-                $.each(data.result.notifications, (i, notification) => {
-                    notificator.addNewNotificationToContainer(notification);
-                });
-                const loaderClassString = 'notification-loader';
-                const loaderClass = `.${loaderClassString}`;
-                $('#notificationList').find(loaderClass).fadeOut();
-                setTimeout(function () { $('#notificationList').find(loaderClass).remove(); }, 400);
-            }
-        });
-    }
 });

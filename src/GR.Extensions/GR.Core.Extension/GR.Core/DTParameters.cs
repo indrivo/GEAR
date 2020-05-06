@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace GR.Core
@@ -30,7 +31,24 @@ namespace GR.Core
                 /// Note that this parameter's name can be changed using the ajaxDT option's dataSrc property.
                 /// </summary>
         [JsonProperty("data")]
-        public List<T> Data { get; set; }
+        public List<T> Data { get; set; } = new List<T>();
+
+        /// <summary>
+        /// Map result
+        /// </summary>
+        /// <typeparam name="TMap"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public DTResult<TMap> MapResult<TMap>(IEnumerable<TMap> data)
+        {
+            return new DTResult<TMap>
+            {
+                Draw = Draw,
+                RecordsFiltered = RecordsFiltered,
+                RecordsTotal = RecordsTotal,
+                Data = data.ToList()
+            };
+        }
     }
 
     /// <summary>
@@ -70,12 +88,12 @@ namespace GR.Core
         /// <summary>
                 /// An array defining all columns in the table.
                 /// </summary>
-        public DTColumn[] Columns { get; set; }
+        public DTColumn[] Columns { get; set; } = new DTColumn[0];
 
         /// <summary>
                 /// An array defining how many columns are being ordering upon - i.e. if the array length is 1, then a single column sort is being performed, otherwise a multi-column sort is being performed.
                 /// </summary>
-        public DTOrder[] Order { get; set; }
+        public DTOrder[] Order { get; set; } = new DTOrder[0];
 
         /// <summary>
                 /// Paging first record indicator.

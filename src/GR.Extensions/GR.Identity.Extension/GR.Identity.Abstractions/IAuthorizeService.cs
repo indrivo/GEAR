@@ -33,5 +33,12 @@ namespace GR.Identity.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<AuthenticationScheme>>> GetAuthenticationSchemes();
+
+        /// <summary>
+        /// Check password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> CheckPasswordAsync(LoginViewModel model);
     }
 }

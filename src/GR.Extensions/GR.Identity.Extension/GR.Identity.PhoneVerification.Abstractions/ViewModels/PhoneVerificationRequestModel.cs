@@ -28,6 +28,7 @@ namespace GR.Identity.PhoneVerification.Abstractions.ViewModels
         /// Length of password
         /// </summary>
         [Required]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Password must be numeric")]
         [StringLength(6)]
         public string Pin { get; set; }
     }

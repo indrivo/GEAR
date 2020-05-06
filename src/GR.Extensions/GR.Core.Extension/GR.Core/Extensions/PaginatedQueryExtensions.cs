@@ -96,7 +96,13 @@ namespace GR.Core.Extensions
         public static PagedResult<T> GetPaged<T>(this IQueryable<T> query,
             int page, int pageSize) where T : class
         {
-            var result = new PagedResult<T> { CurrentPage = page, PageSize = pageSize, RowCount = query.Count() };
+            var count = query.Count();
+            var result = new PagedResult<T>
+            {
+                CurrentPage = page, PageSize = pageSize, 
+                RowCount = count,
+                TotalNonFiltered = count
+            };
 
             var pageCount = (double)result.RowCount / pageSize;
             result.PageCount = (int)Math.Ceiling(pageCount);
@@ -125,10 +131,11 @@ namespace GR.Core.Extensions
             var result = new PagedResult<T>
             {
                 CurrentPage = parameters.Draw,
-                PageSize = parameters.Length
+                PageSize = parameters.Length,
+                TotalNonFiltered = await query.CountAsync()
             };
 
-            if (!parameters.Search.Value.IsNullOrEmpty())
+            if (parameters.Search != null && !parameters.Search.Value.IsNullOrEmpty())
             {
                 query = parameters.Search.Regex
                     ? query.FilterSourceByRegEx(parameters.Search.Value)
@@ -169,7 +176,7 @@ namespace GR.Core.Extensions
                 Draw = paged.CurrentPage,
                 Data = paged.Result.ToList(),
                 RecordsFiltered = paged.RowCount,
-                RecordsTotal = paged.PageCount
+                RecordsTotal = paged.TotalNonFiltered
             };
         }
 

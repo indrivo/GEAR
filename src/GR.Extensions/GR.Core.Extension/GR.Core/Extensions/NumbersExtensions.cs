@@ -50,7 +50,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static int PercentOf(this int value, int total)
         {
-            return (int)((value / (double)total) * 100);
+            return (int)(value / (double)total * 100);
         }
 
         /// <summary>
@@ -61,7 +61,27 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static int PercentOf(this ulong value, ulong total)
         {
-            return (int)((value / (double)total) * 100);
+            return (int)(value / (double)total * 100);
+        }
+
+        /// <summary>
+        /// Percent of
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        public static double PercentOf(this decimal value, decimal total)
+        {
+            try
+            {
+                return (double)(value / total * 100);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return 0;
         }
 
         /// <summary>

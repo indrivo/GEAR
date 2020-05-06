@@ -1,5 +1,4 @@
-﻿using Castle.MicroKernel.Registration;
-using Castle.Windsor.MsDependencyInjection;
+﻿using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Exceptions;
 using GR.Cache.Extensions;
@@ -27,11 +26,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using AutoMapper;
+using GR.Core.Attributes.Validation;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Razor.Extensions;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace GR.WebApplication.Extensions
 {
@@ -50,6 +53,18 @@ namespace GR.WebApplication.Extensions
             IoC.Container.Register(Component.For<IConfiguration>().Instance(conf));
             IoC.Container.Register(Component.For<IHostingEnvironment>().Instance(hostingEnvironment));
 
+            //----------------------------------------Health Check-------------------------------------
+            services.AddHealthChecks();
+            services.AddDatabaseHealth();
+            //services.AddSeqHealth();
+            services.AddHealthChecksUI("health-gear-database", setup =>
+            {
+                setup.SetEvaluationTimeInSeconds((int)TimeSpan.FromMinutes(2).TotalSeconds);
+                setup.AddHealthCheckEndpoint(GearApplication.SystemConfig.MachineIdentifier, $"{GearApplication.SystemConfig.EntryUri}hc");
+            });
+
+
+
             var configuration = new GearServiceCollectionConfig
             {
                 GearServices = services,
@@ -58,6 +73,9 @@ namespace GR.WebApplication.Extensions
             };
 
             configAction(configuration);
+
+            //Register mappings from modules
+            services.AddAutoMapper(configuration.GetAutoMapperProfilesFromAllAssemblies().ToArray());
 
             //Register system config
             services.RegisterSystemConfig(configuration.Configuration);
@@ -68,7 +86,10 @@ namespace GR.WebApplication.Extensions
             //Global settings
             services.AddMvc(options =>
                 {
+                    //Global
                     options.EnableEndpointRouting = false;
+
+                    //Binders
                     options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
@@ -76,7 +97,6 @@ namespace GR.WebApplication.Extensions
                 {
                     x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
                 });
-
             services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddUrlHelper();
@@ -121,16 +141,6 @@ namespace GR.WebApplication.Extensions
                 options.ErrorResponses = configuration.ApiVersioningOptions.ErrorResponses;
             });
 
-            //----------------------------------------Health Check-------------------------------------
-            services.AddHealthChecks();
-            services.AddDatabaseHealth();
-            //services.AddSeqHealth();
-            services.AddHealthChecksUI("health-gear-database", setup =>
-            {
-                setup.SetEvaluationTimeInSeconds((int)TimeSpan.FromMinutes(2).TotalSeconds);
-                setup.AddHealthCheckEndpoint(GearApplication.SystemConfig.MachineIdentifier, $"{GearApplication.SystemConfig.EntryUri}hc");
-            });
-
             //--------------------------------------Swagger Module-------------------------------------
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
                 services.AddSwaggerModule(configuration.Configuration);
@@ -139,6 +149,10 @@ namespace GR.WebApplication.Extensions
             IoC.Container.Register(Component
                 .For<IMemoryCache>()
                 .Instance(configuration.BuildGearServices.GetService<IMemoryCache>()));
+
+
+            //Type Convertors
+            TypeDescriptor.AddAttributes(typeof(DateTime), new TypeConverterAttribute(typeof(EuDateTimeConvertor)));
 
             return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
@@ -151,6 +165,15 @@ namespace GR.WebApplication.Extensions
         /// <returns></returns>
         public static IGearAppBuilder UseGearWebApp(this IApplicationBuilder app, Action<GearAppBuilderConfig> config)
         {
+            //---------------------------------------Heath Check---------------------------------------
+            app.UseHealthChecks("/hc", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = GearHealthCheckWriter.WriteHealthCheckUiResponse
+            });
+
+            app.UseHealthChecksUI();
+
             var configuration = new GearAppBuilderConfig();
             config(configuration);
 
@@ -173,10 +196,17 @@ namespace GR.WebApplication.Extensions
 
             if (GearApplication.IsHostedOnLinux())
             {
-                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                var forwardOptions = new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                });
+                };
+
+                if (configuration.HostingEnvironment.IsDevelopment())
+                {
+                    forwardOptions.ForwardLimit = 2;
+                }
+
+                app.UseForwardedHeaders(forwardOptions);
             }
 
             if (configuration.HostingEnvironment.IsDevelopment())
@@ -220,15 +250,6 @@ namespace GR.WebApplication.Extensions
 
             //--------------------------------------Use compression-------------------------------------
             if (configuration.UseResponseCompression && configuration.HostingEnvironment.IsProduction()) app.UseResponseCompression();
-
-            //---------------------------------------Heath Check---------------------------------------
-            app.UseHealthChecks("/hc", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
-            app.UseHealthChecksUI();
 
             return new GearAppBuilder(app.ApplicationServices);
         }

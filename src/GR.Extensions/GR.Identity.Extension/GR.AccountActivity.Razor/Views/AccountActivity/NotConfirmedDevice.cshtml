@@ -1,0 +1,128 @@
+@using GR.Core.Razor.Extensions
+@model GR.AccountActivity.Abstractions.Models.UserDevice
+
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>Device not confirmed</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" type="image/png" href="~/favicon.png" asp-append-version="true">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+		  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet"
+		  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+		  integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
+	<link rel="stylesheet" href="~/assets/savecrypto/style.css" asp-append-version="true" />
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+	<style>
+		.h-text {
+			font-size: 42px;
+			font-family: Gilroy-extrabold;
+		}
+
+		.s-text {
+			font-size: 24px;
+			font-family: Gilroy-medium;
+		}
+
+		.resend-info {
+			font-size: 16px;
+			font-family: Gilroy-regular;
+			color: #A3A4AF;
+			max-width: 520px;
+		}
+
+		.device-details span,
+		.device-details p {
+			font-size: 16px;
+			font-family: Gilroy-regular;
+			color: #202443;
+		}
+
+		.device-details span {
+			width: 6em;
+			opacity: 0.8;
+		}
+
+		.device-details div {
+			height: 1.5em;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="forbidden-device-container d-flex justify-content-center" style="height: 100vh;">
+		<img src="~/assets/savecrypto/images/not_confirmed_device_background.png" class="d-flex operation-img align-self-center" style="padding-right: 5em;" />
+		<div class="d-flex flex-column align-self-center p-4">
+			<p class="h-text">Forbidden</p>
+			<p class="s-text">Unconfirmed device</p>
+
+			<div class="device-details d-flex flex-column">
+				<div class="d-flex flex-row">
+					<span>Ip: </span> <p>@Model.IpAddress</p>
+				</div>
+				<div class="d-flex flex-row">
+					<span>Location: </span> <p>@Model.Location</p>
+				</div>
+				<div class="d-flex flex-row">
+					<span>Platform: </span> <p>@Model.Platform</p>
+				</div>
+				<div class="d-flex flex-row">
+					<span>Browser: </span> <p>@Model.Browser</p>
+				</div>
+			</div>
+
+			<span class="resend-info pt-2">If you have not received a confirmation link by email, click on the button below</span>
+			<div class="d-flex flex-row">
+				<a href="#" id="resend" class="btn blue-btn mt-3 align-self-start">Resend</a>
+				<a asp-action="Index" asp-controller="Home" class="btn blue-btn mt-3 align-self-start ml-4">Go to home page</a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="~/lib/jqueryui/jquery-ui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+	<script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+	<script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+	@Html.IncludeCoreJavascriptPlugins()
+
+<script>
+		$(document).ready(() => {
+			const toast = new ToastNotifier();
+			$("#resend").on("click", function () {
+				$.ajax({
+				url: "@Url.Action("SendConfirmNewDeviceMail", "AccountActivityApi")",
+				method:"post",
+				data: {
+					deviceId: "@Model.Id"
+				},
+					success: data => {
+						console.log(data);
+						if (data.is_success) {
+						toast.notify({
+							heading: "Message sent successfully, check mail",
+							icon: "success"
+						});
+					} else {
+						toast.notifyErrorList(data.error_keys);
+					}
+					},
+					error: e => {
+						alert(e);
+					}
+			});
+			});
+		});
+	</script>
+</body>
+</html>

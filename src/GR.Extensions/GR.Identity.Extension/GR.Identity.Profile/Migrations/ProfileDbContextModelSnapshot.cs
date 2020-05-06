@@ -44,8 +44,6 @@ namespace GR.Identity.Profile.Migrations
 
                     b.Property<DateTime>("Created");
 
-                    b.Property<Guid?>("DistrictId");
-
                     b.Property<bool>("IsDefault");
 
                     b.Property<bool>("IsDeleted");
@@ -54,6 +52,8 @@ namespace GR.Identity.Profile.Migrations
 
                     b.Property<string>("Phone")
                         .HasMaxLength(450);
+
+                    b.Property<string>("Region");
 
                     b.Property<Guid>("StateOrProvinceId");
 
@@ -69,8 +69,6 @@ namespace GR.Identity.Profile.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId");
-
-                    b.HasIndex("DistrictId");
 
                     b.HasIndex("StateOrProvinceId");
 
