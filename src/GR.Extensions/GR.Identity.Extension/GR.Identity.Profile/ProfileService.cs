@@ -1,9 +1,15 @@
 ﻿using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Validators;
+using GR.Email.Abstractions.Events;
+using GR.Email.Abstractions.Events.EventArgs;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Profile
 {
@@ -16,18 +22,17 @@ namespace GR.Identity.Profile
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
-
         /// <summary>
-        /// Inject profile context
+        /// Inject http context accessor
         /// </summary>
-        private readonly IProfileContext _profileContext;
+        private readonly IHttpContextAccessor _accessor;
 
         #endregion
 
-        public ProfileService(IProfileContext profileContext, IUserManager<GearUser> userManager)
+        public ProfileService(IUserManager<GearUser> userManager, IHttpContextAccessor accessor)
         {
-            _profileContext = profileContext;
             _userManager = userManager;
+            _accessor = accessor;
         }
 
         /// <summary>
@@ -37,6 +42,9 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel> UpdateBaseUserProfileAsync(UserProfileEditViewModel model)
         {
+            var modelState = ModelValidator.IsValid(model);
+            if (!modelState.IsSuccess) return modelState;
+
             var resultModel = new ResultModel();
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess)
@@ -46,6 +54,19 @@ namespace GR.Identity.Profile
             }
 
             var currentUser = currentUserRequest.Result;
+
+            var isUsed = await _userManager.UserManager
+                .Users.AnyAsync(x => !x.Id.Equals(currentUser.Id)
+                                     && !x.Email.IsNullOrEmpty()
+                                     && x.Email.ToLowerInvariant()
+                                         .Equals(model.Email.ToLowerInvariant()));
+
+            if (isUsed)
+            {
+                resultModel.AddError("Email is used by another user");
+                return resultModel;
+            }
+
             currentUser.FirstName = model.FirstName;
             currentUser.LastName = model.LastName;
             currentUser.Birthday = model.Birthday;
@@ -53,6 +74,15 @@ namespace GR.Identity.Profile
             currentUser.PhoneNumber = model.PhoneNumber;
             currentUser.EmailConfirmed = currentUser.EmailConfirmed && model.Email.Equals(currentUser.Email);
             currentUser.Email = model.Email;
+
+            if (!currentUser.EmailConfirmed)
+            {
+                EmailEvents.Events.TriggerSendConfirmEmail(new SendConfirmEmailEventArgs
+                {
+                    HttpContext = _accessor.HttpContext,
+                    Email = model.Email
+                });
+            }
 
             var result = await _userManager.UserManager.UpdateAsync(currentUser);
             if (result.Succeeded)

@@ -92,7 +92,47 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static bool IsLeapYear(this DateTime value)
         {
-            return (System.DateTime.DaysInMonth(value.Year, 2) == 29);
+            return (DateTime.DaysInMonth(value.Year, 2) == 29);
+        }
+
+        /// <summary>
+        /// Display text date
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public static string DisplayTextDate(this DateTime source, string format = null)
+        {
+            if (format == null)
+            {
+                format = GearSettings.Date.DateFormatWithTime;
+            }
+
+            string text;
+            var duration = DateTime.Now - source;
+
+            if (duration.TotalMinutes < 1)
+            {
+                text = "less than a minute ago";
+            }
+            else if (duration.TotalMinutes < 60)
+            {
+                text = $"about {(int)duration.TotalMinutes} minutes ago";
+            }
+            else if (duration.TotalDays < 1)
+            {
+                text = $"about {(int)duration.TotalHours} hours ago";
+            }
+            else if (duration.TotalDays < 30)
+            {
+                text = $"about {(int)duration.TotalDays} days ago";
+            }
+            else
+            {
+                text = source.ToString(format);
+            }
+
+            return text;
         }
     }
 }

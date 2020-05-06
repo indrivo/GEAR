@@ -44,14 +44,56 @@ namespace GR.Core.Helpers
         /// Add error
         /// </summary>
         /// <param name="error"></param>
-        public virtual void AddError(string error) => Errors?.Add(new ErrorModel(string.Empty, error));
+        public virtual ResultModel<T> AddError(string error)
+        {
+            Errors?.Add(new ErrorModel(string.Empty, error));
+            return this;
+        }
 
         /// <summary>
         /// Add error
         /// </summary>
         /// <param name="key"></param>
         /// <param name="error"></param>
-        public virtual void AddError(string key, string error) => Errors?.Add(new ErrorModel(key, error));
+        public virtual ResultModel<T> AddError(string key, string error)
+        {
+            Errors?.Add(new ErrorModel(key, error));
+            return this;
+        }
+
+        /// <summary>
+        /// Add error from results
+        /// </summary>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        public virtual ResultModel<T> JoinResults<TIn>(IEnumerable<ResultModel<TIn>> results)
+        {
+            var collection = results.ToList();
+            var response = new ResultModel<T>
+            {
+                IsSuccess = collection.All(x => x.IsSuccess)
+            };
+            foreach (var result in collection)
+            {
+                foreach (var error in result.Errors)
+                {
+                    response.Errors.Add(error);
+                }
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Set result
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public virtual ResultModel<T> SetResult(T result)
+        {
+            Result = result;
+            return this;
+        }
 
         /// <summary>
         /// Has error code

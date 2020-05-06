@@ -555,24 +555,6 @@ namespace GR.Identity.Users.Razor.Controllers
         }
 
         /// <summary>
-        /// Get user by id
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult GetUserById([Required] Guid userId)
-        {
-            var user = _identityContext.Users.FirstOrDefault(x => x.Id == userId);
-            return Json(new ResultModel
-            {
-                IsSuccess = true,
-                Result = user
-            });
-        }
-
-        /// <summary>
         /// Get user image
         /// </summary>
         /// <param name="id"></param>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace GR.Identity.Abstractions.Events.EventArgs.Authorization
 {
@@ -9,5 +10,6 @@ namespace GR.Identity.Abstractions.Events.EventArgs.Authorization
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        public HttpContext HttpContext { get; set; }
     }
 }

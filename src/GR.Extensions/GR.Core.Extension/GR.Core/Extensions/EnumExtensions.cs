@@ -9,7 +9,6 @@ namespace GR.Core.Extensions
         /// <summary>
         /// Get enum definition
         /// </summary>
-        /// <param name="enm"></param>
         /// <param name="enumType"></param>
         /// <returns></returns>
         public static Dictionary<int, string> GetEnumDefinition(this Type enumType)

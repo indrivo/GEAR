@@ -7,6 +7,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.Core.Razor.BaseControllers;
+using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models.Countries;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Localization.Api.Controllers
 {
+    [JsonApiExceptionFilter]
     [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("api/country/[action]")]
     public class CountryApiController : BaseGearController

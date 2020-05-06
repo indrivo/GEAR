@@ -33,7 +33,7 @@ namespace GR.Core.Extensions
         public static IQueryable<TSource> FilterSourceByTextExpression<TSource>(this IQueryable<TSource> source, string toSearch)
         {
             var props = typeof(TSource).GetTypeProprietiesByType(typeof(string)).ToList();
-            return !props.Any() ? source : source.Where(t => FindExpression(t, toSearch, props.Select(x => x.Name)));
+            return !props.Any() ? source : source.Where(t => FindExpression(t, toSearch.Trim().ToLowerInvariant(), props.Select(x => x.Name)));
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace GR.Core.Extensions
             delegate (object o, string exp, IEnumerable<string> props)
             {
                 var values = props.Select(o.GetStringPropertyValue).ToList();
-                return values.Any(c => c.Contains(exp));
+                return values.Any(c => c.ToLowerInvariant().Contains(exp));
             };
 
         #endregion

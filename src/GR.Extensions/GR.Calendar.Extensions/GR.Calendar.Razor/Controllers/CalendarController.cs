@@ -272,14 +272,14 @@ namespace GR.Calendar.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<UserInfoViewModel>>))]
         public JsonResult GetOrganizationUsers()
         {
             var users = _organizationService.GetAllowedUsersByOrganizationId(_userManager.CurrentUserTenantId.GetValueOrDefault());
             return Json(new ResultModel
             {
                 IsSuccess = true,
-                Result = users.Select(x => new SampleGetUserViewModel(x))
+                Result = users.Select(x => new UserInfoViewModel(x))
             });
         }
 

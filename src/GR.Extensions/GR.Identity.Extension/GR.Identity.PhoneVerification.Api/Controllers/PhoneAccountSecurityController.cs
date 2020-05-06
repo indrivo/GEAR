@@ -4,18 +4,20 @@ using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
+using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.PhoneVerification.Abstractions;
-using GR.Identity.PhoneVerification.Abstractions.Helpers.Enums;
+using GR.Identity.PhoneVerification.Abstractions.Helpers;
 using GR.Identity.PhoneVerification.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace GR.Identity.PhoneVerification.Api.Controllers
 {
+    [JsonApiExceptionFilter]
     [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     [Route("/api/[controller]/[action]"), Produces("application/json")]
     public sealed class PhoneAccountSecurityController : BaseGearController
@@ -63,6 +65,12 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
         {
             var response = new ResultModel();
             if (!ModelState.IsValid) return JsonModelStateErrors();
+            var validPhone = await _authy.ValidatePhoneAsync(verificationRequest.CountryCode, verificationRequest.PhoneNumber);
+            if (!validPhone.IsSuccess) return Json(validPhone.ToBase());
+
+            var isUsedPhoneCheck = await _authy.CheckIfPhoneIsUsedByAnotherUserAsync(validPhone.Result);
+            if (!isUsedPhoneCheck.IsSuccess) return Json(isUsedPhoneCheck);
+
             var userName = _authy.NormalizePhoneNumber(verificationRequest.CountryCode, verificationRequest.PhoneNumber);
             var user = await _userManager.UserManager.FindByNameAsync(userName);
             if (user != null)
@@ -106,15 +114,6 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
 
             if (!validationResult.IsSuccess) return Json(validationResult);
             var phone = _authy.NormalizePhoneNumber(verificationRequest.CountryCode, verificationRequest.PhoneNumber);
-            var createRequest = await _userManager.CreateUserAsync(new GearUser
-            {
-                PhoneNumber = phone,
-                UserName = phone,
-                IsEditable = true,
-                PhoneNumberConfirmed = true
-            }, verificationRequest.Pin);
-
-            if (!createRequest.IsSuccess) return Json(createRequest);
             var addNewUserRequest = await _authy.RegisterUserAsync(new RegisterViewModel
             {
                 CountryCode = verificationRequest.CountryCode,
@@ -123,24 +122,70 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
                 UserName = verificationRequest.PhoneNumber
             });
 
-            return Json(!addNewUserRequest.IsSuccess ? addNewUserRequest : validationResult);
+            if (!addNewUserRequest.IsSuccess) return Json(addNewUserRequest);
+
+            var user = new GearUser
+            {
+                PhoneNumber = phone,
+                UserName = phone,
+                IsEditable = true,
+                PhoneNumberConfirmed = true
+            };
+
+            var createRequest = await _userManager.CreateUserAsync(user, verificationRequest.Pin);
+
+            if (!createRequest.IsSuccess)
+                return !createRequest.IsSuccess ? Json(createRequest) : Json(validationResult);
+
+            var setTokenResult = await _userManager
+                .UserManager
+                .SetAuthenticationTokenAsync(user, PhoneVerificationResources.LOGIN_PROVIDER_NAME, PhoneVerificationResources.AUTHY_TOKEN,
+                    addNewUserRequest.Result);
+            if (setTokenResult.Succeeded) return !createRequest.IsSuccess ? Json(createRequest) : Json(validationResult);
+            var tokenResponse = new ResultModel();
+            tokenResponse.AppendIdentityErrors(setTokenResult.Errors);
+            return Json(tokenResponse);
         }
 
-
+        /// <summary>
+        /// Send token
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> Verify(TokenVerificationModel data)
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<string>))]
+        public async Task<JsonResult> SendTwoFactorAuthToken()
         {
-            var currentUser = await _userManager.UserManager.GetUserAsync(User);
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return Json(userRequest);
+            var tokenRequest = await _authy.GetUserAuthyTokenAsync(userRequest.Result);
+            if (!tokenRequest.IsSuccess) return Json(tokenRequest);
+            var result = await _authy.SendSmsAsync(tokenRequest.Result);
+            return Json(result);
+        }
 
+        /// <summary>
+        /// Authorize with
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public async Task<JsonResult> AuthorizeWithSmsToken(TokenVerificationModel data)
+        {
             if (!ModelState.IsValid) return JsonModelStateErrors();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return Json(userRequest);
+            var currentUser = userRequest.Result;
             ResultModel<string> result;
-
+            var authyToken = await _authy.GetUserAuthyTokenAsync(currentUser);
+            if (!authyToken.IsSuccess) return Json(authyToken);
             if (data.Token.Length > 4)
             {
-                result = await _authy.VerifyTokenAsync(currentUser.Id.ToString(), data.Token);
+                result = await _authy.VerifyTokenAsync(authyToken.Result, data.Token);
             }
             else
             {
+                //TODO: Extract phone and code from phone number
                 result = await _authy.VerifyPhoneTokenAsync(currentUser.PhoneNumber, "MD", data.Token);
             }
 
@@ -148,52 +193,6 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
 
             if (!result.IsSuccess) return Json(result);
             await AddTokenVerificationClaim(currentUser);
-            return Json(result);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> Sms()
-        {
-            var currentUser = await _userManager.UserManager.GetUserAsync(User);
-            var result = await _authy.SendSmsAsync(currentUser.Id.ToString());
-            return Json(result);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> Voice()
-        {
-            var currentUser = await _userManager.UserManager.GetUserAsync(User);
-            var result = await _authy.PhoneVerificationRequestAsync(
-                "MD",
-                currentUser.PhoneNumber,
-                VerificationMethod.Call
-            );
-            return Json(result);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> OneTouch()
-        {
-            var currentUser = await _userManager.UserManager.GetUserAsync(User);
-            var oneTouchUuid = await _authy.CreateApprovalRequestAsync(currentUser.Id.ToString());
-            HttpContext.Session.Set("onetouch_uuid", oneTouchUuid);
-            return Json(oneTouchUuid);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> OneTouchStatus()
-        {
-            var currentUser = await _userManager.UserManager.GetUserAsync(this.User);
-            var oneTouchUuid = HttpContext.Session.Get<string>("onetouch_uuid");
-
-            var result = await _authy.CheckRequestStatusAsync(oneTouchUuid);
-            var data = (JObject)result;
-            var approvalRequestStatus = (string)data["approval_request"]["status"];
-
-            if (approvalRequestStatus != "approved") return Json(result);
-            await AddTokenVerificationClaim(currentUser);
-            await _userManager.UserManager.UpdateAsync(currentUser);
-
             return Json(result);
         }
 

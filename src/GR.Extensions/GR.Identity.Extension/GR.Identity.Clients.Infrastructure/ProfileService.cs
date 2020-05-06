@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -77,12 +78,17 @@ namespace GR.Identity.Clients.Infrastructure
                     }
                 }
 
-                context.IsActive =
-                    !user.IsPasswordExpired() ||
-                    !user.IsDisabled ||
-                    !user.LockoutEnabled ||
-                    !user.LockoutEnd.HasValue ||
-                    user.LockoutEnd <= DateTime.UtcNow;
+                if (user.IsDeleted || user.IsPasswordExpired())
+                {
+                    context.IsActive = false;
+                }
+                else
+                {
+                    context.IsActive =
+                        !user.LockoutEnabled ||
+                        !user.LockoutEnd.HasValue ||
+                        user.LockoutEnd <= DateTime.UtcNow;
+                }
             }
         }
 
@@ -99,7 +105,9 @@ namespace GR.Identity.Clients.Infrastructure
                 new Claim(JwtClaimTypes.Subject, user.Id.ToString()),
                 new Claim(JwtClaimTypes.Name, user.UserName),
                 new Claim(GearClaimTypes.Tenant, user.TenantId?.ToString() ?? string.Empty),
-                new Claim(GearClaimTypes.UserPhotoUrl, $"/Users/GetImage?id={user.Id}")
+                new Claim(GearClaimTypes.IsDisabled, user.IsDisabled.ToString()),
+                new Claim(GearClaimTypes.UserPhotoUrl, $"/Users/GetImage?id={user.Id}"),
+                new Claim(GearClaimTypes.BirthDay, user.Birthday.ToString(CultureInfo.InvariantCulture))
             };
             var identityRequestResources = context.RequestedResources?.IdentityResources?.Select(x => x.Name).ToList() ?? new List<string>();
             if (identityRequestResources.Contains("email"))

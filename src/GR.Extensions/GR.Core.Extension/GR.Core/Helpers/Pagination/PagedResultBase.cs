@@ -37,6 +37,11 @@ namespace GR.Core.Helpers.Pagination
         /// </summary>
         public virtual int RowCount { get; set; }
 
+        /// <summary>
+        /// Total non filtered
+        /// </summary>
+        public virtual int TotalNonFiltered { get; set; }
+
         public virtual int FirstRowOnPage => (CurrentPage - 1) * PageSize + 1;
 
         public virtual int LastRowOnPage => Math.Min(CurrentPage * PageSize, RowCount);

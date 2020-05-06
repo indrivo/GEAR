@@ -7,14 +7,14 @@
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<IsPackable>false</IsPackable>
 	<LangVersion>7.3</LangVersion>
-	<Version>1.9.3</Version>
+	<Version>1.9.4</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Indrivo</Company>
 	<Product>Gear</Product>
 	<Description>Web project that is responsible for coupling all modules</Description>
 	<Copyright>Indrivo 2019</Copyright>
-	<FileVersion>1.9.3</FileVersion>
-	<AssemblyVersion>1.9.3</AssemblyVersion>
+	<FileVersion>1.9.4</FileVersion>
+	<AssemblyVersion>1.9.4</AssemblyVersion>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	<GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
 	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
@@ -76,6 +76,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files\GR.Files.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms.Razor\GR.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms\GR.Forms.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.AccountActivity.Abstractions\GR.AccountActivity.Abstractions.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.AccountActivity.Impl\GR.AccountActivity.Impl.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Infrastructure\GR.Identity.Clients.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Razor\GR.Identity.Clients.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Api\GR.Identity.Groups.Api.csproj" />

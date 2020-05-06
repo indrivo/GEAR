@@ -21,5 +21,15 @@
         /// Last name
         /// </summary>
         public static string LastName = "lastName";
+
+        /// <summary>
+        /// Birth day claim
+        /// </summary>
+        public static string BirthDay = "birthDay";
+        
+        /// <summary>
+        /// Is disabled
+        /// </summary>
+        public static string IsDisabled = "isDisabled";
     }
 }

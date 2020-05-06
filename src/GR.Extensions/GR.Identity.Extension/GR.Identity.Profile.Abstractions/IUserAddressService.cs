@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
+using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 
 namespace GR.Identity.Profile.Abstractions
 {
@@ -49,5 +49,11 @@ namespace GR.Identity.Profile.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateUserAddressAsync(EditUserProfileAddressViewModel model);
+
+        /// <summary>
+        /// Get default address
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync();
     }
 }

@@ -49,8 +49,6 @@ namespace GR.Identity.Profile.Data
         public virtual DbSet<Country> Countries { get; set; }
         [NotMapped]
         public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
-        [NotMapped]
-        public virtual DbSet<District> Districts { get; set; }
 
         #endregion
 
@@ -73,10 +71,8 @@ namespace GR.Identity.Profile.Data
 
             builder.Entity<Country>().ToTable("Countries", CountrySchema);
             builder.Entity<StateOrProvince>().ToTable("StateOrProvinces", CountrySchema);
-            builder.Entity<District>().ToTable("Districts", CountrySchema);
             builder.Entity<Address>().HasIndex(x => x.CountryId);
             builder.Entity<Address>().HasIndex(x => x.StateOrProvinceId);
-            builder.Entity<Address>().HasIndex(x => x.DistrictId);
             builder.Entity<Address>().HasIndex(x => x.UserId);
 
             builder.Entity<GearUser>().ToTable("Users", Schema);
@@ -85,7 +81,6 @@ namespace GR.Identity.Profile.Data
             {
                 builder.Ignore<Country>();
                 builder.Ignore<StateOrProvince>();
-                builder.Ignore<District>();
 
                 builder.Ignore<GearUser>();
 

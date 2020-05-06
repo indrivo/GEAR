@@ -90,16 +90,59 @@ namespace GR.Identity
         public virtual async Task<ResultModel<Guid>> CreateUserAsync(GearUser user, string password)
         {
             if (user == null) return new InvalidParametersResultModel<Guid>();
+            if (!user.Email.IsNullOrEmpty())
+            {
+                var emailUser = await UserManager.FindByEmailAsync(user.Email);
+                if (emailUser != null)
+                {
+                    var emailFailResponse = new ResultModel<Guid>();
+                    emailFailResponse.AddError($"User with {user.Email.ToLowerInvariant()} email already exists");
+                    return emailFailResponse;
+                }
+            }
+
             var createResponse = await UserManager.CreateAsync(user, password);
             var response = createResponse.ToResultModel<Guid>();
             response.Result = user.Id;
+
             if (response.IsSuccess)
             {
                 await AddDefaultRoles(user);
+                IdentityEvents.Users.UserCreated(new UserCreatedEventArgs
+                {
+                    Email = user.Email,
+                    UserId = user.Id,
+                    UserName = user.UserName
+                });
             }
             return response;
         }
 
+        /// <summary>
+        /// Find user id in claims
+        /// </summary>
+        /// <returns></returns>
+        public virtual ResultModel<Guid> FindUserIdInClaims()
+        {
+            var result = new ResultModel<Guid>();
+            if (_httpContextAccessor.HttpContext == null || !_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            {
+                result.Errors.Add(new ErrorModel("", "Unauthorized user"));
+                return result;
+            }
+            var nameIdentifierClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (nameIdentifierClaim != null)
+            {
+                result.IsSuccess = true;
+                result.Result = nameIdentifierClaim.Value.ToGuid();
+                return result;
+            }
+
+            var id = UserManager.GetUserId(_httpContextAccessor.HttpContext.User).ToGuid();
+            result.IsSuccess = id != Guid.Empty;
+            result.Result = id;
+            return result;
+        }
 
         /// <inheritdoc />
         /// <summary>
@@ -274,6 +317,22 @@ namespace GR.Identity
         }
 
         /// <summary>
+        /// Delete user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DeleteUserAsync(Guid? userId)
+            => await IdentityContext.DisableRecordAsync<GearUser>(userId);
+
+        /// <summary>
+        /// Restore user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RestoreUserAsync(Guid? userId)
+            => await IdentityContext.ActivateRecordAsync<GearUser>(userId);
+
+        /// <summary>
         /// Set editable status
         /// </summary>
         /// <param name="userId"></param>
@@ -313,14 +372,14 @@ namespace GR.Identity
         /// </summary>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<SampleGetUserViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName)
+        public async Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName)
         {
-            if (roleName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<SampleGetUserViewModel>>();
+            if (roleName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<UserInfoViewModel>>();
             var currentUserRequest = await GetCurrentUserAsync();
-            if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<SampleGetUserViewModel>>();
+            if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<UserInfoViewModel>>();
             var allUsers = await UserManager.GetUsersInRoleAsync(roleName);
-            var filterUsers = allUsers.Where(x => x.TenantId.Equals(currentUserRequest.Result.TenantId)).Select(x => new SampleGetUserViewModel(x)).ToList();
-            return new SuccessResultModel<IEnumerable<SampleGetUserViewModel>>(filterUsers);
+            var filterUsers = allUsers.Where(x => x.TenantId.Equals(currentUserRequest.Result.TenantId)).Select(x => new UserInfoViewModel(x)).ToList();
+            return new SuccessResultModel<IEnumerable<UserInfoViewModel>>(filterUsers);
         }
 
         /// <summary>
@@ -481,6 +540,34 @@ namespace GR.Identity
         }
 
         /// <summary>
+        /// Remove user photo
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RemoveUserPhotoAsync()
+        {
+            var resultModel = new ResultModel();
+            var currentUser = (await GetCurrentUserAsync()).Result;
+            if (currentUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                return resultModel;
+            }
+
+            currentUser.UserPhoto = null;
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return resultModel;
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.AppendIdentityErrors(result.Errors);
+            return resultModel;
+        }
+
+        /// <summary>
         /// Get users with pagination
         /// </summary>
         /// <param name="parameters"></param>
@@ -519,6 +606,40 @@ namespace GR.Identity
             };
 
             return finalResult;
+        }
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeUserPasswordAsync(string current, string next)
+        {
+            var resultModel = new ResultModel();
+            var currentUser = (await GetCurrentUserAsync()).Result;
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                return resultModel;
+            }
+
+            var result = await UserManager.ChangePasswordAsync(currentUser, current, next);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
+                {
+                    Email = currentUser.Email,
+                    UserName = currentUser.UserName,
+                    UserId = currentUser.Id,
+                    Password = next
+                });
+                return resultModel;
+            }
+
+            resultModel.AppendIdentityErrors(result.Errors);
+            return resultModel;
         }
         #region Helpers
 

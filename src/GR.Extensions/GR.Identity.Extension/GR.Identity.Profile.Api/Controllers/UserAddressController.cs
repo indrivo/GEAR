@@ -4,14 +4,16 @@ using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
+using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions.Helpers.Attributes;
-using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
+using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Identity.Profile.Api.Controllers
 {
+    [JsonApiExceptionFilter]
     [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
     public class UserAddressController : BaseGearController
     {
@@ -35,7 +37,17 @@ namespace GR.Identity.Profile.Api.Controllers
         /// <returns></returns>
         [HttpGet, Route(DefaultApiRouteTemplate)]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<Address>>))]
-        public async Task<JsonResult> GetUserAddresses() => Json(await _addressService.GetUserAddressesAsync());
+        public async Task<JsonResult> GetUserAddresses()
+            => await JsonAsync(_addressService.GetUserAddressesAsync());
+
+        /// <summary>
+        /// Get default user address
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route(DefaultApiRouteTemplate)]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<GetUserAddressViewModel>))]
+        public async Task<JsonResult> GetDefaultUserAddress()
+            => await JsonAsync(_addressService.GetDefaultAddressAsync());
 
         /// <summary>
         /// Add new address
