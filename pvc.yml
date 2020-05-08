@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ name }}"
+  namespace: development
+spec:
+  accessModes:
+    - ReadWriteOnce # Access modes for volumes is defined under Persistent Volumes
+  storageClassName: nfs-client
+  resources:
+    requests:
+      storage: "{{ size }}" # volume size requested

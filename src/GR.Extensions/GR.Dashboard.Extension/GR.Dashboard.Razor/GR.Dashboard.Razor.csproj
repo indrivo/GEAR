@@ -14,6 +14,8 @@
 - Fix custom preset for widgets</PackageReleaseNotes>
     <AssemblyVersion>1.9.4</AssemblyVersion>
     <FileVersion>1.9.4</FileVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

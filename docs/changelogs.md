@@ -1,3 +1,5 @@
+# Change logs
+
 v.1.9.4 - Lupei Nicolae May 2020
 * add user activity module
 * add phone verification module
@@ -20,6 +22,11 @@ v.1.9.4 - Lupei Nicolae May 2020
 * fix user address service
 * use and create mappers for dto
 * add api for user
+* remove districts from localization module
+* add structure for read docs reading
+* refact docs files
+* generate xml comments for all projects and bind on swagger
+* add configuration to generate xml comments
 
 v.1.9.3 - Lupei Nicolae April 2020
 * separe groups module from identity

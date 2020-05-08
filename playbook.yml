@@ -1,0 +1,20 @@
+- hosts: localhost
+  tasks:
+  - name: Deploy the volume
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'pvc.yml') | from_yaml }}"
+      validate_certs: no
+      namespace: development
+  - name: Deploy the service
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'service.yml') | from_yaml }}"
+      validate_certs: no
+      namespace: development
+  - name: Deploy the application
+    k8s:
+      state: present
+      validate_certs: no
+      namespace: development
+      definition: "{{ lookup('template', 'deployment.yml') | from_yaml }}"

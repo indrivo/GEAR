@@ -11,7 +11,8 @@
     <Configurations>Debug;Release;Stage</Configurations>
     <FileVersion>1.9.4</FileVersion>
     <AssemblyVersion>1.9.4</AssemblyVersion>
-
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BPMN.Sharp">

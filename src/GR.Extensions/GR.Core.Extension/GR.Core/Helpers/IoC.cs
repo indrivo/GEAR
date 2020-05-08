@@ -16,17 +16,6 @@ namespace GR.Core.Helpers
         /// </summary>
         public static IWindsorContainer Container => Singleton<IWindsorContainer, WindsorContainer>.Instance;
 
-        ///// <summary>
-        ///// IoC container
-        ///// </summary>
-        //private static IWindsorContainer _container;
-
-        ///// <summary>
-        ///// Container resolver
-        ///// </summary>
-        //public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
-
-
         /// <summary>
         /// Register new service
         /// </summary>
@@ -37,6 +26,19 @@ namespace GR.Core.Helpers
             Container.Register(Component.For<TAbstraction>()
                     .ImplementedBy(provider)
                     .Named(providerName));
+        }
+
+        /// <summary>
+        /// Register new service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        public static void RegisterSingletonService<TAbstraction>(string providerName, Type provider) where TAbstraction : class
+        {
+            if (providerName.IsNullOrEmpty()) throw new Exception("Provider name must be not null");
+            Container.Register(Component.For<TAbstraction>()
+                .ImplementedBy(provider)
+                .Named(providerName)
+                .LifestyleSingleton());
         }
 
         /// <summary>
@@ -90,6 +92,18 @@ namespace GR.Core.Helpers
             if (!IsServiceRegistered<TAbstraction>())
                 Container.Register(Component.For<TAbstraction>()
                     .ImplementedBy<TImplementation>()
+                    .LifestyleSingleton());
+        }
+
+        /// <summary>
+        /// Register singleton
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        public static void RegisterSingletonService<TService>() where TService : class
+        {
+            if (!IsServiceRegistered<TService>())
+                Container.Register(Component.For<TService>()
+                    .ImplementedBy<TService>()
                     .LifestyleSingleton());
         }
 

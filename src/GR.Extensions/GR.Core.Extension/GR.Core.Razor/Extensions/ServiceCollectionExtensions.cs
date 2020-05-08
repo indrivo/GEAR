@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using GR.Core.Razor.Helpers;
 using GR.Core.Razor.Helpers.Filters;
 using Microsoft.AspNetCore.Builder;
@@ -73,8 +73,11 @@ namespace GR.Core.Razor.Extensions
                 });
                 options.OperationFilter<SwaggerAuthorizeCheckOperationFilter>();
                 // Integrate XML comments
-                if (File.Exists(XmlCommentsFilePath))
-                    options.IncludeXmlComments(XmlCommentsFilePath);
+                var xmlCommentsFiles = GetXmlCommentsPaths();
+                foreach (var xmlCommentsFile in xmlCommentsFiles)
+                {
+                    options.IncludeXmlComments(xmlCommentsFile);
+                }
             });
             return services;
         }
@@ -113,15 +116,18 @@ namespace GR.Core.Razor.Extensions
         }
 
         /// <summary>
-        /// XML Comments File path
+        /// Get xml comments
         /// </summary>
-        private static string XmlCommentsFilePath
+        /// <returns></returns>
+        private static IEnumerable<string> GetXmlCommentsPaths()
         {
-            get
+            var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
             {
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var fileName = typeof(ServiceCollectionExtensions).GetTypeInfo().Assembly.GetName().Name + ".xml";
-                return Path.Combine(basePath, fileName);
+                var fileName = assembly.GetName().Name + ".xml";
+                var path = Path.Combine(basePath, fileName);
+                if (File.Exists(path)) yield return path;
             }
         }
     }
