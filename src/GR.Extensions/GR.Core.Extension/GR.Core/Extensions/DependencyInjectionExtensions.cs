@@ -26,6 +26,23 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Add singleton service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddGearSingleton<TService>(this IServiceCollection services)
+            where TService : class
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services.AddSingleton<TService>();
+            IoC.RegisterSingletonService<TService>();
+            return services;
+        }
+
+        /// <summary>
         /// Add transient service
         /// </summary>
         /// <typeparam name="TService"></typeparam>

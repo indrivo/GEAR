@@ -10,6 +10,8 @@
     <PackageReleaseNotes>-Add entities for commerce</PackageReleaseNotes>
     <FileVersion>1.9.4</FileVersion>
     <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

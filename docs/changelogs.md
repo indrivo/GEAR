@@ -23,6 +23,10 @@ v.1.9.4 - Lupei Nicolae May 2020
 * use and create mappers for dto
 * add api for user
 * remove districts from localization module
+* add structure for read docs reading
+* refact docs files
+* generate xml comments for all projects and bind on swagger
+* add configuration to generate xml comments
 
 v.1.9.3 - Lupei Nicolae April 2020
 * separe groups module from identity

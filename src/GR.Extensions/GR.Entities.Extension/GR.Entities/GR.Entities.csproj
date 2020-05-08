@@ -11,15 +11,13 @@
     <Configurations>Debug;Release;Stage</Configurations>
     <FileVersion>1.9.4</FileVersion>
     <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Seed\**" />
     <EmbeddedResource Remove="Seed\**" />
     <None Remove="Seed\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Migrations\20190815131046_EntitiesDbContext_EntitySecurity_Initial.cs" />
-    <Compile Remove="Migrations\20190815131046_EntitiesDbContext_EntitySecurity_Initial.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
