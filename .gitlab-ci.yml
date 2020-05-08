@@ -4,9 +4,6 @@ stages:
   - test
   - deploy_to_nuget
 
-cache:
-  paths:
-    - src/GR.WebHosts/GR.Cms/wwwroot/lib/
 test_projects:
   stage: test
   script:
@@ -14,7 +11,7 @@ test_projects:
     - dotnet build ./GR.sln
     - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
 
-#deploy_to_nuget_job:
+deploy_to_nuget_job:
   stage: deploy_to_nuget
   only: 
     - master

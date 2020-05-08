@@ -1,0 +1,58 @@
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<link rel="icon" type="image/png" href="~/favicon.png" asp-append-version="true">
+	<title>Fail to confirm device</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet"
+	      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+	      integrity="sha256-siyOpF/pBWUPgIcQi17TLBkjvNgNQArcmwJB8YvkAgg=" crossorigin="anonymous" />
+	<link rel="stylesheet" href="~/assets/savecrypto/style.css" asp-append-version="true" />
+	<style>
+		.blue-btn {
+			height: 2em;
+			max-width: max-content;
+		}
+
+		.operation-img {
+			width: 172px;
+			height: 172px;
+		}
+
+		.h-text {
+			font-size: 28px;
+			font-family: Gilroy-medium;
+			color: #202443;
+			text-align: center;
+		}
+
+		.s-text {
+			font-size: 16px;
+			font-family: Gilroy-medium;
+			color: #202443;
+			opacity: 0.5;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+<div class="d-flex flex-column justify-content-center" style="height: 100vh;">
+	<img src="~/assets/savecrypto/images/operationSuccess.png" class="d-flex operation-img align-self-center" />
+	<div class="d-flex flex-column align-self-center p-4">
+		<p class="h-text">Device not confirmed</p>
+		<p class="s-text">An invalid link or system problem has been received, contact your administrator</p>
+
+		<a href="/Home" class="btn blue-btn mt-5 align-self-center">Redirect to home</a>
+	</div>
+</div>
+</body>
+</html>

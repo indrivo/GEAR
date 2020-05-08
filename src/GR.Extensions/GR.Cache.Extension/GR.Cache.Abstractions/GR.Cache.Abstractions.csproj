@@ -5,10 +5,12 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <Version>1.9.3</Version>
+    <Version>1.9.4</Version>
     <PackageReleaseNotes>-Add in memory cache provider</PackageReleaseNotes>
-    <FileVersion>1.9.3</FileVersion>
-    <AssemblyVersion>1.9.3</AssemblyVersion>
+    <FileVersion>1.9.4</FileVersion>
+    <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

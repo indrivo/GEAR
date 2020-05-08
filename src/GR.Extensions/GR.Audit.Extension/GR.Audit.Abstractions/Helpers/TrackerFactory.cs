@@ -54,15 +54,15 @@ namespace GR.Audit.Abstractions.Helpers
                     switch (entity.State)
                     {
                         case EntityState.Added:
-                            model.Created = DateTime.UtcNow;
-                            model.Changed = DateTime.UtcNow;
+                            model.Created = DateTime.Now;
+                            model.Changed = DateTime.Now;
                             model.Author = currentUsername;
                             model.ModifiedBy = currentUsername;
                             model.TenantId = model.TenantId ?? tenantId;
                             model.Version = 1;
                             break;
                         case EntityState.Modified:
-                            model.Changed = DateTime.UtcNow;
+                            model.Changed = DateTime.Now;
                             model.ModifiedBy = currentUsername;
                             if (model.TenantId == Guid.Empty) model.TenantId = tenantId;
                             ++model.Version;

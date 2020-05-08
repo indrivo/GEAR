@@ -26,7 +26,6 @@ namespace GR.Localization.Data
 
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
-        public virtual DbSet<District> Districts { get; set; }
 
         #endregion
 

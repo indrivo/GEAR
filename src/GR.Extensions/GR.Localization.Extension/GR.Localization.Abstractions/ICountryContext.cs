@@ -8,6 +8,5 @@ namespace GR.Localization.Abstractions
     {
         DbSet<Country> Countries { get; set; }
         DbSet<StateOrProvince> StateOrProvinces { get; set; }
-        DbSet<District> Districts { get; set; }
     }
 }

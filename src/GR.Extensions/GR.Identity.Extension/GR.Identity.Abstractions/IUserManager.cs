@@ -114,7 +114,7 @@ namespace GR.Identity.Abstractions
         /// <param name="roleName"></param>
         /// <returns></returns>
 
-        Task<ResultModel<IEnumerable<SampleGetUserViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName);
+        Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName);
 
         /// <summary>
         /// Find roles by id
@@ -173,5 +173,39 @@ namespace GR.Identity.Abstractions
         /// <param name="parameters"></param>
         /// <returns></returns>
         Task<DTResult<UserListItemViewModel>> GetAllUsersWithPaginationAsync(DTParameters parameters);
+
+        /// <summary>
+        /// Find user id in claims
+        /// </summary>
+        /// <returns></returns>
+        ResultModel<Guid> FindUserIdInClaims();
+
+        /// <summary>
+        /// Delete user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteUserAsync(Guid? userId);
+
+        /// <summary>
+        /// Restore user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RestoreUserAsync(Guid? userId);
+
+        /// <summary>
+        /// Remove user photo
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel> RemoveUserPhotoAsync();
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeUserPasswordAsync(string current, string next);
     }
 }

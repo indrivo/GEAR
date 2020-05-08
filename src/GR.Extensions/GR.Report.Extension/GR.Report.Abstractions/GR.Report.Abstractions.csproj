@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.9.3</Version>
+    <Version>1.9.4</Version>
     <Authors>Alexandru Donici</Authors>
     <Company>Indrivo</Company>
     <Description>Gear report builder abstractions</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>report builder gear .net core</PackageTags>
     <PackageReleaseNotes />
-    <FileVersion>1.9.3</FileVersion>
-    <AssemblyVersion>1.9.3</AssemblyVersion>
+    <FileVersion>1.9.4</FileVersion>
+    <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

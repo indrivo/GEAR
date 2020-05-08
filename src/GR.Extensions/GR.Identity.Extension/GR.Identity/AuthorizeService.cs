@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Core;
@@ -63,7 +64,7 @@ namespace GR.Identity
             {
                 if (user.IsDeleted)
                 {
-                    response.Errors.Add(new ErrorModel(string.Empty, "User is disabled by admin."));
+                    response.Errors.Add(new ErrorModel(string.Empty, "The user is deleted and cannot log in"));
                     return response;
                 }
 
@@ -74,7 +75,7 @@ namespace GR.Identity
                     return response;
                 }
 
-                await ClearUserClaimsAsync(user);
+
                 var result =
                     await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe,
                         false);
@@ -93,9 +94,14 @@ namespace GR.Identity
                         LastName = user.LastName
                     });
 
-                    var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId?.ToString());
+                    var claims = await _userManager.UserManager.GetClaimsAsync(user);
+                    var exist = claims.Any(x => x.Type.Equals(nameof(Tenant).ToLowerInvariant()));
+                    if (!exist)
+                    {
+                        var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId?.ToString());
+                        await _userManager.UserManager.AddClaimAsync(user, claim);
+                    }
 
-                    await _userManager.UserManager.AddClaimAsync(user, claim);
                     response.IsSuccess = true;
                     return response;
                 }
@@ -105,6 +111,25 @@ namespace GR.Identity
             }
 
             response.Errors.Add(new ErrorModel(string.Empty, "Invalid credentials!"));
+            return response;
+        }
+
+        /// <summary>
+        /// Check password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> CheckPasswordAsync(LoginViewModel model)
+        {
+            var response = new ResultModel();
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName);
+            if (user == null)
+            {
+                response.AddError("User not found");
+                return response;
+            }
+            var checkPassword = await _userManager.UserManager.CheckPasswordAsync(user, model.Password);
+            response.IsSuccess = checkPassword;
             return response;
         }
 

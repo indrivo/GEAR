@@ -1,5 +1,9 @@
 using System;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace GR.Core.Extensions
 {
@@ -58,6 +62,54 @@ namespace GR.Core.Extensions
             {
                 ctx.Response.Cookies.Delete(cookie);
             }
+        }
+
+        /// <summary>
+        /// Is local ip address
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns></returns>
+        public static bool IsLocalIpAddress(this IPAddress ipAddress)
+        {
+            try
+            {
+                // get local IP addresses
+                var localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+                // is localhost
+                if (IPAddress.IsLoopback(ipAddress)) return true;
+                // is local address
+                if (localIPs.Contains(ipAddress)) return true;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Create a link action
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="actionName"></param>
+        /// <param name="controller"></param>
+        /// <param name="values"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string ActionLink(this IUrlHelper urlHelper, string actionName, string controller, object values, HttpContext context = null)
+        {
+            var httpContext = context ?? urlHelper.ActionContext.HttpContext;
+            var host = httpContext.Request.Host.ToUriComponent();
+
+            return urlHelper.Action(new UrlActionContext
+            {
+                Action = actionName,
+                Controller = controller,
+                Protocol = httpContext.Request.Scheme,
+                Host = host,
+                Values = values
+            });
         }
     }
 }

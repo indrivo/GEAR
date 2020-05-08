@@ -57,5 +57,24 @@ namespace GR.Identity.Abstractions.Extensions
             }
             return response;
         }
+
+        /// <summary>
+        /// To result model
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static ResultModel ToResultModel(this IdentityResult result)
+        {
+            var response = new ResultModel
+            {
+                IsSuccess = result.Succeeded
+            };
+
+            foreach (var e in result.Errors)
+            {
+                response.Errors.Add(new ErrorModel(e.Code, e.Description));
+            }
+            return response;
+        }
     }
 }

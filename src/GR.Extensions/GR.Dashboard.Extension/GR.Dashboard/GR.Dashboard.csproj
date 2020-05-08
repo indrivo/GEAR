@@ -2,30 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.9.3</Version>
+    <Version>1.9.4</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Implementation of GR.Dasjboard.Abstractions with EF core</Description>
     <PackageReleaseNotes>- Implementation of GR.Dash.Abstractions</PackageReleaseNotes>
-    <FileVersion>1.9.3</FileVersion>
-    <AssemblyVersion>1.9.3</AssemblyVersion>
+    <FileVersion>1.9.4</FileVersion>
+    <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20190929175532_DashBoardDbContext_Change_Relations_Between_Tables.cs" />
-    <Compile Remove="Migrations\20190929175532_DashBoardDbContext_Change_Relations_Between_Tables.Designer.cs" />
-    <Compile Remove="Migrations\20190929192402_DashBoardDbContext_Fix_UI_settings.cs" />
-    <Compile Remove="Migrations\20190929192402_DashBoardDbContext_Fix_UI_settings.Designer.cs" />
-    <Compile Remove="Migrations\20190929192920_DashBoardDbContext_Fix_UI_settings.cs" />
-    <Compile Remove="Migrations\20190929192920_DashBoardDbContext_Fix_UI_settings.Designer.cs" />
-    <Compile Remove="Migrations\20190929193318_DashBoardDbContext_Fix_UI_settings.cs" />
-    <Compile Remove="Migrations\20190929193318_DashBoardDbContext_Fix_UI_settings.Designer.cs" />
-    <Compile Remove="Migrations\20190929195021_DashBoardDbContext_Border_Style.cs" />
-    <Compile Remove="Migrations\20190929195021_DashBoardDbContext_Border_Style.Designer.cs" />
-    <Compile Remove="Migrations\20190929195325_DashBoardDbContext_Border_Style.cs" />
-    <Compile Remove="Migrations\20190929195325_DashBoardDbContext_Border_Style.Designer.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Templates\ReportTemplate.cshtml" />

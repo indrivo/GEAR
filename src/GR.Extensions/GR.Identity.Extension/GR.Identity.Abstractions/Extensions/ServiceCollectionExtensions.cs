@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core;
@@ -24,10 +25,10 @@ namespace GR.Identity.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services)
+        public static IdentityBuilder AddIdentityModule<TContext>(this IServiceCollection services)
             where TContext : DbContext, IIdentityContext
         {
-            services.AddIdentity<GearUser, GearRole>(options =>
+            var builder = services.AddIdentity<GearUser, GearRole>(options =>
                 {
                     options.Lockout = new LockoutOptions
                     {
@@ -43,7 +44,8 @@ namespace GR.Identity.Abstractions.Extensions
                 })
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
-            return services;
+
+            return builder;
         }
 
         /// <summary>
@@ -88,8 +90,9 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add authentication
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="useHttps"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services)
+        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services, bool useHttps = false)
             where TAuthorizeService : class, IAuthorizeService
         {
             services.AddGearTransient<IAuthorizeService, TAuthorizeService>();
@@ -98,7 +101,7 @@ namespace GR.Identity.Abstractions.Extensions
             var hostingEnvironment = services
                 .BuildServiceProvider()
                 .GetRequiredService<IHostingEnvironment>();
-            var isDevelopment = hostingEnvironment.IsDevelopment();
+            var isDevelopment = hostingEnvironment.IsDevelopment() || !useHttps;
 
             services.AddAuthentication(options =>
                 {
@@ -124,15 +127,19 @@ namespace GR.Identity.Abstractions.Extensions
                     opts.Authority = authorityUri;
                     opts.RequireHttpsMetadata = false;
                     opts.SaveToken = true;
+                    opts.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context => Task.CompletedTask
+                    };
+                })
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = isDevelopment
+                        ? CookieSecurePolicy.None
+                        : CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
                 });
-                //.AddCookie(options =>
-                //{
-                //    options.Cookie.HttpOnly = true;
-                //    options.Cookie.SecurePolicy = isDevelopment
-                //        ? CookieSecurePolicy.None
-                //        : CookieSecurePolicy.Always;
-                //    options.Cookie.SameSite = SameSiteMode.Lax;
-                //});
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -158,7 +165,7 @@ namespace GR.Identity.Abstractions.Extensions
             where TUser : GearUser
             where TUserManager : class, IUserManager<TUser>
         {
-            services.AddGearTransient<IUserManager<TUser>, TUserManager>();
+            services.AddGearScoped<IUserManager<TUser>, TUserManager>();
             //Register user manager
             IoC.Container.Register(Component.For<UserManager<GearUser>>());
             return services;

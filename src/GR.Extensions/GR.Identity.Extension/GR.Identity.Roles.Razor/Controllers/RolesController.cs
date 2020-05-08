@@ -588,7 +588,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// <param name="roleName"></param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<UserInfoViewModel>>))]
         [Route("api/[controller]/[action]")]
         public async Task<JsonResult> GetUsersInRoleForCurrentCompany([Required] string roleName) => Json(await _userManager.GetUsersInRoleForCurrentCompanyAsync(roleName));
 
@@ -609,7 +609,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<UserInfoViewModel>>))]
         [Route("api/[controller]/[action]")]
         public async Task<JsonResult> GetUserRoles([Required]string userId)
         {
@@ -660,7 +660,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<UserInfoViewModel>>))]
         [Route("api/[controller]/[action]")]
         public JsonResult GetAllRolesAsync()
             => Json(new SuccessResultModel<IEnumerable<BaseRoleViewModel>>(_roleManager.Roles.Select(x => new BaseRoleViewModel

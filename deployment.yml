@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ project_name }}"
+  labels:
+    app: "{{ project_name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: "{{ project_name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ project_name }}"
+    spec:
+      containers:
+      - name: "{{ name }}"
+        image: "{{ image_id }}"
+        resources:
+          requests:
+            cpu: "{{ cpu }}"
+            memory: "{{ ram }}"
+        volumeMounts:
+        - name: pv-storage
+          mountPath: /mnt
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: "{{ name }}"
+      imagePullSecrets:
+      - name: registry-secret

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Email.Abstractions;
+using GR.Email.Abstractions.Helpers;
 using GR.Email.Abstractions.Models.EmailViewModels;
 
 namespace GR.Email
@@ -91,6 +93,19 @@ namespace GR.Email
             }
         }
 
+        /// <summary>
+        /// Send mail 
+        /// </summary>
+        /// <typeparam name="TConfigurator"></typeparam>
+        /// <param name="conf"></param>
+        /// <returns></returns>
+        public virtual async Task SendEmailAsync<TConfigurator>(Action<TConfigurator> conf = null) where TConfigurator : BaseMailTemplateGenerator
+        {
+            var configuration = Activator.CreateInstance<TConfigurator>();
+            conf?.Invoke(configuration);
+            await SendEmailAsync(configuration.Emails, configuration.Subject, await configuration.GenerateAsync());
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Update email settings
@@ -111,6 +126,70 @@ namespace GR.Email
             });
             result.IsSuccess = true;
             return result;
+        }
+
+
+        /// <summary>
+        /// Is valid email
+        /// </summary>
+        /// <param name="emailAddress"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> IsValidEmailAsync(string emailAddress)
+        {
+            //TODO: Need for all smtp servers
+            var response = new ResultModel();
+            response.IsSuccess = true;
+            return response;
+
+
+            if (!emailAddress.IsValidEmail())
+            {
+                response.AddError("Invalid email");
+                return response;
+            }
+
+            var host = emailAddress.Split('@');
+            var hostname = host[1];
+            var addresses = ResolveDns($"smtp.{hostname}") ?? ResolveDns(hostname);
+
+            if (addresses == null)
+            {
+
+            }
+
+            try
+            {
+                var endPt = new IPEndPoint(addresses[0], 25);
+                var s = new Socket(endPt.AddressFamily,
+                    SocketType.Stream, ProtocolType.Tcp);
+                await s.ConnectAsync(endPt);
+                if (s.Connected)
+                {
+                    response.IsSuccess = true;
+                    return response;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            response.AddError("Invalid host for email");
+            return response;
+        }
+
+        private static IPAddress[] ResolveDns(string host)
+        {
+            try
+            {
+                return Dns.GetHostAddresses(host);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return null;
         }
     }
 }

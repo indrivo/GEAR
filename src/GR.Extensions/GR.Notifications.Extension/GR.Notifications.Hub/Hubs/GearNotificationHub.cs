@@ -1,14 +1,15 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using GR.Core.Extensions;
+using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Notifications.Abstractions.Models.Config;
 using GR.Notifications.Hub.Helpers;
 using Microsoft.AspNetCore.Http;
 
 namespace GR.Notifications.Hub.Hubs
 {
+    [GearAuthorize(GearAuthenticationScheme.IdentityWithBearer)]
     public class GearNotificationHub : Microsoft.AspNetCore.SignalR.Hub
     {
         /// <summary>
@@ -16,9 +17,15 @@ namespace GR.Notifications.Hub.Hubs
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GearNotificationHub(IHttpContextAccessor httpContextAccessor)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        public GearNotificationHub(IHttpContextAccessor httpContextAccessor, IUserManager<GearUser> userManager)
         {
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
         internal static class UserConnections
@@ -39,11 +46,13 @@ namespace GR.Notifications.Hub.Hubs
             await base.OnConnectedAsync();
             if (_httpContextAccessor?.HttpContext?.User.IsAuthenticated() ?? false)
             {
-                var userId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+                var userIdReq = _userManager.FindUserIdInClaims();
+                if (!userIdReq.IsSuccess) return;
+
                 UserConnections.Connections.Add(new SignalrConnection
                 {
                     ConnectionId = Context.ConnectionId,
-                    UserId = userId.ToGuid()
+                    UserId = userIdReq.Result
                 });
             }
         }

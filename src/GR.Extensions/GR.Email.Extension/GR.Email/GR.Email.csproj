@@ -7,12 +7,11 @@
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>Email sender for gear</Description>
     <PackageTags>gear c# email sender</PackageTags>
-
-    <Version>1.9.3</Version>
-
-    <FileVersion>1.9.3</FileVersion>
-
-    <AssemblyVersion>1.9.3</AssemblyVersion>
+    <Version>1.9.4</Version>
+    <FileVersion>1.9.4</FileVersion>
+    <AssemblyVersion>1.9.4</AssemblyVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

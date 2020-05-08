@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
 using GR.Core.Abstractions;
@@ -13,6 +14,11 @@ namespace GR.Core
                                         "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
+        /// <summary>
+        /// App version
+        /// </summary>
+        public static string AppVersion = Assembly.GetCallingAssembly().GetName().Version.ToString();
+
         /// <summary>
         /// Get system config
         /// </summary>

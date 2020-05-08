@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using GR.Core.Attributes.Validation;
 
 namespace GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels
 {
@@ -7,11 +8,13 @@ namespace GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels
     {
         [Required]
         [MaxLength(50)]
+        [OfficialName(nameof(FirstName))]
         [Display(Name = "First name", Description = "first name", Prompt = "ex: John")]
         public virtual string FirstName { get; set; }
 
         [Required]
         [MaxLength(50)]
+        [OfficialName(nameof(LastName))]
         [Display(Name = "Last name", Description = "last name", Prompt = "ex: Doe")]
         public virtual string LastName { get; set; }
 

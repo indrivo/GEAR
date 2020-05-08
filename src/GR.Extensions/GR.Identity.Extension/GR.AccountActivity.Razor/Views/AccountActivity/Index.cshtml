@@ -1,0 +1,308 @@
+@{
+	ViewData["Title"] = "Account activity";
+	Layout = "_SaveCryptoLayout";
+}
+
+@section Styles{
+	<link rel="stylesheet" type="text/css" href="~/lib/datatables/css/jquery.dataTables.min.css" />
+	<style>
+		.device-actions {
+			font-size: 24px;
+			-webkit-text-stroke: 3px white;
+			text-align: end;
+		}
+
+			.device-actions .fa-check {
+				color: #202443;
+			}
+
+			.device-actions .fa-close {
+				color: #FF9066;
+				padding-left: 0.5em;
+				cursor: pointer;
+			}
+	</style>
+}
+
+<div class="crypto-table-container col-md-12">
+	<div class="table-header-temp">
+		<div class="d-flex flex-column head-box">
+			<span class="h-text">Web Sessions</span>
+			<span class="f-text">These sessions are currently signed in to your account. <a href="#" onclick="signoutAllDevices()" class="cp" style="color:#FF9066"> Sign out all other sessions</a></span>
+		</div>
+	</div>
+	<table id="webSessions" class="table">
+		<thead>
+			<tr>
+				<th>Signed in</th>
+				<th>Browser</th>
+				<th>IP Address</th>
+				<th>Near</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+
+
+<div class="crypto-table-container col-md-12 mt-4">
+	<div class="table-header-temp">
+		<div class="d-flex flex-column head-box">
+			<span class="h-text">Confirmed devices</span>
+			<span class="f-text">These devices are currently allowed to access your account. <a href="#" onclick="removeOtherDevices()" class="cp" style="color: #FF9066"> Remove all other devices</a></span>
+		</div>
+	</div>
+	<table id="confirmedDevices" class="table">
+		<thead>
+			<tr>
+				<th>Confirmed</th>
+				<th>Browser</th>
+				<th>Platform</th>
+				<th>Ip Address</th>
+				<th>Near</th>
+				<th style="max-width: 60px;">Current</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+
+
+<div class="crypto-table-container col-md-12 mt-4">
+	<div class="table-header-temp">
+		<div class="d-flex flex-column head-box">
+			<span class="h-text">Account Activity</span>
+			<span class="f-text">Recent activity on your account.</span>
+		</div>
+	</div>
+	<table id="accountActivity" class="table">
+		<thead>
+			<tr>
+				<th>Action</th>
+				<th>Source</th>
+				<th>IP Address</th>
+				<th>Location</th>
+				<th>When</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+
+@section Scripts{
+	<script type="text/javascript" src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+	<script>
+		let confirmDevicesTable = undefined;
+		$(document).ready(function () {
+			$('#webSessions').customTable({
+				paging: true,
+				ordering: true,
+				info: true,
+				isAjax: true,
+				searching: true,
+				url: "@Url.Action("GetWebSessionsWithPagination", "AccountActivityApi")",
+				columns: [
+					{
+						data: "created",
+						render: function (data, type, row, meta) {
+							return `<span style="color: #375DDB" class="cp" data-toggle="tooltip" data-placement="top" title="${row.created}">${row.when}</span>`;
+						}
+					},
+					{ "data": "browser" },
+					{ "data": "ipAddress" },
+					{ "data": "location" }
+				],
+				onRefresh: () => {
+					$(function () {
+						$('[data-toggle="tooltip"]').tooltip();
+					});
+				}
+			});
+
+			//confirmed devices configuration table
+			confirmDevicesTable = $('#confirmedDevices').customTable({
+				paging: true,
+				ordering: true,
+				info: true,
+				searching: true,
+				isAjax: true,
+				url: "@Url.Action("GetConfirmedDevicesWithPagination", "AccountActivityApi")",
+				columns: [
+					{
+						data: "confirmDate",
+						render: function (data, type, row, meta) {
+							return row.confirmDateText;
+						}
+					},
+					{ "data": "browser" },
+					{ "data": "platform" },
+					{ "data": "ipAddress" },
+					{ "data": "location" },
+					{
+						data: null,
+						orderable: false,
+						render: function (data, type, row, meta) {
+							const closeHtml = `<span data-id="${row.id}" class="fa fa-close" data-toggle="tooltip" data-placement="right" title="Remove confirmed device"></span>`;
+
+							if (!row.isCurrent) {
+								return `<div class="device-actions"> ${closeHtml}</div>`;
+							}
+							return `<div class="device-actions"><span class="fa fa-check"></span> ${closeHtml}</div>`;
+						}
+					}
+				],
+				onRefresh: () => {
+					$(".device-actions")
+						.find(".fa-close")
+						.off()
+						.on("click", function() {
+							const id = $(this).data("id");
+							const toast = new ToastNotifier();
+							swal({
+								title: "Are you sure you want to delete the confirmed device?",
+								type: "warning",
+								showCancelButton: true,
+								confirmButtonColor: "#DD6B55",
+								confirmButtonText: "Yes, delete",
+								cancelButtonText: window.translate("cancel"),
+								customClass: "custom_swal"
+							}).then(r => {
+								if (r.value) {
+									$.ajax({
+										url: "@Url.Action("DeleteDevice", "AccountActivityApi")",
+										data: {
+											deviceId: id
+										},
+										method: "delete",
+										success: (response) => {
+											if (response.is_success) {
+												toast.notifySuccess("Info", "Successful operation")
+												confirmDevicesTable.ajax.reload();
+											} else {
+												toast.notifyErrorList(response.error_keys);
+											}
+										},
+										error: (e) => {
+											notification.notify({
+												heading: window.translate("system_server_not_respond")
+											});
+										}
+									});
+								}
+							});
+						});
+
+					$(function () {
+						$('[data-toggle="tooltip"]').tooltip();
+					});
+				}
+			});
+
+
+			//account activity configuration
+			$('#accountActivity').customTable({
+				paging: true,
+				ordering: true,
+				info: true,
+				searching: true,
+				isAjax: true,
+				url: "@Url.Action("GetUserActivityWithPagination", "AccountActivityApi")",
+				columns: [
+					{ data: "activity" },
+					{ data: "source" },
+					{ data: "ipAddress" },
+					{ data: "location" },
+					{
+						data: "created",
+						render: function (data, type, row, meta) {
+							return `<span style="color: #375DDB" class="cp" data-toggle="tooltip" data-placement="top" title="${row.created}">${row.when}</span>`;
+						}
+					}
+				],
+				onRefresh: () => {
+					$(function () {
+						$('[data-toggle="tooltip"]').tooltip();
+					});
+				}
+			});
+		});
+
+
+		function signoutAllDevices() {
+			const toast = new ToastNotifier();
+			//remove all devices
+			swal({
+				title: "Are you sure you want to log out of all web devices",
+				text: "",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#DD6B55",
+				confirmButtonText: "Yes, log out",
+				cancelButtonText: window.translate("cancel"),
+				customClass: "custom_swal"
+			}).then(r => {
+				if (r.value) {
+					$.ajax({
+						url: "@Url.Action("SignOutAllWebUserDevicesAsync", "AccountActivityApi")",
+						method: "post",
+						success: (response) => {
+							if (response.is_success) {
+								toast.notifySuccess("Info", "All devices have been logged in, you will soon be logged out of the system");
+								setTimeout(() => {
+									location.reload();
+								}, 1500);
+							} else {
+								toast.notifyErrorList(response.error_keys);
+							}
+						},
+						error: (e) => {
+							notification.notify({
+								heading: window.translate("system_server_not_respond")
+							});
+						}
+					});
+				}
+			});
+		}
+
+		function removeOtherDevices() {
+			const toast = new ToastNotifier();
+			//remove all devices
+			swal({
+				title: "Are you sure you want to delete all other devices",
+				text: "After deletion you will need confirmation again",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#DD6B55",
+				confirmButtonText: "Yes, delete",
+				cancelButtonText: window.translate("cancel"),
+				customClass: "custom_swal"
+			}).then(r => {
+				if (r.value) {
+					$.ajax({
+						url: "@Url.Action("DeleteOtherConfirmedDevices", "AccountActivityApi")",
+						method: "delete",
+						success: (response) => {
+							if (response.is_success) {
+								toast.notifySuccess("Info", "Successful operation")
+								confirmDevicesTable.ajax.reload();
+							} else {
+								toast.notifyErrorList(response.error_keys);
+							}
+						},
+						error: (e) => {
+							notification.notify({
+								heading: window.translate("system_server_not_respond")
+							});
+						}
+					});
+				}
+			});
+		}
+
+	</script>
+}

@@ -115,6 +115,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using GR.AccountActivity.Abstractions.ActionFilters;
+using GR.AccountActivity.Abstractions.Extensions;
+using GR.AccountActivity.Impl;
+using GR.AccountActivity.Impl.Data;
 using GR.Backup.Razor.Extensions;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
@@ -210,7 +214,9 @@ namespace GR.Cms
 
 			//------------------------------Identity Module----------------------------------------
 			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
-				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
+				.AddConfirmDeviceTokenProvider();
+
+			config.GearServices.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<RolePermissions>, RolePermissions>()
 				.PasswordPolicy(new DefaultPasswordPolicy())
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
@@ -515,7 +521,16 @@ namespace GR.Cms
 
 
 			//-------------------------- Phone verification Module ----------------------------------
-			config.GearServices.AddPhoneVerificationModule<Authy>();
+			config.GearServices.AddPhoneVerificationModule<Authy>(Configuration)
+				.BindPhoneVerificationEvents();
+
+			//---------------------------------User activity  Module ----------------------------------
+			services.AddUserActivityModule<UserActivityService, ActivityTrackerFilter>()
+				.AddUserActivityModuleStorage<UserActivityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//------------------------------------Processes Module-------------------------------------
 			config.GearServices.AddProcessesModule<ProcessParser>()
