@@ -1,7 +1,9 @@
 .. Gear documentation file created by Lupei Nicolae
 
-Gear 1.9.4 | [![Build Status](https://travis-ci.com/nicolae-lupei/GEAR.svg?branch=master)](https://travis-ci.com/nicolae-lupei/GEAR) 
+Gear 1.9.4 
 ================
+
+[![Build Status](https://travis-ci.com/nicolae-lupei/GEAR.svg?branch=master)](https://travis-ci.com/nicolae-lupei/GEAR)
 
 Gear is a .NET framework for building your apps.
 
@@ -28,7 +30,10 @@ The following platforms are supported:
   :maxdepth: 1
   :caption: Modules
 
-  modules
+  all-modules
+  Modules/GR.Core.Razor
+  Modules/GR.Calendar
+  Modules/GR.Workflow
 
 
 .. _changes-docs:
