@@ -1,8 +1,8 @@
-# `Workflow builder`
-
-Workflow builder is a module that belongs to Gear and aims to manage states for an object.
+# Workflow Builder Module
 
 ## Description
+Workflow builder is a module that belongs to Gear and aims to manage states for an object.
+
 A workflow consists of an orchestrated and repeatable pattern of business activity enabled by the systematic organization of resources into processes that transform materials, provide services, or process information It can be depicted as a sequence of operations, declared as work of a person or group, an organization of staff, or one or more simple or complex mechanisms.
 
 The module is made on 3 layers:
