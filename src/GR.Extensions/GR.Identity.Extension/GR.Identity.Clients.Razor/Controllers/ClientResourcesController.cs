@@ -33,6 +33,7 @@ namespace GR.Identity.Clients.Razor.Controllers
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="clientsService"></param>
         public ClientResourcesController(IClientsContext context, IClientsService clientsService)
         {
             _context = context;

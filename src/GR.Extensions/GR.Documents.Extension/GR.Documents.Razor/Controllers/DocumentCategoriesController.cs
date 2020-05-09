@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
@@ -8,10 +6,8 @@ using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Helpers;
 using GR.Documents.Abstractions.ViewModels.DocumentCategoryViewModels;
-using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GR.Documents.Razor.Controllers
 {
@@ -57,7 +53,6 @@ namespace GR.Documents.Razor.Controllers
         /// <summary>
         /// Get all Document categories from table model
         /// </summary>
-        /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("api/[controller]/[action]")]
@@ -104,10 +99,7 @@ namespace GR.Documents.Razor.Controllers
         {
             var result = await _documentCategoryService.EditDocumentCategoryAsync(model);
 
-
             return RedirectToAction("Edit", new { id = result.Result.Id });
-
-            //return View(result.Result);
         }
 
 
@@ -118,7 +110,7 @@ namespace GR.Documents.Razor.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Delete(Guid? id)
         {
-            var result = await _documentCategoryService.DeleteDocumentCategoryAsync(id);
+            await _documentCategoryService.DeleteDocumentCategoryAsync(id);
 
             return RedirectToAction("Index");
         }

@@ -12,6 +12,8 @@ using GR.Core.Helpers;
 using GR.Email.Abstractions;
 using GR.Email.Abstractions.Helpers;
 using GR.Email.Abstractions.Models.EmailViewModels;
+// ReSharper disable HeuristicUnreachableCode
+#pragma warning disable 162
 
 namespace GR.Email
 {
@@ -128,7 +130,6 @@ namespace GR.Email
             return result;
         }
 
-
         /// <summary>
         /// Is valid email
         /// </summary>
@@ -137,10 +138,11 @@ namespace GR.Email
         public async Task<ResultModel> IsValidEmailAsync(string emailAddress)
         {
             //TODO: Need for all smtp servers
-            var response = new ResultModel();
-            response.IsSuccess = true;
+            var response = new ResultModel
+            {
+                IsSuccess = true
+            };
             return response;
-
 
             if (!emailAddress.IsValidEmail())
             {

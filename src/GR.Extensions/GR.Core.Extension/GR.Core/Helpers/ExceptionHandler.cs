@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -34,7 +32,6 @@ namespace GR.Core.Helpers
         /// <summary>
         /// Returns ResultModel of type T with exception message passed from enumeration exception
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="exceptionMessageEnum"></param>
         /// <returns></returns>
         public static ResultModel ToErrorModel(this Enum exceptionMessageEnum)

@@ -46,8 +46,8 @@ namespace GR.Documents.Razor.Controllers
                 Text = s.Name,
                 Value = s.Id.ToString(),
             }).ToList();
-           
-            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.FirstOrDefault(x=> x.Code == 1)?.Id;
+
+            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.FirstOrDefault(x => x.Code == 1)?.Id;
 
             return View();
         }
@@ -176,10 +176,10 @@ namespace GR.Documents.Razor.Controllers
 
 
         /// <summary>
-        /// Get al documents by type and ignore documents by list id
+        /// Get all documents by type and ignore documents by list id
         /// </summary>
-        /// <param name="listDocumetId"></param>
-        /// <param name="typeId"></param>
+        /// <param name="listDocumentId"></param>
+        /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("api/[controller]/[action]")]
@@ -227,9 +227,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> Create(AddDocumentViewModel model)
         {
-            var result = new ResultModel();
-            result = await _documentService.AddDocumentAsync(model);
-
+            var result = await _documentService.AddDocumentAsync(model);
             return Json(result);
         }
 
@@ -291,8 +289,6 @@ namespace GR.Documents.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> AddNewDocumentVersion(AddNewVersionDocumentViewModel model)
         {
-            var result = new ResultModel();
-
             //if (!ModelState.IsValid)
             //{
             //    result.IsSuccess = false;
@@ -301,7 +297,7 @@ namespace GR.Documents.Razor.Controllers
             //    return Json(result);
             //}
 
-            result = await _documentService.AddNewDocumentVersionAsync(model);
+            var result = await _documentService.AddNewDocumentVersionAsync(model);
             return Json(result);
         }
 
