@@ -1,6 +1,6 @@
 dotnet restore
 dotnet build
 rmdir /Q /S ./dist
-dotnet publish -c Release -o ./dist
+dotnet publish --no-restore -c Release -o ./dist
 
 PAUSE
