@@ -1,20 +1,47 @@
+
 # Modules
 
 The framework has developed the following modules:
 - Module for managing dynamic entities
+- Entities management module
 - Workflow manager and builder module 
 - Task Management Module
 - Calendar module
 - Synchronization component with external calendar
 - Notifications module
+- Email module
 - Document Management Module (DMS)
 - User Management Module
-- Role and permissions management module
+- Ldap module
+- Role management module
+- Permissions module
 - Report and Statistics Module
 - The chat module
 - Content management module
 - Page Management module
 - Forms management module
 - Menu management module
-- The localization module
+- Localization module
 - Authentication and authorization module
+- Group management module
+- User account activity and tracking module
+- User preferences module
+- Phone verification module
+- User profile module
+- Multi tenant module
+- Files module
+- Subscriptions module
+- Commerce module
+	- Products module
+	- Orders module
+	- Payments module
+		- Braintree payment method
+		- Paypal payment method
+		- Mobil pay payment method
+- Dashboard module
+- Database backup module (postgres)
+- Audit module
+- External clients module
+- Installer module
+- Logger module
+- Modules module
