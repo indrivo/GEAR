@@ -92,6 +92,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile.Razor\GR.Identity.Profile.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Profile\GR.Identity.Profile.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Razor\GR.Identity.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.UserPreferences.Api\GR.UserPreferences.Api.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.UserPreferences.Impl\GR.UserPreferences.Impl.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />

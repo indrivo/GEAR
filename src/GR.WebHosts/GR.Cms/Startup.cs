@@ -163,6 +163,10 @@ using GR.Procesess.Parsers;
 using GR.Process.Razor.Extensions;
 using GR.Processes.Abstractions.Extensions;
 using GR.Processes.Abstractions.Helpers;
+using GR.UserPreferences.Abstractions.Extensions;
+using GR.UserPreferences.Abstractions.Helpers;
+using GR.UserPreferences.Impl;
+using GR.UserPreferences.Impl.Data;
 using Microsoft.Extensions.Logging;
 using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 
@@ -531,6 +535,18 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
+
+
+			//---------------------------------User preferences Module --------------------------------
+			config.GearServices
+				.AddUserPreferencesModule<UserPreferencesService>()
+				.RegisterPreferencesProvider<DefaultUserPreferenceProvider>()
+				.AddUserPreferencesModuleStorage<UserPreferencesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
 
 			//------------------------------------Processes Module-------------------------------------
 			config.GearServices.AddProcessesModule<ProcessParser>()
