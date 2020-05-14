@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models;
@@ -14,6 +15,11 @@ namespace GR.Localization.Data
         /// Do not remove this
         /// </summary>
         public const string Schema = "Localization";
+
+        /// <summary>
+        /// Check if is migration mode
+        /// </summary>
+        public static bool IsMigrationMode { get; set; } = true;
 
         public TranslationsDbContext(DbContextOptions<TranslationsDbContext> options) : base(options)
         {
@@ -33,8 +39,23 @@ namespace GR.Localization.Data
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
 
-            builder.Entity<Language>().HasKey(x => x.Identifier);
-            builder.Entity<Translation>().HasKey(x => x.Key);
+            builder.Entity<Language>(o =>
+            {
+                o.HasKey(x => new { x.Id });
+                o.HasIndex(x => x.Identifier);
+            });
+
+            builder.Entity<Translation>(o =>
+            {
+                o.HasKey(x => new { x.Id });
+                o.HasIndex(x => x.Key);
+            });
+
+            if (IsMigrationMode)
+            {
+                builder.Ignore<TrackAudit>();
+                builder.Ignore<TrackAuditDetails>();
+            }
         }
 
         public override Task InvokeSeedAsync(IServiceProvider services)

@@ -4,14 +4,13 @@ using System.Linq;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Localization.Abstractions;
-using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.Models.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-namespace GR.Localization
+namespace GR.Localization.DataBaseProvider
 {
     public class DbStringLocalizer : IStringLocalizer
     {

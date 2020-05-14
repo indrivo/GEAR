@@ -27,9 +27,8 @@ namespace GR.Localization.Abstractions.Extensions
         /// Add localization
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="section"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLocalizationModule<TService, TStringLocalizer>(this IServiceCollection services, IConfigurationSection section)
+        public static IServiceCollection AddLocalizationModule<TService, TStringLocalizer>(this IServiceCollection services)
             where TService : class, ILocalizationService
             where TStringLocalizer : class, IStringLocalizer
         {
@@ -38,7 +37,6 @@ namespace GR.Localization.Abstractions.Extensions
             services.AddTransient<ILocalizationService, TService>();
             services.AddTransient<IStringLocalizer, TStringLocalizer>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            services.Configure<LocalizationConfigModel>(section);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession(opts =>
             {
@@ -115,7 +113,8 @@ namespace GR.Localization.Abstractions.Extensions
         public static IServiceCollection AddLocalizationModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, ILocalizationContext
         {
-            services.AddScopedContextFactory<ILocalizationContext, TContext>();
+            services.AddGearScoped<ILocalizationContext, TContext>();
+            services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("Localization module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {

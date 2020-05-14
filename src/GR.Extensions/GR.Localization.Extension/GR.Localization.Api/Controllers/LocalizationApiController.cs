@@ -1,18 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using GR.Core;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
+using GR.Core.Razor.BaseControllers;
+using GR.Core.Razor.Helpers.Filters;
+using GR.Identity.Abstractions.Helpers.Attributes;
+using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace GR.Localization.Api.Controllers
 {
-    [AllowAnonymous]
+    /// <summary>
+    /// This is a localization api 
+    /// </summary>
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
+    [GearAuthorize(GearAuthenticationScheme.IdentityWithBearer)]
     [Route("api/[controller]/[action]")]
-    public class LocalizationApiController : Controller
+    [JsonApiExceptionFilter]
+    public class LocalizationApiController : BaseGearController
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject service
+        /// </summary>
+        private readonly ILocalizationService _service;
+
+        #endregion
+
+        public LocalizationApiController(ILocalizationService service)
+        {
+            _service = service;
+        }
+
+        /// <summary>
+        /// Get all languages, authentication is not required
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<LanguageCreateViewModel>>))]
+        public async Task<JsonResult> GetAllLanguages()
+            => await JsonAsync(_service.GetAllLanguagesAsync());
+
+        /// <summary>
+        /// Add new language
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public JsonResult AddLanguage([Required] AddLanguageViewModel model)
+            => Json(_service.AddLanguage(model));
+
+        /// <summary>
+        /// Import language pack
+        /// </summary>
+        /// <param name="language"></param>
+        /// <param name="filePack"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public async Task<JsonResult> ImportLanguagePack([Required]string language, [Required]IFormFile filePack)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+
+            Dictionary<string, string> dict;
+            using (var reader = new StreamReader(filePack.OpenReadStream()))
+            {
+                var content = await reader.ReadToEndAsync();
+                dict = content.Deserialize<Dictionary<string, string>>();
+            }
+
+            var importResult = await _service.ImportLanguageTranslationsAsync(language, dict);
+            return Json(importResult);
+        }
+
         /// <summary>
         /// Get jquery data table translations
         /// </summary>
@@ -20,6 +98,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="customReplace"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public JsonResult GetJQueryTableTranslations(string language, string customReplace = null)
         {
             if (string.IsNullOrEmpty(language))

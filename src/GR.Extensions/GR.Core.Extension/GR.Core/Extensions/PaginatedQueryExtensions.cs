@@ -99,7 +99,8 @@ namespace GR.Core.Extensions
             var count = query.Count();
             var result = new PagedResult<T>
             {
-                CurrentPage = page, PageSize = pageSize, 
+                CurrentPage = page,
+                PageSize = pageSize,
                 RowCount = count,
                 TotalNonFiltered = count
             };
@@ -148,6 +149,10 @@ namespace GR.Core.Extensions
                 var propName = split[0].ToLower().FirstCharToUpper();
                 var isAsc = split.Length != 2;
                 query = query.OrderByWithDirection(x => x.GetPropertyValue(propName), !isAsc);
+            }
+            else
+            {
+                query = query.OrderByWithDirection(x => x.GetPropertyValue(nameof(BaseModel.Created)), true);
             }
 
             result.RowCount = await query.CountAsync();

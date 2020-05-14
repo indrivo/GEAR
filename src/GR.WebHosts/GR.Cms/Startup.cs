@@ -154,6 +154,7 @@ using GR.Identity.Profile.Data;
 using GR.Identity.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Data;
+using GR.Localization.Extensions;
 using GR.Localization.JsonStringProvider;
 using GR.Logger;
 using GR.Logger.Abstractions.Extensions;
@@ -324,16 +325,10 @@ namespace GR.Cms
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
-				.AddLocalizationModule<JsonFileLocalizationService, JsonStringLocalizer>(
-					Configuration.GetSection(nameof(LocalizationConfig)))
+				.AddLocalizationModule<JsonFileLocalizationService, JsonStringLocalizer>()
+				.BindLanguagesFromJsonFile(Configuration.GetSection(nameof(LocalizationConfig)))
 				.RegisterTranslationService<YandexTranslationProvider>(
 					Configuration.GetSection(nameof(LocalizationProviderSettings)))
-				//Only with DB provider
-				//.AddLocalizationModuleStorage<TranslationsDbContext>(options =>
-				//{
-				//	options.GetDefaultOptions(Configuration);
-				//	options.EnableSensitiveDataLogging();
-				//})
 				.AddLocalizationRazorModule()
 				.AddCountryModule<CountryService>()
 				.AddCountryModuleStorage<CountriesDbContext>(options =>

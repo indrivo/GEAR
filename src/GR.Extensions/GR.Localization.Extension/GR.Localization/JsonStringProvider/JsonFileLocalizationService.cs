@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
+using GR.Core.Helpers.Validators;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models.Config;
@@ -41,6 +44,8 @@ namespace GR.Localization.JsonStringProvider
         /// <returns></returns>
         public ResultModel AddLanguage(AddLanguageViewModel model)
         {
+            var isValid = ModelValidator.IsValid(model);
+            if (!isValid.IsSuccess) return isValid.ToBase();
             var response = new ResultModel { IsSuccess = true };
             var existsInConfig =
                 _locConfig.Value.Languages.Any(m => m.Identifier == model.Identifier && m.Name == model.Name);
@@ -189,6 +194,24 @@ namespace GR.Localization.JsonStringProvider
             return response;
         }
 
+        public virtual Task<ResultModel> ImportLanguageTranslationsAsync(string identifier, Dictionary<string, string> translations)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get all languages
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<ResultModel<IEnumerable<LanguageCreateViewModel>>> GetAllLanguagesAsync()
+        {
+            var languages = _locConfig.Value.Languages
+                .Where(x => !x.IsDisabled).ToList();
+            ResultModel<IEnumerable<LanguageCreateViewModel>> response =
+                new SuccessResultModel<IEnumerable<LanguageCreateViewModel>>(languages);
+            return Task.FromResult(response);
+        }
+
         /// <summary>
         /// Edit key
         /// </summary>
@@ -206,11 +229,11 @@ namespace GR.Localization.JsonStringProvider
         /// <param name="localizedStrings"></param>
         public void AddOrUpdateKey(string key, IDictionary<string, string> localizedStrings)
         {
-            foreach (var item in localizedStrings)
+            foreach (var (s, value) in localizedStrings)
             {
-                var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, item.Key + ".json");
-                var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{item.Key}_{key}";
-                _cache.SetAsync(cacheKey, item.Value).ExecuteAsync();
+                var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, s + ".json");
+                var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{s}_{key}";
+                _cache.SetAsync(cacheKey, value).ExecuteAsync();
                 if (!File.Exists(filePath))
                 {
                     using (Stream str = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write,
@@ -221,7 +244,7 @@ namespace GR.Localization.JsonStringProvider
                         writer.Formatting = Formatting.Indented;
                         writer.WriteStartObject();
                         writer.WritePropertyName(key);
-                        writer.WriteValue(item.Value);
+                        writer.WriteValue(value);
                         writer.WriteEndObject();
                     }
                 }
@@ -233,7 +256,7 @@ namespace GR.Localization.JsonStringProvider
                     using (var reader = new JsonTextReader(sReader))
                     {
                         var obj = JObject.Load(reader);
-                        obj[key] = item.Value;
+                        obj[key] = value;
                         reader.Close();
                         File.WriteAllText(filePath, obj.ToString());
                     }
