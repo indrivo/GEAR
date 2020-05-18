@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using GR.Modules.Abstractions;
-using Microsoft.Extensions.Configuration;
+﻿using GR.Modules.Abstractions;
 
 namespace GR.Localization
 {
@@ -11,14 +8,5 @@ namespace GR.Localization
         /// Name
         /// </summary>
         public override string Name => "Localization module";
-
-        /// <summary>
-        /// Configuration
-        /// </summary>
-        public override Action<IConfigurationBuilder> Configuration => builder =>
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, "translationSettings.json");
-            builder.AddJsonFile(path, true, true);
-        };
     }
 }

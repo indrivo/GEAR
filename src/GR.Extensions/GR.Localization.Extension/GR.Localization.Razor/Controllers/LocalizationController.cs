@@ -274,15 +274,18 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult EditKey(EditLocalizationViewModel model)
+        public async Task<IActionResult> EditKey(EditLocalizationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            _localizationService.EditKey(model);
-            return RedirectToAction("Index", "Localization", new { page = 1, perPage = 10 });
+            var editResponse = await _localizationService.EditKeyAsync(model);
+            if (editResponse.IsSuccess)
+                return RedirectToAction("Index", "Localization");
+            ModelState.AppendResultModelErrors(editResponse.Errors);
+            return View(model);
         }
 
         [HttpGet]
@@ -315,7 +318,7 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddKey(AddKeyViewModel model)
+        public async Task<IActionResult> AddKey(AddKeyViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -332,8 +335,12 @@ namespace GR.Localization.Razor.Controllers
                 }
                 else
                 {
-                    _localizationService.AddOrUpdateKey(model.NewKey, model.LocalizedStrings);
-                    return RedirectToAction("Index", "Localization", new { page = 1, perPage = 10 });
+                    var addResponse = await _localizationService.AddOrUpdateKeyAsync(model.NewKey, model.LocalizedStrings);
+                    if (addResponse.IsSuccess)
+                        return RedirectToAction("Index", "Localization");
+                    model.Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name);
+                    ModelState.AppendResultModelErrors(addResponse.Errors);
+                    return View(model);
                 }
             }
 
@@ -382,11 +389,11 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddLanguage(AddLanguageViewModel model)
+        public async Task<IActionResult> AddLanguage(AddLanguageViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var response = _localizationService.AddLanguage(model);
+                var response = await _localizationService.AddLanguageAsync(model);
                 if (response.IsSuccess)
                 {
                     return RedirectToAction("GetLanguages", "Localization");

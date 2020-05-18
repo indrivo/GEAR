@@ -132,10 +132,28 @@ namespace GR.AccountActivity.Abstractions
         Task<ResultModel> RegisterUserActivityAsync(string activityName, HttpContext context);
 
         /// <summary>
+        /// Register user activity
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="activityName"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task<ResultModel> RegisterUserNotAuthenticatedActivityAsync(Guid userId, string activityName,
+            HttpContext context);
+
+        /// <summary>
         /// Get web sessions
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
         Task<DTResult<WebSessionViewModel>> GetWebSessionsAsync(DTParameters parameters);
+
+        /// <summary>
+        /// Find user device
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task<ResultModel<UserDevice>> FindDeviceAsync(Guid userId, HttpContext context);
     }
 }

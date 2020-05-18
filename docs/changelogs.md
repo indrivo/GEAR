@@ -27,7 +27,13 @@ v.1.9.4 - Lupei Nicolae May 2020
 * refact docs files
 * generate xml comments for all projects and bind on swagger
 * add configuration to generate xml comments
-* add localization provider
+* add database localization provider
+* refactoring on notifications api
+* full refactoring on localization module
+* add support for module appSettings files
+* clean language files
+* add support for import language pack
+* add support for download laguage pack/paks(zip) 
 
 v.1.9.3 - Lupei Nicolae April 2020
 * separe groups module from identity

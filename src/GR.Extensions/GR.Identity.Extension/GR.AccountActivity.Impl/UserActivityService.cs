@@ -188,23 +188,36 @@ namespace GR.AccountActivity.Impl
         /// <returns></returns>
         public virtual async Task<ResultModel<UserDevice>> FindDeviceAsync(HttpContext context)
         {
+            var userIdReq = _userManager.FindUserIdInClaims();
+            if (!userIdReq.IsSuccess) return userIdReq.Map<UserDevice>();
+            return await FindDeviceAsync(userIdReq.Result, context);
+        }
+
+        /// <summary>
+        /// Find device
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<UserDevice>> FindDeviceAsync(Guid userId, HttpContext context)
+        {
             var ip = context.Connection.RemoteIpAddress;
             var location = GetLocationOfDevice(context);
             var (platform, browser) = ExtractPlatformAndBrowserVersions(context);
-            var userId = _userManager.FindUserIdInClaims();
 
             var device = await _context.Devices
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.IpAddress.Equals(ip.ToString())
                                           && x.Platform.Equals(platform)
                                           && x.Location.Equals(location)
-                                          && x.UserId.Equals(userId.Result)
+                                          && x.UserId.Equals(userId)
                                           && x.Browser.Equals(browser));
 
             if (device == null) return new NotFoundResultModel<UserDevice>();
 
             return new SuccessResultModel<UserDevice>(device);
         }
+
 
         /// <summary>
         /// Get location of device
@@ -497,6 +510,31 @@ namespace GR.AccountActivity.Impl
             if (activityName.IsNullOrEmpty()) return new InvalidParametersResultModel();
             if (context == null) context = _accessor.HttpContext;
             var deviceGet = await FindDeviceAsync(context);
+            if (!deviceGet.IsSuccess) return deviceGet.ToBase();
+
+            var activity = new UserActivity
+            {
+                Activity = activityName,
+                DeviceId = deviceGet.Result.Id
+            };
+
+            await _context.Activities.AddAsync(activity);
+
+            return await _context.PushAsync();
+        }
+
+        /// <summary>
+        /// Register user activity 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="activityName"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RegisterUserNotAuthenticatedActivityAsync(Guid userId, string activityName, HttpContext context)
+        {
+            if (activityName.IsNullOrEmpty()) return new InvalidParametersResultModel();
+            if (context == null) context = _accessor.HttpContext;
+            var deviceGet = await FindDeviceAsync(userId, context);
             if (!deviceGet.IsSuccess) return deviceGet.ToBase();
 
             var activity = new UserActivity

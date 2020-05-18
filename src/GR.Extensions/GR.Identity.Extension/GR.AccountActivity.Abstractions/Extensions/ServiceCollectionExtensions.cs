@@ -36,7 +36,7 @@ namespace GR.AccountActivity.Abstractions.Extensions
             IdentityEvents.Authorization.OnUserLogIn += (sender, args) =>
             {
                 var service = args.InjectService<IUserActivityService>();
-                service.RegisterUserActivityAsync(AccountActivityResources.ActivityTypes.SIGNIN, args.HttpContext);
+                service.RegisterUserNotAuthenticatedActivityAsync(args.UserId, AccountActivityResources.ActivityTypes.SIGNIN, args.HttpContext);
             };
 
             IdentityEvents.Authorization.OnUserLogout += (sender, args) =>

@@ -16,6 +16,7 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,13 +43,19 @@ namespace GR.Identity
         /// </summary>
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Inject context accessor
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
+
         #endregion
 
-        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger)
+        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger, IHttpContextAccessor contextAccessor)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _contextAccessor = contextAccessor;
         }
 
         /// <summary>
@@ -79,22 +86,22 @@ namespace GR.Identity
                 var result =
                     await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe,
                         false);
-
                 if (result.Succeeded)
                 {
                     user.LastLogin = DateTime.Now;
                     await _userManager.UserManager.UpdateAsync(user);
                     _logger.LogInformation("User logged in.");
+                    var claims = await _userManager.UserManager.GetClaimsAsync(user);
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
                         IpAdress = _userManager.GetRequestIpAdress(),
                         UserId = user.Id,
                         Email = user.Email,
                         FirstName = user.FirstName,
-                        LastName = user.LastName
+                        LastName = user.LastName,
+                        HttpContext = _contextAccessor.HttpContext
                     });
 
-                    var claims = await _userManager.UserManager.GetClaimsAsync(user);
                     var exist = claims.Any(x => x.Type.Equals(nameof(Tenant).ToLowerInvariant()));
                     if (!exist)
                     {

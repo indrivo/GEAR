@@ -86,15 +86,16 @@ namespace GR.UserPreferences.Abstractions.Extensions
 
                 options.ResolveListItems = selectedZone =>
                 {
-                    //$"({zone.StandardName}) {zone.Id}"
-                    var data = TimeZoneInfo.GetSystemTimeZones()
-                        .Select(zone =>
-                            new DisplayItem
-                            {
-                                Id = zone.Id,
-                                Label = zone.DisplayName,
-                                Selected = selectedZone == zone.Id
-                            }).ToList();
+                    var zones = TimeZoneInfo.GetSystemTimeZones();
+                    //var useDisplayName = zones.All(x => x.DisplayName.Contains("+"));
+                    var data = zones.Select(zone =>
+                                            new DisplayItem
+                                            {
+                                                Id = zone.Id,
+                                                //Label = useDisplayName ? zone.DisplayName : $"({zone.StandardName}) {zone.Id}",
+                                                Label = zone.DisplayName,
+                                                Selected = selectedZone == zone.Id
+                                            }).ToList();
 
                     return Task.FromResult<IEnumerable<DisplayItem>>(data);
                 };

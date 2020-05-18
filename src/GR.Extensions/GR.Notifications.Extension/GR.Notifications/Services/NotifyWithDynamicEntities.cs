@@ -209,12 +209,12 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool onlyUnread = true)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return userRequest.Map<PaginatedNotificationsViewModel>();
-            var user = userRequest.Result;
+            var userId = userRequest.Result;
             var filters = new List<Filter>
             {
-                new Filter(nameof(SystemNotifications.UserId),user.Id)
+                new Filter(nameof(SystemNotifications.UserId),userId)
             };
 
             if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));

@@ -16,28 +16,30 @@ namespace GR.Localization.DataBaseProvider
         private readonly IHttpContextAccessor _httpAccessor;
         private readonly IOptionsSnapshot<LocalizationConfig> _locConfig;
         private readonly ICacheService _cache;
+        private readonly ILocalizationService _service;
 
         #endregion
 
         public DbLocalizerFactory(IHttpContextAccessor httpAccessor,
             ILocalizationContext localizationContext,
             IOptionsSnapshot<LocalizationConfig> locConfig,
-            ICacheService cache)
+            ICacheService cache, ILocalizationService service)
         {
             _httpAccessor = httpAccessor;
             _localizationContext = localizationContext;
             _locConfig = locConfig;
             _cache = cache;
+            _service = service;
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new DbStringLocalizer(_localizationContext, _cache, _httpAccessor, _locConfig);
+            return new DbStringLocalizer(_localizationContext, _cache, _httpAccessor, _locConfig, _service);
         }
 
         public IStringLocalizer Create(string baseName, string location)
         {
-            return new DbStringLocalizer(_localizationContext, _cache, _httpAccessor, _locConfig);
+            return new DbStringLocalizer(_localizationContext, _cache, _httpAccessor, _locConfig, _service);
         }
     }
 }

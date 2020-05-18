@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -20,6 +12,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using GR.Core.Helpers.Archiving;
+using Newtonsoft.Json.Linq;
 
 namespace GR.Localization.Api.Controllers
 {
@@ -64,8 +66,8 @@ namespace GR.Localization.Api.Controllers
         [HttpPut]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        public JsonResult AddLanguage([Required] AddLanguageViewModel model)
-            => Json(_service.AddLanguage(model));
+        public async Task<JsonResult> AddLanguage([Required] AddLanguageViewModel model)
+            => await JsonAsync(_service.AddLanguageAsync(model));
 
         /// <summary>
         /// Import language pack
@@ -89,6 +91,39 @@ namespace GR.Localization.Api.Controllers
 
             var importResult = await _service.ImportLanguageTranslationsAsync(language, dict);
             return Json(importResult);
+        }
+
+        /// <summary>
+        /// Get language pack
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetLanguagePack([StringLength(2), Required]string language)
+        {
+            var request = await _service.GetLanguagePackAsync(language);
+            if (!request.IsSuccess) return NotFound();
+            var serialized = JObject.FromObject(request.Result).ToString(Formatting.Indented);
+            return File(serialized.Utf8ToBytes(), ContentType.ApplicationJson, $"{language}.json");
+        }
+
+        /// <summary>
+        /// Get language packs as archive
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetLanguagePacks()
+        {
+            var request = await _service.GetLanguagePacksAsync();
+            if (!request.IsSuccess) return NotFound();
+            var items = new Dictionary<string, MemoryStream>();
+            foreach (var languagePack in request.Result)
+            {
+                var serialized = JObject.FromObject(languagePack.Value).ToString(Formatting.Indented);
+                items.Add($"{languagePack.Key}.json", new MemoryStream(serialized.Utf8ToBytes()));
+            }
+            var archive = ZipHelper.CreateZipArchive(items);
+            return File(archive, ContentType.ApplicationZip, "LanguagePackArchive");
         }
 
         /// <summary>
