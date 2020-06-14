@@ -16,6 +16,7 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using GR.Notifications.Abstractions;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +25,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity
 {
-    [Author(Authors.LUPEI_NICOLAE)]
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     [Documentation("Base implementation of gear user manager")]
     public class IdentityUserManager : IUserManager<GearUser>
     {
@@ -127,7 +128,7 @@ namespace GR.Identity
             var result = new ResultModel<Guid>();
             if (_httpContextAccessor.HttpContext == null || !_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                result.Errors.Add(new ErrorModel("", "Unauthorized user"));
+                result.AddError("Unauthorized user");
                 return result;
             }
             var nameIdentifierClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -154,7 +155,7 @@ namespace GR.Identity
             var result = new ResultModel<GearUser>();
             if (_httpContextAccessor.HttpContext == null || !_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                result.Errors.Add(new ErrorModel("", "Unauthorized user"));
+                result.AddError("Unauthorized user");
                 return result;
             }
 
@@ -193,7 +194,7 @@ namespace GR.Identity
         /// Get request ip address
         /// </summary>
         /// <returns></returns>
-        public virtual string GetRequestIpAdress() => _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
+        public virtual string GetRequestIpAddress() => _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
 
         /// <inheritdoc />
         /// <summary>
@@ -235,16 +236,12 @@ namespace GR.Identity
         {
             var result = new ResultModel();
 
-            if (user == null || roles == null)
-            {
-                result.Errors.Add(new ErrorModel(string.Empty, "Bad parameters"));
-                return result;
-            }
+            if (user == null || roles == null) return new InvalidParametersResultModel();
 
             var exist = await UserManager.FindByNameAsync(user.UserName);
             if (exist == null)
             {
-                result.Errors.Add(new ErrorModel(string.Empty, "User not found"));
+                result.AddError("User not found");
                 return result;
             }
 
@@ -372,7 +369,7 @@ namespace GR.Identity
         /// </summary>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName)
+        public async Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required] string roleName)
         {
             if (roleName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<UserInfoViewModel>>();
             var currentUserRequest = await GetCurrentUserAsync();
@@ -475,19 +472,19 @@ namespace GR.Identity
             var user = await UserManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                result.Errors.Add(new ErrorModel("User not found"));
+                result.AddError("User not found");
                 return result;
             }
 
             if (IsCurrentUser(userId.Value))
             {
-                result.Errors.Add(new ErrorModel("You can't delete current user"));
+                result.AddError("You can't delete current user");
                 return result;
             }
 
             if (!user.IsEditable)
             {
-                result.Errors.Add(new ErrorModel("This user cannot be deleted"));
+                result.AddError("This user cannot be deleted");
                 return result;
             }
 
@@ -547,12 +544,7 @@ namespace GR.Identity
         {
             var resultModel = new ResultModel();
             var currentUser = (await GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return resultModel;
-            }
+            if (currentUser == null) return new UserNotFoundResult<object>().ToBase();
 
             currentUser.UserPhoto = null;
             var result = await UserManager.UpdateAsync(currentUser);
@@ -618,11 +610,7 @@ namespace GR.Identity
         {
             var resultModel = new ResultModel();
             var currentUser = (await GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return resultModel;
-            }
+            if (currentUser == null) return new UserNotFoundResult<object>().ToBase();
 
             var result = await UserManager.ChangePasswordAsync(currentUser, current, next);
             if (result.Succeeded)
@@ -641,6 +629,18 @@ namespace GR.Identity
             resultModel.AppendIdentityErrors(result.Errors);
             return resultModel;
         }
+
+        /// <summary>
+        /// Find user by phone number
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public virtual async Task<GearUser> FindByPhoneNumberAsync(string phone)
+        {
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phone));
+            return user;
+        }
+
         #region Helpers
 
         /// <summary>
@@ -649,7 +649,7 @@ namespace GR.Identity
         /// <returns></returns>
         private static byte[] GetUserDefaultImage()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
+            var path = Path.Combine(AppContext.BaseDirectory, GlobalResources.Paths.EmbeddedResourcesPath + "/user.jpg");
             if (!File.Exists(path))
                 return default;
 

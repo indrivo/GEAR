@@ -98,6 +98,12 @@ namespace GR.ECommerce.Razor.Helpers
                     Href = "/products/dashboard"
                 },
 
+                new MenuItemConfig(CommerceRazorResources.Menu.StoreMenuItem)
+                {
+                    ParentMenuItemId = CommerceRazorResources.Menu.CommerceMenuItem,
+                    Name = "Store",
+                    Href = MenuResources.MenuItems.None
+                },
 
                 new MenuItemConfig(CommerceRazorResources.Menu.PaymentMethodsMenuItem)
                 {

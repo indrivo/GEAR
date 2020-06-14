@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
@@ -26,12 +27,16 @@ namespace GR.Modules.Abstractions.Helpers
             ConfigurationBuilder = builder;
             AppDomain.CurrentDomain.AssemblyLoad += (sender, args) =>
             {
-                var newModules = ExtractModulesFromAssembly(args.LoadedAssembly);
-                foreach (var conf in newModules)
-                {
-                    conf.ApplyBuilderConfiguration(ConfigurationBuilder);
-                }
+                var unused = ExtractModulesFromAssembly(args.LoadedAssembly);
             };
+
+            var appSettingsFolder = Path.Combine(AppContext.BaseDirectory, "AppSettings");
+            if (!Directory.Exists(appSettingsFolder)) return;
+            var settingFiles = Directory.GetFiles(appSettingsFolder);
+            foreach (var settingFile in settingFiles)
+            {
+                builder.AddJsonFile(settingFile, true, true);
+            }
         }
 
         /// <summary>

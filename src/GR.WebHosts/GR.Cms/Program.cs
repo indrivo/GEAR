@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using GR.WebApplication;
+using GR.WebApplication.Models;
 
 namespace GR.Cms
 {
@@ -8,6 +10,14 @@ namespace GR.Cms
 		/// Main
 		/// </summary>
 		/// <param name="args"></param>
-		public static void Main(string[] args) => GearWebApplication.Run<Startup>(args);
+		public static void Main(string[] args)
+		{
+			var options = new GearApplicationArgs
+			{
+				UseKestrel = !Debugger.IsAttached
+			};
+
+			GearWebApplication.Run<Startup>(args, options);
+		}
 	}
 }

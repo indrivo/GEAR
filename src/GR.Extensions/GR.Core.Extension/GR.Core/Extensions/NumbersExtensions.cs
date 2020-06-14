@@ -43,6 +43,18 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Get a certain percentage of the specified number.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="percentage"></param>
+        /// <returns></returns>
+        public static double GetPercentage(this decimal value, double percentage)
+        {
+            var percentAsDouble = percentage / 100;
+            return (double)value * percentAsDouble;
+        }
+
+        /// <summary>
         /// Get percent of
         /// </summary>
         /// <param name="value"></param>
@@ -50,6 +62,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static int PercentOf(this int value, int total)
         {
+            if (total == 0) return 0;
             return (int)(value / (double)total * 100);
         }
 
@@ -61,6 +74,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static int PercentOf(this ulong value, ulong total)
         {
+            if (total == 0) return 0;
             return (int)(value / (double)total * 100);
         }
 
@@ -72,6 +86,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static double PercentOf(this decimal value, decimal total)
         {
+            if (total == 0) return 0;
             try
             {
                 return (double)(value / total * 100);
@@ -92,10 +107,18 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static int PercentOf(this long value, long total)
         {
+            if (total == 0) return 0;
             var v = value > 0 ? (ulong)value : 0;
             return total == 0 ? 0 : v.PercentOf((ulong)total);
         }
 
+        /// <summary>
+        /// Get random number
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static long NextLong(this Random random, long min, long max)
         {
             if (max <= min)

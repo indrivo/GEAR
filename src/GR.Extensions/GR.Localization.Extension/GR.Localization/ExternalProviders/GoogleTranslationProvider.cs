@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Localization.Abstractions;
 
-namespace GR.Localization
+namespace GR.Localization.ExternalProviders
 {
     public class GoogleTranslationProvider : IExternalTranslationProvider
     {

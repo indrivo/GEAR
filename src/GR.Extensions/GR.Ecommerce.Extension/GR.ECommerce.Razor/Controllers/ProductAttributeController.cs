@@ -8,7 +8,6 @@ using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
-using GR.ECommerce.Razor.ViewModels;
 using System.Threading.Tasks;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Mapster;

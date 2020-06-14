@@ -13,7 +13,7 @@ using GR.Identity.Abstractions;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.ECommerce.Infrastructure.Services
 {
     [Author(Authors.DOROSENCO_ION, 1.1)]
     [Documentation("Basic Implementation of cart service")]

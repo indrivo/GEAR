@@ -1,4 +1,8 @@
-﻿@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductAttributeViewModel
+@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductAttributeViewModel
+
+@{
+	ViewData["Title"] = "Add attribute";
+}
 
 <div class="row">
     <div class="col-lg-12">
@@ -28,8 +32,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="AttributeGroupId"></label><i class="btn btn-secondary ml-2"><a asp-controller="AttributeGroup" asp-action="Create" class="ti-plus text-white"></a></i>
-                                    
-                                    <select asp-for="AttributeGroupId" asp-items="Model.AttributeGroups" class="form-control"></select>
+	                                <select asp-for="AttributeGroupId" asp-items="Model.AttributeGroups" class="form-control"></select>
                                 </div>
                             </div>
                         </div>

@@ -16,15 +16,24 @@ using GR.Identity.Data;
 using GR.Logger.Extensions;
 using GR.Modules.Abstractions.Helpers;
 using GR.UI.Menu.Data;
+using GR.WebApplication.Extensions;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
 using Newtonsoft.Json;
 
 namespace GR.WebApplication
 {
-    [Author(Authors.LUPEI_NICOLAE, 1.1, "Gear app for run on web env")]
+    /// <summary>
+    /// Gear app for run on web env
+    /// </summary>
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     public class GearWebApplication : GearApplication
     {
+        /// <summary>
+        /// Application arguments
+        /// </summary>
+        public static GearApplicationArgs ApplicationArgs;
+
         /// <summary>
         /// Build web host
         /// </summary>
@@ -38,11 +47,6 @@ namespace GR.WebApplication
                 ResourceProvider.AppSettingsFilepath(hostingEnvironment));
 
         /// <summary>
-        /// Migrate and run
-        /// </summary>
-        public static void MigrateAndRun() => Migrate().Run();
-
-        /// <summary>
         /// Init migrations
         /// </summary>
         public static void InitModulesMigrations() => Migrate();
@@ -51,8 +55,10 @@ namespace GR.WebApplication
         /// Run application
         /// </summary>
         /// <param name="args"></param>
-        public static void Run<TStartUp>(string[] args) where TStartUp : class
+        /// <param name="gearApplicationArgs"></param>
+        public static void Run<TStartUp>(string[] args, GearApplicationArgs gearApplicationArgs = null) where TStartUp : class
         {
+            ApplicationArgs = gearApplicationArgs ?? new GearApplicationArgs();
             SystemEvents.RegisterEvents();
             BuildWebHost<TStartUp>(args).Run();
         }
@@ -129,27 +135,29 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IWebHost BuildWebHost<TStartUp>(string[] args) where TStartUp : class
         {
-            GlobalAppHost = GlobalWebHost = WebHost.CreateDefaultBuilder(args)
+            if (GlobalWebHost != null) return GlobalWebHost;
+            var builder = WebHost.CreateDefaultBuilder(args)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseConfiguration(BuildConfiguration())
                 .RegisterGearLoggingProviders()
                 .CaptureStartupErrors(true)
                 .UseStartup<TStartUp>()
-                .ConfigureAppConfiguration((hostingContext, conf) =>
-                {
-                    ModulesProvider.Bind(conf);
-                })
-                .Build();
+                .ConfigureAppConfiguration((hostingContext, conf) => { ModulesProvider.Bind(conf); });
 
+            if (ApplicationArgs.UseKestrel)
+            {
+                builder.UseKestrel(options => options.ConfigureEndpoints());
+            }
+
+            GlobalAppHost = GlobalWebHost = builder.Build();
             return GlobalWebHost;
         }
-
 
         /// <summary>
         /// Migrate Web host extension
         /// </summary>
         /// <returns></returns>
-        private static IWebHost Migrate()
+        private static void Migrate()
         {
             AppState.InstallOnProgress = true;
 
@@ -159,8 +167,6 @@ namespace GR.WebApplication
                 .MigrateDbContext<MenuDbContext>();
 
             SystemEvents.Database.MigrateAll(EventArgs.Empty);
-
-            return GlobalWebHost;
         }
         #endregion
     }

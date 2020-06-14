@@ -4,6 +4,7 @@
 	ViewData["Title"] = "Checkout";
 
 	Guid? defaultAddress = null;
+	string defaultCountry = "";
 }
 
 @section Styles {
@@ -50,24 +51,6 @@
 
 		.adress-item:not(:last-child) > label {
 			border-bottom: 1px solid #D8DCE0;
-		}
-
-		.sidebar + .content-area .payment-actions {
-			width: calc(100vw - 300px);
-			margin-left: 300px;
-			bottom: 0;
-			left: 0;
-			background-color: white;
-			transition: all 0.4s;
-		}
-
-		.sidebar.collapsed + .content-area .payment-actions {
-			width: calc(100vw - 60px);
-			margin-left: 60px;
-			bottom: 0;
-			left: 0;
-			background-color: white;
-			transition: all 0.4s;
 		}
 
 		.button-border {
@@ -128,76 +111,146 @@
 <div class="row">
 	<div class="col-md-5">
 		<div class="card p-4">
-			<h2 class="w-400">@Localizer["system_billing_address"]</h2>
-			<ul id="address-list" class="list-group">
-				@foreach (var address in Model.Addresses)
-				{
-					if (address.IsDefault)
+			<div class="card-body">
+				<h2 class="w-400" id="addressHeader">Shipping address</h2>
+				<div>
+					<input type="checkbox" id="billingSameAsSipping" />
+					<label for="billingSameAsSipping">Use selected shipping address as billing address</label>
+				</div>
+				<ul id="address-shipping-list" class="list-group">
+					@foreach (var address in Model.Addresses)
 					{
-						defaultAddress = address.Id;
+						if (address.IsDefault)
+						{
+							defaultAddress = address.Id;
+							defaultCountry = address.CountryId;
+						}
+
+						<li class="adress-item">
+							<label for="a_@address.Id" class="w-100 m-0 pt-4 pb-4">
+								<div class="custom-control custom-radio d-flex align-items-center weight-600">
+									<input data-country="@address.CountryId" type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customShipment" class="custom-control-input shipping-address" value="@address.Id" />
+									<div class="custom-control-label ml-2"><span class="ml-4 w-130px"> Contact Name: </span>@address.ContactName</div>
+								</div>
+
+								<div class="address-data ml-32px">
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_address_line_1"]:</span>
+										@address.AddressLine1
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_address_line_2"]:</span>
+										@address.AddressLine2
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["system_phone"]:</span>
+										@address.Phone
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_postal_code"]:</span>
+										@address.ZipCode
+									</div>
+								</div>
+							</label>
+						</li>
 					}
+				</ul>
+				<hr />
+				<div id="billingAddressContainer">
+					<h2 class="w-400">@Localizer["system_billing_address"]</h2>
+					<ul id="address-list" class="list-group">
+						@foreach (var address in Model.Addresses)
+						{
+							if (address.IsDefault)
+							{
+								defaultAddress = address.Id;
+							}
 
-					<li class="adress-item">
-						<label for="a_@address.Id" class="w-100 m-0 pt-4 pb-4">
-							<div class="custom-control custom-radio d-flex align-items-center weight-600">
-								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id" />
-								<div class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>@address.ContactName</div>
-							</div>
+							<li class="adress-item">
+								<label for="b_@address.Id" class="w-100 m-0 pt-4 pb-4">
+									<div class="custom-control custom-radio d-flex align-items-center weight-600">
+										<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="b_@address.Id" name="customBilling" class="custom-control-input billing-address" value="@address.Id" />
+										<div class="custom-control-label ml-2"><span class="ml-4 w-130px"> Contact Name: </span>@address.ContactName</div>
+									</div>
 
-							<div class="address-data ml-32px">
-								<div class="mt-2">
-									<span class="w-130px">@Localizer["user_address_line_1"]:</span>
-									@address.AddressLine1
+									<div class="address-data ml-32px">
+										<div class="mt-2">
+											<span class="w-130px">@Localizer["user_address_line_1"]:</span>
+											@address.AddressLine1
+										</div>
+										<div class="mt-2">
+											<span class="w-130px">@Localizer["user_address_line_2"]:</span>
+											@address.AddressLine2
+										</div>
+										<div class="mt-2">
+											<span class="w-130px">@Localizer["system_phone"]:</span>
+											@address.Phone
+										</div>
+										<div class="mt-2">
+											<span class="w-130px">@Localizer["user_postal_code"]:</span>
+											@address.ZipCode
+										</div>
+									</div>
+								</label>
+							</li>
+						}
+						<li class="address-item address-item-new">
+							<h2 class="w-400 pt-2">Add new address</h2>
+							<form id="new-address" class="w-100 pt-4 pb-4 ml-32px">
+								<div class="address-data-input">
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["system_country"]:</span>
+										<select type="text" id="add-address-country" class="form-control address-city d-inline-block" required></select>
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["system_city"]:</span>
+										<select type="text" id="add-address-city" class="form-control address-city d-inline-block" required></select>
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_address_line_1"]:</span>
+										<input type="text" id="add-address-line-1" class="form-control address-line-1 d-inline-block">
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_address_line_2"]:</span>
+										<input type="text" id="add-address-line-2" class="form-control address-line-2 d-inline-block">
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["system_phone"]:</span>
+										<input type="text" id="add-address-phone" class="form-control address-phone d-inline-block">
+									</div>
+									<div class="mt-2">
+										<span class="w-130px">@Localizer["user_postal_code"]:</span>
+										<input type="text" id="add-address-postal-code" class="form-control address-postal-code d-inline-block" required>
+									</div>
 								</div>
-								<div class="mt-2">
-									<span class="w-130px">@Localizer["user_address_line_2"]:</span>
-									@address.AddressLine2
-								</div>
-								<div class="mt-2">
-									<span class="w-130px">@Localizer["system_phone"]:</span>
-									@address.Phone
-								</div>
-								<div class="mt-2">
-									<span class="w-130px">@Localizer["user_postal_code"]:</span>
-									@address.ZipCode
-								</div>
-							</div>
-						</label>
-					</li>
-				}
-				<li class="address-item address-item-new">
-					<form id="new-address" class="w-100 pt-4 pb-4 ml-32px">
-						<div class="address-data-input">
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["system_country"]:</span>
-								<select type="text" id="add-address-country" class="form-control address-city d-inline-block" required></select>
-							</div>
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["system_city"]:</span>
-								<select type="text" id="add-address-city" class="form-control address-city d-inline-block" required></select>
-							</div>
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["user_address_line_1"]:</span>
-								<input type="text" id="add-address-line-1" class="form-control address-line-1 d-inline-block">
-							</div>
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["user_address_line_2"]:</span>
-								<input type="text" id="add-address-line-2" class="form-control address-line-2 d-inline-block">
-							</div>
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["system_phone"]:</span>
-								<input type="text" id="add-address-phone" class="form-control address-phone d-inline-block">
-							</div>
-							<div class="mt-2">
-								<span class="w-130px">@Localizer["user_postal_code"]:</span>
-								<input type="text" id="add-address-postal-code" class="form-control address-postal-code d-inline-block" required>
-							</div>
+							</form>
+						</li>
+					</ul>
+					<div>
+						<button class="btn btn-primary mt-3 d-flex align-items-center" type="submit" form="new-address">
+							Save address
+						</button>
+					</div>
+				</div>
+				<div class="py-2">
+					<form asp-action="Shipping">
+						@Html.HiddenFor(x => x.Order.Id)
+						<input asp-for="BillingAddressId" type="hidden" value="@defaultAddress" />
+						<input asp-for="ShipmentAddress" type="hidden" value="@defaultAddress" />
+
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="pull-left d-flex h-100 py-2">
+							<a id="cancel-order" href="#" class="btn-cancel-order btn btn-block btn-inverse button-border d-flex align-items-center py-2 px-3">
+								@Localizer["system_cancel_order"]
+							</a>
+							<button type="submit" class="btn-payment btn btn-block mt-0 ml-2 btn-primary d-flex align-items-center py-2 px-3">
+								@Localizer["system_payment"]
+							</button>
 						</div>
 					</form>
-				</li>
-			</ul>
+				</div>
+			</div>
 		</div>
-
 	</div>
 	<div class="col-md-3">
 		<div class="card h-100 p-4">
@@ -206,55 +259,17 @@
 	</div>
 </div>
 
-<div>
-	<button class="btn btn-primary mt-3 d-flex align-items-center" type="submit" form="new-address">
-		<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
-			<path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
-		</svg>
-		Save address
-	</button>
-</div>
-
-<div style="height: 100px">
-
-</div>
-
-<div class="position-fixed payment-actions py-2">
-	<form asp-action="Shipping">
-		@Html.HiddenFor(x => x.Order.Id)
-		<input asp-for="BillingAddressId" type="hidden" value="@defaultAddress" />
-		<input asp-for="ShipmentAddress" type="hidden" value="@defaultAddress" />
-
-		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-		<div class="pull-left d-flex h-100 pl-3 py-2">
-			<a id="cancel-order" href="#" class="btn-cancel-order btn btn-block btn-inverse button-border d-flex align-items-center py-2 px-3">
-				<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
-					<path id="Icon" d="M245,3448a7,7,0,1,1,7-7A7.008,7.008,0,0,1,245,3448Zm0-12.6a5.6,5.6,0,1,0,5.6,5.6A5.606,5.606,0,0,0,245,3435.4Zm-2.513,9.1h0l-.986-.987,2.513-2.513-2.513-2.513.987-.987,2.513,2.513,2.512-2.513.987.987L245.986,3441l2.513,2.513-.987.987L245,3441.986l-2.513,2.513Z" transform="translate(-238 -3434)" fill="rgba(0,0,0,0.6)" />
-				</svg>
-				@Localizer["system_cancel_order"]
-			</a>
-			<button type="submit" class="btn-payment btn btn-block mt-0 ml-2 btn-primary d-flex align-items-center py-2 px-3">
-				<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
-					<path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
-				</svg>
-				@Localizer["system_payment"]
-			</button>
-		</div>
-	</form>
-</div>
-
-
 @section Scripts{
 	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 	<script>
 
 		class Address {
-			ajaxRequest(requestUrl, requestType, requestData) {
-				const baseUrl = '/api/Address';
+			ajaxRequest(requestUrl, requestType, requestData, customBaseUrl = false) {
+				const baseUrl = '/api/UserAddress';
 				return new Promise((resolve, reject) => {
 					$.ajax({
-						url: baseUrl + requestUrl,
+						url: customBaseUrl ? requestUrl : baseUrl + requestUrl,
 						type: requestType,
 						data: requestData,
 						success: (data) => {
@@ -274,13 +289,13 @@
 			}
 
 			getAllCountries() {
-				const requestUrl = '/GetAllCountries';
-				return this.ajaxRequest(requestUrl, 'get', null);
+				const requestUrl = '/api/Country/GetAllCountries';
+				return this.ajaxRequest(requestUrl, 'get', null, true);
 			}
 
 			getCitiesByCountryId(countryId) {
-				const requestUrl = '/GetCitiesByCountryId';
-				return this.ajaxRequest(requestUrl, 'get', { countryId });
+				const requestUrl = '/api/Country/GetCitiesByCountry';
+				return this.ajaxRequest(requestUrl, 'get', { countryId }, true);
 			}
 
 			addNewAddress(address = {
@@ -302,14 +317,18 @@
 	<script>
 		const toast = new ToastNotifier();
 		const addressManager = new Address();
+		const orderTotalCost = '@Model.Order.Total.ToString("N2")';
+		let sameAddress = false;
 
 		addressManager.getAllCountries().then(countries => {
 			const countriesInput = $('#new-address #add-address-country');
 			countriesInput.html(null);
-			$.each(countries, function (index, value) {
-				const option = new Option(value.name, value.id);
-				countriesInput.append(option);
-			});
+
+			$.each(countries,
+				function(index, value) {
+					const option = new Option(value.name, value.id);
+					countriesInput.append(option);
+				});
 			countriesInput.select2();
 			updateCityInput($('#new-address #add-address-city'), countriesInput);
 		});
@@ -318,43 +337,70 @@
 			const countryId = countriesInput.val();
 			addressManager.getCitiesByCountryId(countryId).then(cities => {
 				input.html(null);
-				$.each(cities, function (index, value) {
-					const option = new Option(value.name, value.id);
-					input.append(option);
-				});
+				$.each(cities,
+					function(index, value) {
+						const option = new Option(value.name, value.id);
+						input.append(option);
+					});
 			});
 			input.select2();
 		}
 
-		$(document).ready(function () {
-			$("#cancel-order").on("click", function () {
-                $.ajax({
-                    method: "delete",
-					url: "/api/Orders/CancelOrder",
-					data: {
-						orderId: "@Model.Order.Id"
-					},
-					success: function (response) {
-						if (response.is_success) {
-							toast.notifySuccess("Info", "Order was canceled");
-							setTimeout(function () {
-								location.href = "/Orders/MyOrders";
-							}, 300);
-						} else {
-							toast.notifyErrorList(response.error_keys);
-						}
-					},
-					error: function () {
-						toast.notifyErrorList("Error");
+		function setOrderShippingCost(countryId) {
+			const max = 2;
+			$.ajax({
+				method: "get",
+				url: "/api/Country/GetCountryById",
+				data: {
+					countryId: countryId
+				},
+				success: function(response) {
+					if (response.is_success) {
+						const shippingCost = response.result.shippingCost;
+						$('#shipping-container-value').text(shippingCost.toFixed(max));
+						$('#order-total-value').text((parseFloat(orderTotalCost) + shippingCost).toFixed(max));
+					} else {
+						toast.notifyErrorList(response.error_keys);
 					}
+				},
+				error: function() {
+					toast.notifyErrorList("Error");
+				}
+			});
+		}
+
+		$(document).ready(function() {
+			$("#cancel-order").on("click",
+				function() {
+					$.ajax({
+						method: "delete",
+						url: "/api/Orders/CancelOrder",
+						data: {
+							orderId: "@Model.Order.Id"
+						},
+						success: function(response) {
+							if (response.is_success) {
+								toast.notifySuccess("Info", "Order was canceled");
+								setTimeout(function() {
+										location.href = "/Orders/MyOrders";
+									},
+									300);
+							} else {
+								toast.notifyErrorList(response.error_keys);
+							}
+						},
+						error: function() {
+							toast.notifyErrorList("Error");
+						}
+					});
 				});
-			});
 
-			$('#new-address #add-address-country').on('change', function () {
-				updateCityInput($('#new-address #add-address-city'), $(this));
-			});
+			$('#new-address #add-address-country').on('change',
+				function() {
+					updateCityInput($('#new-address #add-address-city'), $(this));
+				});
 
-			$('#new-address').submit(function (e) {
+			$('#new-address').submit(function(e) {
 				e.preventDefault();
 
 				const scope = $(this);
@@ -369,34 +415,42 @@
 					isDefault: true
 				}
 				addressManager.addNewAddress(address).then(addressId => {
-					forceSetAdresses(addressId, addressId);
 					address.id = addressId;
-					prependAddress(address, $('#address-list'));
+					prependAddress(address, $('#address-list'), "b", "customBilling", "billing-address");
+					prependAddress(address, $('#address-shipping-list'), "a", "customShipment", "shipping-address");
 					scope[0].reset();
 					scope.find('select').val('').select2();
+					attachEvents();
 				});
-
 			});
 
 			function attachEvents() {
-			$(".billing-address").off("change").on("change", function () {
-				const addressId = $(this).val();
-				forceSetAdresses(addressId, addressId);
-			});
+				$(".billing-address").off("change").on("change",
+					function() {
+						const addressId = $(this).val();
+						$("#BillingAddressId").val(addressId);
+					});
+				$(".shipping-address").off("change").on("change",
+					function() {
+						const addressId = $(this).val();
+						if (sameAddress) {
+							$("#BillingAddressId").val(addressId);
+						}
+						$("#ShipmentAddress").val(addressId);
+						const countryId = $(this).data("country");
+						//setOrderShippingCost(countryId);
+					});
 			}
 
-			function forceSetAdresses(billingId, shipmentId) {
-				$("#BillingAddressId").val(billingId);
-                $("#ShipmentAddress").val(shipmentId);
-			}
-
-			function prependAddress(address, target) {
+			function prependAddress(address, target, prefix, name, classIdentifier) {
 				const htmlMarkup = `
 					<li class="adress-item">
-						<label for="a_${address.id}" class="w-100 m-0 pt-4 pb-4">
+						<label for="${prefix}_${address.id}" class="w-100 m-0 pt-4 pb-4">
 							<div class="custom-control custom-radio d-flex align-items-center weight-600">
-								<input type="radio" checked='checked' id="a_${address.id}" name="customRadio" class="custom-control-input billing-address" value="${address.id}">
-								<label class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>${address.contactName}</label>
+								<input data-country="${address.countryId}" type="radio" checked='checked' id="${prefix}_${address.id
+					}" name="${name}" class="custom-control-input ${classIdentifier}" value="${address.id}">
+								<label class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>${
+					address.contactName}</label>
 							</div>
 
 							<div class="address-data ml-32px">
@@ -423,8 +477,20 @@
 				attachEvents();
 			}
 
-
+			//setOrderShippingCost("@defaultCountry");
 			attachEvents();
+
+			$('#billingSameAsSipping').on('change',
+				function() {
+					sameAddress = $(this).is(':checked');
+					if (sameAddress) {
+						$('#addressHeader').text('Shipping address same as billing address');
+						$('#billingAddressContainer').hide();
+					} else {
+						$('#addressHeader').text('Shipping address');
+						$('#billingAddressContainer').show();
+					}
+				});
 		});
 	</script>
 }

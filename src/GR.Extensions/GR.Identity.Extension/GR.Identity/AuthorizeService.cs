@@ -16,6 +16,7 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,13 +43,58 @@ namespace GR.Identity
         /// </summary>
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Inject context accessor
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
+
         #endregion
 
-        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger)
+        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger, IHttpContextAccessor contextAccessor)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _contextAccessor = contextAccessor;
+        }
+
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> LoginAsync(GearUser user)
+        {
+            var response = new ResultModel();
+            if (user == null)
+            {
+                response.AddError("User not found");
+                return response;
+            }
+            if (user.IsDeleted)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "The user is deleted and cannot log in"));
+                return response;
+            }
+
+            if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
+            {
+                response.Errors.Add(new ErrorModel(string.Empty,
+                    "Password has been expired, you need to change the password"));
+                return response;
+            }
+            await _signInManager.SignInAsync(user, true);
+            IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
+            {
+                IpAdress = _userManager.GetRequestIpAddress(),
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                HttpContext = _contextAccessor.HttpContext
+            });
+            response.IsSuccess = true;
+            return response;
         }
 
         /// <summary>
@@ -75,26 +121,26 @@ namespace GR.Identity
                     return response;
                 }
 
-
                 var result =
                     await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe,
                         false);
-
                 if (result.Succeeded)
                 {
                     user.LastLogin = DateTime.Now;
+                    user.DisableAuditTracking = true;
                     await _userManager.UserManager.UpdateAsync(user);
                     _logger.LogInformation("User logged in.");
+                    var claims = await _userManager.UserManager.GetClaimsAsync(user);
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
-                        IpAdress = _userManager.GetRequestIpAdress(),
+                        IpAdress = _userManager.GetRequestIpAddress(),
                         UserId = user.Id,
                         Email = user.Email,
                         FirstName = user.FirstName,
-                        LastName = user.LastName
+                        LastName = user.LastName,
+                        HttpContext = _contextAccessor.HttpContext
                     });
 
-                    var claims = await _userManager.UserManager.GetClaimsAsync(user);
                     var exist = claims.Any(x => x.Type.Equals(nameof(Tenant).ToLowerInvariant()));
                     if (!exist)
                     {
@@ -166,7 +212,7 @@ namespace GR.Identity
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                IpAdress = _userManager.GetRequestIpAdress()
+                IpAdress = _userManager.GetRequestIpAddress()
             });
 
             result.IsSuccess = true;

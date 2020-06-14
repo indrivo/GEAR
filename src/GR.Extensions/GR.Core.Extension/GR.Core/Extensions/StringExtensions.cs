@@ -123,5 +123,30 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static byte[] ToBytes(this string str)
             => str.IsNull() ? default : Encoding.ASCII.GetBytes(str);
+
+        /// <summary>
+        /// Utf8 to bytes
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static byte[] Utf8ToBytes(this string str)
+            => str.IsNull() ? default : Encoding.UTF8.GetBytes(str);
+
+
+        /// <summary>
+        /// Decode string from UTF8
+        /// </summary>
+        /// <param name="utf8String"></param>
+        /// <returns></returns>
+        public static string DecodeFromUtf8(this string utf8String)
+        {
+            var utf8Bytes = new byte[utf8String.Length];
+            for (var i = 0; i < utf8String.Length; ++i)
+            {
+                utf8Bytes[i] = (byte)utf8String[i];
+            }
+
+            return Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length);
+        }
     }
 }

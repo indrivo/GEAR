@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using GR.Calendar.Abstractions.Enums;
 using GR.Core.Abstractions;
@@ -49,6 +50,9 @@ namespace GR.Calendar.Abstractions.Models.ViewModels
         public int Version { get; set; }
         [JsonIgnore]
         public Guid? TenantId { get; set; }
+
+        [NotMapped]
+        public bool DisableAuditTracking { get; set; }
     }
 
     public sealed class CalendarUserViewModel : UserInfoViewModel

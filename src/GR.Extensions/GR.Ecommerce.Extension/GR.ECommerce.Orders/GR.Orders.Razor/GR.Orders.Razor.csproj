@@ -3,14 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
-    <Version>1.9.4</Version>
+    <Version>1.9.3</Version>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>commerce-ui gear orders razor</PackageTags>
-    <FileVersion>1.9.4</FileVersion>
-    <AssemblyVersion>1.9.4</AssemblyVersion>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
+    <FileVersion>1.9.3</FileVersion>
+    <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +27,7 @@
     </Content>
     <Content Update="Views\Orders\Details.cshtml">
       <Pack>false</Pack>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Views\Orders\MyOrders.cshtml">
       <Pack>false</Pack>

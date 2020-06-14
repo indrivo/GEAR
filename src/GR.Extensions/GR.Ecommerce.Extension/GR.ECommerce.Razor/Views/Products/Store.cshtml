@@ -1,0 +1,578 @@
+@using GR.ECommerce.Abstractions
+@using GR.ECommerce.Abstractions.Models
+@inject IProductService<Product> ProductService
+
+@{
+	ViewData["Title"] = "Store";
+	Layout = "_Layout";
+}
+
+@{
+	var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
+}
+
+<style>
+
+	.card-product {
+		margin: 1em;
+	}
+
+	.add-to-cart {
+		margin-left: 1.1vw;
+	}
+</style>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-md-3">
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filtersModal">
+					Filters
+				</button>
+			</div>
+			<div id="filters-tags" class="col-md-5">
+
+			</div>
+			<div class="col-md-4">
+				<div id="search-block" class="input-group mb-3">
+					<input id="search-input" type="search" class="form-control" placeholder="@Localizer["system_search"]..." aria-label="" aria-describedby="basic-addon2">
+					<div class="input-group-append">
+						<span class="input-group-text fa fa-search" id="basic-addon2"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<section class="wrapper">
+		<div class="spinner">
+			<i></i>
+			<i></i>
+			<i></i>
+			<i></i>
+			<i></i>
+			<i></i>
+			<i></i>
+		</div>
+	</section>
+	<div id="products" class="row p-3">
+
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal right fade" tabindex="-1" role="dialog" id="filtersModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Filters</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div id="filters-body" class="modal-body">
+
+			</div>
+			<div class="modal-footer">
+				<a id="clearFilters" href="#" class="btn btn-primary">Clear filters</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts
+{
+	<script id="productTemplate" type="text/x-jsrender">
+		<div class="card-product card col-md-2">
+			<img style="max-height: 20em;" class="card-img-top" src="/Products/GetProductImage?productId={{:id}}" alt="Card image cap">
+			<div class="card-body" style="overflow: auto; height: 30vh;">
+				<h5 class="card-title">{{:name}}</h5>
+				<div class="card-text">{{:shortDescription}}<br /></div>
+			</div>
+			<div class="card-footer">
+				<a data-id="{{:id}}" href="/Products/ProductDetail?productId={{:id}}" class="add-to-cart btn btn-primary">
+					<span class="fa fa-eye"></span>
+					View {{:priceWithoutDiscount}} @currency?.Symbol
+				</a>
+			</div>
+		</div>
+	</script>
+	<script>
+		class ProductsStore {
+			constructor(config = {
+				containerSelector: "",
+				productTemplateSelector: ""
+			}) {
+				this.containerSelector = config.containerSelector;
+				this.filtersBodySelector = "#filters-body";
+				this.filtersTagsSelector = "#filters-tags";
+				this.pageConf = {
+					page: 1,
+					perPage: 10
+				};
+				this.filters = [];
+				this.categories = [];
+				this.brands = [];
+				this.attributes = [];
+				this.productTemplate = $.templates(config.productTemplateSelector);
+				this.spinner = $(`<div class="spinner text-center">
+																																					  <div class="spinner-border" role="status">
+																																						<span class="sr-only">Loading...</span>
+																																					  </div>
+																																					</div>`);
+				$(config.containerSelector).append(this.spinner);
+			}
+
+			startSpinner() {
+				$(this.containerSelector).find(".spinner").show();
+			}
+
+			stopSpinner() {
+				$(this.containerSelector).find(".spinner").hide();
+			}
+
+			addFilter(filter) {
+				const existFilter = this.filters.find(x => x.parameterName == filter.parameterName);
+				if (!filter.parameterValue && existFilter) {
+					this.filters = this.filters.filter(x => x.parameterName != filter.parameterName);
+				} else if (!existFilter) {
+					this.filters.push(filter);
+				} else {
+					this.filters.update(x => x.parameterName == filter.parameterName, filter);
+				}
+				this.invalidateFilterTags();
+			}
+
+			removeFilters() {
+				this.filters = [];
+				$(this.filtersBodySelector).find('input[type=checkbox]').prop('checked', false);
+				this.invalidateFilterTags();
+				this.invalidate();
+			}
+
+			invalidateFilterTags() {
+				const self = this;
+				const container = $(self.filtersTagsSelector);
+				container.html(null);
+				$.each(self.filters,
+					(i, item) => {
+						if (self.isJSONArray(item.parameterValue)) {
+							const arr = JSON.parse(item.parameterValue);
+							$.each(arr,
+								(r, t) => {
+									const i = t;
+									i.parameterValue = t.parameterName;
+									self.appendFilterToContainer(container, t);
+								});
+						} else {
+							self.appendFilterToContainer(container, item);
+						}
+					});
+			}
+
+			//<span class="fa fa-close"></span>
+			appendFilterToContainer(container, item) {
+				container.append($(
+					`<button data-id="${item.displayName
+					}" type="button" class="btn btn-secondary m-3">
+																			<span class="fa fa-ticket"></span>
+																			${item.parameterValue}
+
+																			</button>`));
+			}
+
+			isJSONArray(obj) {
+				try {
+					const o = JSON.parse(obj);
+					return this.isArray(o);
+				} catch{
+					return false;
+				}
+			}
+
+			isArray(obj) {
+				return obj !== undefined && obj !== null && obj.constructor == Array;
+			}
+
+			getCheckBoxFilter(conf = {
+				id: "",
+				name: ""
+			},
+				classNames) {
+				const domEl = $(`<div class="custom-control custom-checkbox my-1 mr-sm-2">
+						    <input data-name="${conf.name}" data-id="${conf.id
+					}" type="checkbox" class="custom-control-input ${classNames}" id="customControlInline_${conf.id}">
+							<label class="custom-control-label" for="customControlInline_${conf
+						.id}">${conf.name}</label>
+																			</div>`);
+				return domEl;
+			}
+
+			insertTitleIntoFilters(target, name) {
+				const titleEl = $(`<h5 class="pt-2">${name}</h3>`);
+				target.append(titleEl);
+			}
+
+			createFiltersContainer() {
+				const self = this;
+				const container = $(self.filtersBodySelector);
+				self.insertTitleIntoFilters(container, "Categories");
+				$.each(this.categories,
+					(i, item) => {
+						const body = self.getCheckBoxFilter(item, "product-category");
+						container.append(body);
+					});
+
+				$(".product-category").on("change",
+					function () {
+						const val = $(this).data("id");
+						const name = $(this).data("name");
+						let categoryFilter = self.filters.find(x => x.parameterName == "Categories");
+						if (!categoryFilter) {
+							categoryFilter = {
+								displayName: "Categories",
+								parameterName: "Categories",
+								parameterValue: []
+							};
+						} else {
+							categoryFilter.parameterValue = JSON.parse(categoryFilter.parameterValue);
+						}
+						if ($(this).is(':checked')) {
+							categoryFilter.parameterValue.push({
+								parameterName: name,
+								parameterValue: val
+							});
+						} else {
+							categoryFilter.parameterValue =
+								categoryFilter.parameterValue.filter(c => c.parameterValue != val);
+						}
+
+						categoryFilter.parameterValue = JSON.stringify(categoryFilter.parameterValue);
+						self.addFilter(categoryFilter);
+
+						self.invalidate();
+					});
+
+
+				self.insertTitleIntoFilters(container, window.translate("system_commerce_brands"));
+				$.each(this.brands,
+					(i, item) => {
+						const body = self.getCheckBoxFilter(item, "product-brand");
+						container.append(body);
+					});
+
+				$(".product-brand").on("change",
+					function () {
+						const val = $(this).data("id");
+						const name = $(this).data("name");
+						let categoryFilter = self.filters.find(x => x.parameterName == "Brands");
+						if (!categoryFilter) {
+							categoryFilter = {
+								displayName: window.translate("system_commerce_brands"),
+								parameterName: "Brands",
+								parameterValue: []
+							};
+						} else {
+							categoryFilter.parameterValue = JSON.parse(categoryFilter.parameterValue);
+						}
+						if ($(this).is(':checked')) {
+							categoryFilter.parameterValue.push({
+								parameterName: name,
+								parameterValue: val
+							});
+						} else {
+							categoryFilter.parameterValue =
+								categoryFilter.parameterValue.filter(c => c.parameterValue != val);
+						}
+
+						categoryFilter.parameterValue = JSON.stringify(categoryFilter.parameterValue);
+						self.addFilter(categoryFilter);
+
+						self.invalidate();
+					});
+
+				$.each(self.attributes, (i, a) => {
+					self.insertTitleIntoFilters(container, a.displayName);
+					if (a.values.length == 0) {
+						container.append($(`<code>No values</code>`));
+					}
+					$.each(a.values,
+						(i, item) => {
+							const strippedHtml = item.replace(/<[^>]*>?/gm, '');
+							const body = self.getCheckBoxFilter({
+								id: `${self.generateId()}_${a.id}`,
+								name: strippedHtml
+							}, "product-attribute");
+							container.append(body);
+						});
+				});
+
+				$(".product-attribute").on("change",
+					function () {
+						const val = $(this).data("id");
+						const name = $(this).data("name");
+						let categoryFilter = self.filters.find(x => x.parameterName == "Attributes");
+						if (!categoryFilter) {
+							categoryFilter = {
+								displayName: window.translate("system_commerce_attributes"),
+								parameterName: "Attributes",
+								parameterValue: []
+							};
+						} else {
+							categoryFilter.parameterValue = JSON.parse(categoryFilter.parameterValue);
+						}
+						if ($(this).is(':checked')) {
+							categoryFilter.parameterValue.push({
+								parameterName: name,
+								parameterValue: val
+							});
+						} else {
+							categoryFilter.parameterValue =
+								categoryFilter.parameterValue.filter(c => c.parameterValue != val);
+						}
+
+						categoryFilter.parameterValue = JSON.stringify(categoryFilter.parameterValue);
+						self.addFilter(categoryFilter);
+
+						self.invalidate();
+					});
+			}
+
+			generateId() {
+				return new ST().newGuid();
+			}
+
+			getStore() {
+				return this.request();
+			};
+
+			invalidate() {
+				const self = this;
+				$(self.containerSelector).html(this.spinner);
+				this.request(this.filters).then(items => {
+					self.renderItems(items, self.containerSelector);
+				});
+			};
+
+			setCategories() {
+				const self = this;
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: "/api/products/GetCategories",
+						success: function (data) {
+							if (data.is_success) {
+								self.categories = data.result;
+								resolve(data.result);
+							} else {
+								reject(data.error_keys);
+							}
+						}
+					});
+				});
+			}
+
+
+			loadBrands() {
+				const self = this;
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: "/api/products/GetBrands",
+						success: function (data) {
+							if (data.is_success) {
+								self.brands = data.result;
+								resolve(data.result);
+							} else {
+								reject(data.error_keys);
+							}
+						},
+						error: function (e) {
+							reject(e);
+						}
+					});
+				});
+			}
+
+			loadAttributes() {
+				const self = this;
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: "/api/products/GetAttributes",
+						success: function (data) {
+							if (data.is_success) {
+								self.attributes = data.result;
+								resolve(data.result);
+							} else {
+								reject(data.error_keys);
+							}
+						},
+						error: function (e) {
+							reject(e);
+						}
+					});
+				});
+			}
+
+
+			request(filters = undefined) {
+				const self = this;
+				this.startSpinner();
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: "/api/products/GetProductsWithFilters",
+						data: {
+							filters: JSON.stringify(filters),
+							page: self.pageConf.page,
+							perPage: self.pageConf.perPage
+						},
+						success: function (data) {
+							self.stopSpinner();
+							if (data.is_success) {
+								resolve(data.result);
+							} else {
+								reject(data.error_keys);
+							}
+						},
+						error: function (e) {
+							self.stopSpinner();
+							reject(e);
+						}
+					});
+				});
+			};
+
+			renderItems(items) {
+				const self = this;
+				const targetContainer = $(self.containerSelector);
+
+				//iterate categories
+				$.each(self.categories, (o, p) => {
+					targetContainer.append($(`<div class="col-md-12"><h3 class="text-white">${p.name}</h3></div>`));
+					const catItems = items.filter(d => d.productCategories.length > 0 && d.productCategories.find(h => h.categoryId == p.id));
+					if (catItems.length == 0) {
+						targetContainer.append($(`<div class="col-md-12"><h6>No products</h6></div>`));
+					} else {
+						self.renderCategoryItems(catItems, targetContainer);
+					}
+				});
+
+				const uncategoryProducts = items.filter(v => v.productCategories.length == 0);
+				targetContainer.append($(`<div class="col-md-12"><h3 class="text-black">Uncategorized</h3></div>`));
+				if (uncategoryProducts.length == 0) {
+					targetContainer.append($(`<div class="col-md-12"><h6>No products</h6></div>`));
+				} else {
+					self.renderCategoryItems(uncategoryProducts, targetContainer);
+				}
+			}
+
+
+			renderCategoryItems(items, targetContainer) {
+				const self = this;
+				$.each(items,
+					(i, item) => {
+						targetContainer.append(self.createItem(item));
+					});
+			}
+
+			createItem(item) {
+				const htmlOutput = this.productTemplate.render(item);
+				return $(htmlOutput);
+			}
+		}
+
+		$(document).ready(function () {
+			const config = {
+				containerSelector: "#products",
+				productTemplateSelector: "#productTemplate"
+			};
+			var _ = new ProductsStore(config);
+			//ensure that filter types are loaded
+			Promise.all([
+				_.loadAttributes(),
+				_.setCategories(),
+				_.loadBrands()
+			]).then(() => {
+				//Create filters container
+				_.createFiltersContainer();
+
+				_.getStore().then(items => {
+					_.renderItems(items);
+					$("#clearFilters").on("click", function () {
+						_.removeFilters();
+					});
+					$("#search-input").on("search",
+						function () {
+							_.addFilter({
+								parameterName: "SearchGlobal",
+								parameterValue: $(this).val()
+							});
+
+							//Invalidate items
+							_.invalidate();
+						});
+				});
+
+			}).catch(e => {
+				console.log(e);
+			});
+		});
+
+	</script>
+}
+
+
+@section Styles{
+
+	<style>
+		.modal.right .modal-dialog {
+			position: fixed;
+			margin: auto;
+			width: 320px;
+			height: 100%;
+			-webkit-transform: translate3d(0%, 0, 0);
+			-ms-transform: translate3d(0%, 0, 0);
+			-o-transform: translate3d(0%, 0, 0);
+			transform: translate3d(0%, 0, 0);
+		}
+
+		.modal.right .modal-content {
+			height: 100%;
+			overflow-y: auto;
+		}
+
+		.modal.right .modal-body {
+			padding: 15px 15px 80px;
+		}
+
+		/*Right*/
+		.modal.right.fade .modal-dialog {
+			right: 0em;
+			-webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+			-moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+			-o-transition: opacity 0.3s linear, right 0.3s ease-out;
+			transition: opacity 0.3s linear, right 0.3s ease-out;
+		}
+
+		.modal.right.fade.in .modal-dialog {
+			right: 0;
+		}
+
+		/* ----- MODAL STYLE ----- */
+		.modal-content {
+			border-radius: 0;
+			border: none;
+		}
+
+
+		.modal-header {
+			background: rgba(14,9,35,0.88);
+			z-index: 101;
+			border-bottom: solid 2px #ff9000;
+			color: white;
+		}
+
+			.modal-header button span {
+				color: white;
+			}
+	</style>
+}

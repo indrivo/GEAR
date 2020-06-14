@@ -1,7 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
+using GR.Core;
+using GR.Core.Events;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.ECommerce.Payments.Abstractions.Configurator;
+using GR.ECommerce.Payments.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,10 +21,7 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
         public static IServiceCollection RegisterPayments<TService>(this IServiceCollection services)
             where TService : class, IPaymentService
         {
-            IoC.RegisterServiceCollection(new Dictionary<Type, Type>
-            {
-                { typeof(IPaymentService), typeof(TService) }
-            });
+            IoC.RegisterTransientService<IPaymentService, TService>();
             return services;
         }
 
@@ -34,7 +34,7 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
         public static IServiceCollection RegisterPaymentStorage<TContext>(this IServiceCollection services)
             where TContext : DbContext, IPaymentContext
         {
-            IoC.RegisterService<IPaymentContext>(nameof(IPaymentContext), typeof(TContext));
+            IoC.RegisterTransientService<IPaymentContext>(nameof(IPaymentContext), typeof(TContext));
             return services;
         }
 
@@ -42,16 +42,40 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
         /// Register
         /// </summary>
         /// <typeparam name="TProvider"></typeparam>
+        /// <typeparam name="TProviderAbstraction"></typeparam>
         /// <param name="services"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterPaymentProvider<TProvider>(this IServiceCollection services, PaymentProvider<TProvider> config)
-            where TProvider : class, IPaymentMethodService
+        public static IServiceCollection RegisterPaymentProvider<TProviderAbstraction, TProvider>(this IServiceCollection services, PaymentProvider<TProviderAbstraction, TProvider> config)
+            where TProviderAbstraction : class, IPaymentMethodService
+            where TProvider : class, TProviderAbstraction
         {
             Arg.NotNull(services, nameof(RegisterPaymentProvider));
             Arg.NotNull(config, nameof(RegisterPaymentProvider));
 
-            IoC.RegisterService<IPaymentMethodService>(config.ProviderName, typeof(TProvider));
+            IoC.RegisterService<IPaymentMethodService>($"payment_method_{config.Id}", typeof(TProvider));
+            services.AddGearTransient<TProviderAbstraction, TProvider>();
+            PaymentProviders.Register(config.Id, new PaymentProvider
+            {
+                Id = config.Id,
+                ProviderName = config.ProviderName,
+                Description = config.Description,
+                DisplayName = config.DisplayName
+            });
+
+            if (GearApplication.IsDevelopment() && Debugger.IsAttached)
+            {
+                SystemEvents.Application.OnApplicationStarted += (sender, args) =>
+                   {
+                       PaymentProviders.SeedProviderAsync(config.Id).Wait();
+                   };
+            }
+
+            SystemEvents.Database.OnSeed += (sender, args) =>
+            {
+                if (!(args.DbContext is IPaymentContext)) return;
+                PaymentProviders.SeedProviderAsync(config.Id).Wait();
+            };
             return services;
         }
     }

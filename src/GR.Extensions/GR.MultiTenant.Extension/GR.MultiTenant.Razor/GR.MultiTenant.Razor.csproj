@@ -16,14 +16,14 @@
 
   <ItemGroup>
     <None Remove="libman.json" />
-    <None Remove="Static\Embedded Resources\company.png" />
+    <None Remove="Static\EmbeddedResources\company.png" />
     <None Remove="Templates\invite-new-user.html" />
     <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage-invite.js" />
     <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Static\Embedded Resources\company.png">
+    <EmbeddedResource Include="Static\EmbeddedResources\company.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\invite-new-user.html">
@@ -69,5 +69,16 @@
   <ItemGroup>
     <Folder Include="ViewModels\" />
     <Folder Include="Views\Company\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\CompanyManage\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>false</Pack>
+    </Content>
+    <Content Update="Views\CompanyManage\RegisterCompany.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>false</Pack>
+    </Content>
   </ItemGroup>
 </Project>

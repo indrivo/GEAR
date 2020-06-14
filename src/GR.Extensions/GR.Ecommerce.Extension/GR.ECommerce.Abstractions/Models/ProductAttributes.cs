@@ -33,5 +33,10 @@ namespace GR.ECommerce.Abstractions.Models
         /// Is Attribute Available
         /// </summary>
         public virtual bool IsAvailable { get; set; } = true;
+
+        /// <summary>
+        /// Show in filters
+        /// </summary>
+        public virtual bool ShowInFilters { get; set; }
     }
 }

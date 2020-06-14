@@ -15,6 +15,7 @@ namespace GR.Identity.Profile.Api.Controllers
 {
     [JsonApiExceptionFilter]
     [GearAuthorize(GearAuthenticationScheme.Bearer | GearAuthenticationScheme.Identity)]
+    [Route(DefaultApiRouteTemplate)]
     public class UserAddressController : BaseGearController
     {
         #region Injectable
@@ -35,7 +36,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// Get user addresses
         /// </summary>
         /// <returns></returns>
-        [HttpGet, Route(DefaultApiRouteTemplate)]
+        [HttpGet]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<Address>>))]
         public async Task<JsonResult> GetUserAddresses()
             => await JsonAsync(_addressService.GetUserAddressesAsync());
@@ -44,7 +45,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// Get default user address
         /// </summary>
         /// <returns></returns>
-        [HttpGet, Route(DefaultApiRouteTemplate)]
+        [HttpGet]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<GetUserAddressViewModel>))]
         public async Task<JsonResult> GetDefaultUserAddress()
             => await JsonAsync(_addressService.GetDefaultAddressAsync());
@@ -54,7 +55,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost, Route(DefaultApiRouteTemplate)]
+        [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Guid>))]
         public async Task<JsonResult> AddNewAddress(AddNewAddressViewModel model)
         {
@@ -67,7 +68,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// </summary>
         /// <param name="addressId"></param>
         /// <returns></returns>
-        [HttpDelete, Route(DefaultApiRouteTemplate)]
+        [HttpDelete]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteAddress(Guid? addressId) => Json(await _addressService.DeleteAddressAsync(addressId));
 
@@ -76,7 +77,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost, Route(DefaultApiRouteTemplate)]
+        [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public virtual async Task<JsonResult> UpdateUserAddress(EditUserProfileAddressViewModel model)
         {

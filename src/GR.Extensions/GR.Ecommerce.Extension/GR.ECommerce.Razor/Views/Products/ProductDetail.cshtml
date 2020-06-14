@@ -109,7 +109,7 @@
 							@foreach (var attribute in Model.ProductAttributes)
 							{
 								<tr>
-									<td>@attribute.ProductAttribute?.Name</td>
+									<td>@attribute.ProductAttribute?.DisplayName</td>
 									<td>@attribute.Value</td>
 								</tr>
 							}
@@ -135,7 +135,7 @@
 
 
 <div id="productModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
@@ -146,14 +146,12 @@
 			<div class="modal-body">
 				<div class="card">
 					<div class="card-body">
-
 						<div class="col-12">
-							<p>Product is add to card</p>
+							<p>The product has been added to cart</p>
 						</div>
-
 						<div class="row col-12">
 							<div class="col-3">
-								Image
+								<img src="/Products/GetProductImage?productId=@Model.Id" style="width: 5em;" alt="Product image"/>
 							</div>
 
 							<div class="col-6">
@@ -167,7 +165,7 @@
 						<div class="mt-2 col-12 row">
 							<div class="col-6"></div>
 							<div class="col-6">
-								total sum: <span id="cartTotalPrice">1 </span> @currency?.Symbol
+								Total sum: <span id="cartTotalPrice">1 </span> @currency?.Symbol
 							</div>
 						</div>
 					</div>
@@ -186,8 +184,6 @@
 @section Scripts
 {
 	<script type="text/javascript">
-
-
 		$(document).ready(function() {
 			$('input:radio[name="productVariation"]').change(function() {
 				if ($(this).is(':checked')) {
@@ -195,37 +191,6 @@
 				}
 			});
 		});
-
-
-		//function chengeStatus(optionId, variationId) {
-
-		//	var controlSelectVariation = true;
-
-		//	if (!$("#" + variationId).hasClass("disableVariation"))
-		//	{
-		//		if ($("#" + variationId).hasClass("selectVariation"))
-		//		{
-		//			$("#" + variationId).removeClass("selectVariation");
-		//			$("#" + variationId).addClass("activVariation");
-		//			controlSelectVariation = false;
-		//		}
-
-		//		if (controlSelectVariation)
-		//		{
-		//			$("#" + optionId).find(".variationDetails").each(function (index, element) {
-
-		//					$(element).removeClass("selectVariation");
-		//					$(element).addClass("activVariation");
-		//			});
-
-		//			$("#" + variationId).removeClass("activVariation");
-		//			$("#" + variationId).addClass("selectVariation");
-		//		}
-
-		//		getPriceByVariation(optionId);
-		//	}
-		//}
-
 
 		function getPriceByVariation() {
 
@@ -237,18 +202,14 @@
 				quantity: $("#quantity_input").val()
 			}
 
-
-
 			$.ajax({
-				url: '@Url.Action("GetPriceByVariation")',
+				url: '@Url.Action("GetPriceByVariation", "ProductsApi")',
 				method: 'post',
 				data: model,
 				success: function(data) {
 					if (data.is_success) {
 						$("#productPrice").empty();
 						$("#productPrice").append(data.result.price);
-
-
 					}
 				},
 				error: function(error) {
@@ -272,7 +233,6 @@
 				$("#quantity_input").val(curentQuantity);
 				getPriceByVariation(null);
 			}
-
 		}
 
 		function AddProductToCart() {
@@ -288,13 +248,12 @@
 				method: 'post',
 				data: model,
 				success: function(data) {
-
 					if (data.is_success) {
 
-						var amount = data.result.Amount;
-						var productPrice = data.result.product.priceWithoutDiscount; // data.result.product.
+						var amount = data.result.amount;
+						var productPrice = data.result.product.priceWithoutDiscount;
 
-						if (data.result.ProductVariation != null)
+						if (data.result.productVariation != null)
 						{
 							productPrice = data.result.productVariation.price;
 						}
@@ -317,11 +276,8 @@
 			});
 		}
 
-
 		function redirectToCart() {
 			window.location.replace('@Url.Action("Index", "Cart")');
 		}
-
-
 	</script>
 }

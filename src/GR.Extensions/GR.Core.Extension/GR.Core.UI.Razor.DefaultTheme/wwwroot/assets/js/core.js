@@ -685,8 +685,19 @@ ST.prototype.registerLocalLogout = function (selector, url = "/Account/Login") {
                             localStorage.removeItem("current_user");
                         }
                     },
-                    error: function () {
-                        swal("Fail!", "Server no response!", "error");
+                    error: function (xhr) {
+                        switch (xhr.status) {
+                            case 401:
+                                swal("Fail!", "Operation not allowed, you were already logged out, in a few seconds you will be redirected to the login page", "error");
+                                setTimeout(() => {
+                                    localStorage.clear();
+                                    window.location.href = url;
+                                }, 1000);
+                                break;
+                            default:
+                                swal("Fail!", "Server no response!", "error");
+                                break;
+                        }
                     }
                 });
             }

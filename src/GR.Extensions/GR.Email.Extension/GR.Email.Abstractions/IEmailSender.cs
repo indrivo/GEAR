@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Email.Abstractions.Helpers;
 using GR.Email.Abstractions.Models.EmailViewModels;
 
 namespace GR.Email.Abstractions
 {
-    public interface IEmailSender : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender
+    public interface IEmailSender : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, ISender
     {
         /// <summary>
         /// Send message to multiple users
@@ -17,7 +18,7 @@ namespace GR.Email.Abstractions
         /// <param name="message"></param>
         /// <param name="isBodyHtml"></param>
         /// <returns></returns>
-        Task SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true);
+        Task<ResultModel> SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true);
 
         /// <summary>
         /// Send mail

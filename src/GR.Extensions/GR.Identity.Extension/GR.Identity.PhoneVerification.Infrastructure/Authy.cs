@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -10,6 +11,7 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Identity.PhoneVerification.Abstractions;
 using GR.Identity.PhoneVerification.Abstractions.Events;
 using GR.Identity.PhoneVerification.Abstractions.Events.EventArgs;
@@ -74,7 +76,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             _client = clientFactory.CreateClient();
             _client.BaseAddress = new Uri("https://api.authy.com");
             _client.DefaultRequestHeaders.Add("Accept", "application/json");
-            _client.DefaultRequestHeaders.Add("user-agent", "Gear Application");
+            _client.DefaultRequestHeaders.Add("user-agent", GearApplication.ApplicationName);
             _client.DefaultRequestHeaders.Add("X-Authy-API-Key", _twilioSettings.AuthyApiKey);
         }
 
@@ -121,25 +123,14 @@ namespace GR.Identity.PhoneVerification.Infrastructure
         /// </summary>
         /// <param name="authyId"></param>
         /// <param name="token"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<string>> VerifyTokenAsync(string authyId, string token)
+        public virtual async Task<ResultModel<string>> VerifyTokenAsync(string authyId, string token, Guid userId)
         {
             if (_twilioSettings.IsTestEnv)
             {
                 if (token == PhoneVerificationResources.DEFAULT_CODE)
-                {
-                    PhoneVerificationEvents.Events.TwoFactorVerified(new SecondFactorVerifiedEventArgs
-                    {
-                        HttpContext = _accessor.HttpContext,
-                        Data = new Dictionary<string, string>
-                        {
-                            { nameof(authyId), authyId },
-                            { nameof(token), token }
-                        }
-                    });
-
                     return new SuccessResultModel<string>(PhoneVerificationResources.TEST_ENV_TEXT);
-                }
 
                 return new ResultModel<string>()
                     .AddError("Code not match")
@@ -154,19 +145,6 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var obj = JObject.Parse(clientResponse);
             var isSuccess = obj.SelectToken("success").Value<bool>();
             var message = obj.SelectToken("message").Value<string>();
-
-            if (isSuccess)
-            {
-                PhoneVerificationEvents.Events.TwoFactorVerified(new SecondFactorVerifiedEventArgs
-                {
-                    HttpContext = _accessor.HttpContext,
-                    Data = new Dictionary<string, string>
-                    {
-                        { nameof(authyId), authyId },
-                        { nameof(token), token }
-                    }
-                });
-            }
 
             return new ResultModel<string>
             {
@@ -261,6 +239,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
         /// <returns></returns>
         public virtual async Task<ResultModel<string>> GetUserAuthyTokenAsync(GearUser user)
         {
+            if (user == null) return new UserNotFoundResult<string>();
             var userToken = await _identityUserManager.GetAuthenticationTokenAsync(user, PhoneVerificationResources.LOGIN_PROVIDER_NAME, PhoneVerificationResources.AUTHY_TOKEN);
             if (userToken.IsNullOrEmpty()) return new ResultModel<string>()
                 .AddError("User not registered on this service");
@@ -399,7 +378,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                     }
 
                     var examplePhone = PhoneVerificationUtil.PhoneHelper.GetExampleNumber(country.Alpha2Code);
-                    message = $"Invalid phone for country code, example of phone: {examplePhone.NationalNumber}";
+                    message = $"Invalid phone for country code, example of phone: {examplePhone?.NationalNumber}";
                 }
                 else
                 {

@@ -43,4 +43,10 @@
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AppSettings\HostSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -21,7 +21,7 @@
         @if (!Model?.CartItems.Any() ?? false)
         {
             <tr>
-                <td colspan="4">No items</td>
+                <td colspan="4">No products in cart</td>
             </tr>
         }
 
@@ -33,13 +33,19 @@
                     @{var productPriceWithoutDiscount = cartItem.ProductVariation == null ? cartItem.Product?.PriceWithoutDiscount : cartItem.ProductVariation.Price;}
                     @productPriceWithoutDiscount @currency?.Symbol
                 </td>
+	            <td width="300">
+		            <div class="input-group">
+			            <div class="input-group-prepend">
+				            <a class="btn btn-light" onclick="decreasesQuantity('@cartItem.Id')"><span class="fa fa-minus"></span></a>
+			            </div>
+			            <input id="quantyty_@cartItem.Id" class="form-control" value="@cartItem.Amount" readonly/>
+			            <div class="input-group-append">
+				            <a class="btn btn-light" onclick="addQuantity('@cartItem.Id')"><span class="fa fa-plus"></span></a>
+			            </div>
+		            </div>
+	            </td>
                 <td>
-                    <button class="btn btn-light" onclick="decreasesQuantity('@cartItem.Id')">-</button>
-                    <input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly />
-                    <button class="btn btn-light" onclick="addQuantity('@cartItem.Id')">+</button>
-                </td>
-                <td>
-                    <button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')"> <span fa fa-close>X</span></button>
+                    <button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')"> <span class="fa fa-close"></span></button>
                 </td>
             </tr>
         }

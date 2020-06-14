@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GR.ECommerce.BaseImplementations.Migrations
+namespace GR.ECommerce.Infrastructure.Migrations
 {
     public partial class add_new_product_attributes : Migration
     {

@@ -1,275 +1,148 @@
-﻿@using GR.Core.Extensions
+@using GR.Core.Extensions
 @using GR.Identity.Abstractions
 @using GR.Identity.Abstractions.Models.MultiTenants
 @using GR.MultiTenant.Abstractions.ViewModels
 
 @{
-    ViewData["Title"] = Localizer["system_my_company"];
-    ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
-    var user = (GearUser)ViewBag.User;
-    var roles = (string)ViewBag.UserRoles;
-    var organization = (Tenant)ViewBag.Organization;
-    ViewData["TenantCallBackUrl"] = "/CompanyManage";
-    var tenantEditModel = new EditTenantViewModel(organization)
-    {
-        CountrySelectListItems = (IEnumerable<SelectListItem>)ViewBag.Countries
-    };
+	ViewData["Title"] = Localizer["system_my_company"];
+	ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
+	var user = (GearUser)ViewBag.User;
+	var roles = (string)ViewBag.UserRoles;
+	var organization = (Tenant)ViewBag.Organization;
+	ViewData["TenantCallBackUrl"] = "/CompanyManage";
+	var tenantEditModel = new EditTenantViewModel(organization)
+	{
+		CountrySelectListItems = (IEnumerable<SelectListItem>)ViewBag.Countries
+	};
 }
 
 @section Styles
 {
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
-    <style type="text/css">
-        .table td {
-            white-space: normal !important;
-        }
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+	<style type="text/css">
+		.table td {
+			white-space: normal !important;
+		}
 
-        .select2-dropdown.increased-z-index {
-            z-index: 999999;
-        }
-    </style>
+		.select2-dropdown.increased-z-index {
+			z-index: 999999;
+		}
+	</style>
 }
 
 <div class="row">
-    <div class="col-lg-2 mb-2">
-        <div class="card h-400">
-            <div class="card-body">
-                <div class="mx-3 my-2 px-2">
-                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.UserName">
-                </div>
-                <div class="text-center">
-                    <h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @user.UserName</h5>
-                    <p>
-                        <span class="weight-400">@Localizer["iso_company_name"] : </span><span class="text-muted">@organization.Name</span>
-                    </p>
-                    <p>
-                        <span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@organization.Address</span>
-                    </p>
-                    <p>
-                        <span class="weight-400">@Localizer["iso_company_website"] : </span><span class="text-muted">@organization.SiteWeb</span>
-                    </p>
-                    <p>
-                        <span class="weight-400">@Localizer["roles"] : </span><span class="text-muted">@roles</span>
-                    </p>
-                </div>
+	<div class="col-lg-2 mb-2">
+		<div class="card h-400">
+			<div class="card-body">
+				<div class="mx-3 my-2 px-2">
+					<img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.UserName">
+				</div>
+				<div class="text-center">
+					<h5 class="weight-400">Hello, @user.UserName</h5>
+					<p>
+						<span class="weight-400">Company name : </span><span class="text-muted">@organization.Name</span>
+					</p>
+					<p>
+						<span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@organization.Address</span>
+					</p>
+					<p>
+						<span class="weight-400">Website : </span><span class="text-muted">@organization.SiteWeb</span>
+					</p>
+					<p>
+						<span class="weight-400">@Localizer["roles"] : </span><span class="text-muted">@roles</span>
+					</p>
+				</div>
 
-                <hr class="my-4 dashed">
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-10">
-        <div class="card mb-4">
-            <div class="card-header p-0">
-                <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["iso_menu_company_settings"]</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">@Localizer["users"]</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData" />
-                    </div>
-                    <div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
-                        <JList asp-for="@ViewBag.UsersListSettings"></JList>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				<hr class="my-4 dashed">
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-10">
+		<div class="card mb-4">
+			<div class="card-header p-0">
+				<ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Company settings</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">@Localizer["users"]</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="subscriptions-tab" data-toggle="tab" href="#subscriptions" role="tab" aria-controls="subscriptions" aria-selected="false">@Localizer["commerce_my_subscriptions"]</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="subscriptions-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false">@Localizer["system_commerce_my_orders"]</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+						<partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData" />
+					</div>
+					<div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
+						<JList asp-for="@ViewBag.UsersListSettings"></JList>
+					</div>
+					<div class="tab-pane fade show" id="subscriptions" role="tabpanel" aria-labelledby="users-tab">
+						<partial name="_SubscriptionsPartialView" />
+					</div>
+					<div class="tab-pane fade show" id="orders" role="tabpanel" aria-labelledby="users-tab">
+						<partial name="_MyOrdersPartialView" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div class="modal fade company-manage-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
-
 </div>
 
 @section Scripts
 {
-    <script id="checkboxTemplate" type="text/x-jsrender">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="{{:id}}" {{if checked}} checked {{/if}}>
-            <label class="custom-control-label" for="{{:id}}">{{:name}}</label>
-        </div>
-    </script>
+	<script id="checkboxTemplate" type="text/x-jsrender">
+		<div class="custom-control custom-checkbox mt-2">
+			<input type="checkbox" class="custom-control-input" id="{{:id}}" {{if checked}} checked {{/if}}>
+			<label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+		</div>
+	</script>
 
-    <script id="edit-user-roles-modal" type="text/x-jsrender">
-        <div class="modal-dialog" role="document" data-user-id="{{:id}}">
-            <div class="modal-content">
-                <div class="">
-                    <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
-                        <span class="material-icons">close</span>
-                    </button>
-                </div>
-                <form id="edit-user-roles">
-                    <div class="roles-list">
-                        {{for roles tmpl="#checkboxTemplate" /}}
-                    </div>
-                    <div class="mt-4 d-flex">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true" aria-label="Close">
-                            @Localizer["cancel"]
-                        </button>
-                        <button id="edit-user-roles-submit" class="btn btn-outline-primary" type="submit">
-                            @Localizer["save"]
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </script>
+	<script id="edit-user-roles-modal" type="text/x-jsrender">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content p-4">
+				<div class="">
+					<button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<div class="pb-2 h5">
+					{{:~userName}}
+				</div>
+				<form id="edit-user-roles">
+					<div class="roles-list">
+						{{for roles tmpl="#checkboxTemplate" /}}
+					</div>
+					<div class="mt-4 d-flex">
+						<button type="button" class="btn btn-danger ml-auto mr-3" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+							@Localizer["cancel"]
+						</button>
+						<button id="edit-user-roles-submit" class="btn btn-outline-primary" type="submit">
+							@Localizer["save"]
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
-    <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
-    <script src="~/assets/MultiTenantPlugins/company-manage-invite.js"></script>
-    @if (!string.IsNullOrEmpty(tenantEditModel.CountryId))
-    {
-        <script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+	<script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
+	<script src="~/assets/MultiTenantPlugins/company-manage-invite.js"></script>
+	@if (!string.IsNullOrEmpty(tenantEditModel.CountryId))
+	{
+		<script>
         loadCitiesByCountryId("@tenantEditModel.CountryId", "@tenantEditModel.CityId");
-        </script>
-    }
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
-    <script>
-        !function ($) {
-            class userRolesEdit {
-                constructor() {
-                    const toast = new ToastNotifier();
-                    this.getRoles();
-                }
-                ajaxRequest(requestUrl, requestType, requestData) {
-                    const baseUrl = '/api/WorkFlowBuilder';
-                    return new Promise((resolve, reject) => {
-                        $.ajax({
-                            url: baseUrl + requestUrl,
-                            type: requestType,
-                            data: requestData,
-                            success: (data) => {
-                                if (Array.isArray(data)) {
-                                    resolve(data);
-                                }
-                                else {
-                                    if (data.is_success) {
-                                        resolve(data.result);
-                                    } else if (!data.is_success) {
-                                        reject(data.error_keys);
-                                    } else {
-                                        resolve(data);
-                                    }
-                                }
-                            },
-                            error: (e) => {
-                                reject(e);
-                            }
-                        });
-                    });
-                }
-                getRoles() {
-                    const requestUrl = '/getRoles';
-                    return this.ajaxRequest(requestUrl, 'get', null);
-                }
-
-                roles = [];
-                loadRoles() {
-                    const scope = this;
-                    return new Promise((resolve, reject) => {
-                        if (scope.roles.length > 0) {
-                            resolve(scope.roles);
-                        } else {
-                            scope.getRoles().then(result => {
-                                scope.roles = result;
-                                resolve(scope.roles);
-                            }).catch(e => {
-                                console.warn(e);
-                                toast.notifyErrorList(e);
-                            });
-                        }
-                    });
-                }
-            }
-        }(window.jQuery);
-    </script>
-    <script>
-        !function ($) {
-            const userRolesManager = new userRolesEdit();
-            const toast = new ToastNotifier();
-            const editUserRolesModal = $.templates("#edit-user-roles-modal");
-            const modal = $('.company-manage-modal');
-
-            const findObjectsByProperties = (array, properties) => {
-                return array.filter(obj => {
-                    let response = true;
-                    properties.forEach(property => {
-                        const propertyFound = obj[property.name] === property.value;
-                        response = response && propertyFound;
-                    });
-                    return response;
-                });
-            }
-
-            const addCheckedPropToRoles = userRoles => {
-                return userRolesManager.loadRoles(roles => {
-                    $.each(userRoles, function () {
-                        const properties = [
-                            {
-                                name: 'id',
-                                value: this.id
-                            }
-                        ];
-                        const matchedRole = findObjectsByProperties(roles, properties)[0];
-
-                        if (matchedRole) {
-                            this.checked = true;
-                        }
-                        else {
-                            this.checked = false;
-                        }
-                    });
-                    return userRoles;
-                }).catch(e => {
-                    toast.notifyErrorList(e);
-                });
-            }
-
-            const updateUserRoles = (config) => {
-                userRolesManager.updateUserRoles(config).then().catch(e => {
-                    toast.notifyErrorList(e);
-                });
-            }
-
-            const getRolesFromCheckboxes = () => {
-                let roles = [];
-                $.each(modal.find('.roles-list .custom-checkbox'), function () {
-                    const checkbox = $(this).find('input[type="checkbox"]');
-                    if (checkbox.is(':checked')) {
-                        roles.push(checkbox.attr('id'));
-                    } 
-                });
-                return roles;
-            }
-
-            const addModalEvents = () => {
-                modal.find('.edit-user-roles').submit(function (e) {
-                    e.preventDefault();
-                    const config = {
-                        id: modal.find('.modal-dialog').data('user-id'),
-                        roles: getRolesFromCheckboxes(),
-                    }
-                    updateUserRoles(config);
-                    modal.modal('hide');
-                });
-            }
-
-            const changeRoles = async id => {
-                const user = await userRolesManager.getUser(id);
-                user.roles = await addCheckedPropToRoles(user.roles);
-                const htmlOutput = editUserRolesModal.render(user);
-                modal.html(htmlOutput);
-                addModalEvents();
-                modal.modal('show');
-            }
-        }(window.jQuery);
-    </script>
+		</script>
+	}
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

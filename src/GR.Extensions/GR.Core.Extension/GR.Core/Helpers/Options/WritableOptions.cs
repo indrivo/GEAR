@@ -5,15 +5,27 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GR.Core.Abstractions;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 
 namespace GR.Core.Helpers.Options
 {
+    /// <summary>
+    /// This is an implementation of write new settings to app settings files
+    /// and update it on options monitor 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [Author(Authors.LUPEI_NICOLAE)]
     public class WritableOptions<T> : IWritableOptions<T> where T : class, new()
     {
+        #region Injectable
+
         private readonly IHostingEnvironment _environment;
         private readonly IOptionsMonitor<T> _options;
         private readonly string _section;
         private readonly string _file;
+
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -41,13 +53,26 @@ namespace GR.Core.Helpers.Options
         /// </summary>
         /// <param name="applyChanges"></param>
         /// <param name="filePath"></param>
-        public void Update(Action<T> applyChanges, string filePath = null)
+        public ResultModel Update(Action<T> applyChanges, string filePath = null)
         {
-            if (filePath != null) filePath = Path.Combine(_environment.ContentRootPath, filePath);
+            var response = new ResultModel();
+            string physicalPath;
+            if (filePath != null)
+            {
+                physicalPath = Path.Combine(AppContext.BaseDirectory, filePath);
+            }
+            else
+            {
+                var fileProvider = _environment.ContentRootFileProvider;
+                var fileInfo = fileProvider.GetFileInfo(_file);
+                physicalPath = fileInfo.PhysicalPath;
+            }
 
-            var fileProvider = _environment.ContentRootFileProvider;
-            var fileInfo = fileProvider.GetFileInfo(filePath ?? _file);
-            var physicalPath = fileInfo.PhysicalPath ?? fileInfo.Name;
+            if (!File.Exists(physicalPath))
+            {
+                response.AddError($"No app settings file with path: {physicalPath}");
+                return response;
+            }
 
             var jObject = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(physicalPath));
             var sectionObject = jObject.TryGetValue(_section, out var section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : Value ?? new T();
@@ -66,7 +91,17 @@ namespace GR.Core.Helpers.Options
                     jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
             }
 
-            File.WriteAllText(physicalPath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+            try
+            {
+                File.WriteAllText(physicalPath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                response.AddError(e.Message);
+            }
+
+            return response;
         }
     }
 }

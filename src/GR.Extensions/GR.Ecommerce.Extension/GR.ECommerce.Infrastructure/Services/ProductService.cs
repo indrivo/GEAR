@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
+using GR.Core.Helpers.Validators;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Helpers;
@@ -19,9 +22,10 @@ using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.Orders.Abstractions;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.ECommerce.Infrastructure.Services
 {
     [Author(Authors.LUPEI_NICOLAE, 1.1)]
     [Documentation("Basic Implementation of product service")]
@@ -104,31 +108,71 @@ namespace GR.ECommerce.Products.Services
         }
 
         /// <summary>
-        /// Get subscription plans
+        /// Add product
         /// </summary>
+        /// <param name="product"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync()
+        public virtual async Task<ResultModel<Guid>> AddProductAsync([Required] Product product)
         {
-            var products = await Context.Products
-                .Include(x => x.ProductAttributes)
-                .ThenInclude(x => x.ProductAttribute)
-                .Include(x => x.ProductPrices)
-                .Include(x => x.ProductVariations)
-                .ThenInclude(x => x.ProductVariationDetails)
-                .ThenInclude(x => x.ProductOption)
-                .Where(x => x.ProductTypeId.Equals(ProductTypes.SubscriptionPlan)
-                            && x.IsPublished)
-                .ToListAsync();
+            if (product == null) return new InvalidParametersResultModel<Guid>();
+            var modelState = ModelValidator.IsValid(product);
+            if (!modelState.IsSuccess) return modelState.Map<Guid>();
+            await Context.Products.AddAsync(product);
+            var dbResult = await Context.PushAsync();
+            return dbResult.Map(product.Id);
+        }
 
-            var currency = (await GetGlobalCurrencyAsync()).Result;
-            var response = new ResultModel<IEnumerable<SubscriptionPlanViewModel>>
+        /// <summary>
+        /// get product by min number value by attribute name 
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute)
+        {
+            var valueInt = 0;
+            var listAttribute = Context.ProductAttributes
+                .Include(i => i.ProductAttribute)
+                .Include(i => i.Product)
+                .ThenInclude(i => i.ProductAttributes)
+                .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
+
+            if (!listAttribute.Any())
+            {
+                return new NotFoundResultModel<Product>();
+            }
+
+            var minValue = listAttribute.Min(x => int.Parse(x.Value));
+            var product = (await listAttribute.FirstOrDefaultAsync(x => int.Parse(x.Value) == minValue))?.Product;
+
+            var resultModel = new ResultModel<Product>
             {
                 IsSuccess = true,
-                Result = products.Select(product => ProductMapper.Map(product, currency))
+                Result = product
             };
 
-            return response;
+            return resultModel;
         }
+
+        #region ProductTypes
+
+        /// <summary>
+        /// Add new product type
+        /// </summary>
+        /// <param name="productType"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType)
+        {
+            if (productType == null) return new InvalidParametersResultModel<Guid>();
+            var modelState = ModelValidator.IsValid(productType);
+            if (!modelState.IsSuccess) return modelState.Map<Guid>();
+            await Context.ProductTypes.AddAsync(productType);
+            var dbResponse = await Context.PushAsync();
+            return dbResponse.Map(productType.Id);
+        }
+
+        #endregion
+
+        #region Settings
 
         /// <summary>
         /// 
@@ -186,37 +230,6 @@ namespace GR.ECommerce.Products.Services
             return new SuccessResultModel<TOutput>(setting.Value.Deserialize<TOutput>());
         }
 
-
-        /// <summary>
-        /// get product by min number value by attribute name 
-        /// </summary>
-        /// <param name="attribute"></param>
-        /// <returns></returns>
-        public async Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute)
-        {
-            int valueInt = 0;
-            var listAttribute = Context.ProductAttributes
-                .Include(i => i.ProductAttribute)
-                .Include(i => i.Product)
-                .ThenInclude(i => i.ProductAttributes)
-                .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
-
-            if (!listAttribute.Any())
-            {
-                return new NotFoundResultModel<Product>();
-            }
-
-            var minValue = listAttribute.Min(x => int.Parse(x.Value));
-            var product = (await listAttribute.FirstOrDefaultAsync(x => int.Parse(x.Value) == minValue))?.Product;
-
-            var resultModel = new ResultModel<Product>();
-
-            resultModel.IsSuccess = true;
-            resultModel.Result = product;
-
-            return resultModel;
-        }
-
         /// <summary>
         /// Add or update setting
         /// </summary>
@@ -244,46 +257,9 @@ namespace GR.ECommerce.Products.Services
             return await Context.PushAsync();
         }
 
-        /// <summary>
-        /// Get price by variation
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public async Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model)
-        {
-            var resultModel = new ResultModel();
+        #endregion
 
-            var prod = await Context.Products.Include(i => i.ProductPrices).FirstOrDefaultAsync(x => x.Id == model.ProductId);
-
-            if (prod != null)
-            {
-                if (model.VariationId is null)
-                {
-                    resultModel.IsSuccess = true;
-                    resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
-                    return resultModel;
-                }
-
-                var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
-
-                if (productVariation is null)
-                {
-                    resultModel.IsSuccess = false;
-                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-                    return resultModel;
-                }
-
-                resultModel.IsSuccess = true;
-                resultModel.Result = new { Price = productVariation.Price * model.Quantity };
-                return resultModel;
-            }
-
-            resultModel.IsSuccess = false;
-            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-
-
-            return resultModel;
-        }
+        #region Attributes
 
         /// <summary>
         /// Remove product attribute
@@ -304,6 +280,144 @@ namespace GR.ECommerce.Products.Services
             return dbResult;
         }
 
+        #endregion
+
+        #region Brands
+
+        /// <summary>
+        /// Add new brand
+        /// </summary>
+        /// <param name="brand"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> AddBrandAsync(Brand brand)
+        {
+            if (brand == null) return new InvalidParametersResultModel<Guid>();
+            var modelState = ModelValidator.IsValid(brand);
+            if (!modelState.IsSuccess) return modelState.Map<Guid>();
+            await Context.Brands.AddAsync(brand);
+            var dbResponse = await Context.PushAsync();
+            return dbResponse.Map(brand.Id);
+        }
+
+        /// <summary>
+        /// Get all brands
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Brand>>> GetAllBrandsAsync()
+        {
+            var data = await Context.Brands.ToListAsync();
+            return new SuccessResultModel<IEnumerable<Brand>>(data);
+        }
+
+        #endregion
+
+        #region Filters
+
+        /// <summary>
+        /// Get products by filters
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Product>>> GetProductsWithFiltersAsync([Required]ProductsFilterRequest model)
+        {
+            var modelState = ModelValidator.IsValid(model);
+            if (!modelState.IsSuccess) return modelState.Map<IEnumerable<Product>>();
+            var response = new ResultModel<IEnumerable<Product>>();
+            var queryProducts = Context.Products
+                .Include(x => x.Brand)
+                .Include(x => x.ProductAttributes)
+                .ThenInclude(x => x.ProductAttribute)
+                .Include(x => x.ProductCategories)
+                .ThenInclude(x => x.Category)
+                .Include(x => x.ProductPrices)
+                .Include(x => x.ProductVariations)
+                .ThenInclude(x => x.ProductVariationDetails)
+                .ThenInclude(x => x.ProductOption)
+                .AsQueryable();
+
+            foreach (var filter in model.Filters ?? new List<CommerceFilter>())
+            {
+                switch (filter.ParameterName)
+                {
+                    case "SearchGlobal":
+                        {
+                            Expression<Func<Product, bool>> globalSearch = x => x.Name.Contains(filter.ParameterValue) || x.DisplayName.Contains(filter.ParameterValue);
+                            queryProducts = queryProducts.Where(globalSearch);
+                        }
+                        break;
+                    case "Categories":
+                        {
+                            var categories = filter.ParameterValue.Deserialize<IEnumerable<CommerceFilter>>();
+                            if (categories == null) continue;
+                            var catIds = categories.Where(x => !x.ParameterValue.IsNullOrEmpty()).Select(x => x.ParameterValue.ToGuid())
+                                .ToList();
+                            foreach (var id in catIds)
+                            {
+                                Expression<Func<Product, bool>> categoryFilter = x => x.ProductCategories.Select(i => i.CategoryId).Contains(id);
+                                queryProducts = queryProducts.Where(categoryFilter);
+                            }
+                        }
+                        break;
+                    case "Brands":
+                        {
+                            var brands = filter.ParameterValue.Deserialize<IEnumerable<CommerceFilter>>();
+                            if (brands == null) continue;
+                            var bIds = brands.Where(x => !x.ParameterValue.IsNullOrEmpty()).Select(x => x.ParameterValue.ToGuid())
+                                .ToList();
+                            if (!bIds.Any()) continue;
+                            Func<Product, List<Guid>, bool> bFilter = (p, bds) => bds.Contains(p.BrandId);
+                            queryProducts = queryProducts.Where(t => bFilter(t, bIds));
+                        }
+                        break;
+                    case "Attributes":
+                        {
+                            var attributes = filter.ParameterValue.Deserialize<IEnumerable<CommerceFilter>>().ToList();
+                            if (!attributes.Any()) continue;
+                            queryProducts = queryProducts.Where(p => p.ProductAttributes.Any(x => attributes.Select(m => m.ParameterName).Contains(x.Value))
+                                                                     && p.ProductAttributes.Any(j => attributes.Select(m => StringExtensions.Split(m.ParameterValue, "_")[1].ToGuid())
+                                                                         .Contains(j.ProductAttributeId)));
+                        }
+                        break;
+                }
+            }
+
+
+
+            var products = await queryProducts
+               //.Skip((model.Page - 1) * model.PerPage).Take(model.PerPage)
+               .ToListAsync();
+
+            response.IsSuccess = true;
+            response.Result = products;
+            return response;
+        }
+
+        /// <summary>
+        /// Get attributes for filters
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<FilterAttributeValuesViewModel>>> GetAttributesForFiltersAsync()
+        {
+            var attributes = await Context.ProductAttribute
+                .Include(x => x.AttributeGroup)
+                .ToListAsync();
+
+            var data = attributes.Adapt<IEnumerable<FilterAttributeValuesViewModel>>().ToList();
+            foreach (var item in data)
+            {
+                item.Values = Context.ProductAttributes
+                    .Where(m => m.ShowInFilters && m.ProductAttributeId == item.Id)
+                    .Select(x => x.Value)
+                    .Distinct();
+            }
+
+            return new SuccessResultModel<IEnumerable<FilterAttributeValuesViewModel>>(data);
+        }
+
+        #endregion
+
+        #region Statistic
+
         /// <summary>
         /// Get commerce general statistic
         /// </summary>
@@ -322,7 +436,11 @@ namespace GR.ECommerce.Products.Services
             return new SuccessResultModel<SalesStatisticViewModel>(model);
         }
 
-        public async Task<ResultModel<Dictionary<int, object>>> GetYearReportAsync()
+        /// <summary>
+        /// Get year report
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<int, object>>> GetYearReportAsync()
         {
             var year = DateTime.Today.Year;
             var data = new Dictionary<int, object>();
@@ -340,27 +458,129 @@ namespace GR.ECommerce.Products.Services
             return new SuccessResultModel<Dictionary<int, object>>(data);
         }
 
+        #endregion
+
+        #region Product Variations
+
         /// <summary>
-        /// Get customers info
+        /// Get price by variation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model)
+        {
+            var modelState = ModelValidator.IsValid(model);
+            if (!modelState.IsSuccess) return modelState;
+            var resultModel = new ResultModel();
+            var prod = await Context.Products
+                .NonDeleted()
+                .Include(i => i.ProductPrices)
+                .FirstOrDefaultAsync(x => x.Id == model.ProductId);
+
+            if (prod != null)
+            {
+                if (model.VariationId is null)
+                {
+                    resultModel.IsSuccess = true;
+                    resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
+                    return resultModel;
+                }
+
+                var productVariation = Context.ProductVariations
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.Id == model.VariationId);
+
+                if (productVariation is null)
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                    return resultModel;
+                }
+
+                resultModel.IsSuccess = true;
+                resultModel.Result = new
+                {
+                    Price = productVariation.Price * model.Quantity
+                };
+                return resultModel;
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+
+
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Remove variation options
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RemoveVariationOptionAsync([Required]Guid? productId, [Required]Guid? variationId)
+        {
+            var resultModel = new ResultModel();
+            if (productId == null || variationId == null) return new InvalidParametersResultModel();
+
+            var result = Context.ProductVariations
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
+
+            if (result == null) return resultModel;
+            Context.ProductVariations.Remove(result);
+            var dbResult = await Context.PushAsync();
+            return dbResult;
+        }
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Parse setting
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static string ParseSettingValue(object value, CommerceSettingType type)
+        {
+            var response = string.Empty;
+
+            switch (type)
+            {
+                case CommerceSettingType.Text:
+                case CommerceSettingType.Number:
+                    response = value.ToString();
+                    break;
+                case CommerceSettingType.Object:
+                case CommerceSettingType.Array:
+                    response = value.SerializeAsJson();
+                    break;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get order statistic
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <returns></returns>
-        private async Task<ResultModel<NewCustomersStatisticViewModel>> GetNewCustomersGeneralInfoAsync(DateTime? startDate, DateTime? endDate)
+        private async Task<ResultModel<OrderReceivedStatisticViewModel>> GetOrderReceivedStatisticAsync(DateTime? startDate, DateTime? endDate)
         {
-            if (startDate == null || endDate == null) return new InvalidParametersResultModel<NewCustomersStatisticViewModel>();
-            var companyRole = await _userManager.RoleManager.FindByNameAsync(MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
-            if (companyRole == null) return new NotFoundResultModel<NewCustomersStatisticViewModel>();
-            var newCustomersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { companyRole });
-            if (!newCustomersRequest.IsSuccess) return newCustomersRequest.Map<NewCustomersStatisticViewModel>();
-            var newCustomers = newCustomersRequest.Result.ToList();
-            var inPeriod = newCustomers.Where(x => x.Created >= startDate && x.Created <= endDate).ToList();
-            var model = new NewCustomersStatisticViewModel
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<OrderReceivedStatisticViewModel>();
+            var total = await _orderDbContext.Orders.CountAsync();
+            var inPeriod = await _orderDbContext.Orders
+                .AsNoTracking()
+                .CountAsync(x => x.Created >= startDate && x.Created <= endDate);
+            var model = new OrderReceivedStatisticViewModel
             {
-                NewCustomers = inPeriod.Count,
-                Percentage = inPeriod.Count.PercentOf(newCustomers.Count)
+                TotalOrderReceived = inPeriod,
+                Percentage = inPeriod.PercentOf(total)
             };
-            return new SuccessResultModel<NewCustomersStatisticViewModel>(model);
+            return new SuccessResultModel<OrderReceivedStatisticViewModel>(model);
         }
 
         /// <summary>
@@ -389,51 +609,26 @@ namespace GR.ECommerce.Products.Services
         }
 
         /// <summary>
-        /// Get order statistic
+        /// Get customers info
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <returns></returns>
-        private async Task<ResultModel<OrderReceivedStatisticViewModel>> GetOrderReceivedStatisticAsync(DateTime? startDate, DateTime? endDate)
+        private async Task<ResultModel<NewCustomersStatisticViewModel>> GetNewCustomersGeneralInfoAsync(DateTime? startDate, DateTime? endDate)
         {
-            if (startDate == null || endDate == null) return new InvalidParametersResultModel<OrderReceivedStatisticViewModel>();
-            var total = await _orderDbContext.Orders.CountAsync();
-            var inPeriod = await _orderDbContext.Orders
-                .AsNoTracking()
-                .CountAsync(x => x.Created >= startDate && x.Created <= endDate);
-            var model = new OrderReceivedStatisticViewModel
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<NewCustomersStatisticViewModel>();
+            var companyRole = await _userManager.RoleManager.FindByNameAsync(MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
+            if (companyRole == null) return new NotFoundResultModel<NewCustomersStatisticViewModel>();
+            var newCustomersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { companyRole });
+            if (!newCustomersRequest.IsSuccess) return newCustomersRequest.Map<NewCustomersStatisticViewModel>();
+            var newCustomers = newCustomersRequest.Result.ToList();
+            var inPeriod = newCustomers.Where(x => x.Created >= startDate && x.Created <= endDate).ToList();
+            var model = new NewCustomersStatisticViewModel
             {
-                TotalOrderReceived = inPeriod,
-                Percentage = inPeriod.PercentOf(total)
+                NewCustomers = inPeriod.Count,
+                Percentage = inPeriod.Count.PercentOf(newCustomers.Count)
             };
-            return new SuccessResultModel<OrderReceivedStatisticViewModel>(model);
-        }
-
-        #region Helpers
-
-        /// <summary>
-        /// Parse setting
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private static string ParseSettingValue(object value, CommerceSettingType type)
-        {
-            var response = string.Empty;
-
-            switch (type)
-            {
-                case CommerceSettingType.Text:
-                case CommerceSettingType.Number:
-                    response = value.ToString();
-                    break;
-                case CommerceSettingType.Object:
-                case CommerceSettingType.Array:
-                    response = value.SerializeAsJson();
-                    break;
-            }
-
-            return response;
+            return new SuccessResultModel<NewCustomersStatisticViewModel>(model);
         }
 
         #endregion

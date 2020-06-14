@@ -232,6 +232,7 @@ namespace GR.Orders
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId)
         {
+            var result = new ResultModel<Guid>();
             if (productId == null || variationId == null) return new InvalidParametersResultModel<Guid>();
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
@@ -240,6 +241,12 @@ namespace GR.Orders
             var product = productRequest.Result;
             var variation = product.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
             var order = OrderMapper.Map(product, variation);
+            if (order.Total == 0)
+            {
+                result.AddError("You cannot create a payment for a free service");
+                return result;
+            }
+
             order.UserId = userRequest.Result.Id;
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             order.CurrencyId = currency.Code;
@@ -311,10 +318,9 @@ namespace GR.Orders
             var orderRequest = await GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return orderRequest.ToBase();
             var order = orderRequest.Result;
-            if (order.OrderState == OrderState.New) return await ChangeOrderStateAsync(orderId, OrderState.Canceled);
-            response.Errors.Add(new ErrorModel(string.Empty, "The order can only be canceled in the new order status"));
+            if (order.OrderState != OrderState.Complete) return await ChangeOrderStateAsync(orderId, OrderState.Canceled);
+            response.Errors.Add(new ErrorModel(string.Empty, "Order can only be canceled if it was not complete"));
             return response;
-
         }
 
         /// <summary>

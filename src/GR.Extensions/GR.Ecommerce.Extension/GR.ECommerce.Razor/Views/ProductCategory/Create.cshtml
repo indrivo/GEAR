@@ -1,10 +1,14 @@
 ﻿@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductCategoryViewModel
 
+@{
+    ViewData["Title"] = "Add category";
+}
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
-                <h4 class="m-b-0 text-white">Add product category</h4>
+                <h4 class="m-b-0 text-black">Add product category</h4>
             </div>
             <div class="card-body">
                 <form asp-action="Create" role="form">
@@ -28,7 +32,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="Description"></label>
-                                    <input asp-for="Description" class="form-control" />
+                                    <textarea asp-for="Description" class="form-control"></textarea>
                                     <span asp-validation-for="Description"></span>
                                 </div>
                             </div>
@@ -43,15 +47,17 @@
                                 <div class="form-group">
                                     <label asp-for="ParentCategoryId"></label>
                                     <select asp-for="ParentCategoryId" asp-items="Model.ParentCategoryList" class="form-control">
-                                        <option value=""></option>
+                                        <option value="">Select parent category</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input asp-for="IsPublished"  type="checkbox" />
-                                    <label class="form-check-label" asp-for="IsPublished"></label>
-                                    <span asp-validation-for="IsPublished"></span>
+                                    <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                        <input asp-for="IsPublished" class="custom-control-input vis-check">
+                                        <label class="custom-control-label" asp-for="IsPublished">Is published</label>
+                                    </div>
+                                    <span asp-validation-for="IsPublished" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>

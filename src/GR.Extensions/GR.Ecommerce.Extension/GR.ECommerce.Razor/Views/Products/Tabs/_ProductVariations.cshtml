@@ -1,116 +1,111 @@
+@using GR.ECommerce.Abstractions
+@using GR.ECommerce.Abstractions.Models
 @model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
 
+@inject IProductService<Product> ProductService
+
+@{
+	var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
+}
+
 <div class="row">
-    <div class="col-lg-12 col-md-12">
+	<div class="col-lg-12 col-md-12">
+		<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add variation</a>
 
+		<div class="card card-outline-info mt-2">
+			<div class="tab-content">
+				<div class="card-body">
+					<div class="col-lg-12 col-md-12 row mt-3" id="listVariationProduct">
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-            Add variation
-        </button>
+					</div>
+				</div>
 
-        <div class="card card-outline-info mt-2">
-            <div class="tab-content">
-                <div class="card-body">
-
-                    <div class="col-lg-12 col-md-12 row mt-3" id="ListVariationProduct">
-
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 
-
-
-
-
-
-
 <!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card">
+					<div class="card-body">
+						<form id="createOptionForm">
+							<input type="text" id="VariationId" name="VariationId" class="form-control" value="" hidden />
+							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+							<div class="col-md-12 p-t-20">
+								<div class="form-group">
+									<label for="ProductOptionId">Select Option</label>
+									<div class="input-group mb-3">
+										<select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
+											<option value="">Select option</option>
 
+											@foreach (var productOption in Model.ProductOption)
+											{
+												<option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
+											}
 
-                <div class="card">
-                    <div class=" card-body">
-                        <form id="createOptionForm">
-                            <input type='text' id="VariationId" name="VariationId" class='form-control' value="" hidden />
-
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="row p-t-20">
-                                <div class="col-md-6">
-                                    <div class="input-group mb-3">
-                                        <label class="col-md-12">Select Option</label>
-                                        <select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
-                                            <option value="">Select</option>
-
-                                            @foreach (var productOption in Model.ProductOption)
-                                            {
-                                                <option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
-                                            }
-
-                                        </select>
-                                        <div class="input-group-append">
-                                            <a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Option</th>
-                                            <th scope="col">Value</th>
-                                            <th scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="appendTableOption">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row mb-2 col-12 ">
-                                <div class="col-4"><label class="col-md-12">Price variation</label></div>
-                                <div class="col-4">
-                                    <input type='text' id="PriceVariation" class='form-control' value='' />
-                                </div>
-                            </div>
-                            <div class="row button-group">
-                                <div class="col-lg-2 col-md-3">
-                                    <a href="javascript:void(0)" class="btn btn-block btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
-                                    @*<button type="button" class="btn btn-primary" id="saveOptionBtn">@Localizer["save"]</button>*@
-                                </div>
-                                <div class="col-lg-2 col-md-3">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
+										</select>
+										<div class="input-group-append">
+											<a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<table class="table">
+									<thead>
+										<tr>
+											<th scope="col">Option</th>
+											<th scope="col">Value</th>
+											<th scope="col">Actions</th>
+										</tr>
+									</thead>
+									<tbody id="appendTableOption">
+										<tr class="empty">
+											<td colspan="3">No option set</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="mb-2 col-md-12 ">
+								<div class="form-group">
+									<label for="PriceVariation">Price variation</label>
+									<div class="input-group mb-3">
+										<div class="input-group-prepend">
+											<span class="input-group-text" id="basic-addon1">@currency.Symbol</span>
+										</div>
+										<input id="PriceVariation" type="text" class="form-control" aria-describedby="basic-addon1">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<a href="javascript:void(0)" class="btn btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
+						<a href="#" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 @using (Html.BeginPartialViewScripts())
 {
-    <script type="text/javascript">
+	<script type="text/javascript">
+	const optionList = $("#listVariationProduct");
 	$(document).ready(function () {
-
-		GetProductVariation();
+		getProductVariation();
 
         $("#addOptionBtn").on('click',
             function() {
@@ -122,55 +117,51 @@
                     optionId: $(elm).attr("value"),
                     value: ""
                 };
-                console.log($(elm).attr("label"));
-                console.log($(elm).attr("value"));
                 appendTableOption(conf);
             });
 
         function appendTableOption(element) {
-
-            $("#appendTableOption").append(`<tr id='tr_${element.optionId}'>
+			const target = $("#appendTableOption");
+			target.find(".empty").remove();
+            target.append(`<tr id='tr_${element.optionId}'>
                 <td>${element.label}</td>
                 <td>
                     <input type='text' id="attr_val_${element.optionId}" class='form-control' value='${element.value}'/>
                 </td>
                 <td>
                     <a href='#' data-targetAttribute='${element.optionId
-                }' class='btn btn-secondary' onclick='RemoveOption("${element.optionId}")'>
+                }' class='btn btn-secondary' onclick='removeOption("${element.optionId}")'>
                     <i class='mdi mdi-close'></i></a>
                 </td>`);
         }
 
         $("#saveOptionBtn").on("click", function () {
-
 	        const variationDetails = [];
-	        $($('#appendTableOption')[0].children).each(function (index, element) {
-		        var optionId = element.id.substring(3);
-		        console.log(optionId);
-		        variationDetails.push({
-			        ProductOptionId: optionId,
-                    Value: $(`#attr_val_${optionId}`).val()
-		        });
+			$.each($('#appendTableOption')[0].children, function (index, element) {
+				var optionId = element.id.substring(3);
+				if (optionId) {
+					variationDetails.push({
+						ProductOptionId: optionId,
+						Value: $(`#attr_val_${optionId}`).val()
+					});
+				}
 	        });
 
             const model = {
-	            ProductId: '@Model.Id',
-                Price: $("#PriceVariation").val(),
-	            VariationId: $("#VariationId").val(),
-	            ProductVariationDetails :variationDetails
+	            productId: '@Model.Id',
+                price: $("#PriceVariation").val(),
+	            variationId: $("#VariationId").val(),
+	            productVariationDetails :variationDetails
 	        };
 
-
-
-
 	        $.ajax({
-		        url: '@Url.Action("SaveProductVariation")',
+		        url: '@Url.Action("SaveProductVariation", "ProductsApi")',
 		        method: 'POST',
 		        contentType: "application/json; charset=utf-8",
 		        data: JSON.stringify(model),
 		        success: function(data) {
                     if (data.is_success) {
-	                    GetProductVariation();
+	                    getProductVariation();
 				        toast.notify(
 					        { heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
 			        } else {
@@ -186,20 +177,16 @@
         });
 	});
 
-
-	function RemoveOption(id) {
+	function removeOption(id) {
 		$("#tr_" + id).remove();
 		$("#select_" + id).show();
-
 	}
 
-
-    function GetProductVariation() {
-
-        $("#ListVariationProduct").empty();
+    function getProductVariation() {
+        optionList.empty();
 
 		$.ajax({
-			url: '@Url.Action("GetProductVariation")',
+			url: '@Url.Action("getProductVariation", "ProductsApi")',
 			method: 'get',
 			contentType: "application/json; charset=utf-8",
 			data: {
@@ -215,38 +202,39 @@
 	}
 
 	function listProductVariation(data) {
+		if (data.length == 0) {
+			optionList.html("<span>No variations</span>");
+		}
 
-		$(data).each(function(index, element) {
-
-			var a = "";
-			$(element.variationDetails).each(function(index2, element2) {
-				a += `<tr><td>${element2.option}</td> <td>${element2.value}</td></tr>`;
+		$.each(data, function(i, element) {
+			var row = "";
+			$(element.variationDetails).each(function(j, element2) {
+				row += `<tr><td><b>${element2.option}</b></td> <td>${element2.value}</td></tr>`;
 			});
 
-			$("#ListVariationProduct").append(
+			optionList.append(
 				`<div class="col-lg-5 col-md-5 row border m-2 p-2" id="${element.variationId}" >
-					<div class="col-12">
-						Product Variation
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="removeVariation('${element.variationId}')">
+					<div class="col-md-12">
+						<span>Product Variation</span>
+						<a href="#" class="btn btn-warning ml-3" data-toggle="modal" data-target="#exampleModalCenter" onclick="getVariationById('${element.variationId}')">
+							<span class="fa fa-pencil"></span>
+						</a>
+						<a class="close" data-dismiss="modal" onclick="removeVariation('${element.variationId}')">
 							<span aria-hidden="true">&times;</span>
-						</button>
-						<button type="button" class="edit" data-toggle="modal" data-target="#exampleModalCenter" onclick="getVariationById('${element.variationId}')">
-							edit
-						</button>
+						</a>
 					</div>
 					<table class="table  table-border m-2">
 						<tr>
-							${a}
+							${row}
 						</tr>
 					</table>
-					Price:  ${element.price}
+					Price:  ${element.price} @currency.Symbol
 				</div>`);
 		});
 	}
 
 	function clearForm() {
 		$("#ProductOptionId").val([]);
-
 		$('#ProductOptionId option').each(function() {
 			$(this).show();
 		});
@@ -255,15 +243,9 @@
 		$("#PriceVariation").val("");
 	}
 
-
 	function removeVariation(idVariation) {
-
-		// var model = { productId: '@Model.Id', variationId: idVariation };
-
-		console.log(idVariation);
-
 		$.ajax({
-			url: '@Url.Action("RemoveOptione")',
+			url: '@Url.Action("RemoveOption", "ProductsApi")',
 			method: 'POST',
 			data: {
 				productId: '@Model.Id',
@@ -271,7 +253,7 @@
 			},
 			success: function(data) {
 				if (data.is_success) {
-					GetProductVariation();
+					getProductVariation();
 					toast.notify(
 						{ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
 				} else {
@@ -287,7 +269,7 @@
 
 	function getVariationById(idVariation) {
 		$.ajax({
-			url: '@Url.Action("GetProductVariationById")',
+			url: '@Url.Action("getProductVariationById", "ProductsApi")',
 			method: 'get',
 			contentType: "application/json; charset=utf-8",
 			data: {
@@ -295,9 +277,7 @@
 				variationId: idVariation
 			},
 			success: function(data) {
-                console.log(data);
                 editVariation(data);
-                //listProductVariation(data);
 			},
 			error: function(error) {
 				console.log(error);
@@ -305,30 +285,26 @@
 		});
 	}
 
-
     function editVariation(data) {
+		const target = $("#appendTableOption");
+		target.find(".empty").remove();
 
         $(data.variationDetails).each(function (index, element) {
-
 	        $("#select_" + element.optionId).hide();
-
-		    $("#appendTableOption").append(`<tr id='tr_${element.optionId}'>
+			target.append(`<tr id='tr_${element.optionId}'>
                 <td>${element.option}</td>
                 <td>
                     <input type='text' id="attr_val_${element.optionId}" class='form-control' value='${element.value}'/>
                 </td>
                 <td>
                     <a href='#' data-targetAttribute='${element.optionId
-			    }' class='btn btn-secondary' onclick='RemoveOption("${element.optionId}")'>
+			    }' class='btn btn-secondary' onclick='removeOption("${element.optionId}")'>
                     <i class='mdi mdi-close'></i></a>
                 </td>`);
         });
 
         $("#PriceVariation").val(data.price);
         $("#VariationId").val(data.variationId);
-
-        console.log(data.variationId);
     }
-
-    </script>
+	</script>
 }

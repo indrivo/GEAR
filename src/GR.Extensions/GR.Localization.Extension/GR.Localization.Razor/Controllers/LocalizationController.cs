@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using GR.Core;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
@@ -273,15 +274,18 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult EditKey(EditLocalizationViewModel model)
+        public async Task<IActionResult> EditKey(EditLocalizationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            _localizationService.EditKey(model);
-            return RedirectToAction("Index", "Localization", new { page = 1, perPage = 10 });
+            var editResponse = await _localizationService.EditKeyAsync(model);
+            if (editResponse.IsSuccess)
+                return RedirectToAction("Index", "Localization");
+            ModelState.AppendResultModelErrors(editResponse.Errors);
+            return View(model);
         }
 
         [HttpGet]
@@ -314,7 +318,7 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddKey(AddKeyViewModel model)
+        public async Task<IActionResult> AddKey(AddKeyViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -331,8 +335,12 @@ namespace GR.Localization.Razor.Controllers
                 }
                 else
                 {
-                    _localizationService.AddOrUpdateKey(model.NewKey, model.LocalizedStrings);
-                    return RedirectToAction("Index", "Localization", new { page = 1, perPage = 10 });
+                    var addResponse = await _localizationService.AddOrUpdateKeyAsync(model.NewKey, model.LocalizedStrings);
+                    if (addResponse.IsSuccess)
+                        return RedirectToAction("Index", "Localization");
+                    model.Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name);
+                    ModelState.AppendResultModelErrors(addResponse.Errors);
+                    return View(model);
                 }
             }
 
@@ -381,27 +389,17 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddLanguage(AddLanguageViewModel model)
+        public async Task<IActionResult> AddLanguage(AddLanguageViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (model.Identifier.Length == 2)
+                var response = await _localizationService.AddLanguageAsync(model);
+                if (response.IsSuccess)
                 {
-                    var response = _localizationService.AddLanguage(model);
-                    if (response.IsSuccess)
-                    {
-                        return RedirectToAction("GetLanguages", "Localization");
-                    }
-
-                    foreach (var e in response.Errors)
-                    {
-                        ModelState.AddModelError(e.Key, e.Message);
-                    }
-
-                    return View(model);
+                    return RedirectToAction("GetLanguages", "Localization");
                 }
 
-                ModelState.AddModelError(string.Empty, "Identifier must have only 2 characters");
+                ModelState.AppendResultModelErrors(response.Errors);
                 return View(model);
             }
 
@@ -454,11 +452,10 @@ namespace GR.Localization.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public JsonResult GetLanguagesAsJson()
+        public async Task<JsonResult> GetLanguagesAsJson()
         {
-            var languages = _locConfig.Value.Languages
-                .Where(x => !x.IsDisabled).ToList();
-            return Json(languages);
+            var languagesRequest = await _localizationService.GetAllLanguagesAsync();
+            return Json(languagesRequest.Result);
         }
 
         /// <summary>

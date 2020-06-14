@@ -12,7 +12,6 @@ namespace GR.Identity.Abstractions.Models.MultiTenants
         /// Name of tenant
         /// </summary>
         [Required]
-        [DisplayTranslate(Key = "company_name")]
         public virtual string Name { get; set; }
 
         /// <summary>
@@ -31,7 +30,6 @@ namespace GR.Identity.Abstractions.Models.MultiTenants
         /// The url of site web
         /// </summary>
         [Display(Name = "Site Web")]
-        [DisplayTranslate(Key = "company_website")]
         public string SiteWeb { get; set; }
 
         /// <summary>

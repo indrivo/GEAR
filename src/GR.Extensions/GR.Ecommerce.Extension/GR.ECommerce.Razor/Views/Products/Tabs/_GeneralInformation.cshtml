@@ -49,7 +49,7 @@
                                     <div class="form-group">
                                         <label asp-for="Brand"></label>
                                         <select asp-for="BrandId" asp-items="Model.Brands" class="form-control">
-                                            <option value=""></option>
+                                            <option value="">Select brand</option>
                                         </select>
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@
                                     <div class="form-group">
                                         <label asp-for="ProductTypeList"></label>
                                         <select asp-for="ProductTypeId" asp-items="Model.ProductTypeList" class="form-control">
-                                            <option value=""></option>
+                                            <option value="">Select product type</option>
                                         </select>
                                     </div>
                                 </div>
@@ -82,6 +82,15 @@
                                         <label asp-for="Price"></label>
                                         <input asp-for="Price" class="form-control" />
                                         <span asp-validation-for="Price" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                            <input asp-for="IsPublished" class="custom-control-input vis-check">
+                                            <label class="custom-control-label" asp-for="IsPublished">Is published</label>
+                                        </div>
+                                        <span asp-validation-for="IsPublished" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>

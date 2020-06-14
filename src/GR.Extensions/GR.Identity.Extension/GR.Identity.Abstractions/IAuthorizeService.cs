@@ -16,6 +16,13 @@ namespace GR.Identity.Abstractions
         Task<ResultModel> LoginAsync(LoginViewModel model);
 
         /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<ResultModel> LoginAsync(GearUser user);
+
+        /// <summary>
         /// Logout
         /// </summary>
         /// <returns></returns>

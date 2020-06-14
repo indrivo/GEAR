@@ -13,7 +13,7 @@ namespace GR.Email.Abstractions.Events
             /// <summary>
             /// On email confirm
             /// </summary>
-            public static event EventHandler<EmailConfirmEventArgs> OnEmailConfirm;
+            public static event EventHandler<EmailConfirmEventArgs> OnEmailConfirmed;
 
             /// <summary>
             /// On confirm email sent
@@ -24,8 +24,8 @@ namespace GR.Email.Abstractions.Events
 
             #region Triggers
 
-            public static void TriggerEmailConfirm(EmailConfirmEventArgs e)
-                => SystemEvents.InvokeEvent(null, OnEmailConfirm, e, nameof(OnEmailConfirm));
+            public static void TriggerEmailConfirmed(EmailConfirmEventArgs e)
+                => SystemEvents.InvokeEvent(null, OnEmailConfirmed, e, nameof(OnEmailConfirmed));
 
             public static void TriggerSendConfirmEmail(SendConfirmEmailEventArgs e)
                 => SystemEvents.InvokeEvent(null, OnConfirmEmailSend, e, nameof(OnConfirmEmailSend));

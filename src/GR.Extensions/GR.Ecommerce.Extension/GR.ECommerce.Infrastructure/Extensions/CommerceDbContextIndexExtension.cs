@@ -1,7 +1,7 @@
 ﻿using GR.ECommerce.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.Products.Extensions
+namespace GR.ECommerce.Infrastructure.Extensions
 {
     internal static class EntityDbContextIndexExtension
     {

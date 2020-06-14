@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
+using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models.Config;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,8 +18,8 @@ namespace GR.Localization.JsonStringProvider
     {
         #region DependencyInjection Fields
         private readonly IHostingEnvironment _env;
-        private readonly IOptionsSnapshot<LocalizationConfig> _locConfig;
         private readonly ICacheService _cache;
+        private readonly ILocalizationService _service;
         #endregion
 
         #region Private Fields
@@ -36,13 +37,13 @@ namespace GR.Localization.JsonStringProvider
         public JsonStringLocalizer(IHostingEnvironment env,
             IHttpContextAccessor httpAccessor,
             IOptionsSnapshot<LocalizationConfig> locConfig,
-            ICacheService cache)
+            ICacheService cache, ILocalizationService service)
         {
             _env = env;
-            _locConfig = locConfig;
             _cache = cache;
-            var sessionKey = _locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
-            var defaultLanguage = _locConfig.Value.DefaultLanguage ?? DefaultLanguage;
+            _service = service;
+            var sessionKey = locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
+            var defaultLanguage = locConfig.Value.DefaultLanguage ?? DefaultLanguage;
 
             var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
 
@@ -52,7 +53,7 @@ namespace GR.Localization.JsonStringProvider
             }
 
             _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
-            _path = _locConfig.Value.Path ?? PathDefault;
+            _path = locConfig.Value.Path ?? PathDefault;
         }
         #endregion
 
@@ -65,9 +66,7 @@ namespace GR.Localization.JsonStringProvider
 
                 var exists = File.Exists(filePath);
                 if (!exists) return new LocalizedString(name, $"[{name}]", true);
-
-                var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{_language}";
-                var locKey = $"{cacheKey}_{name}";
+                var locKey = _service.GenerateKey(_language, name);//$"{cacheKey}_{name}";
 
                 var cacheTranslated = _cache.GetAsync<string>(locKey).ExecuteAsync();
                 if (!string.IsNullOrEmpty(cacheTranslated)) return new LocalizedString(name, cacheTranslated, false);

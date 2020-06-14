@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using GR.ECommerce.Payments.Abstractions.Models;
+using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions.Models;
 
 namespace GR.Orders.Razor.ViewModels.OrderViewModels
@@ -15,5 +16,15 @@ namespace GR.Orders.Razor.ViewModels.OrderViewModels
         /// Payments
         /// </summary>
         public virtual IEnumerable<Payment> Payments { get; set; }
+
+        /// <summary>
+        /// Billing address
+        /// </summary>
+        public virtual Address BillingAddress { get; set; }
+
+        /// <summary>
+        /// Shipping address
+        /// </summary>
+        public virtual Address ShippingAddress { get; set; }
     }
 }

@@ -17,12 +17,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="Twilio.AspNet.Core" Version="5.33.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.PhoneVerification.Abstractions\GR.Identity.PhoneVerification.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.TwoFactorAuthentication.Abstractions\GR.TwoFactorAuthentication.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

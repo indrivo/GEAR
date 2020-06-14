@@ -1,0 +1,410 @@
+@using GR.ApplePay.Abstractions
+@using GR.ApplePay.Abstractions.ViewModels
+@using GR.Core.Abstractions
+@using GR.Core.Extensions
+@using GR.Core.Razor.Extensions
+@model Guid
+
+@inject IWritableOptions<ApplePaySettingsViewModel> Options
+@inject IApplePayPaymentMethodService Service
+
+@{
+    var merchantId = Service.GetMerchantIdentifier();
+}
+
+@using (Html.BeginPartialViewStyles())
+{
+	<link rel="stylesheet" type="text/css" href="~/assets/apple-pay/style.css" asp-append-version="true" />
+}
+
+<div id="ckoApplePay" class="payment-method-button apple-pay-button apple-pay-button-text-buy" lang=en></div>
+
+<!-- Adding an error message to show in case Apple Pay is not possible -->
+<p style="display:none" id="ckoApplePayError"></p>
+
+@using (Html.BeginPartialViewScripts())
+{
+    //Run on non apple products
+	@if (Options.Value.UsePolyfill)
+	{
+		@await Html.PartialAsync("_ApplePayPolyfill", merchantId)
+	}
+
+	<script>
+        $(function () {
+	        const toast = new ToastNotifier();
+        const orderId = "@Model";
+        const merchantIdentifier = "@merchantId";
+
+        const serverSettings = JSON.parse(`@Html.Raw(Options.Value.SerializeAsJson())`);
+        const applePayUiController = (function () {
+            var DOMStrings = {
+                appleButton: 'ckoApplePay',
+                errorMessage: 'ckoApplePayError'
+            };
+
+            return {
+                DOMStrings,
+                displayApplePayButton: function () {
+                    document.getElementById(DOMStrings.appleButton).style.display = 'block';
+                },
+                hideApplePayButton: function () {
+                    document.getElementById(DOMStrings.appleButton).style.display = 'none';
+                },
+                displayErrorMessage: function () {
+                    document.getElementById(DOMStrings.errorMessage).style.display = 'block';
+                },
+                setErrorMessage: function (errorMessage) {
+					$(DOMStrings.errorMessage).text(errorMessage);
+                }
+            };
+        })();
+
+        var applePayController = (function (uiController) {
+            const BACKEND_URL_CREATE_PAYMENT = '@Url.Action("CreatePayment", "ApplePay")';
+            const BACKEND_URL_VALIDATE_SESSION = '@Url.Action("Validate", "ApplePay")';
+            const BACKEND_URL_PAY = '@Url.Action("ApproveTransactionRequest", "ApplePay")';
+
+            // High level configuration options.
+            let config = {
+                payments: {
+                    acceptedCardSchemes: serverSettings.acceptedCardSchemes
+                },
+                //overrided on click pay button
+                shop: {
+                    product_price: 0.0,
+                    shop_name: 'Shop Name',
+                    shop_localisation: {
+                        currencyCode: 'GBP',
+                        countryCode: 'GB'
+                    }
+                },
+                shipping: {
+                    GB_region: [
+                        {
+                            label: 'Free Shipping',
+                            amount: '0.00',
+                            detail: 'Arrives in 3-5 days',
+                            identifier: 'freeShipping'
+                        },
+                        {
+                            label: 'Express Shipping',
+                            amount: '5.00',
+                            detail: 'Arrives in 1-2 days',
+                            identifier: 'expressShipping'
+                        }
+                    ],
+                    WORLDWIDE_region: [
+                        {
+                            label: 'Worldwide Standard Shipping',
+                            amount: '10.00',
+                            detail: 'Arrives in 5-8 days',
+                            identifier: 'worldwideShipping'
+                        }
+                    ]
+                }
+            };
+
+            /**
+             * Get product info from server
+             */
+            var _getProductInfo = function () {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: BACKEND_URL_CREATE_PAYMENT,
+                        method: "POST",
+                        data: {
+                            orderId: orderId
+                        },
+                        success: response => {
+                            if (response.is_success) {
+                                resolve(response.result);
+                            } else {
+                                reject(response.error_keys);
+                            }
+                        },
+                        error: e => {
+                            reject(e);
+                        }
+                    });
+                });
+            }
+
+            /**
+             * Checks if Apple Pay is possible in the current environment.
+             * @@return {boolean} Boolean to check if Apple Pay is possible
+             */
+			var _supportedByDevice = function () {
+                return window.ApplePaySession;
+            };
+
+            var _supportsSetup = function() {
+	            return "openPaymentSetup" in ApplePaySession;
+            };
+
+            /**
+             * Starts the Apple Pay session using a configuration
+             */
+            var _startApplePaySession = function (config) {
+                const applePaySession = new ApplePaySession(serverSettings.applePayVersion, config);
+                console.log(applePaySession);
+                _handleApplePayEvents(applePaySession);
+                applePaySession.begin();
+            };
+
+            /**
+             * This method cals your backend server with the Apple Pay validation URL.
+             * On the backend, a POST request will be done to this URL with the Apple Pay certificates
+             * and the outcome will be returned
+             *
+             * @@param {string} appleUrl The Apple Pay validation URL generated by Apple
+             * @@param {function} callback Callback function used to return the server call outcome
+             *
+             * @@return {object} The session payload
+             *
+             */
+            var _validateApplePaySession = function (appleUrl, callback) {
+                const data = {
+                    validationUrl: appleUrl
+                };
+
+                $.ajax({
+                    url: BACKEND_URL_VALIDATE_SESSION,
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data)
+                }).then(function (response) {
+                    if (response.is_success) {
+                        callback(response.result);
+                    } else {
+                        alert("Error");
+                    }
+                });
+            };
+
+            /**
+             * This method returns the available payment methods for a certain region. You can add
+             * your business logic here to determine the shipping methods you need.
+             *
+             * @@param {string} 2 Letter ISO of the region
+             *
+             * @@return {Array} An array of shipping methods
+             *
+             */
+            var _getAvailableShippingMethods = function (region) {
+                // return the shipping methods available based on region
+                if (region === 'GB') {
+                    return { methods: config.shipping.GB_region };
+                } else {
+                    return { methods: config.shipping.WORLDWIDE_region };
+                }
+            };
+
+            var _calculateTotal = function (subtotal, shipping) {
+                return (parseFloat(subtotal) + parseFloat(shipping)).toFixed(2);
+            };
+
+            // here we talk to our backend to send the Apple Pay Payload and return the transaction outcome
+            var _performTransaction = function (details, callback) {
+
+                const data = {
+                    token: details.token,
+                    customerEmail: details.shippingContact.emailAddress,
+                    billingDetails: details.billingContact,
+                    shippingDetails: details.shippingContact,
+                    orderId: orderId
+                };
+
+                $.ajax({
+                    url: BACKEND_URL_PAY,
+                    method: "POST",
+                    data: data
+                }).then(function (response) {
+                    callback(response);
+                });
+            };
+
+            /**
+             * This is the main method of the script, since here we handle all the Apple Pay
+             * events. Here you are able to populate your shipping methods, react to  shipping methods
+             * changes, and many other interaction that the user has with the Apple Pay pup-up.
+             *
+             * @@param {object} Apple Pay Session (the one generate on the button click)
+             *
+             */
+            var _handleApplePayEvents = function (appleSession) {
+                // This is the first event that Apple triggers. Here you need to validate the
+                // Apple Pay Session from your Back-End
+                appleSession.onvalidatemerchant = function (event) {
+	                _validateApplePaySession(event.validationURL, function (merchantSession) {
+                        appleSession.completeMerchantValidation(merchantSession);
+                    });
+                };
+
+                // This method is triggered before populating the shipping methods. This is the
+                // perfect place inject your shipping methods
+                appleSession.onshippingcontactselected = function (event) {
+                    // populate with the availbale shipping methods for the region (Apple will tell you the region).
+                    // while the full address will only be available to you after the user confirms tha payment
+                    const shipping = _getAvailableShippingMethods(
+                        config.shop.shop_localisation.countryCode
+                    );
+                    // Update total and line items based on the shipping methods
+                    const newTotal = {
+                        type: 'final',
+                        label: config.shop.shop_name,
+                        amount: _calculateTotal(
+                            config.shop.product_price,
+                            shipping.methods[0].amount
+                        )
+                    };
+                    const newLineItems = [
+                        {
+                            type: 'final',
+                            label: 'Subtotal',
+                            amount: config.shop.product_price
+                        },
+                        {
+                            type: 'final',
+                            label: shipping.methods[0].label,
+                            amount: shipping.methods[0].amount
+                        }
+                    ];
+                    appleSession.completeShippingContactSelection(
+                        ApplePaySession.STATUS_SUCCESS,
+                        shipping.methods,
+                        newTotal,
+                        newLineItems
+                    );
+                };
+
+                // This method is triggered when a user select one of the shipping options.
+                // Here you generally want to keep track of the transaction amount
+                appleSession.onshippingmethodselected = function (event) {
+                    const newTotal = {
+                        type: 'final',
+                        label: config.shop.shop_name,
+                        amount: _calculateTotal(
+                            config.shop.product_price,
+                            event.shippingMethod.amount
+                        )
+                    };
+                    const newLineItems = [
+                        {
+                            type: 'final',
+                            label: 'Subtotal',
+                            amount: config.shop.product_price
+                        },
+                        {
+                            type: 'final',
+                            label: event.shippingMethod.label,
+                            amount: event.shippingMethod.amount
+                        }
+                    ];
+                    appleSession.completeShippingMethodSelection(
+                        ApplePaySession.STATUS_SUCCESS,
+                        newTotal,
+                        newLineItems
+                    );
+                };
+
+                // This method is the most important method. It gets triggered after the user has
+                // confirmed the transaction with the Touch ID or Face ID. Besides getting all the
+                // details about the customer (email, address ...) you also get the Apple Pay payload
+                // needed to perform a payment.
+                appleSession.onpaymentauthorized = function (event) {
+                    _performTransaction(event.payment, function (outcome) {
+                        if (outcome.is_success) {
+                            appleSession.completePayment(ApplePaySession.STATUS_SUCCESS);
+                            setTimeout(() => {
+	                            window.location = `/checkout/success?orderId=${orderId}`;
+                            }, 1000);
+                        } else {
+                            appleSession.completePayment(ApplePaySession.STATUS_FAILURE);
+							setTimeout(() => {
+								window.location = `/checkout/fail?orderId=${orderId}`;
+							}, 1000);
+                        }
+                    });
+                };
+            };
+
+            /**
+             * Sets a onClick listen on the Apple Pay button. When clicked it will
+             * begin the Apple Pay session with your configuration
+             */
+            var _setButtonClickListener = function () {
+                document
+                    .getElementById(uiController.DOMStrings.appleButton)
+                    .addEventListener('click', function () {
+                        _getProductInfo()
+                            .then(productInfo => {
+                                config.shop = Object.assign(config.shop, productInfo);
+
+                                _startApplePaySession({
+                                    currencyCode: config.shop.shop_localisation.currencyCode,
+                                    countryCode: config.shop.shop_localisation.countryCode,
+                                    merchantCapabilities: serverSettings.merchantCapabilities,
+                                    supportedNetworks: config.payments.acceptedCardSchemes,
+                                    shippingType: 'shipping',
+                                    requiredBillingContactFields: serverSettings.requiredBillingContactFields,
+                                    requiredShippingContactFields: serverSettings.requiredShippingContactFields,
+                                    total: {
+                                        label: config.shop.shop_name,
+                                        amount: config.shop.product_price,
+                                        type: 'final'
+                                    }
+                                });
+                            })
+                            .catch(e => {
+	                            toast.notifyErrorList(e);
+                            });
+                    });
+            };
+
+            return {
+                init: function () {
+                    //Check merchant id
+                    if (merchantIdentifier == "") {
+	                    uiController.setErrorMessage("Bad gear server configuration");
+	                    uiController.displayErrorMessage();
+                    }
+                    // Is ApplePaySession available in the browser?
+                    else if (_supportedByDevice()) {
+                        if (ApplePaySession.canMakePayments() === true) {
+	                        uiController.displayApplePayButton();
+                        } else {
+	                        ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier).then(function (canMakePayments) {
+		                        if (canMakePayments === true) {
+									uiController.displayApplePayButton();
+		                        } else {
+									if (_supportsSetup) {
+				                        //setup
+				                        uiController.setErrorMessage("Need to setup your account");
+				                        uiController.displayErrorMessage();
+			                        } else {
+										uiController.setErrorMessage("Apple Pay cannot be used at this time. If using macOS you need to be paired with a device that supports at least TouchID.");
+				                        uiController.displayErrorMessage();
+									}
+		                        }
+	                        });
+                        }
+
+	                    } else {
+                            uiController.hideApplePayButton();
+                            uiController.setErrorMessage("ApplePay is not available in this environment.");
+		                    uiController.displayErrorMessage();
+	                    }
+
+	                    // Set the onClick listener on the Apple Pay button
+	                    _setButtonClickListener();
+
+                }
+            };
+        })(applePayUiController); // passing the UI controller
+
+        // Initialise the Apple Pay controller and let the magic happen
+        applePayController.init();
+    });
+	</script>
+}

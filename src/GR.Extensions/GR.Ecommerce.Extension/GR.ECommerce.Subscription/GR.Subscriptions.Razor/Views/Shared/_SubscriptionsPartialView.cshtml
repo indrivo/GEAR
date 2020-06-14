@@ -30,7 +30,7 @@
                         {
                             <tr>
                                 <td colspan="7">
-                                   @Localizer["no_data"]
+                                    @Localizer["no_data"]
                                 </td>
                             </tr>
                         }
@@ -55,7 +55,7 @@
                                 </td>
                                 <td>
                                     <ul style="list-style: none;" class="m-0 p-0">
-                                        @foreach (var permission in subscription.SubscriptionPermissions)
+                                        @foreach (var permission in subscription.Permissions)
                                         {
                                             <li><b>@permission.Name</b> - @permission.Value</li>
                                         }
@@ -64,7 +64,11 @@
                                 <td>
                                     @if (!subscription.IsFree)
                                     {
-                                        <a class="btn btn-primary m-0 p-0" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId">@Localizer["system_order_details"]</a>
+                                        <a class="btn btn-primary m-0 p-0" asp-action="Details" asp-controller="Orders" asp-route-orderId="@subscription.OrderId"> @Localizer["system_order_details"]</a>
+                                    }
+                                    else
+                                    {
+                                        <span>No actions</span>
                                     }
                                 </td>
                             </tr>

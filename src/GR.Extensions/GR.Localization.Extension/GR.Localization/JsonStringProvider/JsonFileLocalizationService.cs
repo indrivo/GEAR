@@ -1,14 +1,23 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using GR.Cache.Abstractions;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
+using GR.Core.Helpers.Responses;
+using GR.Core.Helpers.Validators;
 using GR.Localization.Abstractions;
-using GR.Localization.Abstractions.Extensions;
+using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -16,22 +25,35 @@ using Newtonsoft.Json.Linq;
 
 namespace GR.Localization.JsonStringProvider
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.2, "Add new features, change all methods Task based")]
     public class JsonFileLocalizationService : ILocalizationService
     {
+        #region Injectable
+
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IHostingEnvironment _env;
-        private readonly IStringLocalizer _localizer;
         private readonly ICacheService _cache;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
+        
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+        /// <summary>
+        /// Inject context accessor
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env,
-            IStringLocalizer localizer, ICacheService cache, IExternalTranslationProvider externalTranslationProvider)
+        #endregion
+
+        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env, ICacheService cache, IExternalTranslationProvider externalTranslationProvider, IMapper mapper, IHttpContextAccessor contextAccessor)
         {
             _env = env;
             _locConfig = locConfig;
-            _localizer = localizer;
             _cache = cache;
             _externalTranslationProvider = externalTranslationProvider;
+            _mapper = mapper;
+            _contextAccessor = contextAccessor;
         }
 
         /// <summary>
@@ -39,8 +61,10 @@ namespace GR.Localization.JsonStringProvider
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public ResultModel AddLanguage(AddLanguageViewModel model)
+        public async Task<ResultModel> AddLanguageAsync(AddLanguageViewModel model)
         {
+            var isValid = ModelValidator.IsValid(model);
+            if (!isValid.IsSuccess) return isValid.ToBase();
             var response = new ResultModel { IsSuccess = true };
             var existsInConfig =
                 _locConfig.Value.Languages.Any(m => m.Identifier == model.Identifier && m.Name == model.Name);
@@ -71,7 +95,9 @@ namespace GR.Localization.JsonStringProvider
                 using (var sWriter = new StreamWriter(stream))
                 using (var writer = new JsonTextWriter(sWriter))
                 {
-                    var keys = _localizer.GetAllForLanguage("en").ToList();
+                    var pack = await GetLanguagePackAsync("en");
+                    if (!pack.IsSuccess) return pack.ToBase();
+                    var keys = pack.Result.Select(x => new LocalizedString(x.Key, x.Value));
                     var dict = new Dictionary<string, string>();
                     foreach (var item in keys)
                     {
@@ -84,9 +110,9 @@ namespace GR.Localization.JsonStringProvider
                     obj.WriteTo(writer);
                 }
 
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
+                var languagesFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
 
-                using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
+                using (Stream str = new FileStream(languagesFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
                 using (var sReader = new StreamReader(str))
                 using (var reader = new JsonTextReader(sReader))
@@ -98,10 +124,18 @@ namespace GR.Localization.JsonStringProvider
                         Name = model.Name,
                         IsDisabled = false
                     });
-                    var newLangs = JArray.FromObject(_locConfig.Value.Languages);
-                    fileObj[nameof(LocalizationConfig)][nameof(LocalizationConfig.Languages)] = newLangs;
+                    var newLanguages = JArray.FromObject(_locConfig.Value.Languages);
+                    fileObj[nameof(LocalizationConfig)][nameof(LocalizationConfig.Languages)] = newLanguages;
                     reader.Close();
-                    File.WriteAllText(langsFile.PhysicalPath, fileObj.ToString());
+                    try
+                    {
+                        await File.WriteAllTextAsync(languagesFile.PhysicalPath, fileObj.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        response.IsSuccess = false;
+                        response.AddError(e.Message);
+                    }
                 }
             }
 
@@ -190,13 +224,127 @@ namespace GR.Localization.JsonStringProvider
         }
 
         /// <summary>
+        /// Import language translations
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="translations"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ImportLanguageTranslationsAsync(string identifier, Dictionary<string, string> translations)
+        {
+            var response = new ResultModel();
+            var languageRequest = await GetLanguageByIdentifierAsync(identifier);
+            if (!languageRequest.IsSuccess) return languageRequest.ToBase();
+            var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, identifier + ".json");
+            foreach (var (key, value) in translations)
+            {
+                var cacheKey = GenerateKey(identifier, key);
+                await _cache.SetAsync(cacheKey, value);
+            }
+
+            var obj = JObject.Parse(translations.SerializeAsJson());
+            try
+            {
+                await File.WriteAllTextAsync(filePath, obj.ToString(Formatting.Indented));
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                response.AddError(e.Message);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get all languages
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<ResultModel<IEnumerable<LanguageCreateViewModel>>> GetAllLanguagesAsync()
+        {
+            var languages = _locConfig.Value.Languages
+                .Where(x => !x.IsDisabled).ToList();
+            ResultModel<IEnumerable<LanguageCreateViewModel>> response =
+                new SuccessResultModel<IEnumerable<LanguageCreateViewModel>>(languages);
+            return Task.FromResult(response);
+        }
+
+        /// <summary>
+        /// Get language by identifier
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public Task<ResultModel<Language>> GetLanguageByIdentifierAsync(string identifier)
+        {
+            var language = _locConfig.Value.Languages.FirstOrDefault(x => x.Identifier.Equals(identifier));
+            if (language == null) return Task.FromResult<ResultModel<Language>>(new NotFoundResultModel<Language>());
+            var mapped = _mapper.Map<Language>(language);
+            return Task.FromResult<ResultModel<Language>>(new SuccessResultModel<Language>(mapped));
+        }
+
+        /// <summary>
+        /// Generate key
+        /// </summary>
+        /// <param name="language"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual string GenerateKey(string language, string key)
+        {
+            var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{language}_{key}";
+            return cacheKey;
+        }
+
+        /// <summary>
+        /// Get language pack
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<string, string>>> GetLanguagePackAsync(string language)
+        {
+            var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, language + ".json");
+            if (!File.Exists(filePath))
+                return new NotFoundResultModel<Dictionary<string, string>>();
+            var text = await File.ReadAllTextAsync(filePath);
+            var dict = text.Deserialize<Dictionary<string, string>>();
+            return new SuccessResultModel<Dictionary<string, string>>(dict);
+        }
+
+        /// <summary>
+        /// Get languages packs
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<string, Dictionary<string, string>>>> GetLanguagePacksAsync()
+        {
+            var languagesReq = await GetAllLanguagesAsync();
+            if (!languagesReq.IsSuccess) return languagesReq.Map<Dictionary<string, Dictionary<string, string>>>();
+            var dict = new Dictionary<string, Dictionary<string, string>>();
+            foreach (var lang in languagesReq.Result.ToList())
+            {
+                var packRequest = await GetLanguagePackAsync(lang.Identifier);
+                if (packRequest.IsSuccess) dict.Add(lang.Identifier, packRequest.Result);
+            }
+            return new SuccessResultModel<Dictionary<string, Dictionary<string, string>>>(dict);
+        }
+
+        /// <summary>
+        /// Get current language
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Language> GetCurrentLanguageAsync()
+        {
+            var languageId = _contextAccessor.HttpContext.Session.GetString(_locConfig.Value.SessionStoreKeyName);
+            return (await GetLanguageByIdentifierAsync(languageId)).Result;
+        }
+
+        /// <summary>
         /// Edit key
         /// </summary>
         /// <param name="model"></param>
-        public void EditKey(EditLocalizationViewModel model)
+        public async Task<ResultModel> EditKeyAsync([Required]EditLocalizationViewModel model)
         {
+            var modelState = ModelValidator.IsValid(model);
+            if (!modelState.IsSuccess) return modelState;
             var newStrings = model.LocalizedStrings;
-            AddOrUpdateKey(model.Key, newStrings);
+            return await AddOrUpdateKeyAsync(model.Key, newStrings);
         }
 
         /// <summary>
@@ -204,13 +352,15 @@ namespace GR.Localization.JsonStringProvider
         /// </summary>
         /// <param name="key"></param>
         /// <param name="localizedStrings"></param>
-        public void AddOrUpdateKey(string key, IDictionary<string, string> localizedStrings)
+        public async Task<ResultModel> AddOrUpdateKeyAsync(string key, IDictionary<string, string> localizedStrings)
         {
-            foreach (var item in localizedStrings)
+            var response = new ResultModel();
+            if (key.IsNullOrEmpty() || localizedStrings == null) return new InvalidParametersResultModel();
+            foreach (var (s, value) in localizedStrings)
             {
-                var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, item.Key + ".json");
-                var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{item.Key}_{key}";
-                _cache.SetAsync(cacheKey, item.Value).ExecuteAsync();
+                var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, s + ".json");
+                var cacheKey = GenerateKey(s, key);
+                await _cache.SetAsync(cacheKey, value);
                 if (!File.Exists(filePath))
                 {
                     using (Stream str = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write,
@@ -219,11 +369,13 @@ namespace GR.Localization.JsonStringProvider
                     using (var writer = new JsonTextWriter(sWriter))
                     {
                         writer.Formatting = Formatting.Indented;
-                        writer.WriteStartObject();
-                        writer.WritePropertyName(key);
-                        writer.WriteValue(item.Value);
-                        writer.WriteEndObject();
+                        await writer.WriteStartObjectAsync();
+                        await writer.WritePropertyNameAsync(key);
+                        await writer.WriteValueAsync(value);
+                        await writer.WriteEndObjectAsync();
                     }
+
+                    response.IsSuccess = true;
                 }
                 else
                 {
@@ -233,12 +385,21 @@ namespace GR.Localization.JsonStringProvider
                     using (var reader = new JsonTextReader(sReader))
                     {
                         var obj = JObject.Load(reader);
-                        obj[key] = item.Value;
+                        obj[key] = value;
                         reader.Close();
-                        File.WriteAllText(filePath, obj.ToString());
+                        try
+                        {
+                            await File.WriteAllTextAsync(filePath, obj.ToString());
+                            response.IsSuccess = true;
+                        }
+                        catch (Exception e)
+                        {
+                            response.AddError(e.Message);
+                        }
                     }
                 }
             }
+            return response;
         }
     }
 }

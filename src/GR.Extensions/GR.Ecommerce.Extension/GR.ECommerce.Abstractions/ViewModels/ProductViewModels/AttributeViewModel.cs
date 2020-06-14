@@ -5,11 +5,16 @@
         /// <summary>
         /// Name
         /// </summary>
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
+
+        /// <summary>
+        /// Display name
+        /// </summary>
+        public virtual string DisplayName { get; set; }
 
         /// <summary>
         /// Value
         /// </summary>
-        public string Value { get; set; }
+        public virtual string Value { get; set; }
     }
 }

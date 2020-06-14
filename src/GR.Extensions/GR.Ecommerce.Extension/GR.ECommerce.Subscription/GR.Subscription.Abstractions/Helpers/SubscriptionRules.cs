@@ -39,7 +39,7 @@ namespace GR.Subscriptions.Abstractions.Helpers
                         var maxUsers = 0;
                         foreach (var subscription in subscriptions)
                         {
-                            var allowedUsers = subscription.SubscriptionPermissions.FirstOrDefault(x => x.Name.Equals("Number of users"))?.Value;
+                            var allowedUsers = subscription.Permissions.FirstOrDefault(x => x.Name.Equals("Number of users"))?.Value;
                             if (allowedUsers == null) continue;
                             try
                             {

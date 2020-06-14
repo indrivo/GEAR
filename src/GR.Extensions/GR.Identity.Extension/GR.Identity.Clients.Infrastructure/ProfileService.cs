@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 using GR.Identity.Abstractions;
 using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityModel;
@@ -17,6 +19,7 @@ namespace GR.Identity.Clients.Infrastructure
     /// Returns the profile data associated to the main
     /// Identity of the user
     /// </summary>
+    [Author(Authors.LUPEI_NICOLAE)]
     public class ProfileService : IProfileService
     {
         #region DependencyInjection Private Fields

@@ -1,0 +1,1 @@
+sed 's/<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" Condition="true" />/ /g' *.csproj

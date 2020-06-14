@@ -15,11 +15,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AppSettings\LanguagesSettings.json" />
+    <None Remove="AppSettings\translationSettings.json" />
     <None Remove="Configuration\countries-source.json" />
     <None Remove="Configuration\countries.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="AppSettings\LanguagesSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AppSettings\translationSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Configuration\countries-source.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

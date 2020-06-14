@@ -35,6 +35,8 @@ The following platforms are supported:
   Modules/GR.Core.Razor
   Modules/GR.Calendar
   Modules/GR.Workflow
+  Modules/GR.UserPreferences
+  Modules/GR.Localization
 
 
 .. _changes-docs:

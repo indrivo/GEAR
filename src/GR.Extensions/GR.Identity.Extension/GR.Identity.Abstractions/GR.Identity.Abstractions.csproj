@@ -26,11 +26,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
 
-    <EmbeddedResource Include="Static\Embedded Resources\user.jpg">
+    <EmbeddedResource Include="Static\EmbeddedResources\user.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
 
-    <Content Include="Static\Embedded Resources\user.jpg">
+    <Content Include="Static\EmbeddedResources\user.jpg">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>

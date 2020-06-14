@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
-using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.Orders.Abstractions.Models;
 

@@ -1,0 +1,44 @@
+﻿@using GR.Card.Abstractions.Models
+@using GR.Core.Abstractions
+@using GR.Core.Razor.Extensions
+@model Guid
+@inject IWritableOptions<CardSettingsViewModel> Options
+
+@{
+    var formModel = new OrderCreditCardPayViewModel
+    {
+        OrderId = Model
+    };
+}
+
+@using (Html.BeginPartialViewStyles())
+{
+    <link rel="stylesheet" type="text/css" href="~/assets/credit_card_pay/style.css" asp-append-version="true" />
+}
+
+<button type="button" class="btn-payment-method" id="creditCardBtn">Pay with card</button>
+
+<div id="creditCardModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pay with card</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <partial name="_CreditCardPayForm" model="@formModel"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="payWithCreditCardBtn">Pay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginPartialViewScripts())
+{
+    <script asp-append-version="true" src="~/assets/credit_card_pay/script.js"></script>
+}

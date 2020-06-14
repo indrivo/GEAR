@@ -9,17 +9,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
-using System.ComponentModel.DataAnnotations;
 using System.Drawing.Imaging;
-using GR.Core;
 using GR.Core.Razor.Extensions;
-using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using GR.ECommerce.Razor.Helpers;
 using GR.ECommerce.Razor.Models;
@@ -50,9 +46,6 @@ namespace GR.ECommerce.Razor.Controllers
             _galleryManager = galleryManager;
         }
 
-
-        #region Views
-
         /// <inheritdoc />
         /// <summary>
         /// Index page
@@ -60,6 +53,16 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         public override IActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Store
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Store()
         {
             return View();
         }
@@ -256,6 +259,53 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
+        /// Get product image
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductImage(Guid? productId)
+        {
+            var photo = await _productService.Context.ProductImages.FirstOrDefaultAsync(x => x.ProductId.Equals(productId));
+            if (photo?.Image == null)
+            {
+                var def = GetDefaultImage();
+                if (def == null) return NotFound();
+                return File(def, "image/png");
+            }
+
+            return File(photo.Image, photo.ContentType);
+        }
+
+        /// <summary>
+        /// Get default image
+        /// </summary>
+        /// <returns></returns>
+        private static byte[] GetDefaultImage()
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Static/EmbeddedResources/no-image.png");
+            if (!System.IO.File.Exists(path))
+                return default;
+
+            try
+            {
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var binary = new BinaryReader(stream))
+                {
+                    var data = binary.ReadBytes((int)stream.Length);
+                    return data;
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return default;
+        }
+
+        /// <summary>
         /// Upload images
         /// </summary>
         /// <param name="model"></param>
@@ -334,104 +384,35 @@ namespace GR.ECommerce.Razor.Controllers
             return NotFound();
         }
 
-        #endregion
 
-        #region Api's
+        #region Helpers
 
-        /// <summary>
-        /// Remove variation option
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="variationId"></param>
-        /// <returns></returns>
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> RemoveOptione([Required]Guid? productId, [Required]Guid? variationId)
+        private List<SelectListItem> GetProdOptionByVariation(Guid productId)
         {
-            var resultModel = new ResultModel();
-            if (productId is null || variationId is null)
+            return Context.ProductVariationDetails.Where(x => x.ProductVariation.ProductId == productId).Select(s => new SelectListItem
             {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-                return Json(resultModel);
-            }
-
-            var result = Context.ProductVariations
-                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
-
-            if (result == null) return Json(resultModel);
-            Context.ProductVariations.Remove(result);
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
+                Text = s.ProductOption.Name,
+                Value = s.ProductOptionId.ToString(),
+            }).AsEnumerable().DistinctBy(d => d.Value).ToList();
         }
 
-        /// <summary>
-        /// Remove variation option
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> GetPriceByVariation(ProductPriceVariationViewModel model)
+        private List<ProductVariation> GetProdVariationList(Guid productId)
         {
-            if (ModelState.IsValid) return await JsonAsync(_productService.GetPriceByVariationAsync(model));
-            ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
-            return Json(model);
+
+            var listVariation = Context.ProductVariations
+                .Include(i => i.ProductVariationDetails)
+                .ThenInclude(i => i.ProductOption)
+                .Where(x => x.ProductId == productId).ToList();
+
+            return listVariation;
         }
-
-        /// <summary>
-        /// Get subscription plans
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
-        public async Task<JsonResult> GetSubscriptionPlans() =>
-            await JsonAsync(_productService.GetSubscriptionPlansAsync());
-
-        /// <summary>
-        /// Get commerce statistic
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<SalesStatisticViewModel>))]
-        public async Task<JsonResult> GetCommerceGeneralStatistic(DateTime? startDate, DateTime? endDate) =>
-            await JsonAsync(_productService.GetCommerceGeneralStatisticAsync(startDate, endDate));
-
-        /// <summary>
-        /// Get year report
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<Dictionary<int, object>>))]
-        public async Task<JsonResult> GetYearReport() =>
-            await JsonAsync(_productService.GetYearReportAsync());
-
-        /// <summary>
-        /// Get global currency
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
-        public async Task<JsonResult> GetGlobalCurrency() =>
-            Json(await _productService.GetGlobalCurrencyAsync());
-
-
-        /// <summary>
-        /// Set global currency
-        /// </summary>
-        /// <param name="currencyIdentifier"></param>
-        /// <returns></returns>
-        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
-        public async Task<JsonResult> SetGlobalCurrency(string currencyIdentifier) =>
-            Json(await _productService.SetGlobalCurrencyAsync(currencyIdentifier));
 
         /// <summary>
         /// Load dropdown items
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public ProductViewModel GetDropdownItems(ProductViewModel model)
+        private ProductViewModel GetDropdownItems(ProductViewModel model)
         {
             model.Brands.AddRange(Context.Brands.Where(x => x.IsDeleted == false).Select(x => new SelectListItem
             {
@@ -473,189 +454,7 @@ namespace GR.ECommerce.Razor.Controllers
             return model;
         }
 
-
-        public List<SelectListItem> GetProdOptionByVariation(Guid productId)
-        {
-            return Context.ProductVariationDetails.Where(x => x.ProductVariation.ProductId == productId).Select(s => new SelectListItem
-            {
-                Text = s.ProductOption.Name,
-                Value = s.ProductOptionId.ToString(),
-            }).AsEnumerable().DistinctBy(d => d.Value).ToList();
-        }
-
-        public List<ProductVariation> GetProdVariationList(Guid productId)
-        {
-
-            var listVariation = Context.ProductVariations
-                .Include(i => i.ProductVariationDetails)
-                .ThenInclude(i => i.ProductOption)
-                .Where(x => x.ProductId == productId).ToList();
-
-            return listVariation;
-        }
-
-
-        [HttpPost]
-        public async Task<JsonResult> EditProductAttributes([FromBody] IEnumerable<ProductAttributesViewModel> model)
-        {
-            foreach (var item in model)
-            {
-                var attribute = Context.ProductAttributes
-                    .FirstOrDefault(x =>
-                        x.ProductAttributeId == item.ProductAttributeId && x.ProductId == item.ProductId);
-
-                if (attribute != null)
-                {
-                    Context.ProductAttributes.Remove(attribute);
-                }
-
-                Context.ProductAttributes.Add(item);
-            }
-
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
-        }
-
-
-        [HttpPost]
-        public async Task<JsonResult> SaveProductVariation([FromBody] ProductVariationViewModel model)
-        {
-            var response = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                response.Errors = ModelState.ToResultModelErrors().ToList();
-                return Json(response);
-            }
-
-            var prod = await Context.Products.FirstOrDefaultAsync(i => i.Id == model.ProductId);
-
-            if (prod != null)
-            {
-                var variation = await Context.ProductVariations
-                    .FirstOrDefaultAsync(i => i.Id == model.VariationId && i.ProductId == model.ProductId);
-
-
-                if (variation != null)
-                {
-                    variation.Price = model.Price;
-                    Context.ProductVariations.Update(variation);
-
-                    var listProductVariationDetails =
-                        Context.ProductVariationDetails.Where(x => x.ProductVariationId == variation.Id);
-
-                    Context.ProductVariationDetails.RemoveRange(listProductVariationDetails);
-                }
-                else
-                {
-                    variation = new ProductVariation
-                    {
-                        ProductId = model.ProductId,
-                        Price = model.Price,
-                    };
-
-                    Context.ProductVariations.Add(variation);
-                }
-
-                var variationDetails = model.ProductVariationDetails.Select(x => new ProductVariationDetail()
-                {
-                    ProductVariationId = variation.Id,
-                    Value = x.Value,
-                    ProductOptionId = x.ProductOptionId
-                });
-
-                await Context.ProductVariationDetails.AddRangeAsync(variationDetails);
-            }
-
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
-        }
-
-
-        [HttpGet]
-        public JsonResult GetProductVariation(string productId) => Json(Context.ProductVariations
-            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
-            .Where(x => x.ProductId == productId.ToGuid())
-            .Select(x => new
-            {
-                VariationId = x.Id,
-                x.Price,
-                VariationDetails = x.ProductVariationDetails.Select(s => new { s.Value, Option = s.ProductOption.Name })
-            }));
-
-
-        [HttpGet]
-        public JsonResult GetProductVariationById(string productId, string variationId) => Json(Context
-            .ProductVariations
-            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
-            .Where(x => x.ProductId == productId.ToGuid() && x.Id == variationId.ToGuid())
-            .Select(x => new
-            {
-                x.ProductId,
-                VariationId = x.Id,
-                x.Price,
-                VariationDetails = x.ProductVariationDetails.Select(s => new { s.Value, Option = s.ProductOption.Name, optionId = s.ProductOptionId })
-            }).FirstOrDefault());
-
-
-        [HttpGet]
-        public JsonResult GetProductAttributes(string productId) => Json(Context.ProductAttributes
-            .Include(x => x.ProductAttribute)
-            .Where(x => x.ProductId == productId.ToGuid())
-            .Select(x => new
-            {
-                AttributeId = x.ProductAttributeId,
-                Label = x.ProductAttribute.Name,
-                x.Value,
-                x.IsAvailable,
-                x.IsPublished
-            }));
-
-
-        /// <summary>
-        /// Remove attribute
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="attributeId"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<JsonResult> RemoveAttribute(Guid productId, Guid attributeId)
-            => await JsonAsync(_productService.RemoveAttributeAsync(productId, attributeId));
-
-        /// <summary>
-        /// Edit map product categories
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<JsonResult> EditProductCategories([FromBody] IEnumerable<ProductCategoriesViewModel> model)
-        {
-            foreach (var item in model)
-            {
-                if (Context.ProductCategories.Any(x =>
-                    x.CategoryId == item.CategoryId && x.ProductId == item.ProductId))
-                {
-                    if (!item.Checked)
-                    {
-                        Context.ProductCategories.Remove(item);
-                    }
-                }
-                else
-                {
-                    if (item.Checked)
-                    {
-                        Context.ProductCategories.Add(item);
-                    }
-                }
-            }
-
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
-        }
-
-        [HttpGet]
-        public JsonResult GetProductCategories(Guid productId)
-            => Json(Context.ProductCategories.Where(x => x.ProductId == productId));
         #endregion
+
     }
 }

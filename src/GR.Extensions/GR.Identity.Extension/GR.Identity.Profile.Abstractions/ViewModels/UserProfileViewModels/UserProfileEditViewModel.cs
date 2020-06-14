@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using GR.Core;
 using GR.Core.Attributes.Validation;
 
 namespace GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels
@@ -31,6 +32,7 @@ namespace GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels
         [Required]
         [EmailAddress]
         [DataType(DataType.EmailAddress)]
+        [RegularExpression(GlobalResources.RegularExpressions.EMAIL, ErrorMessage = "Please enter a valid email address")]
         public virtual string Email { get; set; }
 
         [MaxLength(500)]

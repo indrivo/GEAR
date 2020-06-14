@@ -9,6 +9,15 @@
                         <div class="form-body">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="row p-t-20">
+                                @if (!Model.ProductCategoryList.Any())
+                                {
+                                    <div class="d-flex flex-column pl-3 pb-3">
+                                        <h3>No categories</h3>
+                                        <code>In order to be able to map a product to a category, you need to add at least one category </code>
+                                        <a asp-controller="ProductCategory" asp-action="Create">Add category</a>
+                                    </div>
+                                }
+
                                 @foreach (var item in Model.ProductCategoryList)
                                 {
                                     <div class="col-md-12">
@@ -53,7 +62,7 @@
                 });
             });
             $.ajax({
-                url: '@Url.Action("EditProductCategories")',
+                url: '@Url.Action("EditProductCategories", "ProductsApi")',
                 method: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(model),

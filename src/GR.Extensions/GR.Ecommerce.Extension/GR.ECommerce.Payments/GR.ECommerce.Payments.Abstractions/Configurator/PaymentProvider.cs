@@ -1,11 +1,27 @@
 ﻿namespace GR.ECommerce.Payments.Abstractions.Configurator
 {
-    public class PaymentProvider<TProvider> where TProvider : class, IPaymentMethodService
+    // ReSharper disable once UnusedTypeParameter
+    public class PaymentProvider<TProviderAbstraction, TProvider> : PaymentProvider
+        where TProvider : class, IPaymentMethodService
+        where TProviderAbstraction : IPaymentMethodService
     {
         /// <summary>
         /// Provider name
         /// </summary>
-        public virtual string ProviderName => typeof(TProvider).Name;
+        public override string ProviderName => typeof(TProvider).Name;
+    }
+
+    public class PaymentProvider
+    {
+        /// <summary>
+        /// Provider name
+        /// </summary>
+        public virtual string ProviderName { get; set; }
+
+        /// <summary>
+        /// Payment method id
+        /// </summary>
+        public virtual string Id { get; set; }
 
         /// <summary>
         /// Display name

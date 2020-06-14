@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.ECommerce.Abstractions.Enums;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Orders.Abstractions.ViewModels.CheckoutViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.ECommerce.Razor.Controllers
 {
-    [Authorize]
+    [GearAuthorize(GearAuthenticationScheme.IdentityWithBearer)]
     public class CheckoutController : Controller
     {
         #region Injectable
@@ -114,6 +114,8 @@ namespace GR.ECommerce.Razor.Controllers
             if (!wasInvoicedRequest.IsSuccess || !wasInvoicedRequest.Result)
                 return RedirectToAction(nameof(Shipping), new { OrderId = orderId });
 
+            var paymentReceivedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.PaymentReceived);
+            if (paymentReceivedRequest.Result) return RedirectToAction(nameof(Success), new { OrderId = orderId });
             return View(orderRequest.Result);
         }
 

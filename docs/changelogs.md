@@ -27,6 +27,41 @@ v.1.9.4 - Lupei Nicolae May 2020
 * refact docs files
 * generate xml comments for all projects and bind on swagger
 * add configuration to generate xml comments
+* add database localization provider
+* refactoring on notifications api
+* full refactoring on localization module
+* add support for module appSettings files
+* clean language files
+* add support for import language pack
+* add support for download laguage pack/paks(zip) 
+* add google pay configuration page
+* finish google pay payment flow
+* configuration of google play console for merchant id 
+* refactoring  and improvements on subscription module, add new api
+* add  shiping  and billing addresses on order details
+* add apple pay module
+* add polyfill for apple pay
+* add apple pay configuration page
+* add hot reloader for razor modules (only ui assets)
+* add new extensions 
+* code refactoring  
+* add hot reloader for Views (Razor Class Library modules)
+* separe sms phone 2-factor verification
+* add abstraction module for 2-factor
+* add email 2-factor verification 
+* order countries and cities by name
+* fix time zones name
+* add api for import countries from json
+* add admin route: /admin
+* add and refactoring paypal module
+* add google pay payment module
+* improvements on subscription module
+* refactoring and fix bugs on product variations
+* refactoring on commerce modules
+* add seed product type on install
+* add products store with filters 
+* move settings from appsettings file to custom files
+* add validations for user preverences values
 
 v.1.9.3 - Lupei Nicolae April 2020
 * separe groups module from identity

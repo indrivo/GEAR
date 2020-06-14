@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Core.Attributes.Validation
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class OfficialNameAttribute : RegularExpressionAttribute
     {
         private const string RegexPattern = "^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$";

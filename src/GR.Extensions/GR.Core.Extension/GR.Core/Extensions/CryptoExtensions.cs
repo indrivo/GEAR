@@ -12,7 +12,8 @@ namespace GR.Core.Extensions
         /// <param name="key">Encryption key.</param>
         /// <returns>A string representing a byte array separated by a minus sign.</returns>
         /// <exception cref="ArgumentException">Occurs when stringToEncrypt or key is null or empty.</exception>
-        public static string Encrypt(this string stringToEncrypt, string key)
+        // ReSharper disable once InconsistentNaming
+        public static string EncryptWithRSA(this string stringToEncrypt, string key)
         {
             if (string.IsNullOrEmpty(stringToEncrypt))
             {
@@ -43,7 +44,8 @@ namespace GR.Core.Extensions
         /// <param name="key">Decryption key.</param>
         /// <returns>The decrypted string or null if decryption failed.</returns>
         /// <exception cref="ArgumentException">Occurs when stringToDecrypt or key is null or empty.</exception>
-        public static string Decrypt(this string stringToDecrypt, string key)
+        // ReSharper disable once InconsistentNaming
+        public static string DecryptWithRSA(this string stringToDecrypt, string key)
         {
             string result = null;
 

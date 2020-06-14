@@ -181,7 +181,7 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
             if (!authyToken.IsSuccess) return Json(authyToken);
             if (data.Token.Length > 4)
             {
-                result = await _authy.VerifyTokenAsync(authyToken.Result, data.Token);
+                result = await _authy.VerifyTokenAsync(authyToken.Result, data.Token, currentUser.Id);
             }
             else
             {

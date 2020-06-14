@@ -28,78 +28,6 @@ Structure of appssetings file:
     "Timeout": 3,
     "Path": "/health"
   },
-  "LocalizationConfig": {
-    "Languages": [
-      {
-        "IsDisabled": false,
-        "Identifier": "en",
-        "Name": "English"
-      },
-      {
-        "IsDisabled": false,
-        "Identifier": "ro",
-        "Name": "Romanian"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "ru",
-        "Name": "Russian"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "it",
-        "Name": "Italian"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "fr",
-        "Name": "French"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "de",
-        "Name": "German"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "uk",
-        "Name": "Ukrainian"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "ja",
-        "Name": "Japanese"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "zh",
-        "Name": "Chinese"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "el",
-        "Name": "Greek"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "nl",
-        "Name": "Dutch"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "pl",
-        "Name": "Polish"
-      },
-      {
-        "IsDisabled": true,
-        "Identifier": "es",
-        "Name": "Spanish"
-      }
-    ],
-    "Path": "Localization",
-    "SessionStoreKeyName": "lang",
-    "DefaultLanguage": "en"
-  },
   "IsConfigured": true,
   "LdapSettings": {
     "ServerName": "",
@@ -130,7 +58,7 @@ Structure of appssetings file:
     "Enabled": false,
     "UsePostGreSql": false,
     "UseMsSql": false,
-    "BackupFolder": "ISODMS",
+    "BackupFolder": "AppName",
     "Interval": "24",
     "PostGreSqlBackupSettings": {
       "PgDumpPath": "C:\\Program Files\\PostgreSQL\\11\\bin\\pg_dump.exe",
@@ -138,7 +66,7 @@ Structure of appssetings file:
       "Port": "5432",
       "User": "postgres",
       "Password": "1111",
-      "Database": "ISODMS.PROD",
+      "Database": "AppName.PROD",
       "FileExtension": "pgbackup"
     },
     "MsSqlBackupSettings": {
@@ -151,8 +79,8 @@ Structure of appssetings file:
     "Timeout": 5000,
     "EnableSsl": true,
     "NetworkCredential": {
-      "Email": "iso_dms.mail@indrivo.com",
-      "Password": "I50_dm5.M@!1"
+      "Email": "",
+      "Password": ""
     }
   },
   "Sentry": {

@@ -27,6 +27,23 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Add range
+        /// </summary>
+        /// <typeparam name="TTarget"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static ICollection<TTarget> AddRange<TTarget>(this ICollection<TTarget> context, IEnumerable<TTarget> data)
+        {
+            if (context == null) return null;
+            foreach (var item in data)
+            {
+                context.Add(item);
+            }
+            return context;
+        }
+
+        /// <summary>
         /// Replace item in source
         /// </summary>
         /// <typeparam name="T"></typeparam>
