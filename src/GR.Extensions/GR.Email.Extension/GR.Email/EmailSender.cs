@@ -52,10 +52,15 @@ namespace GR.Email
         /// <param name="message"></param>
         /// <param name="isBodyHtml"></param>
         /// <returns></returns>
-        public virtual async Task SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true)
+        public virtual async Task<ResultModel> SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true)
         {
+            var result = new ResultModel();
             var mails = emails?.ToList() ?? new List<string>();
-            if (!_options.Value.Enabled || !mails.Any()) return;
+            if (!_options.Value.Enabled || !mails.Any())
+            {
+                result.AddError("Invalid parameters or service is disabled");
+                return result;
+            }
             var settings = _options.Value;
             try
             {
@@ -88,11 +93,16 @@ namespace GR.Email
 
                     await client.SendMailAsync(mailMessage);
                 }
+
+                result.IsSuccess = true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                result.AddError(e.Message);
             }
+
+            return result;
         }
 
         /// <summary>
@@ -193,5 +203,24 @@ namespace GR.Email
 
             return null;
         }
+
+        /// <summary>
+        /// Get provider
+        /// </summary>
+        /// <returns></returns>
+        public virtual object GetProvider() => this;
+
+        /// <summary>
+        /// Send email
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SendAsync(string subject, string message, string to)
+            => await SendEmailAsync(new List<string>
+        {
+            to
+        }, subject, message);
     }
 }

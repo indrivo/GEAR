@@ -1,0 +1,61 @@
+@model GR.Braintree.Abstractions.Models.BraintreeConfiguration
+@{
+    ViewData["Title"] = "Braintree settings";
+}
+
+<div class="card mb-4">
+    <div class="card-header text-capitalize">@ViewData["Title"]</div>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (ViewData["isSuccess"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @Localizer["system_inline_saved"]
+            </div>
+        }
+        <form asp-action="Config" asp-controller="BraintreeSettings" method="post" autocomplete="off">
+            <div class="form-group row">
+                <JTranslateLabel asp-for="MerchantId" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="MerchantId" class="form-control">
+                    <span class="text-danger" asp-validation-for="MerchantId"></span>
+                </div>
+            </div>
+            <hr class="my-4 dashed">
+            <div class="form-group row">
+                <JTranslateLabel asp-for="PrivateKey" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="PrivateKey" class="form-control">
+                    <span asp-validation-for="PrivateKey" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="PublicKey" class="col-sm-2 col-form-label text-capitalize"></label>
+                <div class="col-sm-10">
+                    <input asp-for="PublicKey" class="form-control">
+                    <span asp-validation-for="PublicKey" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="custom-control mb-4 custom-checkbox">
+                <input type="checkbox" asp-for="IsProduction" class="custom-control-input">
+                <label class="custom-control-label" asp-for="IsProduction"></label>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a href="/PaymentMethods" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

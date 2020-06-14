@@ -30,7 +30,7 @@ namespace GR.Localization.Api.Controllers
     /// </summary>
     [Author(Authors.LUPEI_NICOLAE, 1.1)]
     [GearAuthorize(GearAuthenticationScheme.IdentityWithBearer)]
-    [Route("api/[controller]/[action]")]
+    [Route(DefaultApiRouteTemplate)]
     [JsonApiExceptionFilter]
     public class LocalizationApiController : BaseGearController
     {

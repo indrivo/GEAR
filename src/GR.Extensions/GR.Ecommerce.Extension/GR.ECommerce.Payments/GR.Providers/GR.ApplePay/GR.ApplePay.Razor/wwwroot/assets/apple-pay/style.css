@@ -1,0 +1,45 @@
+﻿.apple-pay-button {
+    width: 250px;
+    margin-left: 2.5em;
+    height: 55px;
+    padding-left: 2em;
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+    cursor: pointer;
+}
+
+.apple-pay-button-with-text > * {
+    display: none;
+}
+
+.apple-pay-button-black-with-text {
+    -apple-pay-button-style: black;
+}
+
+.apple-pay-button-white-with-text {
+    -apple-pay-button-style: white;
+}
+
+.apple-pay-button-white-with-line-with-text {
+    -apple-pay-button-style: white-outline;
+}
+
+.apple-pay-button-text-book {
+    -apple-pay-button-type: book;
+}
+
+.apple-pay-button-text-buy {
+    -apple-pay-button-type: buy;
+}
+
+.apple-pay-button-text-check-out {
+    -apple-pay-button-type: check-out;
+}
+
+.apple-pay-button-text-donate {
+    -apple-pay-button-type: donate;
+}
+
+#ckoApplePayError {
+    margin-left: 2.5em;
+}

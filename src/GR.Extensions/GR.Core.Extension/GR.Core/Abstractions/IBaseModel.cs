@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace GR.Core.Abstractions
 {
@@ -36,5 +38,14 @@ namespace GR.Core.Abstractions
         /// Tenant id
         /// </summary>
         Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Disable audit tracking
+        /// This only work on current instance,
+        /// The true value ignore save a new version on audit
+        /// </summary>
+        [JsonIgnore]
+        [NotMapped]
+        bool DisableAuditTracking { get; set; }
     }
 }

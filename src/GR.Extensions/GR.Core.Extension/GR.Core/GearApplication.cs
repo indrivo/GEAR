@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
@@ -10,14 +11,50 @@ using Microsoft.Extensions.Configuration;
 
 namespace GR.Core
 {
-    [Author(Authors.LUPEI_NICOLAE, 1.1, "Abstract Gear app for be extended on " +
-                                        "different platforms like web, mobile, desktop")]
+    /// <summary>
+    /// Abstract Gear app for be extended on
+    /// different platforms like web, mobile, desktop
+    /// </summary>
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     public abstract class GearApplication
     {
         /// <summary>
         /// App version
         /// </summary>
         public static string AppVersion = Assembly.GetCallingAssembly().GetName().Version.ToString();
+
+        /// <summary>
+        /// Application name
+        /// </summary>
+        public static string ApplicationName = "Gear";
+
+        /// <summary>
+        /// Set app version
+        /// </summary>
+        /// <param name="version"></param>
+        public static void SetAppVersion(string version)
+        {
+            AppVersion = version;
+        }
+
+        /// <summary>
+        /// Set app version
+        /// </summary>
+        /// <param name="name"></param>
+        public static void SetAppName(string name)
+        {
+            ApplicationName = name;
+        }
+
+        /// <summary>
+        /// Check if 
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsDevelopment()
+        {
+            var parent = Directory.GetParent(AppContext.BaseDirectory);
+            return parent.Name.StartsWith("netcoreapp");
+        }
 
         /// <summary>
         /// Get system config

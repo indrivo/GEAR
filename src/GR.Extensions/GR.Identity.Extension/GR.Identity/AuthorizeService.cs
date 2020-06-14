@@ -61,6 +61,45 @@ namespace GR.Identity
         /// <summary>
         /// Login
         /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> LoginAsync(GearUser user)
+        {
+            var response = new ResultModel();
+            if (user == null)
+            {
+                response.AddError("User not found");
+                return response;
+            }
+            if (user.IsDeleted)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "The user is deleted and cannot log in"));
+                return response;
+            }
+
+            if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
+            {
+                response.Errors.Add(new ErrorModel(string.Empty,
+                    "Password has been expired, you need to change the password"));
+                return response;
+            }
+            await _signInManager.SignInAsync(user, true);
+            IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
+            {
+                IpAdress = _userManager.GetRequestIpAddress(),
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                HttpContext = _contextAccessor.HttpContext
+            });
+            response.IsSuccess = true;
+            return response;
+        }
+
+        /// <summary>
+        /// Login
+        /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         public virtual async Task<ResultModel> LoginAsync(LoginViewModel model)
@@ -82,19 +121,19 @@ namespace GR.Identity
                     return response;
                 }
 
-
                 var result =
                     await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe,
                         false);
                 if (result.Succeeded)
                 {
                     user.LastLogin = DateTime.Now;
+                    user.DisableAuditTracking = true;
                     await _userManager.UserManager.UpdateAsync(user);
                     _logger.LogInformation("User logged in.");
                     var claims = await _userManager.UserManager.GetClaimsAsync(user);
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
-                        IpAdress = _userManager.GetRequestIpAdress(),
+                        IpAdress = _userManager.GetRequestIpAddress(),
                         UserId = user.Id,
                         Email = user.Email,
                         FirstName = user.FirstName,
@@ -173,7 +212,7 @@ namespace GR.Identity
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                IpAdress = _userManager.GetRequestIpAdress()
+                IpAdress = _userManager.GetRequestIpAddress()
             });
 
             result.IsSuccess = true;

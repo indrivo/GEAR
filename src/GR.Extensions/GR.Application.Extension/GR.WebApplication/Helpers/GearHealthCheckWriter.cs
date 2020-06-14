@@ -24,6 +24,7 @@ namespace GR.WebApplication.Helpers
             Action<JsonSerializerSettings> jsonConfigurator)
         {
             var text = "{}";
+            httpContext.Response.ContentType = DEFAULT_CONTENT_TYPE;
             if (report == null) return httpContext.Response.WriteAsync(text);
             var settings = new JsonSerializerSettings()
             {

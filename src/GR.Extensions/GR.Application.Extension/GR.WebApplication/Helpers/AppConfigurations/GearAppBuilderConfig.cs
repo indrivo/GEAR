@@ -14,6 +14,11 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public virtual string AppName { get; set; } = "GEAR_APP";
 
         /// <summary>
+        /// Mvc start view template
+        /// </summary>
+        public virtual string MvcTemplate { get; set; } = "{controller=Home}/{action=Index}";
+
+        /// <summary>
         /// Hosting environment
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; set; }
@@ -34,6 +39,11 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public virtual bool UseResponseCompression { get; set; } = true;
 
         /// <summary>
+        /// Use health check
+        /// </summary>
+        public virtual bool UseHealthCheck { get; set; } = true;
+
+        /// <summary>
         /// Swagger configuration
         /// </summary>
         public SwaggerConfiguration SwaggerConfiguration { get; set; } = new SwaggerConfiguration();
@@ -51,6 +61,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
 
     public sealed class SwaggerConfiguration
     {
+        // ReSharper disable once InconsistentNaming
         public bool UseSwaggerUI { get; set; } = true;
         public bool UseOnlyInDevelopment { get; set; }
     }

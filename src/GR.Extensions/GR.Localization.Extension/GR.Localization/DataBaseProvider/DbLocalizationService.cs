@@ -13,7 +13,9 @@ using GR.Core.Helpers.Validators;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace GR.Localization.DataBaseProvider
 {
@@ -40,13 +42,25 @@ namespace GR.Localization.DataBaseProvider
         /// </summary>
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inject context accessor
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        /// <summary>
+        /// Inject options
+        /// </summary>
+        private readonly IOptionsSnapshot<LocalizationConfigModel> _options;
+
         #endregion
 
-        public DbLocalizationService(ILocalizationContext context, ICacheService cacheService, IMapper mapper)
+        public DbLocalizationService(ILocalizationContext context, ICacheService cacheService, IMapper mapper, IHttpContextAccessor contextAccessor, IOptionsSnapshot<LocalizationConfigModel> options)
         {
             _context = context;
             _cacheService = cacheService;
             _mapper = mapper;
+            _contextAccessor = contextAccessor;
+            _options = options;
         }
 
         /// <summary>
@@ -160,6 +174,16 @@ namespace GR.Localization.DataBaseProvider
                 if (packRequest.IsSuccess) dict.Add(lang.Identifier, packRequest.Result);
             }
             return new SuccessResultModel<Dictionary<string, Dictionary<string, string>>>(dict);
+        }
+
+        /// <summary>
+        /// Get current language
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Language> GetCurrentLanguageAsync()
+        {
+            var languageId = _contextAccessor.HttpContext.Session.GetString(_options.Value.SessionStoreKeyName);
+            return (await GetLanguageByIdentifierAsync(languageId)).Result;
         }
 
         /// <summary>

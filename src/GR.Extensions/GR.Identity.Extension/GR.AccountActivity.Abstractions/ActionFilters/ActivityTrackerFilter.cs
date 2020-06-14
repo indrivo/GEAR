@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GR.AccountActivity.Abstractions.Helpers;
 using GR.Core;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
@@ -81,15 +82,14 @@ namespace GR.AccountActivity.Abstractions.ActionFilters
         }
 
         /// <summary>
-        /// Redirect
+        /// Redirect to page with not confirm device
         /// </summary>
         /// <param name="context"></param>
         /// <param name="deviceId"></param>
         /// <returns></returns>
         protected static async Task RedirectToNotConfirmedDeviceViewAsync(ActionExecutingContext context, Guid deviceId)
         {
-            var authHeader = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            if (authHeader?.StartsWith("Bearer ") ?? false)
+            if (context.HttpContext.IsBearerRequest())
             {
                 context.Result = new JsonResult(new NotConfirmedDeviceResultModel());
             }

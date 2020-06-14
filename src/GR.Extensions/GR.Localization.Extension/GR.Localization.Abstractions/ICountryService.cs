@@ -47,8 +47,12 @@ namespace GR.Localization.Abstractions
         /// Get cities by country id
         /// </summary>
         /// <param name="countryId"></param>
+        /// <param name="search"></param>
+        /// <param name="selectedCityId"></param>
+        /// <param name="maxItems"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId);
+        Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId, string search,
+            Guid? selectedCityId, int maxItems = 20);
 
         /// <summary>
         /// Add city to country
@@ -125,5 +129,12 @@ namespace GR.Localization.Abstractions
         /// <param name="region"></param>
         /// <returns></returns>
         Task<ResultModel<ICollection<CountryInfoViewModel>>> GetCountriesInfoByRegionAsync(string region);
+
+        /// <summary>
+        /// Import countries 
+        /// </summary>
+        /// <param name="countries"></param>
+        /// <returns></returns>
+        Task<ResultModel> ImportCountriesAsync(IEnumerable<Country> countries);
     }
 }

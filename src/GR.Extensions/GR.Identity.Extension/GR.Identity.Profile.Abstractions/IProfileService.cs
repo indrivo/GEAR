@@ -12,5 +12,18 @@ namespace GR.Identity.Profile.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateBaseUserProfileAsync(UserProfileEditViewModel model);
+
+        /// <summary>
+        /// Change email
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeEmailAsync(ChangeEmailViewModel model);
+
+        /// <summary>
+        /// Resend mail for confirm email 
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel> ResendConfirmEmailAsync();
     }
 }

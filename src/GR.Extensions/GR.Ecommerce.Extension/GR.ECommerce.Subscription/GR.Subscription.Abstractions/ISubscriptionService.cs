@@ -11,12 +11,17 @@ namespace GR.Subscriptions.Abstractions
 {
     public interface ISubscriptionService<TSubscriptionEntity> where TSubscriptionEntity : Subscription
     {
+        /// <summary>
+        /// Get subscription plans
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync();
 
         /// <summary>
         /// Get subscription by Id
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<TSubscriptionEntity>>> GetSubscriptionsByUserAsync();
+        Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetSubscriptionsByUserAsync();
 
         /// <summary>
         /// Get subscription by Id
@@ -31,7 +36,7 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateUpdateSubscriptionAsync(SubscriptionViewModel model);
+        Task<ResultModel<Guid>> UpdateSubscriptionAsync(SubscriptionAddViewModel model);
 
         /// <summary>
         /// Has valid subscription
@@ -51,7 +56,7 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Subscription>>> GetValidSubscriptionsForUserAsync(Guid? userId);
+        Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetValidSubscriptionsForUserAsync(Guid? userId);
 
         /// <summary>
         /// Get subscriptions that will expire after some period
@@ -92,5 +97,11 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync(Guid? userId = null);
+
+        /// <summary>
+        /// Get last subscription
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<SubscriptionGetViewModel>> GetLastSubscriptionAsync();
     }
 }

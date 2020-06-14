@@ -29,9 +29,7 @@ using GR.Documents.Data;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
-using GR.ECommerce.Products.Services;
 using GR.ECommerce.Razor.Extensions;
 using GR.Email;
 using GR.Email.Abstractions.Extensions;
@@ -119,11 +117,17 @@ using GR.AccountActivity.Abstractions.ActionFilters;
 using GR.AccountActivity.Abstractions.Extensions;
 using GR.AccountActivity.Impl;
 using GR.AccountActivity.Impl.Data;
+using GR.ApplePay;
+using GR.ApplePay.Abstractions.Extensions;
+using GR.ApplePay.Razor.Extensions;
 using GR.Backup.Razor.Extensions;
 using GR.Braintree;
 using GR.Braintree.Abstractions.Extensions;
 using GR.Braintree.Razor.Extensions;
 using GR.Calendar.Abstractions.Helpers;
+using GR.Card.Abstractions.Extensions;
+using GR.Card.AuthorizeDotNet;
+using GR.Card.Razor.Extensions;
 using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
@@ -132,9 +136,15 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.ECommerce.Infrastructure.Data;
+using GR.ECommerce.Infrastructure.Services;
+using GR.EmailTwoFactorAuth;
 using GR.Entities.Abstractions.Helpers;
 using GR.Files.Razor.Extensions;
 using GR.Forms.Abstractions.Helpers;
+using GR.GooglePay;
+using GR.GooglePay.Abstractions.Extensions;
+using GR.GooglePay.Razor.Extensions;
 using GR.Identity;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Helpers.PasswordPolicies;
@@ -171,6 +181,10 @@ using GR.UserPreferences.Impl.Data;
 using Microsoft.Extensions.Logging;
 using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 using GR.Localization.ExternalProviders;
+using GR.Subscriptions.Abstractions.Helpers;
+using GR.TwoFactorAuthentication.Abstractions.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 #endregion Usings
 
@@ -196,7 +210,12 @@ namespace GR.Cms
 			{
 				config.AppName = "Gear";
 				config.HostingEnvironment = HostingEnvironment;
+				config.UseHealthCheck = false;
 				config.Configuration = Configuration;
+				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
+				{
+					{ "/admin", context => context.MapTo("/Account/Login") }
+				};
 			});
 
 			app.UseIdentityServer();
@@ -213,13 +232,22 @@ namespace GR.Cms
 		{
 			//------------------------------Global Config----------------------------------------
 			config.CacheConfiguration.UseInMemoryCache = true;
-
+			config.UseHotReload = true;
+			config.UseHealthCheck = false;
 
 			//------------------------------Theme Config------------------------------------------
 			config.GearServices.RegisterDefaultThemeRazorModule();
 
 			//------------------------------Identity Module----------------------------------------
-			config.GearServices.AddIdentityModule<GearIdentityDbContext>()
+			config.GearServices.AddIdentityModule<GearIdentityDbContext>(o =>
+				{
+					o.Lockout = new LockoutOptions
+					{
+						MaxFailedAccessAttempts = 5,
+						AllowedForNewUsers = true,
+						DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2)
+					};
+				})
 				.AddConfirmDeviceTokenProvider();
 
 			config.GearServices.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<UserPermissions>, UserPermissions>()
@@ -235,8 +263,8 @@ namespace GR.Cms
 				.AddIdentityRazorModule();
 
 			//-----------------------------Authentication Module-------------------------------------
-			config.GearServices.AddAuthentication<AuthorizeService>();
-
+			config.GearServices.AddAuthentication<AuthorizeService>()
+				.RegisterTwoFactorAuthenticatorProvider<EmailTwoFactorAuthService>();
 
 			//-----------------------------Identity Clients Module-------------------------------------
 			config.GearServices //DefaultClientsConfigurator
@@ -459,28 +487,46 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterProductOrderServices<Order, OrderProductService>()
-				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
-				.RegisterPayments<PaymentService>()
 				.RegisterCartService<CartService>()
-				.RegisterOrdersStorage<CommerceDbContext>()
-				.RegisterSubscriptionStorage<CommerceDbContext>()
-				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
-				.RegisterOrderEvents()
-				.RegisterSubscriptionEvents()
-				.RegisterSubscriptionRules()
-				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				.AddCommerceRazorUIModule();
+
+			//-----------------------------------Commerce payments module------------------------------
+			config.GearServices.RegisterPayments<PaymentService>()
+				.RegisterPaymentStorage<CommerceDbContext>()
 				//Paypal
 				.RegisterPaypalProvider<PaypalPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
-				//Mobil Pay
-				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
-				.RegisterMobilPayRazorProvider(Configuration)
 				//Braintree
 				.RegisterBraintreeProvider<BraintreePaymentMethodService>()
 				.RegisterBraintreeRazorProvider(Configuration)
-				.AddCommerceRazorUIModule();
+				//GPay
+				.RegisterGPayProvider<GPayPaymentMethodService>()
+				.RegisterGPayRazorProvider(Configuration)
+				//ApplePay
+				.RegisterApplePayProvider<ApplePayPaymentMethodService>()
+				.RegisterApplePayRazorProvider(Configuration)
+				//CreditCard
+				.RegisterCreditCardPayProvider<AuthorizeDotNetPaymentMethodService>()
+				.RegisterCreditCardRazorProvider(Configuration)
+				//Mobil Pay
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
+				.RegisterMobilPayRazorProvider(Configuration);
+
+			//-------------------------------------Commerce orders module------------------------------
+			config.GearServices.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterOrderEvents();
+
+			//-------------------------------------Subscription module---------------------------------
+			config.GearServices.RegisterSubscriptionServices<Subscription, SubscriptionService>(options =>
+				{
+					options.UserSubscriptionQuery = SubscriptionResources.QueryResolvers.UserOwnResolver;
+				})
+				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				.RegisterSubscriptionEvents()
+				.RegisterSubscriptionRules()
+				.RegisterSubscriptionStorage<CommerceDbContext>();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			config.GearServices.AddTenantModule<OrganizationService, Tenant>()
@@ -522,6 +568,7 @@ namespace GR.Cms
 
 			//-------------------------- Phone verification Module ----------------------------------
 			config.GearServices.AddPhoneVerificationModule<Authy>(Configuration)
+				.AddSmsSenderModule<SmsSenderService>()
 				.BindPhoneVerificationEvents();
 
 			//---------------------------------User activity  Module ----------------------------------

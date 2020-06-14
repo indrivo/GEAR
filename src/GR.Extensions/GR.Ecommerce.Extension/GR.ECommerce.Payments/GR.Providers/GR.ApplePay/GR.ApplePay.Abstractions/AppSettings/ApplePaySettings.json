@@ -1,0 +1,30 @@
+{
+  "ApplePaySettings": {
+    "StoreName": "Gear",
+    "AcceptedCardSchemes": [ "amex", "masterCard", "visa" ],
+    "MerchantCapabilities": [
+      "supports3DS",
+      "supportsEMV",
+      "supportsCredit",
+      "supportsDebit"
+    ],
+    "RequiredBillingContactFields": [
+      "postalAddress",
+      "name",
+      "phone",
+      "email"
+    ],
+    "RequiredShippingContactFields": [
+      "postalAddress",
+      "name",
+      "phone",
+      "email"
+    ],
+    "ApplePayVersion": 3,
+    "UseCertificateStore": false,
+    "MerchantCertificateFileName": "apple-merchant-indrivo-dev.p12",
+    "MerchantCertificatePassword": "Gear2020",
+    "MerchantCertificateThumbprint": "",
+    "UsePolyfill": true
+  }
+}

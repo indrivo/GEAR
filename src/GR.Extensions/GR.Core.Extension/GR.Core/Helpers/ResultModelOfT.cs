@@ -73,12 +73,29 @@ namespace GR.Core.Helpers
             {
                 IsSuccess = collection.All(x => x.IsSuccess)
             };
-            foreach (var result in collection)
+            foreach (var error in collection.SelectMany(result => result.Errors))
             {
-                foreach (var error in result.Errors)
-                {
-                    response.Errors.Add(error);
-                }
+                response.Errors.Add(error);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Add error from results
+        /// </summary>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        public virtual ResultModel<T> JoinResults(IEnumerable<ResultModel> results)
+        {
+            var collection = results.ToList();
+            var response = new ResultModel<T>
+            {
+                IsSuccess = collection.All(x => x.IsSuccess)
+            };
+            foreach (var error in collection.SelectMany(result => result.Errors))
+            {
+                response.Errors.Add(error);
             }
 
             return response;
@@ -106,7 +123,7 @@ namespace GR.Core.Helpers
         }
 
         /// <summary>
-        /// Adapt
+        /// Gear adapt result model
         /// </summary>
         /// <typeparam name="TModelOutput"></typeparam>
         /// <param name="result"></param>

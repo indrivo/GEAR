@@ -15,11 +15,6 @@ namespace GR.Identity.PhoneVerification.Abstractions.Events
             /// </summary>
             public static event EventHandler<PhoneConfirmedEventArgs> OnPhoneVerified;
 
-            /// <summary>
-            /// On 2 factor verified
-            /// </summary>
-            public static event EventHandler<SecondFactorVerifiedEventArgs> On2FactorVerified;
-
             #endregion
 
             #region Triggers
@@ -30,14 +25,6 @@ namespace GR.Identity.PhoneVerification.Abstractions.Events
             /// <param name="e"></param>
             public static void PhoneVerified(PhoneConfirmedEventArgs e)
                 => SystemEvents.InvokeEvent(null, OnPhoneVerified, e, nameof(OnPhoneVerified));
-
-
-            /// <summary>
-            /// 2 factor verified trigger 
-            /// </summary>
-            /// <param name="e"></param>
-            public static void TwoFactorVerified(SecondFactorVerifiedEventArgs e)
-                => SystemEvents.InvokeEvent(null, On2FactorVerified, e, nameof(On2FactorVerified));
             #endregion
         }
 

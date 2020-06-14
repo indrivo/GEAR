@@ -1,31 +1,81 @@
-﻿@model IEnumerable<GR.ECommerce.Payments.Abstractions.Models.PaymentMethod>
+@model IEnumerable<GR.ECommerce.Payments.Abstractions.ViewModels.PaymentMethodViewModel>
 
 @{
-    ViewData["Title"] = Localizer["system_payment_methods"];
+	ViewData["Title"] = Localizer["system_payment_methods"];
+}
+
+@section Styles
+{
+	<link rel="stylesheet" href="~/lib/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" />
 }
 
 <div class="card">
-    <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>@Localizer["system_payment_method"]</th>
-                    <th>Enabled</th>
-                    <th>@Localizer["list_actions"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var method in Model)
-                {
-                    <tr>
-                        <td>@method.Name</td>
-                        <td>@method.IsEnabled</td>
+	<div class="card-body">
+		<table class="table">
+			<thead>
+            <tr>
+                <th>Id</th>
+                <th>@Localizer["system_payment_method"]</th>
+                <th>@Localizer["description"]</th>
+                <th>Enabled</th>
+                <th>@Localizer["list_actions"]</th>
+            </tr>
+			</thead>
+			<tbody>
+				@foreach (var method in Model)
+				{
+					<tr>
                         <td>
-                            <a class="btn btn-warning" href="/@(method.Name)Settings">@Localizer["settings"]</a>
+                            <code>@method.Name</code>
                         </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+						<td>@method.DisplayName</td>
+						<td>@method.Description</td>
+						<td>
+							<div class="col-lg-12 bt-switch">
+								<div class="m-b-30">
+									<input data-name="@method.Name" type="checkbox" @(method.IsEnabled ? "checked" : "") data-size="mini" />
+								</div>
+							</div>
+						</td>
+						<td>
+							<a class="btn btn-warning" href="/@(method.Name)Settings">@Localizer["settings"]</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 </div>
+
+@section Scripts
+{
+	<script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+	<script>
+		$(function () {
+			const toast = new ToastNotifier();
+			$(".bt-switch input[type='checkbox'], .bt-switch input[type='radio']").bootstrapSwitch({
+				onSwitchChange: function (event, state) {
+					const activateUrl = "@Url.Action("ActivatePaymentMethod", "PaymentsMethodsApi")";
+					const disableUrl = "@Url.Action("DisablePaymentMethod", "PaymentsMethodsApi")";
+					const url = state ? activateUrl : disableUrl;
+					const name = $(this).data("name");
+					$.ajax({
+						url: url,
+						method: "post",
+						data: {
+							id: name
+						},
+						success: function (data) {
+							if (data.is_success) {
+								toast.notifySuccess("Info", "Operation with success");
+							} else toast.notifyErrorList(data.error_keys);
+						},
+						error: function (err) {
+							toast.notifyErrorList(err);
+						}
+					});
+				}
+			});
+		});
+	</script>
+}

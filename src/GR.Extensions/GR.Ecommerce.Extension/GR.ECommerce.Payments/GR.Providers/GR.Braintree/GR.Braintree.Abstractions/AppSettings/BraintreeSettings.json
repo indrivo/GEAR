@@ -1,0 +1,9 @@
+{
+  //https://developers.braintreepayments.com/reference/general/testing/dotnet
+  "BraintreeSettings": {
+    "IsProduction": false,
+    "MerchantId": "",
+    "PublicKey": "",
+    "PrivateKey": ""
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "GPaySettings": {
+    "MerchantId": "",
+    "IsSandbox": true,
+    "MerchantName": "Gear",
+    "ApiVersion": 2,
+    "AllowedCardNetworks": [ "AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA" ],
+    "AllowedCardAuthMethods": [ "PAN_ONLY", "CRYPTOGRAM_3DS" ]
+  }
+}

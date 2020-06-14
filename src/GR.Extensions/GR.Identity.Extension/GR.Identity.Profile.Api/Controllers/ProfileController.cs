@@ -121,5 +121,24 @@ namespace GR.Identity.Profile.Api.Controllers
             if (!ModelState.IsValid) return JsonModelStateErrors();
             return await JsonAsync(_userManager.ChangeUserPasswordAsync(model.CurrentPassword, model.Password));
         }
+
+        /// <summary>
+        /// Change email
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> ChangeEmail([Required] ChangeEmailViewModel model)
+            => await JsonAsync(_profileService.ChangeEmailAsync(model));
+
+        /// <summary>
+        /// Resend email for confirm email
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> ResendConfirmEmail()
+            => await JsonAsync(_profileService.ResendConfirmEmailAsync());
     }
 }

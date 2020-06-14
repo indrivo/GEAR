@@ -67,7 +67,6 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         };
 
         [Required]
-        [DisplayTranslate(Key = "iso_company_name")]
         [Remote("CheckTenantIfExist", "CompanyManage")]
         public override string Name { get; set; }
 

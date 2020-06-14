@@ -14,7 +14,7 @@ namespace GR.Core.Razor.Controllers
         #region Injectable
 
         /// <summary>
-        /// Inject provider of routes
+        /// Inject action descriptor service
         /// </summary>
         private readonly IActionDescriptorCollectionProvider _provider;
 
@@ -25,17 +25,14 @@ namespace GR.Core.Razor.Controllers
             _provider = provider;
         }
 
-
         /// <summary>
         /// Dashboard view
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        [HttpGet]
+        public virtual IActionResult Index()
         {
-            if (AppRoutes.RegisteredRoutes.Any()) return View();
-            var routes = _provider.ActionDescriptors.Items.Select(x =>
-                Url.Action(x.RouteValues["Action"], x.RouteValues["Controller"]).ToLowerInvariant()).ToList();
-            AppRoutes.RegisteredRoutes = routes;
+            RegisterRoutes();
             return View();
         }
 
@@ -43,7 +40,20 @@ namespace GR.Core.Razor.Controllers
         /// Error page
         /// </summary>
         /// <returns></returns>
-        public IActionResult Error() =>
+        public virtual IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+
+        /// <summary>
+        /// Register routes
+        /// </summary>
+        protected void RegisterRoutes()
+        {
+            if (!AppRoutes.RegisteredRoutes.Any())
+            {
+                var routes = _provider.ActionDescriptors.Items.Select(x =>
+                    Url.Action(x.RouteValues["Action"], x.RouteValues["Controller"]).ToLowerInvariant()).ToList();
+                AppRoutes.RegisteredRoutes = routes;
+            }
+        }
     }
 }

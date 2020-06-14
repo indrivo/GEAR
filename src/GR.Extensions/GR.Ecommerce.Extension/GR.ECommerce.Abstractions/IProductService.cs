@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Enums;
+using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
@@ -31,10 +33,11 @@ namespace GR.ECommerce.Abstractions
         Task<ResultModel<Product>> GetProductByIdAsync(Guid? productId);
 
         /// <summary>
-        /// Get subscription plans
+        /// Add product
         /// </summary>
+        /// <param name="product"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync();
+        Task<ResultModel<Guid>> AddProductAsync([Required] Product product);
 
         /// <summary>
         /// Get global currency
@@ -73,13 +76,6 @@ namespace GR.ECommerce.Abstractions
         Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text);
 
         /// <summary>
-        /// Get price by variation
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model);
-
-        /// <summary>
         /// Remove attribute
         /// </summary>
         /// <param name="productId"></param>
@@ -107,5 +103,69 @@ namespace GR.ECommerce.Abstractions
         /// <param name="attribute"></param>
         /// <returns></returns>
         Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute);
+
+        #region ProductTypes
+
+        /// <summary>
+        /// Add new product type
+        /// </summary>
+        /// <param name="productType"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType);
+
+        #endregion
+
+        #region Brands
+
+        /// <summary>
+        /// Add brand
+        /// </summary>
+        /// <param name="brand"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> AddBrandAsync(Brand brand);
+
+        /// <summary>
+        /// Get all brands
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Brand>>> GetAllBrandsAsync();
+
+        #endregion
+
+        #region Filters
+
+        /// <summary>
+        /// Get products by filters
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Product>>> GetProductsWithFiltersAsync([Required] ProductsFilterRequest model);
+
+        /// <summary>
+        /// Get attributes for filters
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<FilterAttributeValuesViewModel>>> GetAttributesForFiltersAsync();
+
+        #endregion
+
+        #region Product variations
+
+        /// <summary>
+        /// Get price by variation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model);
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveVariationOptionAsync([Required] Guid? productId, [Required] Guid? variationId);
+
+        #endregion
     }
 }

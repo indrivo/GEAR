@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.PhoneVerification.Abstractions.Helpers.Enums;
@@ -21,8 +22,9 @@ namespace GR.Identity.PhoneVerification.Abstractions
         /// </summary>
         /// <param name="authyId"></param>
         /// <param name="token"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        Task<ResultModel<string>> VerifyTokenAsync(string authyId, string token);
+        Task<ResultModel<string>> VerifyTokenAsync(string authyId, string token, Guid userId);
 
         /// <summary>
         /// Verify phone token

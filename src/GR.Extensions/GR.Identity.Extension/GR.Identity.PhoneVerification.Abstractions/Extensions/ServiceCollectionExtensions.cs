@@ -1,4 +1,6 @@
 ﻿using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Core.Services;
 using GR.Identity.PhoneVerification.Abstractions.Events;
 using GR.Identity.PhoneVerification.Abstractions.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,21 @@ namespace GR.Identity.PhoneVerification.Abstractions.Extensions
         public static IServiceCollection BindPhoneVerificationEvents(this IServiceCollection services)
         {
             PhoneVerificationEvents.RegisterEvents();
+            return services;
+        }
+
+        /// <summary>
+        /// Register sms sender provider
+        /// </summary>
+        /// <typeparam name="TSmsSender"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSmsSenderModule<TSmsSender>(this IServiceCollection services)
+            where TSmsSender : class, ISmsSender
+        {
+            services.AddTransient<ISmsSender, TSmsSender>();
+            var appSender = IoC.Resolve<AppSender>();
+            appSender.RegisterProvider<TSmsSender>("sms");
             return services;
         }
     }

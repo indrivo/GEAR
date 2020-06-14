@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using GR.Identity.Data;
+using GR.Core;
 using GR.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,16 +25,12 @@ namespace GR.WebApplication.Helpers
 
         #endregion
 
-        /// <summary>
-        /// Migrations Assembly
-        /// </summary>
-        protected static readonly string MigrationsAssembly =
-            typeof(GearIdentityDbContext).GetTypeInfo().Assembly.GetName().Name;
-
         protected GearCoreStartup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             Configuration = configuration;
             HostingEnvironment = hostingEnvironment;
+            var appVersion = Assembly.GetAssembly(GetType()).GetName().Version.ToString();
+            GearApplication.SetAppVersion(appVersion);
         }
 
         /// <summary>

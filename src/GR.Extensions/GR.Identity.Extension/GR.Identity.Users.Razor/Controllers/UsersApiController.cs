@@ -7,8 +7,10 @@ using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Attributes;
+using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -117,13 +119,50 @@ namespace GR.Identity.Users.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> RestoreUser()
+        public async Task<JsonResult> RestoreUserByUserId([Required] Guid userId)
         {
-            var userIdReq = _userManager.FindUserIdInClaims();
-            if (!userIdReq.IsSuccess) return Json(userIdReq);
-            var disableReq = await _userManager.RestoreUserAsync(userIdReq.Result);
-            return Json(disableReq);
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            var restoreReq = await _userManager.RestoreUserAsync(userId);
+            return Json(restoreReq);
+        }
+
+        /// <summary>
+        /// Restore by phone number
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RestoreUserByPhoneNumber([Required, DataType(DataType.PhoneNumber)] string phoneNumber)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            var user = await _userManager.UserManager.Users
+                .FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phoneNumber));
+            if (user == null) return Json(new UserNotFoundResult<object>());
+            if (!user.IsDisabled) return Json(new InvalidParametersResultModel("User is already active"));
+            var restoreReq = await _userManager.RestoreUserAsync(user.Id);
+            return Json(restoreReq);
+        }
+
+        /// <summary>
+        /// Restore by email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RestoreUserByEmail([Required, DataType(DataType.EmailAddress), EmailAddress] string email)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            var user = await _userManager.UserManager.FindByEmailAsync(email);
+            if (user == null) return Json(new UserNotFoundResult<object>());
+            if (!user.IsDisabled) return Json(new InvalidParametersResultModel("User is already active"));
+            var restoreReq = await _userManager.RestoreUserAsync(user.Id);
+            return Json(restoreReq);
         }
     }
 }

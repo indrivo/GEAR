@@ -1,5 +1,9 @@
 ﻿@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductOptionViewModel
 
+@{
+    ViewData["Title"] = "Add product option";
+}
+
 <div class="row">
     <div class="col-lg-12">
         <div class="card card-outline-info">
@@ -17,16 +21,16 @@
                                     <input asp-for="Name" class="form-control" />
                                     <span asp-validation-for="Name"></span>
                                 </div>
-                            </div>  
+                            </div>
                         </div>
-                        <div class="row p-t-20">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label asp-for="IsPublish"></label>
-                                    <input asp-for="IsPublish" class="checkbox" checked="checked" />
-                                    <span asp-validation-for="IsPublish"></span>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                    <input asp-for="IsPublish" class="custom-control-input vis-check">
+                                    <label class="custom-control-label" asp-for="IsPublish">Is published</label>
                                 </div>
-                            </div>  
+                                <span asp-validation-for="IsPublish" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
                     <div class="row button-group">
@@ -45,7 +49,7 @@
         </div>
     </div>
 </div>
-@section Scripts 
+@section Scripts
 {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -5,6 +5,8 @@ using GR.Identity.Abstractions.Enums;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace GR.Identity.Abstractions
 {
@@ -127,5 +129,12 @@ namespace GR.Identity.Abstractions
         /// Version
         /// </summary>
         public int Version { get; set; } = 1;
+
+        /// <summary>
+        /// Disable audit tracking
+        /// </summary>
+        [NotMapped]
+        [JsonIgnore]
+        public bool DisableAuditTracking { get; set; }
     }
 }

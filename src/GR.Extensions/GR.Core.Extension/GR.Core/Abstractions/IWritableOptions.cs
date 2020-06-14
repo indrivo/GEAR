@@ -1,4 +1,5 @@
 ﻿using System;
+using GR.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace GR.Core.Abstractions
@@ -10,6 +11,6 @@ namespace GR.Core.Abstractions
         /// </summary>
         /// <param name="applyChanges"></param>
         /// <param name="filePath"></param>
-        void Update(Action<T> applyChanges, string filePath = null);
+        ResultModel Update(Action<T> applyChanges, string filePath = null);
     }
 }

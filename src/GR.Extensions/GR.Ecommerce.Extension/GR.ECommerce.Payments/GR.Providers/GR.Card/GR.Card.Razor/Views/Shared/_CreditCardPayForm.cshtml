@@ -1,0 +1,53 @@
+﻿@using GR.Core.Razor.Extensions
+@model GR.Card.Abstractions.Models.OrderCreditCardPayViewModel
+
+<form id="creditCardForm" role="form" asp-action="PayOrder" asp-controller="CardPayApi">
+    @Html.HiddenFor(x => x.OrderId)
+    <div class="form-group">
+        <label asp-for="Owner">Full name (on the card)</label>
+        <input asp-for="Owner" placeholder="Jason Doe" class="form-control">
+        <span asp-validation-for="Owner" class="text-danger error-text"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CardNumber">Card number</label>
+        <div class="input-group">
+            <input asp-for="CardNumber" placeholder="Your card number" class="form-control">
+            <div class="input-group-append">
+                <span class="input-group-text text-muted">
+                    <i class="fa fa-cc-visa mx-1"></i>
+                    <i class="fa fa-cc-amex mx-1"></i>
+                    <i class="fa fa-cc-mastercard mx-1"></i>
+                </span>
+            </div>
+        </div>
+        <span asp-validation-for="CardNumber" class="text-danger error-text"></span>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="form-group">
+                <label><span class="hidden-xs">Expiration</span></label>
+                <div class="input-group">
+                    <input asp-for="Month" placeholder="MM" class="form-control">
+                    <input asp-for="Year" placeholder="YYYY" class="form-control">
+                </div>
+            </div>
+            <span asp-validation-for="Month" class="text-danger error-text"></span>
+            <span asp-validation-for="Year" class="text-danger error-text"></span>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group mb-4">
+                <label data-toggle="tooltip" title="Three-digits code on the back of your card">
+                    CVV
+                    <i class="fa fa-question-circle"></i>
+                </label>
+                <input asp-for="CardCode" class="form-control">
+            </div>
+        </div>
+    </div>
+</form>
+
+@using (Html.BeginPartialViewScripts())
+{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+}

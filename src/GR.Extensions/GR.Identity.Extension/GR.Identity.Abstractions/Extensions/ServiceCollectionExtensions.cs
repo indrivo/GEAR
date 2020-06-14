@@ -24,23 +24,20 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add context and identity
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IdentityBuilder AddIdentityModule<TContext>(this IServiceCollection services)
+        public static IdentityBuilder AddIdentityModule<TContext>(this IServiceCollection services, Action<IdentityOptions> options = null)
             where TContext : DbContext, IIdentityContext
         {
-            var builder = services.AddIdentity<GearUser, GearRole>(options =>
+            var builder = services.AddIdentity<GearUser, GearRole>(o =>
                 {
-                    options.Lockout = new LockoutOptions
+                    o.Lockout = new LockoutOptions
                     {
                         MaxFailedAccessAttempts = 4,
                         AllowedForNewUsers = true,
                         DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15)
                     };
-
-                    //options.SignIn = new SignInOptions
-                    //{
-                    //    RequireConfirmedEmail = true
-                    //};
+                    options?.Invoke(o);
                 })
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();

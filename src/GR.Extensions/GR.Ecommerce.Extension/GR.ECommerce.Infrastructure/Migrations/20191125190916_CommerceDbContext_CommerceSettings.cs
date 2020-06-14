@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace GR.ECommerce.BaseImplementations.Migrations
+namespace GR.ECommerce.Infrastructure.Migrations
 {
     public partial class CommerceDbContext_CommerceSettings : Migration
     {

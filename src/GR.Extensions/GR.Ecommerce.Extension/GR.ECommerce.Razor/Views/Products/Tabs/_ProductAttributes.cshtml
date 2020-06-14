@@ -12,7 +12,7 @@
                                 <div class="input-group mb-3">
                                     <label asp-for="ProductAttributeId" class="col-md-12"></label>
                                     <select asp-for="ProductAttributeId" class="form-control" aria-describedby="addAttributeBtn">
-                                        <option value=""></option>
+                                        <option value="">Select available attribute</option>
                                         @foreach (var item in @Model.ProductAttributesList)
                                         {
                                             <optgroup label="@item.Key" id="opt_@item.Key">
@@ -37,7 +37,8 @@
                                         <th scope="col">Value</th>
                                         <th scope="col">Is Published</th>
                                         <th scope="col">Is Available</th>
-                                        <th scope="col">Actions</th>
+                                        <th scope="col">Show in filters</th>
+                                        <th scope="col">@Localizer["list_actions"]</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody"></tbody>
@@ -64,7 +65,7 @@
     const toast = new ToastNotifier();
     $(document).ready(function () {
         $.ajax({
-            url: '@Url.Action("GetProductAttributes")',
+            url: '@Url.Action("GetProductAttributes", "ProductsApi")',
             method: 'get',
             contentType: "application/json; charset=utf-8",
             data: {
@@ -87,9 +88,9 @@
 				attributeId: $(elm).attr("value"),
 				value: "",
 				isAvailable: false,
-				isPublished: false
+                isPublished: false,
+                showInFilters: false
 			};
-			console.log(elm);
             appendTable(conf);
         });
 
@@ -103,12 +104,13 @@
                     productId: '@Model.Id',
                     value: $(`#attr_val_${attributeId}`).val(),
                     isPublished: $(`#chkP_${attributeId}`)[0].checked,
-                    isAllowed: $(`#chkA_${attributeId}`)[0].checked
+                    isAvailable: $(`#chkA_${attributeId}`)[0].checked,
+                    showInFilters : $(`#chkF_${attributeId}`)[0].checked
                 });
             });
 
             $.ajax({
-                url: '@Url.Action("EditProductAttributes")',
+                url: '@Url.Action("EditProductAttributes", "ProductsApi")',
                 method: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(model),
@@ -131,7 +133,7 @@
         $($("#ProductAttributeId option[value=" + id + "]").removeAttr("hidden")[0].parentElement).removeAttr("hidden");
 
         $.ajax({
-            url: '@Url.Action("RemoveAttribute")',
+            url: '@Url.Action("RemoveAttribute", "ProductsApi")',
             method: 'POST',
             data: {
                 productId: '@Model.Id',
@@ -167,6 +169,12 @@
                <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
                     <input type='checkbox' ${(element.isAvailable ? 'checked' : '')} id='chkA_${element.attributeId}' class='custom-control-input'/>
                     <label class='custom-control-label' for='chkA_${element.attributeId}'></label>
+                </div>
+            </td>
+            <td>
+               <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
+                    <input type='checkbox' ${(element.showInFilters ? 'checked' : '')} id='chkF_${element.attributeId}' class='custom-control-input'/>
+                    <label class='custom-control-label' for='chkF_${element.attributeId}'></label>
                 </div>
             </td>
             <td>

@@ -1,7 +1,8 @@
 ﻿using System;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 using GR.Identity.Versioning;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +10,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.WebApplication.Helpers.AppConfigurations
 {
+    [Author(Authors.LUPEI_NICOLAE)]
     public class GearServiceCollectionConfig
     {
+        /// <summary>
+        /// Use hot reload for razor class libraries.
+        /// Requirements:
+        /// 1. Development env and debug, debugger need to be attached.
+        /// 2. All razor class library projects must end with: *.Razor.
+        /// 3. Source not published
+        /// If all requirements are respected, the changed views are recompiled
+        /// </summary>
+        public bool UseHotReload { get; set; }
+
+        /// <summary>
+        /// Use health check
+        /// </summary>
+        public bool UseHealthCheck { get; set; } = true;
+
         private static IServiceProvider BuildServices { get; set; }
         public IServiceProvider BuildGearServices => BuildServices ?? (BuildServices = GearServices.BuildServiceProvider());
 
@@ -45,9 +62,9 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public virtual CacheConfiguration CacheConfiguration { get; set; } = new CacheConfiguration();
 
         /// <summary>
-        /// Api Versioning Options
+        /// Api Version Options
         /// </summary>
-        public virtual ApiVersioningOptions ApiVersioningOptions { get; set; } = new ApiVersioningOptions
+        public virtual ApiVersioningOptions ApiVersionOptions { get; set; } = new ApiVersioningOptions
         {
             ReportApiVersions = true,
             AssumeDefaultVersionWhenUnspecified = true,
@@ -81,6 +98,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
 
     public sealed class SwaggerServicesConfiguration
     {
+        public bool UseSwagger { get; set; } = true;
         public bool UseDefaultConfiguration { get; set; } = true;
     }
 

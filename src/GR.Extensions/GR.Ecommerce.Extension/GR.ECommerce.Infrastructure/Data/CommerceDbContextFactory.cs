@@ -1,7 +1,7 @@
 ﻿using GR.Core.Helpers.DbContexts;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace GR.ECommerce.BaseImplementations.Data
+namespace GR.ECommerce.Infrastructure.Data
 {
     /// <inheritdoc />
     /// <summary>

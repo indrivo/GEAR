@@ -7,11 +7,6 @@
             public const string TENANT_LOGO = "system_tenant_logo";
         }
 
-        public struct EmbeddedResources
-        {
-            public const string COMPANY_IMAGE = "Static/Embedded Resources/company.png";
-        }
-
         public struct Exceptions
         {
             public const string E_MULTI_TENANT_COMPANY_IMAGE_NULL = "Default company image not found";

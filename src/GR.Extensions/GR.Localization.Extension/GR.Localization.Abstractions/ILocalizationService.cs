@@ -9,6 +9,12 @@ namespace GR.Localization.Abstractions
     public interface ILocalizationService
     {
         /// <summary>
+        /// Get current language
+        /// </summary>
+        /// <returns></returns>
+        Task<Language> GetCurrentLanguageAsync();
+
+        /// <summary>
         /// Edit translation key
         /// </summary>
         /// <param name="model"></param>

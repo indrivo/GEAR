@@ -40,7 +40,8 @@ namespace GR.Audit.Abstractions.Helpers
                 var entities = context.ChangeTracker
                     .Entries()
                     .Where(x =>
-                        x.Entity is IBaseModel
+                        x.Entity is IBaseModel entry
+                        && !entry.DisableAuditTracking
                         && !(x.Entity is TrackAudit)
                         && !(x.Entity is TrackAuditDetails)
                         && (x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted))

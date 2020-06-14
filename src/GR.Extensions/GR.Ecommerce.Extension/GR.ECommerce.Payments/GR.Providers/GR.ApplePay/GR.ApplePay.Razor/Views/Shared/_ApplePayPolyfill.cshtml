@@ -1,0 +1,81 @@
+@using GR.Core.Razor.Extensions
+@model string
+
+@using (Html.BeginPartialViewStyles())
+{
+	<style>
+		.apple-pay-button {
+			background-color: black;
+			color: white;
+			font-size: 1.2em;
+			font-weight: bold;
+		}
+
+			.apple-pay-button::after {
+				content: "";
+				width: 2em;
+				position: absolute;
+				top: 0.5em;
+				right: 2em;
+				height: 2em;
+				background-size: cover;
+				background-image: url(/assets/apple-pay/images/logo.png);
+			}
+
+		.apple-pay-button-text-buy {
+			padding: 1em;
+		}
+	</style>
+}
+
+@using (Html.BeginPartialViewScripts())
+{
+	<script src="~/assets/apple-pay/ApplePaySession.js"></script>
+	<script>
+		//Set text
+		$("#ckoApplePay").html("(Sandbox) Buy with");
+
+		@* Set the merchant identifier to use *@
+		ApplePaySessionPolyfill.setMerchantIdentifier("@Model");
+
+		@* Create a dummy billing and shipping contact *@
+		var createContact = function () {
+			return {
+				emailAddress: "user@domain.com",
+				familyName: "Smith",
+				givenName: "John",
+				phoneticFamilyName: "Smith",
+				phoneticGivenName: "John",
+				phoneNumber: "07777777777",
+				addressLines: ["Just Eat", "Fleet Place House", "2 Fleet Place"],
+				locality: "London",
+				subLocality: "",
+				administrativeArea: "",
+				subAdministrativeArea: "",
+				postalCode: "EC4M 7RF",
+				country: "United Kingdom",
+				countryCode: "GB"
+			};
+		};
+
+		ApplePaySessionPolyfill.createBillingContact = createContact;
+		ApplePaySessionPolyfill.createShippingContact = createContact;
+
+		@*
+            Create a dummy payment token, or use one generated from a test
+            device or a test token made available by your payment provider.
+        *@
+		ApplePaySessionPolyfill.createPaymentToken = function (session) {
+			return {
+				paymentData: "SomeEncryptedPaymentData",
+				paymentMethod: {
+					displayName: "American Express",
+					network: "amex",
+					type: "credit",
+					paymentPass: null
+				},
+				transactionIdentifier: "AppleId-@Guid.NewGuid().ToString()"
+			};
+		};
+	</script>
+}

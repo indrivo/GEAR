@@ -27,7 +27,7 @@ namespace GR.Subscriptions.Abstractions.Models
         /// <summary>
         /// Availability days
         /// </summary>
-        public virtual int Availability { get; set; }
+        public virtual int Availability { get; set; } = 0;
 
         /// <summary>
         /// Order id
@@ -44,7 +44,6 @@ namespace GR.Subscriptions.Abstractions.Models
         /// </summary>
         public virtual bool IsFree { get; set; }
 
-
         /// <summary>
         /// Services
         /// </summary>
@@ -53,7 +52,7 @@ namespace GR.Subscriptions.Abstractions.Models
         /// <summary>
         /// Is valid subscription
         /// </summary>
-        public virtual bool IsValid => ExpirationDate > DateTime.Now;
+        public virtual bool IsValid => ExpirationDate > DateTime.Now || IsFree;
 
         /// <summary>
         /// Remaining days subscription

@@ -45,6 +45,21 @@ namespace GR.Core.Helpers
         /// Register new service
         /// </summary>
         /// <typeparam name="TAbstraction"></typeparam>
+        /// <param name="providerName"></param>
+        /// <param name="provider"></param>
+        public static void RegisterTransientService<TAbstraction>(string providerName, Type provider) where TAbstraction : class
+        {
+            if (providerName.IsNullOrEmpty()) throw new Exception("Provider name must be not null");
+            Container.Register(Component.For<TAbstraction>()
+                .ImplementedBy(provider)
+                .Named(providerName)
+                .LifestyleTransient());
+        }
+
+        /// <summary>
+        /// Register new service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
         /// <typeparam name="TImplementation"></typeparam>
         public static void RegisterTransientService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
         {
@@ -203,6 +218,14 @@ namespace GR.Core.Helpers
         /// <returns></returns>
         public static TService ResolveNonRequired<TService>()
             => !IsServiceRegistered<TService>() ? default : Container.Resolve<TService>();
+
+        /// <summary>
+        /// Resolve generic type
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        public static TService ResolveNonRequired<TService>(string key)
+            => !IsServiceRegistered(key) ? default : Container.Resolve<TService>(key);
 
         /// <summary>
         /// Resolve generic type by key

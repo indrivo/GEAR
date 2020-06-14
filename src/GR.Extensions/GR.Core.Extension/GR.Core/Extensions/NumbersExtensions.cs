@@ -43,6 +43,18 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Get a certain percentage of the specified number.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="percentage"></param>
+        /// <returns></returns>
+        public static double GetPercentage(this decimal value, double percentage)
+        {
+            var percentAsDouble = percentage / 100;
+            return (double)value * percentAsDouble;
+        }
+
+        /// <summary>
         /// Get percent of
         /// </summary>
         /// <param name="value"></param>

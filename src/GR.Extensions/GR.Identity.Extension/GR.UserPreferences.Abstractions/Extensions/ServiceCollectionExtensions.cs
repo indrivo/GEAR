@@ -86,15 +86,29 @@ namespace GR.UserPreferences.Abstractions.Extensions
 
                 options.ResolveListItems = selectedZone =>
                 {
+                    var finalZoneList = new List<(string, string)>();
                     var zones = TimeZoneInfo.GetSystemTimeZones();
-                    //var useDisplayName = zones.All(x => x.DisplayName.Contains("+"));
-                    var data = zones.Select(zone =>
+                    var date = new DateTime(2015, 1, 15);
+                    foreach (var zone in zones)
+                    {
+                        var timeZone = "+00:00";
+                        var span = zone.GetUtcOffset(date);
+                        if (span < TimeSpan.Zero)
+                            timeZone = span.ToString(@"\-hh\:mm");
+                        if (span > TimeSpan.Zero)
+                            timeZone = span.ToString(@"\+hh\:mm");
+                        var prefix = $"(GMT{timeZone})";
+                        if (!finalZoneList.Any(x => x.Item2.StartsWith(prefix)))
+                        {
+                            finalZoneList.Add((zone.Id, $"{prefix} {zone.StandardName}"));
+                        }
+                    }
+                    var data = finalZoneList.Select(zone =>
                                             new DisplayItem
                                             {
-                                                Id = zone.Id,
-                                                //Label = useDisplayName ? zone.DisplayName : $"({zone.StandardName}) {zone.Id}",
-                                                Label = zone.DisplayName,
-                                                Selected = selectedZone == zone.Id
+                                                Id = zone.Item1,
+                                                Label = zone.Item2,
+                                                Selected = selectedZone == zone.Item1
                                             }).ToList();
 
                     return Task.FromResult<IEnumerable<DisplayItem>>(data);
@@ -113,9 +127,11 @@ namespace GR.UserPreferences.Abstractions.Extensions
         /// <param name="key"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterUserPreferenceKey<TPreferenceItem>(this IServiceCollection services, string key, Func<TPreferenceItem, TPreferenceItem> options)
+        public static IServiceCollection RegisterUserPreferenceKey<TPreferenceItem>(this IServiceCollection services, string key, Func<TPreferenceItem, TPreferenceItem> options = null)
             where TPreferenceItem : PreferenceItem, new()
         {
+            if (options == null)
+                options = o => o;
             var provider = IoC.Resolve<DefaultUserPreferenceProvider>("PreferencesProvider_Instance");
             provider.RegisterPreferenceItem(key, options(new TPreferenceItem
             {

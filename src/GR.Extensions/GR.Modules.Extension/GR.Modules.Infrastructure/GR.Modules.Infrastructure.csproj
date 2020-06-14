@@ -12,4 +12,9 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
+    <ProjectReference Include="..\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

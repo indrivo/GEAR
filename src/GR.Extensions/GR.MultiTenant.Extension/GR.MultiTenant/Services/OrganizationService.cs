@@ -310,7 +310,7 @@ namespace GR.MultiTenant.Services
         /// <returns></returns>
         public virtual byte[] GetDefaultImage()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, MultiTenantResources.EmbeddedResources.COMPANY_IMAGE);
+            var path = Path.Combine(AppContext.BaseDirectory, GlobalResources.Paths.EmbeddedResourcesPath + "/company.png");
             if (!File.Exists(path))
                 throw new Exception(MultiTenantResources.Exceptions.E_MULTI_TENANT_COMPANY_IMAGE_NULL);
 

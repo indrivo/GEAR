@@ -4,6 +4,7 @@ using GR.Core.Extensions;
 
 namespace GR.Core.Attributes.Validation
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class MinAgeAttribute : ValidationAttribute
     {
         private readonly int _limit;

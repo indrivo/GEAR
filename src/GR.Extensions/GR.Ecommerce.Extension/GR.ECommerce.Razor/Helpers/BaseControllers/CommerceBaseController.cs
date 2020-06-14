@@ -64,6 +64,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         /// <summary>
         /// Create new item
         /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
@@ -103,6 +104,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         /// <summary>
         /// Update item
         /// </summary>
+        /// <typeparam name="TViewModel"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]

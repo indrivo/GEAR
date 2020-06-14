@@ -77,6 +77,7 @@ namespace GR.Localization
         {
             var data = await _context.Countries
                 .AsNoTracking()
+                .OrderBy(x => x.Name)
                 .ToListAsync();
             var mapped = data.Adapt<IEnumerable<AddCountryViewModel>>();
             return new SuccessResultModel<IEnumerable<AddCountryViewModel>>(mapped);
@@ -124,14 +125,36 @@ namespace GR.Localization
         /// Get cities by country id
         /// </summary>
         /// <param name="countryId"></param>
+        /// <param name="search"></param>
+        /// <param name="selectedCityId"></param>
+        /// <param name="maxItems"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId)
+        public virtual async Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId, string search, Guid? selectedCityId, int maxItems = 20)
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<StateOrProvince>>();
-            var data = await _context.StateOrProvinces
+            var query = _context.StateOrProvinces
                 .AsNoTracking()
-                .Where(x => x.CountryId.Equals(countryId))
-                .ToListAsync();
+                .OrderBy(x => x.Name)
+                .Where(x => x.CountryId.Equals(countryId));
+            if (!search.IsNullOrEmpty())
+            {
+                query = query.Where(x => x.Name.ToLowerInvariant().StartsWith(search.ToLowerInvariant()));
+            }
+
+            query = query.Take(maxItems);
+
+            var data = await query.ToListAsync();
+            if (selectedCityId == null || data.Select(x => x.Id).Contains(selectedCityId.Value))
+                return new SuccessResultModel<IEnumerable<StateOrProvince>>(data);
+
+            var selected = await _context.StateOrProvinces
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(selectedCityId) && x.CountryId.Equals(countryId));
+            if (selected != null)
+            {
+                data = data.Prepend(selected).ToList();
+            }
+
             return new SuccessResultModel<IEnumerable<StateOrProvince>>(data);
         }
 
@@ -281,6 +304,45 @@ namespace GR.Localization
             request.Result = request.Result.Where(x => x.Region.Equals(region))
                 .ToList();
             return request;
+        }
+
+        /// <summary>
+        /// Import countries
+        /// </summary>
+        /// <param name="countries"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ImportCountriesAsync(IEnumerable<Country> countries)
+        {
+            foreach (var country in countries)
+            {
+                if (await _context.Countries.AnyAsync(x => x.Id.Equals(country.Id)))
+                {
+                    var existCities = await _context.StateOrProvinces
+                        .AsNoTracking()
+                        .Where(x => x.CountryId.Equals(country.Id))
+                        .ToListAsync();
+                    var newCities = country.StatesOrProvinces
+                        .Where(x => !existCities.Select(y => y.Id).Contains(x.Id))
+                        .Select(x => new StateOrProvince
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            CountryId = x.CountryId,
+                            Name = x.Name,
+                            Type = x.Type,
+                            DisableAuditTracking = true
+                        })
+                        .ToList();
+                    if (newCities.Any()) await _context.StateOrProvinces.AddRangeAsync(newCities);
+                }
+                else
+                {
+                    await _context.Countries.AddAsync(country);
+                }
+                await _context.PushAsync();
+            }
+
+            return new SuccessResultModel<object>().ToBase();
         }
     }
 }

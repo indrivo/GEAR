@@ -3,6 +3,8 @@ using GR.Audit.Abstractions.Enums;
 using GR.Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace GR.Identity.Abstractions
 {
@@ -12,33 +14,6 @@ namespace GR.Identity.Abstractions
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class GearRole : IdentityRole<Guid>, IBase<Guid>
     {
-        /// <inheritdoc />
-        /// <summary>
-        /// Constructs a new <see cref="T:GR.Identity.Abstractions.ApplicationRole" /> object that
-        /// has no name
-        /// </summary>
-        /// <returns></returns>
-        public GearRole() => Id = Guid.NewGuid();
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Constructs a new ApplicationRole object with the
-        /// specified name
-        /// </summary>
-        /// <param name="roleName">Name of the role e.g. Admin</param>
-        /// <returns>A new ApplicationRole Instance</returns>
-        public GearRole(string roleName) : this() => Name = roleName;
-
-        /// <summary>
-        /// Implicit conversion operator to convert a string object
-        /// that represents the Role Name, to an actual ApplicationRole Object
-        /// </summary>
-        /// <param name="roleName">Name of the role</param>
-        public static implicit operator GearRole(string roleName) => new GearRole
-        {
-            Name = roleName
-        };
-
         /// <inheritdoc />
         /// <summary>
         /// Stores Id of the User that created the object
@@ -109,5 +84,12 @@ namespace GR.Identity.Abstractions
         /// Version
         /// </summary>
         public int Version { get; set; }
+
+        /// <summary>
+        /// Disable audit tracking
+        /// </summary>
+        [NotMapped]
+        [JsonIgnore]
+        public bool DisableAuditTracking { get; set; }
     }
 }

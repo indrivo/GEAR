@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GR.Identity.Abstractions.Helpers.Attributes
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     public class GearAuthorizeAttribute : AuthorizeAttribute
     {
         /// <summary>

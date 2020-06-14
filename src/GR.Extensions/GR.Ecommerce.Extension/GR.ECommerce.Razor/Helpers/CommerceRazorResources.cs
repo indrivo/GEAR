@@ -11,6 +11,7 @@ namespace GR.ECommerce.Razor.Helpers
             public static Guid SalesMenuItem = Guid.Parse("6d0c5a3d-baf3-44f0-9342-ec6a9afd41ae");
             public static Guid PaymentMethodsMenuItem = Guid.Parse("f8687a4f-53b0-4a5b-b30c-bdcc02a31ed5");
             public static Guid CommerceSettingsMenuItem = Guid.Parse("a6d503a5-98de-4d63-be77-0b79d0d54cf8");
+            public static Guid StoreMenuItem = Guid.Parse("ef1ca786-5cce-478a-94b1-7e967251f56b");
 
             public static Guid ProductsMenuItem = Guid.Parse("9401fbbf-ce0b-451d-b13c-05934b663549");
             public static Guid BrandsMenuItem = Guid.Parse("99da11b0-bcfd-4f89-97d1-4f538afc3146");

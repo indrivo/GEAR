@@ -17,6 +17,7 @@ using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -33,17 +34,26 @@ namespace GR.Localization.JsonStringProvider
         private readonly IHostingEnvironment _env;
         private readonly ICacheService _cache;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
+        
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
         private readonly IMapper _mapper;
+        /// <summary>
+        /// Inject context accessor
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
 
         #endregion
 
-        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env, ICacheService cache, IExternalTranslationProvider externalTranslationProvider, IMapper mapper)
+        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env, ICacheService cache, IExternalTranslationProvider externalTranslationProvider, IMapper mapper, IHttpContextAccessor contextAccessor)
         {
             _env = env;
             _locConfig = locConfig;
             _cache = cache;
             _externalTranslationProvider = externalTranslationProvider;
             _mapper = mapper;
+            _contextAccessor = contextAccessor;
         }
 
         /// <summary>
@@ -313,6 +323,16 @@ namespace GR.Localization.JsonStringProvider
                 if (packRequest.IsSuccess) dict.Add(lang.Identifier, packRequest.Result);
             }
             return new SuccessResultModel<Dictionary<string, Dictionary<string, string>>>(dict);
+        }
+
+        /// <summary>
+        /// Get current language
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<Language> GetCurrentLanguageAsync()
+        {
+            var languageId = _contextAccessor.HttpContext.Session.GetString(_locConfig.Value.SessionStoreKeyName);
+            return (await GetLanguageByIdentifierAsync(languageId)).Result;
         }
 
         /// <summary>

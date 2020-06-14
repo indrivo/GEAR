@@ -1,0 +1,19 @@
+{
+  "HttpServer": {
+    "Enabled": false,
+    "Endpoints": {
+      "Http": {
+        "Host": "localhost",
+        "Port": 5000,
+        "Scheme": "http"
+      },
+      "Https": {
+        "Host": "localhost",
+        "Port": 5001,
+        "Scheme": "https",
+        "FilePath": "certificate.pfx",
+        "Password": "1111"
+      }
+    }
+  }
+}

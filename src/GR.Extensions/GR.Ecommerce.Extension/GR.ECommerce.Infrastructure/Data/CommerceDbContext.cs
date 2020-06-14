@@ -4,25 +4,27 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Audit.Contexts;
-using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
+using GR.ECommerce.Abstractions.Models.Settings;
+using GR.ECommerce.Abstractions.ViewModels.CurrencyViewModels;
+using GR.ECommerce.Infrastructure.Extensions;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
-using Microsoft.EntityFrameworkCore;
+using GR.Subscriptions.Abstractions.Events;
+using GR.Subscriptions.Abstractions.Events.EventArgs;
 using GR.Subscriptions.Abstractions.Models;
-using GR.ECommerce.Abstractions.Models.Currencies;
-using GR.ECommerce.Abstractions.ViewModels.CurrencyViewModels;
-using GR.ECommerce.Products.Extensions;
 using Mapster;
-using GR.ECommerce.Abstractions.Models.Settings;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace GR.ECommerce.BaseImplementations.Data
+namespace GR.ECommerce.Infrastructure.Data
 {
     public class CommerceDbContext : TrackerDbContext, ICommerceContext, IOrderDbContext, IPaymentContext, ISubscriptionDbContext
     {
@@ -100,9 +102,16 @@ namespace GR.ECommerce.BaseImplementations.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public override Task InvokeSeedAsync(IServiceProvider services)
+        public override async Task InvokeSeedAsync(IServiceProvider services)
         {
-            return Task.CompletedTask;
+            SubscriptionEvents.Subscriptions.TriggerSubscriptionSeed(new SeedSubscriptionEventArgs());
+            var service = services.GetRequiredService<IProductService<Product>>();
+            await service.AddProductTypeAsync(new ProductType
+            {
+                Id = CommerceResources.DefaultProductType,
+                DisplayName = nameof(Product),
+                Name = nameof(Product)
+            });
         }
     }
 }

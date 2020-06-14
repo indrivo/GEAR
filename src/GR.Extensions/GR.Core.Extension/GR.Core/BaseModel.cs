@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using GR.Core.Abstractions;
+using Newtonsoft.Json;
 
 namespace GR.Core
 {
@@ -59,6 +61,15 @@ namespace GR.Core
         /// Tenant id
         /// </summary>
         public virtual Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Disable audit tracking
+        /// This only work on current instance,
+        /// The true value ignore save a new version on audit
+        /// </summary>
+        [JsonIgnore]
+        [NotMapped]
+        public virtual bool DisableAuditTracking { get; set; }
 
         /// <summary>
         /// Get props name

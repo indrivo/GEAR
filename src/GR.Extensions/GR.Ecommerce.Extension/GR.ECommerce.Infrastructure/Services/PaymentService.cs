@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -10,11 +11,12 @@ using GR.Core.Helpers.Responses;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
+using GR.ECommerce.Payments.Abstractions.ViewModels;
+using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
-using GR.Orders.Abstractions;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.ECommerce.Infrastructure.Services
 {
     [Author(Authors.LUPEI_NICOLAE, 1.1)]
     [Documentation("Basic implementation of payment service")]
@@ -32,12 +34,18 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         private readonly IOrderProductService<Order> _orderProductService;
 
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+
         #endregion
 
-        public PaymentService(IPaymentContext paymentContext, IOrderProductService<Order> orderProductService)
+        public PaymentService(IPaymentContext paymentContext, IOrderProductService<Order> orderProductService, IMapper mapper)
         {
             _paymentContext = paymentContext;
             _orderProductService = orderProductService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -47,7 +55,9 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<IEnumerable<PaymentMethod>>> GetActivePaymentMethodsAsync()
         {
             var response = new ResultModel<IEnumerable<PaymentMethod>>();
-            var methods = await _paymentContext.PaymentMethods.Where(x => x.IsEnabled).ToListAsync();
+            var methods = await _paymentContext.PaymentMethods
+                .AsNoTracking()
+                .Where(x => x.IsEnabled).ToListAsync();
             response.IsSuccess = true;
             response.Result = methods;
             return response;
@@ -57,12 +67,17 @@ namespace GR.ECommerce.Products.Services
         /// Get payments methods
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<PaymentMethod>>> GetAllPaymentMethodsAsync()
+        public async Task<ResultModel<IEnumerable<PaymentMethodViewModel>>> GetAllPaymentMethodsAsync()
         {
-            var response = new ResultModel<IEnumerable<PaymentMethod>>();
-            var methods = await _paymentContext.PaymentMethods.ToListAsync();
+            var response = new ResultModel<IEnumerable<PaymentMethodViewModel>>();
+            var methods = await _paymentContext
+                .PaymentMethods
+                .AsNoTracking()
+                .ToListAsync();
+
+            var mapped = _mapper.Map<IEnumerable<PaymentMethodViewModel>>(methods);
             response.IsSuccess = true;
-            response.Result = methods;
+            response.Result = mapped;
             return response;
         }
 
@@ -75,7 +90,9 @@ namespace GR.ECommerce.Products.Services
         {
             var response = new ResultModel<IEnumerable<Payment>>();
             if (orderId == null) return new NotFoundResultModel<IEnumerable<Payment>>();
-            var payment = await _paymentContext.Payments.Where(x => x.OrderId.Equals(orderId)).ToListAsync();
+            var payment = await _paymentContext.Payments
+                .AsNoTracking()
+                .Where(x => x.OrderId.Equals(orderId)).ToListAsync();
             if (payment == null) return new NotFoundResultModel<IEnumerable<Payment>>();
             response.IsSuccess = true;
             response.Result = payment;
@@ -111,6 +128,42 @@ namespace GR.ECommerce.Products.Services
             if (!orderRequest.IsSuccess) return orderRequest.ToBase();
             payment.OrderId = orderId.GetValueOrDefault();
             await _paymentContext.Payments.AddAsync(payment);
+            return await _paymentContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Enable payment method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ActivatePaymentMethodAsync(string id)
+        {
+            if (id.IsNullOrEmpty()) return new InvalidParametersResultModel();
+            var paymentMethod = await _paymentContext.PaymentMethods
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Name.Equals(id));
+            if (paymentMethod == null) return new NotFoundResultModel();
+            if (paymentMethod.IsEnabled) return new SuccessResultModel<object>().ToBase();
+            paymentMethod.IsEnabled = true;
+            _paymentContext.PaymentMethods.Update(paymentMethod);
+            return await _paymentContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Disable payment method
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DisablePaymentMethodAsync(string id)
+        {
+            if (id.IsNullOrEmpty()) return new InvalidParametersResultModel();
+            var paymentMethod = await _paymentContext.PaymentMethods
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Name.Equals(id));
+            if (paymentMethod == null) return new NotFoundResultModel();
+            if (!paymentMethod.IsEnabled) return new SuccessResultModel<object>().ToBase();
+            paymentMethod.IsEnabled = false;
+            _paymentContext.PaymentMethods.Update(paymentMethod);
             return await _paymentContext.PushAsync();
         }
     }

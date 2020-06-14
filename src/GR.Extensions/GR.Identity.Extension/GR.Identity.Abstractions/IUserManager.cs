@@ -55,7 +55,7 @@ namespace GR.Identity.Abstractions
         /// Get request ip address
         /// </summary>
         /// <returns></returns>
-        string GetRequestIpAdress();
+        string GetRequestIpAddress();
 
         /// <summary>
         /// Add roles to user
@@ -137,6 +137,13 @@ namespace GR.Identity.Abstractions
         /// <param name="roles"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<GearRole>>> FindRolesByNamesAsync(IEnumerable<string> roles);
+
+        /// <summary>
+        /// Find user by phone number
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        Task<TUser> FindByPhoneNumberAsync(string phone);
 
         /// <summary>
         /// Change user roles

@@ -1,0 +1,144 @@
+@model GR.ApplePay.Razor.ViewModels.ApplePaySettingsEditViewModel
+@{
+	ViewData["Title"] = "ApplePay Settings";
+	var supportedAcceptedCardSchemes = Model.SupportedAcceptedCardSchemes.Select(x => new SelectListItem(x, x));
+	var supportedMerchantCapabilities = Model.SupportedMerchantCapabilities.Select(x => new SelectListItem(x, x));
+	var supportedRequiredBillingContactFields = Model.SupportedRequiredBillingContactFields.Select(x => new SelectListItem(x, x));
+	var supportedRequiredShippingContactFields = Model.SupportedRequiredShippingContactFields.Select(x => new SelectListItem(x, x));
+}
+
+<div class="card mb-4">
+	<div class="card-header text-capitalize">@ViewData["Title"]</div>
+	<div class="card-body">
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		@if (ViewData["isSuccess"] != null)
+		{
+			<div class="alert alert-success" role="alert">
+				@Localizer["system_inline_saved"]
+			</div>
+		}
+	<form asp-action="Config" asp-controller="ApplePaySettings" method="post" autocomplete="off" enctype="multipart/form-data">
+		<h2>General</h2>
+		<div class="form-group row">
+			<label asp-for="StoreName" class="col-sm-2 col-form-label text-capitalize">Store Name</label>
+			<div class="col-sm-10">
+				<input asp-for="StoreName" class="form-control">
+				<span class="text-danger" asp-validation-for="StoreName"></span>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label asp-for="ApplePayVersion" class="col-sm-2 col-form-label text-capitalize">ApplePay Version</label>
+			<div class="col-sm-10">
+				<input asp-for="ApplePayVersion" class="form-control">
+				<span class="text-danger" asp-validation-for="ApplePayVersion"></span>
+			</div>
+		</div>
+		<hr class="my-4 dashed">
+		<h2>Certificates</h2>
+		<p>
+			<b>Merchant ID Certificate</b> : <span>@Model.MerchantCertificateFileName</span> <br />
+		</p>
+
+		<div class="custom-control mb-4 custom-checkbox">
+			<input type="checkbox" asp-for="UseCertificateStore" class="custom-control-input">
+			<label class="custom-control-label" asp-for="UseCertificateStore"></label>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="MerchantIdCertificate" class="col-sm-2 col-form-label text-capitalize">Merchant Id Certificate</label>
+			<div class="col-sm-10">
+				<input asp-for="MerchantIdCertificate" class="form-control" />
+				<span asp-validation-for="MerchantIdCertificate" class="text-danger"></span>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label asp-for="MerchantCertificatePassword" class="col-sm-2 col-form-label text-capitalize">Merchant Certificate Password</label>
+			<div class="col-sm-10">
+				<input asp-for="MerchantCertificatePassword" class="form-control">
+				<span class="text-danger" asp-validation-for="MerchantCertificatePassword"></span>
+			</div>
+		</div>
+
+		<hr class="my-4 dashed">
+		<h2>Preferences</h2>
+
+		<div class="form-group row">
+			<label asp-for="AcceptedCardSchemes" class="col-sm-2 col-form-label text-capitalize">Accepted Card Schemes</label>
+			<div class="col-sm-10">
+				<select asp-for="AcceptedCardSchemes" class="form-control" asp-items="supportedAcceptedCardSchemes">
+				</select>
+				<span class="text-danger" asp-validation-for="AcceptedCardSchemes"></span>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="MerchantCapabilities" class="col-sm-2 col-form-label text-capitalize">Merchant Capabilities</label>
+			<div class="col-sm-10">
+				<select asp-for="MerchantCapabilities" class="form-control" asp-items="supportedMerchantCapabilities">
+				</select>
+				<span class="text-danger" asp-validation-for="MerchantCapabilities"></span>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="RequiredBillingContactFields" class="col-sm-2 col-form-label text-capitalize">Required Billing Contact Fields</label>
+			<div class="col-sm-10">
+				<select asp-for="RequiredBillingContactFields" class="form-control" asp-items="supportedRequiredBillingContactFields">
+				</select>
+				<span class="text-danger" asp-validation-for="RequiredBillingContactFields"></span>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label asp-for="RequiredShippingContactFields" class="col-sm-2 col-form-label text-capitalize">Required Shipping Contact Fields</label>
+			<div class="col-sm-10">
+				<select asp-for="RequiredShippingContactFields" class="form-control" asp-items="supportedRequiredShippingContactFields">
+				</select>
+				<span class="text-danger" asp-validation-for="RequiredShippingContactFields"></span>
+			</div>
+		</div>
+
+		<hr class="my-4 dashed">
+		<h2>Domain verification</h2>
+		<div class="form-group">
+			<label asp-for="DomainVerificationFile" class="col-sm-2 col-form-label">apple-developer-merchantid-domain-association</label>
+			<div class="col-sm-10">
+				<input asp-for="DomainVerificationFile" class="form-control" />
+				<span asp-validation-for="DomainVerificationFile" class="text-danger"></span>
+			</div>
+		</div>
+		Test: <a href="/.well-known/apple-developer-merchantid-domain-association.txt">@(ViewData["Domain"])/.well-known/apple-developer-merchantid-domain-association.txt</a>
+
+		<hr class="my-4 dashed">
+		<h2>Sandbox</h2>
+		<div class="custom-control mb-4 custom-checkbox">
+			<input type="checkbox" asp-for="UsePolyfill" class="custom-control-input">
+			<label class="custom-control-label" asp-for="UsePolyfill"></label>
+		</div>
+		<div class="row button-group">
+			<div class="col-lg-2 col-md-3">
+				<button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+			</div>
+			<div class="col-lg-2 col-md-3">
+				<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+			</div>
+			<div class="col-lg-2 col-md-3">
+				<a href="/PaymentMethods" class="btn btn-block btn-link"> @Localizer["back"]</a>
+			</div>
+		</div>
+	</form>
+	</div>
+</div>
+
+@section Scripts
+{
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	<script>
+		$(document).ready(function() {
+			$('#AcceptedCardSchemes').select2();
+			$('#MerchantCapabilities').select2();
+			$('#RequiredShippingContactFields').select2();
+			$('#RequiredBillingContactFields').select2();
+		});
+	</script>
+}

@@ -1,7 +1,14 @@
-﻿namespace GR.ECommerce.Abstractions.Helpers
+﻿using System;
+
+namespace GR.ECommerce.Abstractions.Helpers
 {
     public static class CommerceResources
     {
+        /// <summary>
+        /// Default product type 
+        /// </summary>
+        public static Guid DefaultProductType = Guid.Parse("ba0a1d29-22ac-4429-ab56-12391b76e7a4");
+
         public static class SystemCurrencies
         {
             public const string MDL = "MDL";
