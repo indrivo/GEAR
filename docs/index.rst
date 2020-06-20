@@ -32,11 +32,16 @@ The following platforms are supported:
   :caption: Modules
 
   all-modules
+  Modules/GR.Core
   Modules/GR.Core.Razor
+  Modules/GR.Audit
+  Modules/GR.Cache
   Modules/GR.Calendar
   Modules/GR.Workflow
   Modules/GR.UserPreferences
   Modules/GR.Localization
+  Modules/GR.Notifications
+  Modules/GR.Email
 
 
 .. _changes-docs:
