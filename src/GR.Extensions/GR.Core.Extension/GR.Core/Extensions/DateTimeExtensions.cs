@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GR.Core.Abstractions;
 
 namespace GR.Core.Extensions
 {
@@ -212,6 +211,16 @@ namespace GR.Core.Extensions
             var today = DateTime.Now;
             query = query.Where(x => x.Created.Year == today.Year);
             return query;
+        }
+
+        /// <summary>
+        /// Date to time stamp 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static double ToTimeStamp(this DateTime date)
+        {
+            return (date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         }
     }
 }

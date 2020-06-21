@@ -38,7 +38,7 @@ namespace GR.Orders.Abstractions
         /// <param name="param"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        DTResult<GetOrdersViewModel> GetPaginatedOrdersByUserId(DTParameters param, Guid? userId);
+        Task<DTResult<GetOrdersViewModel>> GetPaginatedOrdersByUserIdAsync(DTParameters param, Guid? userId);
 
         /// <summary>
         /// Get my orders
@@ -111,7 +111,7 @@ namespace GR.Orders.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param);
+        Task<DTResult<GetOrdersViewModel>> GetAllOrdersWithPaginationWayAsync(DTParameters param);
 
         /// <summary>
         /// Check if the order was in the x state

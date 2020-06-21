@@ -9,10 +9,12 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
+using GR.Core.Helpers.Validators;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Orders.Abstractions;
@@ -22,6 +24,7 @@ using GR.Subscriptions.Abstractions.Helpers;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions.Abstractions.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GR.Subscriptions
 {
@@ -69,9 +72,14 @@ namespace GR.Subscriptions
         /// </summary>
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        private readonly ILogger<SubscriptionService> _logger;
+
         #endregion
 
-        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<GearRole> notify, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<GearRole> notify, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
@@ -81,13 +89,14 @@ namespace GR.Subscriptions
             _productService = productService;
             _commerceContext = commerceContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
         /// Get subscription by User
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetSubscriptionsByUserAsync()
+        public virtual async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetSubscriptionsByUserAsync()
         {
             var response = new ResultModel<IEnumerable<SubscriptionGetViewModel>>();
             var user = (await _userManager.GetCurrentUserAsync()).Result;
@@ -114,7 +123,7 @@ namespace GR.Subscriptions
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetValidSubscriptionsForUserAsync(Guid? userId)
+        public virtual async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetValidSubscriptionsForUserAsync(Guid? userId)
         {
             var response = new ResultModel<IEnumerable<SubscriptionGetViewModel>>();
             if (userId == null) return new InvalidParametersResultModel<IEnumerable<SubscriptionGetViewModel>>();
@@ -139,7 +148,7 @@ namespace GR.Subscriptions
         /// </summary>
         /// <param name="subscriptionId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Subscription>> GetSubscriptionByIdAsync(Guid? subscriptionId)
+        public virtual async Task<ResultModel<Subscription>> GetSubscriptionByIdAsync(Guid? subscriptionId)
         {
             var response = new ResultModel<Subscription>();
 
@@ -164,9 +173,16 @@ namespace GR.Subscriptions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> UpdateSubscriptionAsync(SubscriptionAddViewModel model)
+        public virtual async Task<ResultModel<Guid>> AddOrUpdateSubscriptionAsync(SubscriptionAddViewModel model)
         {
             if (model == null) throw new NullReferenceException();
+            _logger.LogTrace($"User {model.UserId} start to update subscription, subscription: {model.Id}");
+            var state = ModelValidator.IsValid<SubscriptionAddViewModel, Guid>(model);
+            if (!state.IsSuccess)
+            {
+                _logger.LogCritical($"User {model.UserId} fail to update subscription, reason: validation error, model: {model.SerializeAsJson()}");
+                return state;
+            }
             var result = new ResultModel<Guid>();
             if (!model.IsFree)
             {
@@ -176,6 +192,7 @@ namespace GR.Subscriptions
                 var isPayedRequest = await _paymentService.IsOrderPayedAsync(order.Id);
                 if (!isPayedRequest.IsSuccess)
                 {
+                    _logger.LogTrace($"User {model.UserId} fail to update subscription, reason: order not payed, orderId: {model.OrderId}");
                     result.AddError("Order was not paid");
                     return result;
                 }
@@ -203,27 +220,21 @@ namespace GR.Subscriptions
 
                 if (user == null)
                 {
+                    _logger.LogCritical($"Subscription {model.Name} with id: {model.Id} fail to update, error: user not found, userId: {model.UserId}");
                     result.AddError("User not exist");
                     return result;
                 }
 
-                var subscription = new Subscription
-                {
-                    Id = model.Id,
-                    UserId = user.Id,
-                    TenantId = user.TenantId,
-                    StartDate = model.StartDate,
-                    Availability = model.Availability,
-                    OrderId = model.OrderId,
-                    Name = model.Name,
-                    IsFree = model.IsFree,
-                    SubscriptionPermissions = model.SubscriptionPermissions
-                };
+                var subscription = (Subscription)model;
                 await _subscriptionDbContext.Subscription.AddAsync(subscription);
                 subscriptionId = subscription.Id;
             }
 
             var dbRequest = await _subscriptionDbContext.PushAsync();
+            if (!dbRequest.IsSuccess)
+            {
+                _logger.LogCritical($"Subscription {model.Name} with id: {model.Id} fail to update, error: {dbRequest.Errors.FirstOrDefault()?.Message}");
+            }
 
             return dbRequest.Map(subscriptionId);
         }
@@ -357,15 +368,12 @@ namespace GR.Subscriptions
         /// <returns></returns>
         public virtual async Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync(Guid? userId = null)
         {
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
+            var result = new ResultModel<Subscription>();
+            var user = userId != null
+                ? (await _userManager.FindUserByIdAsync(userId)).Result
+                : (await _userManager.GetCurrentUserAsync()).Result;
 
-            if (user == null && userId.HasValue)
-                user = await _userManager.UserManager.FindByIdAsync(userId.ToString());
-
-            if (user == null)
-            {
-                return new NotFoundResultModel<Subscription>();
-            }
+            if (user == null) return UserNotFoundResult<Subscription>.Instance;
 
             var userSubscription = await _subscriptionDbContext.Subscription
                 .Include(i => i.Order)
@@ -376,18 +384,13 @@ namespace GR.Subscriptions
 
             if (!userSubscription.Any())
             {
-                return new ResultModel<Subscription>
-                {
-                    Errors = new List<IErrorModel> { new ErrorModel { Message = "Subscription not found" } },
-                    IsSuccess = false
-                };
+                result.AddError("Subscription not found");
+                return result;
             }
 
-            return new ResultModel<Subscription>
-            {
-                IsSuccess = true,
-                Result = userSubscription.OrderByDescending(o => o.Created).FirstOrDefault()
-            };
+            result.IsSuccess = true;
+            result.Result = userSubscription.OrderByDescending(o => o.Created).FirstOrDefault();
+            return result;
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace GR.Core.Services
     public class AppSender
     {
         /// <summary>
-        /// 
+        /// Send message
         /// </summary>
         /// <param name="provider"></param>
         /// <param name="subject"></param>

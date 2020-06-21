@@ -18,7 +18,7 @@ namespace GR.Identity.Clients.Abstractions
         /// Get all clients
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Client>> GetAllClientsAsync();
+        Task<IEnumerable<Client>> GetAllClientsAsync(bool resetCache = false);
 
         /// <summary>
         /// Get api resources

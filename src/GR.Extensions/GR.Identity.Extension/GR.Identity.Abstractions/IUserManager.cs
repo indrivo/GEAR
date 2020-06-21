@@ -114,7 +114,7 @@ namespace GR.Identity.Abstractions
         /// <param name="roleName"></param>
         /// <returns></returns>
 
-        Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName);
+        Task<ResultModel<IEnumerable<UserInfoViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required] string roleName);
 
         /// <summary>
         /// Find roles by id
@@ -186,6 +186,13 @@ namespace GR.Identity.Abstractions
         /// </summary>
         /// <returns></returns>
         ResultModel<Guid> FindUserIdInClaims();
+
+        /// <summary>
+        /// Find user by id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<GearUser>> FindUserByIdAsync(Guid? userId);
 
         /// <summary>
         /// Delete user

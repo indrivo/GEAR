@@ -145,6 +145,20 @@ namespace GR.Identity
             return result;
         }
 
+        /// <summary>
+        /// Find user by id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<GearUser>> FindUserByIdAsync(Guid? userId)
+        {
+            if (userId == null) return InvalidParametersResultModel<GearUser>.Instance;
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+            return user == null
+                ? NotFoundResultModel<GearUser>.Instance
+                : new SuccessResultModel<GearUser>(user);
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Get current user

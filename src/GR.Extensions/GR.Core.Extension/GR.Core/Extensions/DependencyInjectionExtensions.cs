@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.MicroKernel.Registration;
 using GR.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,6 +40,24 @@ namespace GR.Core.Extensions
 
             services.AddSingleton<TService>();
             IoC.RegisterSingletonService<TService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Add singleton service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddGearSingleton<TService>(this IServiceCollection services, TService instance)
+            where TService : class
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            services.AddSingleton(instance);
+            IoC.Container.Register(Component.For<TService>().Instance(instance));
             return services;
         }
 

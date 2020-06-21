@@ -101,6 +101,21 @@ namespace GR.Core.Helpers
             return response;
         }
 
+        public virtual ResultModel<T> JoinErrors(IEnumerable<ResultModel> results)
+        {
+            var collection = results.ToList();
+            var response = new ResultModel<T>
+            {
+                IsSuccess = IsSuccess
+            };
+            foreach (var error in collection.SelectMany(result => result.Errors))
+            {
+                response.Errors.Add(error);
+            }
+
+            return response;
+        }
+
         /// <summary>
         /// Set result
         /// </summary>

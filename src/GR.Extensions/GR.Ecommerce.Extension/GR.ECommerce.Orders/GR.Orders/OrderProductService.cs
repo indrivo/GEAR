@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -48,11 +47,6 @@ namespace GR.Orders
         private readonly IOrderDbContext _orderDbContext;
 
         /// <summary>
-        /// Inject data filter
-        /// </summary>
-        private readonly IDataFilter _dataFilter;
-
-        /// <summary>
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
@@ -68,15 +62,13 @@ namespace GR.Orders
         /// Constructor
         /// </summary>
         /// <param name="commerceContext"></param>
-        /// <param name="dataFilter"></param>
         /// <param name="userManager"></param>
         /// <param name="cartService"></param>
         /// <param name="orderDbContext"></param>
         /// <param name="productService"></param>
-        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
+        public OrderProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
         {
             _commerceContext = commerceContext;
-            _dataFilter = dataFilter;
             _userManager = userManager;
             _cartService = cartService;
             _orderDbContext = orderDbContext;
@@ -274,7 +266,7 @@ namespace GR.Orders
         public virtual async Task<DTResult<GetOrdersViewModel>> GetMyOrdersWithPaginationWayAsync(DTParameters param)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
-            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id);
+            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : await GetPaginatedOrdersByUserIdAsync(param, userRequest.Result.Id);
         }
 
         /// <summary>
@@ -282,14 +274,12 @@ namespace GR.Orders
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param)
+        public virtual async Task<DTResult<GetOrdersViewModel>> GetAllOrdersWithPaginationWayAsync(DTParameters param)
         {
             if (param == null) return new DTResult<GetOrdersViewModel>();
-            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).ToList();
+            var filtered = await _orderDbContext.Orders.GetPagedAsDtResultAsync(param);
 
-            var list = filtered.Select(async x =>
+            var list = filtered.Data.Select(async x =>
             {
                 var map = x.Adapt<GetOrdersViewModel>();
                 map.ProductOrders =
@@ -300,10 +290,10 @@ namespace GR.Orders
 
             return new DTResult<GetOrdersViewModel>
             {
-                Draw = param.Draw,
+                Draw = filtered.Draw,
                 Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
         }
 
@@ -445,14 +435,14 @@ namespace GR.Orders
         /// <param name="param"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual DTResult<GetOrdersViewModel> GetPaginatedOrdersByUserId(DTParameters param, Guid? userId)
+        public virtual async Task<DTResult<GetOrdersViewModel>> GetPaginatedOrdersByUserIdAsync(DTParameters param, Guid? userId)
         {
             if (param == null || userId == null) return new DTResult<GetOrdersViewModel>();
-            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => x.UserId.Equals(userId)).ToList();
+            var paginated = await _orderDbContext.Orders
+                .Where(x => x.UserId.Equals(userId))
+                .GetPagedAsDtResultAsync(param);
 
-            var list = filtered.Select(x =>
+            var list = paginated.Data.Select(x =>
             {
                 x.Currency = _commerceContext.Currencies.FirstOrDefault(y => y.Code.Equals(x.CurrencyId));
                 var map = x.Adapt<GetOrdersViewModel>();
@@ -462,10 +452,10 @@ namespace GR.Orders
 
             return new DTResult<GetOrdersViewModel>
             {
-                Draw = param.Draw,
+                Draw = paginated.Draw,
                 Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = paginated.RecordsFiltered,
+                RecordsTotal = paginated.RecordsTotal
             };
         }
     }

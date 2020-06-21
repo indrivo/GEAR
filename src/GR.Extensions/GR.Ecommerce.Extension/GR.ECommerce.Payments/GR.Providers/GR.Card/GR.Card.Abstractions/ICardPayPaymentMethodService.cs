@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Card.Abstractions.Models;
@@ -29,6 +30,46 @@ namespace GR.Card.Abstractions
         /// Get saved card
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<CreditCardPayViewModel>> GetSavedCreditCardAsync();
+        Task<ResultModel<IEnumerable<CreditCardPayViewModel>>> GetSavedCreditCardsAsync();
+
+        /// <summary>
+        /// Get hidden cards
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<HiddenCreditCardPayViewModel>>> GetHiddenCardsAsync();
+
+        /// <summary>
+        /// Get credit card by id
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        Task<ResultModel<CreditCardPayViewModel>> GetCardByIdAsync(Guid cardId);
+
+        /// <summary>
+        /// Pay order with saved card 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> PayOrderAsyncWithExistentCardAsync([Required] OrderWithSavedCreditCardPayViewModel model);
+
+        /// <summary>
+        /// Remove credit card
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveCreditCardAsync(Guid cardId);
+
+        /// <summary>
+        /// Get default credit card
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<CreditCardPayViewModel>> GetDefaultCardAsync();
+
+        /// <summary>
+        /// Set default credit card
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetDefaultCardAsync(Guid cardId);
     }
 }

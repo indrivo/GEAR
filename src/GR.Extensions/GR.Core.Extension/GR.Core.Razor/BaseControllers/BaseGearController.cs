@@ -26,6 +26,16 @@ namespace GR.Core.Razor.BaseControllers
             DateFormatString = GearSettings.Date.DateFormat
         };
 
+        /// <summary>
+        /// Serialization settings
+        /// </summary>
+        protected virtual JsonSerializerSettings DateFormatWithTimeSerializerSettings => new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            DateFormatString = GearSettings.Date.DateFormatWithTime
+        };
+
         #endregion
 
         /// <summary>
