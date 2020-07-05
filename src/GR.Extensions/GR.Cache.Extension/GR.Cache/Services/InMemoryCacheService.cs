@@ -42,7 +42,7 @@ namespace GR.Cache.Services
         /// <param name="key"></param>
         /// <returns></returns>
         public Task<TObject> GetAsync<TObject>(string key) where TObject : class
-            => Task.Factory.StartNew(() => _inMemoryCacheService.Get<TObject>(key));
+            => Task.FromResult(_inMemoryCacheService.Get<TObject>(key));
 
         /// <summary>
         /// Get by pattern
@@ -83,11 +83,7 @@ namespace GR.Cache.Services
         /// <param name="obj"></param>
         /// <returns></returns>
         public Task<bool> SetAsync<TObject>(string key, TObject obj) where TObject : class
-            => Task.Factory.StartNew(() =>
-            {
-                var ob = _inMemoryCacheService.Set(key, obj);
-                return ob != null;
-            });
+            => Task.FromResult(_inMemoryCacheService.Set(key, obj) != null);
 
         /// <summary>
         /// Get provider name
@@ -115,7 +111,14 @@ namespace GR.Cache.Services
         public virtual async Task<T> GetOrSetResponseAsync<T>(string key, Func<Task<T>> func) where T : class
             => await _extendedContainer.GetOrSetResponseAsync(key, func);
 
-        
+        /// <summary>
+        /// Get or set data with expire time
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="life"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public virtual async Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func) where T : class
             => await _extendedContainer.GetOrSetWithExpireTimeAsync(key, life, func);
     }

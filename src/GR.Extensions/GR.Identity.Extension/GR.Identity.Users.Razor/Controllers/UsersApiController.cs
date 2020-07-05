@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
+using GR.Core.Razor.Attributes;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
@@ -163,6 +165,19 @@ namespace GR.Identity.Users.Razor.Controllers
             if (!user.IsDisabled) return Json(new InvalidParametersResultModel("User is already active"));
             var restoreReq = await _userManager.RestoreUserAsync(user.Id);
             return Json(restoreReq);
+        }
+
+        /// <summary>
+        /// Load user with ajax
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost, Admin]
+        [JsonProduces(typeof(DTResult<UserListItemViewModel>))]
+        public async Task<JsonResult> GetUsersWithPagination(DTParameters param)
+        {
+            var data = await _userManager.GetAllUsersWithPaginationAsync(param);
+            return Json(data);
         }
     }
 }

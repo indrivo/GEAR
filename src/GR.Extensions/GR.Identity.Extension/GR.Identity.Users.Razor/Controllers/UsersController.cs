@@ -4,23 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using GR.Core;
-using GR.Core.Attributes;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
 using GR.Core.Helpers.ErrorCodes;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Helpers;
-using GR.Identity.Abstractions.Helpers.Attributes;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.Identity.Users.Razor.ViewModels.UserViewModels;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,21 +34,15 @@ namespace GR.Identity.Users.Razor.Controllers
         private ILogger<UsersController> Logger { get; }
 
         /// <summary>
-        /// Inject Ldap User Manager
-        /// </summary>
-        private readonly BaseLdapUserManager<LdapUser> _ldapUserManager;
-
-        /// <summary>
         /// Inject localizer
         /// </summary>
         private readonly IStringLocalizer _localizer;
 
+        /// <summary>
+        /// Inject role manager
+        /// </summary>
         private readonly RoleManager<GearRole> _roleManager;
 
-        /// <summary>
-        /// Inject identity user manager
-        /// </summary>
-        private readonly UserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject identity context
@@ -66,21 +52,18 @@ namespace GR.Identity.Users.Razor.Controllers
         /// <summary>
         /// Inject custom user manager
         /// </summary>
-        private readonly IUserManager<GearUser> _customUserManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         #endregion
 
-        public UsersController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager,
-             BaseLdapUserManager<LdapUser> ldapUserManager,
-            ILogger<UsersController> logger, IStringLocalizer localizer, IIdentityContext identityContext, IUserManager<GearUser> customUserManager)
+        public UsersController(IUserManager<GearUser> userManager, RoleManager<GearRole> roleManager,
+            ILogger<UsersController> logger, IStringLocalizer localizer, IIdentityContext identityContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _ldapUserManager = ldapUserManager;
             Logger = logger;
             _localizer = localizer;
             _identityContext = identityContext;
-            _customUserManager = customUserManager;
         }
 
         /// <summary>
@@ -154,7 +137,7 @@ namespace GR.Identity.Users.Razor.Controllers
                 }
             }
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -173,7 +156,7 @@ namespace GR.Identity.Users.Razor.Controllers
             {
                 var rolesNameList = await _roleManager.Roles.Where(x => model.SelectedRoleId.Contains(x.Id))
                     .Select(x => x.Name).ToListAsync();
-                var roleAddResult = await _userManager.AddToRolesAsync(user, rolesNameList);
+                var roleAddResult = await _userManager.UserManager.AddToRolesAsync(user, rolesNameList);
                 if (!roleAddResult.Succeeded)
                 {
                     foreach (var error in roleAddResult.Errors)
@@ -207,85 +190,6 @@ namespace GR.Identity.Users.Razor.Controllers
         }
 
         /// <summary>
-        /// Get Ad users
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [AjaxOnly]
-        public JsonResult GetAdUsers()
-        {
-            var result = new ResultModel<IEnumerable<LdapUser>>();
-            var addedUsers = _identityContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).Adapt<IEnumerable<LdapUser>>()
-                .ToList();
-            var users = _ldapUserManager.Users;
-            if (addedUsers.Any())
-            {
-                users = users.Except(addedUsers);
-            }
-
-            result.IsSuccess = true;
-            result.Result = users;
-            return Json(users);
-        }
-
-        /// <summary>
-        /// Add Ad user
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [AjaxOnly]
-        public virtual async Task<JsonResult> AddAdUser([Required] string userName)
-        {
-            var result = new ResultModel<Guid>();
-            if (string.IsNullOrEmpty(userName))
-            {
-                result.Errors.Add(new ErrorModel(string.Empty, $"Invalid username : {userName}"));
-                return Json(result);
-            }
-
-            var exists = await _userManager.FindByNameAsync(userName);
-            if (exists != null)
-            {
-                result.Errors.Add(new ErrorModel(string.Empty, $"UserName {userName} exists!"));
-                return Json(result);
-            }
-
-            var user = new GearUser();
-
-            var ldapUser = await _ldapUserManager.FindByNameAsync(userName);
-            if (ldapUser == null)
-            {
-                result.Errors.Add(new ErrorModel(string.Empty, $"There is no AD user with this username : {userName}"));
-                return Json(result);
-            }
-
-            user.Id = Guid.NewGuid();
-            user.UserName = ldapUser.SamAccountName;
-            user.Email = ldapUser.EmailAddress;
-            user.AuthenticationType = AuthenticationType.Ad;
-            result.IsSuccess = true;
-            var req = await _userManager.CreateAsync(user, "ldap_default_password");
-            if (!req.Succeeded)
-            {
-                result.Errors.Add(new ErrorModel(string.Empty, $"Fail to add user : {userName}"));
-                result.IsSuccess = false;
-            }
-            else
-            {
-                IdentityEvents.Users.UserCreated(new UserCreatedEventArgs
-                {
-                    Email = user.Email,
-                    UserName = user.UserName,
-                    UserId = user.Id
-                });
-                result.Result = user.Id;
-            }
-
-            return Json(result);
-        }
-
-        /// <summary>
         /// Delete user form DB
         /// </summary>
         /// <param name="id"></param>
@@ -295,7 +199,7 @@ namespace GR.Identity.Users.Razor.Controllers
         [AuthorizePermission(UserPermissions.UserDelete)]
         public async Task<JsonResult> Delete(Guid? id)
         {
-            var deleteRequest = await _customUserManager.DeleteUserPermanently(id);
+            var deleteRequest = await _userManager.DeleteUserPermanently(id);
             return Json(deleteRequest);
         }
 
@@ -320,7 +224,7 @@ namespace GR.Identity.Users.Razor.Controllers
             }
 
             var roles = _roleManager.Roles.ToList();
-            var userRolesNames = await _userManager.GetRolesAsync(applicationUser);
+            var userRolesNames = await _userManager.UserManager.GetRolesAsync(applicationUser);
             var userRoles = userRolesNames.Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
                 .ToList();
 
@@ -363,7 +267,7 @@ namespace GR.Identity.Users.Razor.Controllers
 
             var applicationUser = await _identityContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             var roles = _roleManager.Roles.ToList();
-            var userRolesNames = await _userManager.GetRolesAsync(applicationUser);
+            var userRolesNames = await _userManager.UserManager.GetRolesAsync(applicationUser);
             var userRoleList = userRolesNames
                 .Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
                 .ToList();
@@ -383,24 +287,10 @@ namespace GR.Identity.Users.Razor.Controllers
             }
 
             // Update User Data
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.UserManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return NotFound();
-            }
-
-            if (model.AuthenticationType.Equals(AuthenticationType.Ad))
-            {
-                var ldapUser = await _ldapUserManager.FindByNameAsync(model.UserName);
-                if (ldapUser == null)
-                {
-                    model.SelectedRoleId = userRoleList;
-                    ModelState.AddModelError("", $"There is no AD user with this username : {model.UserName}");
-                    return View(model);
-                }
-
-                user.UserName = ldapUser.SamAccountName;
-                user.Email = ldapUser.EmailAddress;
             }
 
             user.IsDeleted = model.IsDeleted;
@@ -421,7 +311,7 @@ namespace GR.Identity.Users.Razor.Controllers
                 }
             }
 
-            var result = await _userManager.UpdateAsync(user);
+            var result = await _userManager.UserManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 model.SelectedRoleId = userRoleList;
@@ -442,7 +332,7 @@ namespace GR.Identity.Users.Razor.Controllers
                 rolesList.Add(role.Name);
             }
 
-            await _userManager.RemoveFromRolesAsync(user, rolesList);
+            await _userManager.UserManager.RemoveFromRolesAsync(user, rolesList);
 
             var roleNameList = new List<string>();
             foreach (var _ in model.SelectedRoleId)
@@ -453,7 +343,7 @@ namespace GR.Identity.Users.Razor.Controllers
 
             await _userManager.AddToRolesAsync(user, roleNameList);
 
-            await _userManager.UpdateSecurityStampAsync(user);
+            await _userManager.UserManager.UpdateSecurityStampAsync(user);
 
             //Refresh user claims for this user
             //await user.RefreshClaims(Context, signInManager);
@@ -476,7 +366,7 @@ namespace GR.Identity.Users.Razor.Controllers
         public async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
         {
             if (userId == null) return NotFound();
-            var user = await _userManager.FindByIdAsync(userId.Value.ToString());
+            var user = await _userManager.UserManager.FindByIdAsync(userId.Value.ToString());
             if (user == null) return NotFound();
             return View(new ChangeUserPasswordViewModel
             {
@@ -496,19 +386,7 @@ namespace GR.Identity.Users.Razor.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> ChangeUserPassword([Required] ChangeUserPasswordViewModel model)
         {
-            if (model.AuthenticationType.Equals(AuthenticationType.Ad))
-            {
-                var ldapUser = await _ldapUserManager.FindByNameAsync(model.UserName);
-
-                var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
-                if (!bind)
-                {
-                    ModelState.AddModelError("", $"Invalid credentials for AD authentication");
-                    return View(model);
-                }
-            }
-
-            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+            var user = await _userManager.UserManager.FindByIdAsync(model.UserId.ToString());
             if (user == null)
             {
                 ModelState.AddModelError("", "The user is no longer in the system");
@@ -519,7 +397,7 @@ namespace GR.Identity.Users.Razor.Controllers
             var hashedPassword = hasher.HashPassword(user, model.Password);
             user.PasswordHash = hashedPassword;
             user.LastPasswordChanged = DateTime.Now;
-            var result = await _userManager.UpdateAsync(user);
+            var result = await _userManager.UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
@@ -541,28 +419,15 @@ namespace GR.Identity.Users.Razor.Controllers
         }
 
         /// <summary>
-        /// Load user with ajax
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [AjaxOnly]
-        [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
-        public async Task<JsonResult> LoadUsers(DTParameters param)
-        {
-            var data = await _customUserManager.GetAllUsersWithPaginationAsync(param);
-            return Json(data);
-        }
-
-        /// <summary>
         /// Get user image
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
+        [ResponseCache(Duration = 120 /*2 minutes*/, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<IActionResult> GetImage(Guid id)
         {
-            var imageRequest = await _customUserManager.GetUserImageAsync(id);
+            var imageRequest = await _userManager.GetUserImageAsync(id);
             if (imageRequest.IsSuccess)
             {
                 return File(imageRequest.Result, "image/jpg");

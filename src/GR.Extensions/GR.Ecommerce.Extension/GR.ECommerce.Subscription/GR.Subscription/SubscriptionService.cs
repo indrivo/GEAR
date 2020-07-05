@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -15,8 +16,6 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Responses;
-using GR.Notifications.Abstractions;
-using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
@@ -60,7 +59,7 @@ namespace GR.Subscriptions
         /// <summary>
         /// Inject notifier
         /// </summary>
-        private readonly INotify<GearRole> _notify;
+        private readonly IAppSender _sender;
 
         /// <summary>
         /// Inject product service
@@ -79,13 +78,13 @@ namespace GR.Subscriptions
 
         #endregion
 
-        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<GearRole> notify, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
             _orderService = orderService;
             _paymentService = paymentService;
-            _notify = notify;
+            _sender = sender;
             _productService = productService;
             _commerceContext = commerceContext;
             _mapper = mapper;
@@ -328,14 +327,11 @@ namespace GR.Subscriptions
             if (!removeRequest.IsSuccess) return removeRequest;
             foreach (var subscription in subscriptions)
             {
-                await _notify.SendNotificationAsync(new List<Guid> { subscription.UserId }, new Notification
-                {
-                    Subject = $"Subscription {subscription.Name} expired",
-                    SendLocal = true,
-                    SendEmail = true,
-                    Content = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
-                              $"to {subscription.ExpirationDate}, has expired"
-                });
+                var userReq = await _userManager.FindUserByIdAsync(subscription.UserId);
+                if (!userReq.IsSuccess) continue;
+                var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
+                              $"to {subscription.ExpirationDate}, has expired";
+                await _sender.SendAsync(userReq.Result, $"Subscription {subscription.Name} expired", message, SubscriptionResources.Configuration.NotificationProviders.ToArray());
             }
 
             return removeRequest;
@@ -351,14 +347,11 @@ namespace GR.Subscriptions
             if (subscriptions == null) throw new NullReferenceException();
             foreach (var subscription in subscriptions)
             {
-                await _notify.SendNotificationAsync(new List<Guid> { subscription.UserId }, new Notification
-                {
-                    Subject = "The subscription expires soon",
-                    SendLocal = true,
-                    SendEmail = true,
-                    Content = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
-                              $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days"
-                });
+                var userReq = await _userManager.FindUserByIdAsync(subscription.UserId);
+                if (!userReq.IsSuccess) continue;
+                var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
+                              $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days";
+                await _sender.SendAsync(userReq.Result, "The subscription expires soon", message, SubscriptionResources.Configuration.NotificationProviders.ToArray());
             }
         }
 

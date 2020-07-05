@@ -95,6 +95,7 @@ namespace GR.Identity.Razor.Controllers
         /// Error message
         /// </summary>
         [TempData]
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private string ErrorMessage { get; set; }
 
         /// <summary>
@@ -326,40 +327,6 @@ namespace GR.Identity.Razor.Controllers
         }
 
         /// <summary>
-        /// Show logout page
-        /// </summary>
-        /// <param name="logoutId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> Logout(string logoutId)
-        {
-            if (string.IsNullOrEmpty(logoutId))
-                await _signInManager.SignOutAsync();
-
-            if (User.Identity.IsAuthenticated == false)
-            {
-                // if the user is not authenticated, then just show logged out page
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
-            }
-
-            //Test for Xamarin.
-            var context = await _interactionService.GetLogoutContextAsync(logoutId);
-            if (context?.ShowSignoutPrompt == false)
-            {
-                //it's safe to automatically sign-out
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
-            }
-
-            // show the logout prompt. this prevents attacks where the user
-            // is automatically signed out by another malicious web page.
-            var vm = new LogoutViewModel
-            {
-                LogoutId = logoutId
-            };
-            return View(vm);
-        }
-
-        /// <summary>
         /// Local logout
         /// </summary>
         /// <returns></returns>
@@ -550,11 +517,6 @@ namespace GR.Identity.Razor.Controllers
                 return RedirectToLocal(returnUrl);
             }
 
-            if (result.IsLockedOut)
-            {
-                return RedirectToAction(nameof(Lockout));
-            }
-
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var name = info.Principal.FindFirstValue(ClaimTypes.Name);
             var identifier = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -593,13 +555,6 @@ namespace GR.Identity.Razor.Controllers
                     Picture = picture,
                     LoginProvider = info.LoginProvider
                 });
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Lockout()
-        {
-            return View();
         }
 
         #region Helpers

@@ -126,7 +126,18 @@ namespace GR.Identity.Abstractions.Extensions
                     opts.SaveToken = true;
                     opts.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = context => Task.CompletedTask
+                        OnMessageReceived = context =>
+                        {
+                            Console.WriteLine(context.Token);
+                            return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine(context.Exception);
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context => Task.CompletedTask,
+                        OnTokenValidated = context => Task.CompletedTask
                     };
                 })
                 .AddCookie(options =>

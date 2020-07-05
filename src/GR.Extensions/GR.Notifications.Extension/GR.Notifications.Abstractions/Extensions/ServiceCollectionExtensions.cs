@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core;
+using GR.Core.Abstractions;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
+using GR.Notifications.Abstractions.Helpers;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ServiceBuilder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +30,21 @@ namespace GR.Notifications.Abstractions.Extensions
             where TRole : IdentityRole<Guid>
         {
             services.AddGearTransient<INotify<TRole>, TNotifyService>();
+            var appSender = IoC.Resolve<IAppSender>();
+            appSender.RegisterProvider<TNotifyService>(NotificationResources.NotificationSender);
+            return services;
+        }
 
+        /// <summary>
+        /// Register seeder
+        /// </summary>
+        /// <typeparam name="TSeeder"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddNotificationSeeder<TSeeder>(this IServiceCollection services)
+            where TSeeder : class, INotificationSeederService
+        {
+            services.AddGearSingleton<INotificationSeederService, TSeeder>();
             return services;
         }
 

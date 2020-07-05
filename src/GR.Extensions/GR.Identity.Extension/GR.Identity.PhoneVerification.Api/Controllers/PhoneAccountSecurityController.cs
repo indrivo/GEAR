@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
@@ -119,7 +120,8 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
                 CountryCode = verificationRequest.CountryCode,
                 PhoneNumber = verificationRequest.PhoneNumber,
                 Password = verificationRequest.Pin,
-                UserName = verificationRequest.PhoneNumber
+                UserName = verificationRequest.PhoneNumber,
+                Email = $"test_{Guid.NewGuid()}@gmail.com"
             });
 
             if (!addNewUserRequest.IsSuccess) return Json(addNewUserRequest);

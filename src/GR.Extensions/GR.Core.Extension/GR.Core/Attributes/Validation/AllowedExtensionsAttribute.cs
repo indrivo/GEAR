@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace GR.Core.Attributes.Validation
 {
+    /// <summary>
+    /// This attribute validate your file extension. Return true if file extension is in config range
+    /// Ex: .jpg, .png
+    /// </summary>
     public class AllowedExtensionsAttribute : ValidationAttribute
     {
         private readonly string[] _extensions;

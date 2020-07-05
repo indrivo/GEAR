@@ -82,6 +82,30 @@ namespace GR.Identity.Profile
         }
 
         /// <summary>
+        /// Get default address of user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync(Guid? userId)
+        {
+            var query = _context.UserAddresses.Where(x => x.UserId == userId)
+                .Include(x => x.User)
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince);
+
+            var defaultAddress = await query.FirstOrDefaultAsync(x => x.IsDefault)
+                                 ?? await query.FirstOrDefaultAsync();
+
+            if (defaultAddress == null)
+            {
+                return new NotFoundResultModel<GetUserAddressViewModel>();
+            }
+
+            var mapped = _mapper.Map<GetUserAddressViewModel>(defaultAddress);
+            return new SuccessResultModel<GetUserAddressViewModel>(mapped);
+        }
+
+        /// <summary>
         /// Get addresses by user id
         /// </summary>
         /// <param name="userId"></param>

@@ -21,5 +21,10 @@
         /// Internal server error
         /// </summary>
         public static string InternalError = "G500";
+
+        /// <summary>
+        /// Email not confirmed
+        /// </summary>
+        public static string EmailNotConfirmed = "G-email-not-confirmed";
     }
 }

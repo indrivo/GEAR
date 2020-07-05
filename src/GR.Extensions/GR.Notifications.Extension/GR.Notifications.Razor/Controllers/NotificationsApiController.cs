@@ -55,6 +55,7 @@ namespace GR.Notifications.Razor.Controllers
         /// <param name="onlyUnread"></param>
         /// <returns></returns>
         [HttpGet]
+        [ResponseCache(Duration = DefaultCacheResponseSeconds, Location = ResponseCacheLocation.Any, NoStore = false)]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<SystemNotifications>>))]
         public async Task<JsonResult> GetNotificationsByUserId([Required] Guid userId, bool onlyUnread = true)
             => await JsonAsync(_notify.GetNotificationsByUserIdAsync(userId, onlyUnread));
@@ -67,6 +68,7 @@ namespace GR.Notifications.Razor.Controllers
         /// <param name="onlyUnread"></param>
         /// <returns></returns>
         [HttpGet]
+        [ResponseCache(Duration = DefaultCacheResponseSeconds, Location = ResponseCacheLocation.Any, NoStore = false)]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<PaginatedNotificationsViewModel>))]
         public async Task<JsonResult> GetUserNotificationsWithPagination([Required] uint page = 1, uint perPage = 10, bool onlyUnread = true)
             => await JsonAsync(_notify.GetUserNotificationsWithPaginationAsync(page, perPage, onlyUnread));
@@ -77,6 +79,7 @@ namespace GR.Notifications.Razor.Controllers
         /// <param name="notificationId"></param>
         /// <returns></returns>
         [HttpGet]
+        [ResponseCache(Duration = DefaultCacheResponseSeconds, Location = ResponseCacheLocation.Any, NoStore = false)]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Dictionary<string, object>>))]
         public async Task<JsonResult> GetNotificationById(Guid? notificationId)
             => await JsonAsync(_notify.GetNotificationByIdAsync(notificationId));

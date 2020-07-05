@@ -1,4 +1,3 @@
-@using GR.Forms.Razor.Extensions
 @using GR.Identity.Clients.Abstractions
 @using GR.Notifications.Razor.Extensions
 @using GR.PageRender.Abstractions.Helpers
@@ -19,9 +18,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>@ViewData["Title"] - @(await ClientsService.GetAppName("core"))</title>
 		<partial name="_BootstrapThemeStyles" />
-		@Html.IncludeFormsStylePlugins()
-		<layout-css-code layout-id="@layoutId"></layout-css-code>
-		<application-styles layout-id="@layoutId"></application-styles>
+		<cache vary-by-user="true" expires-after="@TimeSpan.FromMinutes(1)">
+			<layout-css-code layout-id="@layoutId"></layout-css-code>
+			<application-styles layout-id="@layoutId"></application-styles>
+		</cache>
 		@RenderSection("PreScripts", required: false)
 		<partial name="_BootstrapThemeScripts" />
 		@RenderSection("Styles", required: false)
@@ -34,12 +34,14 @@
 			@RenderBody()
 			<script src="~/assets/EntityPlugins/st-data-data-injector-v.0.1.js" asp-append-version="true"></script>
 			<partial name="_LayoutScriptPartial" model="layoutId" />
-			@Html.IncludeFormsJavascriptPlugins()
 			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 			@RenderSection("Scripts", false)
 			@Html.PartialViewScripts()
-			<application-scripts layout-id="@layoutId"></application-scripts>
-			<layout-js-code layout-id="@layoutId"></layout-js-code>
+
+			<cache vary-by-user="true" expires-after="@TimeSpan.FromMinutes(1)">
+				<application-scripts layout-id="@layoutId"></application-scripts>
+				<layout-js-code layout-id="@layoutId"></layout-js-code>
+			</cache>
 		</App>
 	</body>
 </html>

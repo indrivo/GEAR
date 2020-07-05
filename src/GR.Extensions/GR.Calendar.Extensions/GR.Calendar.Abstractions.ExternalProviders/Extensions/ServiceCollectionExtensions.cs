@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using AutoMapper;
 using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.ExternalProviders.Exceptions;
 using GR.Calendar.Abstractions.ExternalProviders.Helpers;
-using GR.Calendar.Abstractions.Helpers.Mappers;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
+using GR.Calendar.Abstractions.Models.ViewModels;
 using GR.Core.Helpers;
 using GR.Core.Extensions;
 
@@ -41,11 +42,13 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
             {
                 var calendarManager = IoC.Resolve<ICalendarManager>();
                 var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var mapper = IoC.Resolve<IMapper>();
                 var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
                 if (!evtRequest.IsSuccess) return;
                 var evt = evtRequest.Result;
                 var factory = new ExternalCalendarProviderFactory();
                 var providers = factory.GetProviders();
+                var mapEvt = mapper.Map<GetEventViewModel>(evt);
                 foreach (var provider in providers)
                 {
                     var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
@@ -53,7 +56,7 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
                     var providerService = factory.CreateService(provider);
                     var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
                     if (!authRequest.IsSuccess) continue;
-                    var syncResult = await providerService.PushEventAsync(EventMapper.Map(evt));
+                    var syncResult = await providerService.PushEventAsync(mapEvt);
                     if (!syncResult.IsSuccess)
                     {
                         Debug.WriteLine(syncResult.Errors);
@@ -68,11 +71,13 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
             {
                 var calendarManager = IoC.Resolve<ICalendarManager>();
                 var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var mapper = IoC.Resolve<IMapper>();
                 var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
                 if (!evtRequest.IsSuccess) return;
                 var evt = evtRequest.Result;
                 var factory = new ExternalCalendarProviderFactory();
                 var providers = factory.GetProviders();
+                var mapEvt = mapper.Map<GetEventViewModel>(evt);
                 foreach (var provider in providers)
                 {
                     var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
@@ -81,14 +86,14 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
                     var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
                     if (!authRequest.IsSuccess) continue;
 
-                    if (!evt.Synced) await providerService.PushEventAsync(EventMapper.Map(evt));
+                    if (!evt.Synced) await providerService.PushEventAsync(mapEvt);
                     else
                     {
                         var attrRequest = await userSettingsService.GetEventAttributeAsync(evt.Id, $"{provider}_evtId");
                         if (attrRequest.IsSuccess)
                         {
                             var providerEventId = attrRequest.Result;
-                            var syncResult = await providerService.UpdateEventAsync(EventMapper.Map(evt), providerEventId);
+                            var syncResult = await providerService.UpdateEventAsync(mapEvt, providerEventId);
                             if (!syncResult.IsSuccess)
                             {
                                 Debug.WriteLine(syncResult.Errors);
@@ -96,7 +101,7 @@ namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
                         }
                         else
                         {
-                            await providerService.PushEventAsync(EventMapper.Map(evt));
+                            await providerService.PushEventAsync(mapEvt);
                         }
                     }
                 }

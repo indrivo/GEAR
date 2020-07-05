@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core;
+using GR.Core.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Data;
-using GR.Notifications.Seeders;
 using GR.Notifications.Extensions;
 
 namespace GR.Notifications.Data
@@ -61,9 +61,10 @@ namespace GR.Notifications.Data
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
             GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
-                {
-                    await NotificationManager.SeedNotificationTypesAsync();
-                });
+            {
+                var service = IoC.Resolve<INotificationSeederService>();
+                await service.SeedNotificationTypesAsync();
+            });
             return Task.CompletedTask;
         }
     }

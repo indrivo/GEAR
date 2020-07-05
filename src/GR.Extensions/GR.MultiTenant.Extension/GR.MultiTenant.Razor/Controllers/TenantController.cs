@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Razor.BaseControllers;
 using GR.Entities.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
@@ -20,7 +21,7 @@ namespace GR.MultiTenant.Razor.Controllers
     /// Tenant manipulation
     /// </summary>
     [Authorize]
-    public class TenantController : Controller
+    public class TenantController : BaseGearController
     {
         #region Services
 
@@ -68,7 +69,8 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderList(DTParameters param) => Json(_organizationService.GetFilteredList(param));
+        public async Task<JsonResult> GetTenantsWithPagination(DTParameters param)
+            => await JsonAsync(_organizationService.GetTenantsWithPaginationAsync(param));
 
         /// <summary>
         /// View for create a tenant
@@ -90,7 +92,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([Required]CreateTenantViewModel data)
+        public async Task<IActionResult> Create([Required] CreateTenantViewModel data)
         {
             if (!ModelState.IsValid)
             {

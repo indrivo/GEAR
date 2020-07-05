@@ -91,7 +91,10 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Infrastructure\GR.Identity.Groups.Infrastructure.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Groups.Razor\GR.Identity.Groups.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.LdapAuth.Razor\GR.Identity.LdapAuth.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.LdapAuth\GR.Identity.LdapAuth.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Mpass.Razor\GR.Identity.Mpass.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Mpass\GR.Identity.Mpass.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Permissions\GR.Identity.Permissions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Api\GR.Identity.PhoneVerification.Api.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.PhoneVerification.Infrastructure\GR.Identity.PhoneVerification.Infrastructure.csproj" />
@@ -108,6 +111,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Dynamic\GR.Notifications.Dynamic.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Hub\GR.Notifications.Hub.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />

@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\GR.Identity.Profile.Abstractions\GR.Identity.Profile.Abstractions.csproj" />
   </ItemGroup>

@@ -8,6 +8,8 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
+using GR.UserPreferences.Abstractions.Events;
+using GR.UserPreferences.Abstractions.Events.EventArgs;
 using GR.UserPreferences.Abstractions.Helpers;
 using GR.UserPreferences.Abstractions.Helpers.ResponseModels;
 using GR.UserPreferences.Abstractions.Models;
@@ -73,6 +75,18 @@ namespace GR.UserPreferences.Impl
             var userIdReq = _userManager.FindUserIdInClaims();
             if (!userIdReq.IsSuccess) return userIdReq.Map<string>();
             var userId = userIdReq.Result;
+            return await GetValueByKeyAsync(userId, key);
+        }
+
+        /// <summary>
+        /// Get value by key and user id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<string>> GetValueByKeyAsync(Guid userId, string key)
+        {
+            if (key.IsNullOrEmpty() || userId == Guid.Empty) return new InvalidParametersResultModel<string>();
             var cacheKey = BuildKey(userId, key);
             var cacheGet = _cache.Get<UserPreference>(cacheKey);
             if (cacheGet != null) return new SuccessResultModel<string>(cacheGet.Value);
@@ -82,6 +96,24 @@ namespace GR.UserPreferences.Impl
             if (item == null) return new NotFoundResultModel<string>();
             _cache.Set(cacheKey, item);
             return new SuccessResultModel<string>(item.Value);
+        }
+
+        /// <summary>
+        /// Get boolean value by key
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<bool>> GetBoolValueByKeyAsync(Guid userId, string key)
+        {
+            var req = await GetValueByKeyAsync(userId, key);
+            if (!req.IsSuccess)
+            {
+                var confRequest = await _provider.GetConfigurationAsync(key, req.Result);
+                return req.Map((bool)confRequest.Result);
+            }
+            bool.TryParse(req.Result, out var option);
+            return req.Map(option);
         }
 
         /// <summary>
@@ -122,6 +154,12 @@ namespace GR.UserPreferences.Impl
             if (dbResponse.IsSuccess)
             {
                 _cache.Set(cacheKey, item);
+                UserPreferencesEvents.Preferences.KeyUpdated(new KeyUpdateEventArgs
+                {
+                    KeyName = key,
+                    NewValue = value,
+                    UserId = userId
+                });
             }
 
             return dbResponse;

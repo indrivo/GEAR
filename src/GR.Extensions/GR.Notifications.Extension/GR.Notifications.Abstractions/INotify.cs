@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GR.Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions.Models.Notifications;
@@ -8,7 +9,8 @@ using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Abstractions
 {
-    public interface INotify<in TRole> where TRole : IdentityRole<Guid>
+    public interface INotify<in TRole> : ISender
+        where TRole : IdentityRole<Guid>
     {
         /// <summary>
         /// Send notification
@@ -50,6 +52,14 @@ namespace GR.Notifications.Abstractions
         /// <param name="notification"></param>
         /// <returns></returns>
         Task SendNotificationToSystemAdminsAsync(Notification notification);
+
+        /// <summary>
+        /// Send notifications to users
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="notification"></param>
+        /// <returns></returns>
+        Task SendNotificationInBackgroundAsync(IEnumerable<Guid> userId, Notification notification);
 
         /// <summary>
         /// Get notifications by id

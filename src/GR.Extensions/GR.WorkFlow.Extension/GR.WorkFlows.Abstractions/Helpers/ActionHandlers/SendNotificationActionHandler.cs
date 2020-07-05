@@ -38,8 +38,6 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
             {
                 Subject = $"{subject} state changed",
                 Content = $"{subject} has changed its status from {CurrentTransition?.FromState?.Name} to {CurrentTransition?.ToState?.Name}",
-                SendLocal = true,
-                SendEmail = true,
                 NotificationTypeId = NotificationType.Info
             }, EntryState.TenantId);
 
@@ -51,8 +49,6 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
                 {
                     Subject = "You have new actions",
                     Content = $"{subject} can be switched to {nextTransition?.ToState.Name} state",
-                    SendLocal = true,
-                    SendEmail = true,
                     NotificationTypeId = NotificationType.Info
                 }, EntryState.TenantId);
             }

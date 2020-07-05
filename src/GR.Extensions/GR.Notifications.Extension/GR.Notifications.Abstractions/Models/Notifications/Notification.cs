@@ -28,15 +28,5 @@ namespace GR.Notifications.Abstractions.Models.Notifications
         /// User
         /// </summary>
         public Guid UserId { get; set; }
-
-        /// <summary>
-        /// Send local
-        /// </summary>
-        public bool SendLocal { get; set; } = true;
-
-        /// <summary>
-        /// Send email
-        /// </summary>
-        public bool SendEmail { get; set; } = true;
     }
 }

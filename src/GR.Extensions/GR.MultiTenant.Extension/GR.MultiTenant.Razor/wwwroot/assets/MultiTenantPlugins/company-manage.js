@@ -27,13 +27,13 @@ $(document).ready(() => {
 function loadCitiesByCountryId(selectedValue, cityId = null) {
     $.ajax({
         type: "GET",
-        url: `/Users/GetCityByCountryId/?countryId=${selectedValue}`
+        url: `/api/Country/GetCitiesByCountry/?countryId=${selectedValue}`
     }).done((response) => {
         if (response.is_success) {
             citySelect.empty();
             citySelect.prop("disabled", false);
             for (let city of response.result) {
-                citySelect.append(new Option(city.text, city.value, false, city.selected));
+                citySelect.append(new Option(city.name, city.value, false, city.selected));
             }
             if (cityId) {
                 citySelect.val(cityId).trigger('change');

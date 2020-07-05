@@ -2,6 +2,7 @@
 using GraphQL.Types;
 using GR.Calendar.NetCore.Api.GraphQL.Queries;
 using GR.Calendar.NetCore.Api.GraphQL.Schemas.Contracts;
+using GR.Core.Helpers;
 
 namespace GR.Calendar.NetCore.Api.GraphQL.Schemas
 {
@@ -9,7 +10,12 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Schemas
     {
         public CalendarSchema(IDependencyResolver resolver) : base(resolver)
         {
-            Query = resolver.Resolve<CalendarQuery>();
+            Query = IoC.Resolve<CalendarQuery>();
+        }
+
+        public CalendarSchema(CalendarQuery query)
+        {
+            Query = query;
         }
     }
 }

@@ -30,6 +30,17 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// First char to lower
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string FirstCharToLower(this string input)
+        {
+            if (string.IsNullOrEmpty(input) || input.Length < 2) return input;
+            return input.First().ToString().ToLowerInvariant() + input.Substring(1);
+        }
+
+        /// <summary>
         /// Is Null or empty snippet
         /// </summary>
         /// <param name="str"></param>

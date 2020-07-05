@@ -59,6 +59,7 @@ namespace GR.Subscriptions.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
+        [ResponseCache(Duration = 15 * 60 /* 15 minutes */, Location = ResponseCacheLocation.Any, NoStore = false)]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
         public async Task<JsonResult> GetSubscriptionPlans() =>
             await JsonAsync(_subscriptionService.GetSubscriptionPlansAsync());
@@ -79,6 +80,7 @@ namespace GR.Subscriptions.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<SubscriptionGetViewModel>))]
+        [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<JsonResult> GetLastSubscription()
             => await JsonAsync(_subscriptionService.GetLastSubscriptionAsync());
 

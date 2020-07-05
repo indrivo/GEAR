@@ -1,7 +1,6 @@
 using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core.Abstractions;
-using GR.Identity.Abstractions.Enums;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -95,7 +94,7 @@ namespace GR.Identity.Abstractions
         /// Authentication Type
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
-        public virtual AuthenticationType AuthenticationType { get; set; }
+        public virtual string AuthenticationType { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -107,17 +106,6 @@ namespace GR.Identity.Abstractions
         /// Last date password changed
         /// </summary>
         public virtual DateTime LastPasswordChanged { get; set; }
-
-        /// <summary>
-        /// Is password expired
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool IsPasswordExpired()
-        {
-            if (LastPasswordChanged == DateTime.MinValue) return false;
-            var isExpired = (DateTime.Now - LastPasswordChanged).TotalDays >= 30;
-            return isExpired;
-        }
 
         /// <summary>
         /// Last login
@@ -136,5 +124,22 @@ namespace GR.Identity.Abstractions
         [NotMapped]
         [JsonIgnore]
         public bool DisableAuditTracking { get; set; }
+
+        /// <summary>
+        /// Is password expired
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsPasswordExpired()
+        {
+            if (LastPasswordChanged == DateTime.MinValue) return false;
+            var isExpired = (DateTime.Now - LastPasswordChanged).TotalDays >= 30;
+            return isExpired;
+        }
+
+        /// <summary>
+        /// Get full name
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetFullName() => $"{FirstName} {LastName}";
     }
 }

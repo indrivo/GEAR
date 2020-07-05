@@ -21,6 +21,16 @@ namespace GR.Email.Abstractions
         Task<ResultModel> SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true);
 
         /// <summary>
+        /// Send email to user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <param name="isBodyHtml"></param>
+        /// <returns></returns>
+        Task<ResultModel> SendEmailAsync(Guid userId, string subject, string message, bool isBodyHtml = true);
+
+        /// <summary>
         /// Send mail
         /// </summary>
         /// <typeparam name="TConfigurator"></typeparam>

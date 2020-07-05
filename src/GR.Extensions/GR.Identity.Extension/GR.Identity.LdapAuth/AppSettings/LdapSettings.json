@@ -1,0 +1,15 @@
+{
+  "LdapSettings": {
+    "ServerName": "192.168.1.2",
+    "ServerPort": 389,
+    "UseSSL": false,
+    "Credentials": {
+      "DomainUserName": "CN=gearbpm user,OU=IndrivoUsers,DC=ad,DC=indrivo,DC=com",
+      "Password": "G3@rBpmU53r"
+    },
+    "SearchBase": "OU=IndrivoUsers,DC=ad,DC=indrivo,DC=com",
+    "ContainerName": "OU=IndrivoUsers,DC=ad,DC=indrivo,DC=com",
+    "DomainName": "ad.indrivo.com",
+    "DomainDistinguishedName": "DC=ad,DC=indrivo,DC=com"
+  }
+}

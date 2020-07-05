@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.AccountActivity.Abstractions;
+using GR.AccountActivity.Abstractions.Helpers;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
 using GR.Core.Razor.BaseControllers;
@@ -87,6 +88,17 @@ namespace GR.AccountActivity.Razor.Controllers
 
             var req = await _userActivityService.ConfirmDeviceAsync(deviceId, code);
             return RedirectToAction(req.IsSuccess ? nameof(DeviceConfirmed) : nameof(ErrorToConfirm));
+        }
+
+        /// <summary>
+        /// Return json format of not confirmed device
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public JsonResult NotConfirmedDeviceJsonResponse(Guid? deviceId)
+        {
+            return new JsonResult(new NotConfirmedDeviceResultModel().SetResult(deviceId));
         }
     }
 }

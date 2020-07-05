@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Helpers.DbContexts;
 using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models.Config;
@@ -60,6 +61,7 @@ namespace GR.WebApplication.Extensions
                 var environment = sp.GetService<IHostingEnvironment>();
                 GearWebApplication.IsConfigured(environment);
 
+                //------------------------------------------App events-------------------------------------
                 var lifeTimeService = serviceScope.ServiceProvider.GetService<IApplicationLifetime>();
                 lifeTimeService.RegisterAppEvents(app, configuration.AppName);
 
@@ -67,6 +69,11 @@ namespace GR.WebApplication.Extensions
 
                 var languages = serviceScope.ServiceProvider.GetService<IOptionsSnapshot<LocalizationConfig>>();
                 app.UseLocalizationModule(languages);
+
+                if (configuration.AutoApplyPendingMigrations)
+                {
+                    DbContextMigrationTool.ApplyPendingMigrations();
+                }
             }
 
             if (GearApplication.IsHostedOnLinux())
@@ -135,6 +142,9 @@ namespace GR.WebApplication.Extensions
 
             if (configuration.AppFileConfiguration.UseStaticFile)
                 app.UseStaticFiles();
+
+            if (configuration.AppFileConfiguration.UseResponseCaching)
+                app.UseResponseCaching();
 
             //--------------------------------------Use compression-------------------------------------
             if (configuration.UseResponseCompression && configuration.HostingEnvironment.IsProduction()) app.UseResponseCompression();

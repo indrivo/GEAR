@@ -1,7 +1,6 @@
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Data;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -74,7 +73,7 @@ namespace GR.Identity.Seeders
                     var user = seedUser.Adapt<GearUser>();
                     var exists = await userManager.FindByNameAsync(user.UserName);
                     if (exists != null) continue;
-                    user.AuthenticationType = AuthenticationType.Local;
+                    user.AuthenticationType = IdentityResources.LocalAuthenticationType;
                     user.TenantId = GearSettings.TenantId;
                     var result = await userManager.CreateAsync(user, seedUser.Password);
                     if (!result.Succeeded) continue;

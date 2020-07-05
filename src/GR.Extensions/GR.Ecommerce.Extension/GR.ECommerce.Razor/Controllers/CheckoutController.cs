@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Global;
+using GR.Core.Razor.Enums;
 using GR.ECommerce.Abstractions.Enums;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Attributes;
@@ -16,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GR.ECommerce.Razor.Controllers
 {
+    [Author(Authors.LUPEI_NICOLAE)]
     [GearAuthorize(GearAuthenticationScheme.IdentityWithBearer)]
     public class CheckoutController : Controller
     {
@@ -49,10 +53,12 @@ namespace GR.ECommerce.Razor.Controllers
         /// Checkout page
         /// </summary>
         /// <param name="orderId"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Shipping(Guid? orderId)
+        public async Task<IActionResult> Shipping(Guid? orderId, ViewMode mode = ViewMode.Web)
         {
+            ViewData["Mode"] = mode;
             if (orderId == null) return NotFound();
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return NotFound();
@@ -75,9 +81,10 @@ namespace GR.ECommerce.Razor.Controllers
         /// Set up shipment and billing address
         /// </summary>
         /// <param name="model"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Shipping([Required]CheckoutShippingViewModel model)
+        public async Task<IActionResult> Shipping([Required]CheckoutShippingViewModel model, ViewMode mode = ViewMode.Web)
         {
             if (model == null) return NotFound();
 
@@ -85,7 +92,11 @@ namespace GR.ECommerce.Razor.Controllers
             {
                 var addressUpdateRequest = await _orderProductService.SetOrderBillingAddressAndShipmentAsync(model.Order?.Id, model.ShipmentAddress, model.BillingAddressId);
                 if (addressUpdateRequest.IsSuccess)
-                    return RedirectToAction("Payment", new { OrderId = model.Order.Id });
+                    return RedirectToAction("Payment", new
+                    {
+                        OrderId = model.Order.Id,
+                        Mode = mode
+                    });
                 ModelState.AppendResultModelErrors(addressUpdateRequest.Errors);
             }
 
@@ -97,6 +108,7 @@ namespace GR.ECommerce.Razor.Controllers
             var addressesRequest = await _userAddressService.GetUserAddressesAsync(userRequest.Result.Id);
             model.Order = orderRequest.Result;
             model.Addresses = addressesRequest.Result;
+            ViewData["Mode"] = mode;
             return View(model);
         }
 
@@ -104,18 +116,24 @@ namespace GR.ECommerce.Razor.Controllers
         /// Make payment
         /// </summary>
         /// <param name="orderId"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Payment(Guid? orderId)
+        public async Task<IActionResult> Payment(Guid? orderId, ViewMode mode = ViewMode.Web)
         {
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
             var wasInvoicedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.Invoiced);
             if (!wasInvoicedRequest.IsSuccess || !wasInvoicedRequest.Result)
-                return RedirectToAction(nameof(Shipping), new { OrderId = orderId });
+                return RedirectToAction(nameof(Shipping), new
+                {
+                    OrderId = orderId,
+                    Mode = mode
+                });
 
             var paymentReceivedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.PaymentReceived);
             if (paymentReceivedRequest.Result) return RedirectToAction(nameof(Success), new { OrderId = orderId });
+            ViewData["Mode"] = mode;
             return View(orderRequest.Result);
         }
 
@@ -123,24 +141,27 @@ namespace GR.ECommerce.Razor.Controllers
         /// Success
         /// </summary>
         /// <param name="orderId"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Success(Guid? orderId)
+        public async Task<IActionResult> Success(Guid? orderId, ViewMode mode = ViewMode.Web)
         {
+            ViewData["Mode"] = mode;
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
             return View(orderRequest.Result);
         }
 
-
         /// <summary>
         /// Success
         /// </summary>
         /// <param name="orderId"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Fail(Guid? orderId)
+        public async Task<IActionResult> Fail(Guid? orderId, ViewMode mode = ViewMode.Web)
         {
+            ViewData["Mode"] = mode;
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
             return View(orderRequest.Result);

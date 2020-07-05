@@ -1,7 +1,7 @@
 ﻿using System;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
-using GR.Identity.Versioning;
+using GR.WebApplication.Helpers.Versioning;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;

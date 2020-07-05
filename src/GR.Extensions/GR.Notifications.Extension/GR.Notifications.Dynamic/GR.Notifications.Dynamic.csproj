@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,13 +35,11 @@
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities\GR.Entities.csproj" />
-    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
     <ProjectReference Include="..\..\GR.Modules.Extension\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu\GR.UI.Menu.csproj" />
+    <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

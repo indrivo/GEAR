@@ -32,6 +32,9 @@
     <Content Update="Views\Orders\MyOrders.cshtml">
       <Pack>false</Pack>
     </Content>
+    <Content Update="Views\Shared\_MyOrdersPartialView.cshtml">
+      <Pack>false</Pack>
+    </Content>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
     </Content>

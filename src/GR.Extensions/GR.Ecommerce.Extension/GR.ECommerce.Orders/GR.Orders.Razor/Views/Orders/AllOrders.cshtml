@@ -10,12 +10,10 @@
         },
         RenderColumns = new List<ListRenderColumn>
         {
-            new ListRenderColumn("Id", "id"),
+            new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["system_payment_status"], "state"),
             new ListRenderColumn(Localizer["user"], "user.userName"),
-            new ListRenderColumn(Localizer["system_commerce_order_total"], "formattedTotal"),
-            new ListRenderColumn(Localizer["created"], "created"),
-            new ListRenderColumn(Localizer["changed"], "changed")
+            new ListRenderColumn(Localizer["system_commerce_order_total"], "formattedTotal")
         },
         HeadButtons = new List<UrlTagHelperViewModel>(),
         HasActions = true,

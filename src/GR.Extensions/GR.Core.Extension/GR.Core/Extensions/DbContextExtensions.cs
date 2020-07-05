@@ -248,11 +248,30 @@ namespace GR.Core.Extensions
         /// <param name="id"></param>
         /// <returns></returns>
         public static async Task<TEntity> FindByIdAsync<TEntity>(this DbSet<TEntity> self, Guid? id)
-            where TEntity : class, IBaseModel, IBase<Guid>
+            where TEntity : class, IBase<Guid>
         {
             Arg.NotNull(self, nameof(FindByIdAsync));
             if (id == null) return default;
             return await self.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }
+
+        /// <summary>
+        /// Update entry
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TId"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entryId"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel> UpdateAsync<TEntity, TId>(this IDbContext context, TId entryId, Action<TEntity> action)
+            where TEntity : class, IBase<TId>
+        {
+            var entry = await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(entryId));
+            if (entry == null) return new NotFoundResultModel();
+            action(entry);
+            context.Update(entry);
+            return await context.PushAsync();
         }
     }
 }

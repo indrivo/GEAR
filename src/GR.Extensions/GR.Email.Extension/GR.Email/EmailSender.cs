@@ -12,6 +12,9 @@ using GR.Core.Helpers;
 using GR.Email.Abstractions;
 using GR.Email.Abstractions.Helpers;
 using GR.Email.Abstractions.Models.EmailViewModels;
+using GR.Identity.Abstractions;
+using Microsoft.AspNetCore.Identity;
+
 // ReSharper disable HeuristicUnreachableCode
 #pragma warning disable 162
 
@@ -19,15 +22,25 @@ namespace GR.Email
 {
     public class EmailSender : IEmailSender
     {
+        #region Injectable
+
         /// <summary>
         /// Email settings
         /// </summary>
         private readonly IWritableOptions<EmailSettingsViewModel> _options;
 
-        public EmailSender(IWritableOptions<EmailSettingsViewModel> options)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
+
+        public EmailSender(IWritableOptions<EmailSettingsViewModel> options, IUserManager<GearUser> userManager)
         {
             if (options.Value == null) throw new Exception("Email settings not register in appsettings file");
             _options = options;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -103,6 +116,22 @@ namespace GR.Email
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Send email to user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <param name="isBodyHtml"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SendEmailAsync(Guid userId, string subject, string message, bool isBodyHtml = true)
+        {
+            var userReq = await _userManager.FindUserByIdAsync(userId);
+            if (!userReq.IsSuccess) return userReq.ToBase();
+
+            return await SendEmailAsync(new List<string> { userReq.Result.Email.ToLowerInvariant() }, subject, message, isBodyHtml);
         }
 
         /// <summary>
@@ -222,5 +251,18 @@ namespace GR.Email
         {
             to
         }, subject, message);
+
+        /// <summary>
+        /// Send to user
+        /// </summary>
+        /// <typeparam name="TUser"></typeparam>
+        /// <param name="user"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> SendAsync<TUser>(TUser user, string subject, string message) where TUser : IdentityUser<Guid>
+        {
+            return await SendAsync(subject, message, user.Email);
+        }
     }
 }

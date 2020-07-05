@@ -13,12 +13,14 @@ namespace GR.ECommerce.Payments.Abstractions
         /// Get active payment methods
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<PaymentMethod>>> GetActivePaymentMethodsAsync();
+        Task<ResultModel<IEnumerable<PaymentMethodViewModel>>> GetActivePaymentMethodsAsync();
+
         /// <summary>
         /// Get all payment methods
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<PaymentMethodViewModel>>> GetAllPaymentMethodsAsync();
+
         /// <summary>
         /// Get payments for order
         /// </summary>
@@ -50,5 +52,12 @@ namespace GR.ECommerce.Payments.Abstractions
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ResultModel> DisablePaymentMethodAsync(string id);
+
+        /// <summary>
+        /// Check if payment method is supported
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        Task<ResultModel> IsPaymentMethodSupportedAsync(string method);
     }
 }

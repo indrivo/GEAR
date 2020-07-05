@@ -55,5 +55,12 @@ namespace GR.Identity.Profile.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync();
+
+        /// <summary>
+        /// Get default address
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync(Guid? userId);
     }
 }

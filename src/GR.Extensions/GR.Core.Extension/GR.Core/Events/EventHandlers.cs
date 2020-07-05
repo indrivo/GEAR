@@ -1,6 +1,7 @@
 ﻿using System;
 using GR.Core.Events.EventArgs;
 using GR.Core.Events.EventArgs.Database;
+using GR.Core.Helpers;
 
 namespace GR.Core.Events
 {
@@ -13,26 +14,7 @@ namespace GR.Core.Events
         /// <param name="args"></param>
         public static void OnApplicationStartedHandler(object sender, ApplicationStartedEventArgs args)
         {
-            try
-            {
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                var topAndBottom = new string('-', Console.WindowWidth - 1);
-                Console.Write(topAndBottom + "\n");
-                Console.Write(topAndBottom + "\n");
-                var padding = new string('-', (Console.WindowWidth - args.AppIdentifier.Length) / 2);
-                Console.Write(padding);
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(args.AppIdentifier);
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                Console.Write(padding + "\n");
-                Console.Write(topAndBottom + "\n");
-                Console.Write(topAndBottom + "\n");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            ConsoleWriter.WriteTextAsTitle($"App {args.AppIdentifier} started", ConsoleColor.DarkMagenta);
         }
 
         /// <summary>

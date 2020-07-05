@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GR.Calendar.Abstractions.Enums;
 using GR.Core.Extensions;
 

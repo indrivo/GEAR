@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Permissions;
 
 namespace GR.Identity.Data
 {
+    [Author(Authors.LUPEI_NICOLAE)]
     public class GearIdentityDbContext : TrackerIdentityDbContext<GearUser, GearRole, Guid>, IPermissionsContext
     {
         /// <summary>

@@ -44,6 +44,11 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public virtual bool UseHealthCheck { get; set; } = true;
 
         /// <summary>
+        /// Apply auto migrations
+        /// </summary>
+        public virtual bool AutoApplyPendingMigrations { get; set; } = false;
+
+        /// <summary>
         /// Swagger configuration
         /// </summary>
         public SwaggerConfiguration SwaggerConfiguration { get; set; } = new SwaggerConfiguration();
@@ -70,5 +75,6 @@ namespace GR.WebApplication.Helpers.AppConfigurations
     {
         public bool UseDefaultFiles { get; set; } = true;
         public bool UseStaticFile { get; set; } = true;
+        public bool UseResponseCaching { get; set; } = true;
     }
 }

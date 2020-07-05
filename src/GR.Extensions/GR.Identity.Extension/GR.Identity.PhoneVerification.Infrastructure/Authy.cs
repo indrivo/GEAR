@@ -91,7 +91,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
 
             var userRegData = new Dictionary<string, string>
             {
-                { "email", user.Email },
+                {"email", user.Email},
                 { "country_code", user.CountryCode },
                 { "cellphone", user.PhoneNumber }
             };
@@ -102,10 +102,15 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             };
 
             var result = await _client.PostJsonAsync("/protected/json/users/new", userRegRequestData);
-            if (!result.IsSuccessStatusCode) return new ApiNotRespondResultModel<string>();
             var strResponse = await result.Content.ReadAsStringAsync();
             _logger.LogDebug(strResponse);
             var obj = JObject.Parse(strResponse);
+            if (!result.IsSuccessStatusCode)
+            {
+                var apiError = obj.SelectToken("errors").SelectToken("message").Value<string>();
+                return new ApiNotRespondResultModel<string>(apiError);
+            }
+
             var isSuccess = obj.SelectToken("success").Value<bool>();
             if (isSuccess)
             {
@@ -114,6 +119,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             }
 
             var error = obj.SelectToken("errors").SelectToken("message").Value<string>();
+
             return new ResultModel<string>()
                 .AddError(error);
         }

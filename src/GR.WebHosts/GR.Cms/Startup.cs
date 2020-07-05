@@ -131,7 +131,6 @@ using GR.Card.Razor.Extensions;
 using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
-using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
@@ -155,6 +154,10 @@ using GR.Identity.Clients.Razor.Extensions;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
+using GR.Identity.Mpass;
+using GR.Identity.Mpass.Abstractions.Extensions;
+using GR.Identity.Mpass.Abstractions.Helpers;
+using GR.Identity.Mpass.Abstractions.Security;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
@@ -181,6 +184,8 @@ using GR.UserPreferences.Impl.Data;
 using Microsoft.Extensions.Logging;
 using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 using GR.Localization.ExternalProviders;
+using GR.Notifications.Dynamic;
+using GR.Notifications.Dynamic.Seeders;
 using GR.Subscriptions.Abstractions.Helpers;
 using GR.TwoFactorAuthentication.Abstractions.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -212,10 +217,12 @@ namespace GR.Cms
 				config.HostingEnvironment = HostingEnvironment;
 				config.UseHealthCheck = false;
 				config.Configuration = Configuration;
+				config.MvcTemplate = "{controller=Home}/{action=Index}";
 				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 				{
 					{ "/admin", context => context.MapTo("/Account/Login") }
 				};
+				config.AutoApplyPendingMigrations = true;
 			});
 
 			app.UseIdentityServer();
@@ -342,6 +349,7 @@ namespace GR.Cms
 
 			//-------------------------------Notification Module-------------------------------------
 			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
+				.AddNotificationSeeder<DynamicNotificationSeederService>()
 				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
@@ -476,8 +484,19 @@ namespace GR.Cms
 
 			//----------------------------------------Ldap Module-------------------------------------
 			config.GearServices
-				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(
-					Configuration);
+				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(Configuration)
+				.AddLdapAuthentication<LdapAuthorizeService>(options =>
+				{
+					options.AutoImportOnLogin = true;
+				});
+
+			//-------------------------------------------MPass Module-------------------------------------
+			config.GearServices.AddMPassModuleSigningCredentials(new MPassSigningCredentials
+				{
+					ServiceProviderCertificate = MPassResources.GetSandboxServiceProviderCertificate(),
+					IdentityProviderCertificate = MPassResources.GetSandboxIdentityProviderCertificate()
+				})
+				.AddMPassService<MPassService>();
 
 			//-------------------------------------Commerce module-------------------------------------
 			config.GearServices.RegisterCommerceModule<CommerceDbContext>()

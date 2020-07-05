@@ -33,6 +33,13 @@ namespace GR.Card.Abstractions
         Task<ResultModel<IEnumerable<CreditCardPayViewModel>>> GetSavedCreditCardsAsync();
 
         /// <summary>
+        /// Get saved cards for specific users
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<CreditCardPayViewModel>>> GetSavedCreditCardsAsync(Guid userId);
+
+        /// <summary>
         /// Get hidden cards
         /// </summary>
         /// <returns></returns>
@@ -44,6 +51,14 @@ namespace GR.Card.Abstractions
         /// <param name="cardId"></param>
         /// <returns></returns>
         Task<ResultModel<CreditCardPayViewModel>> GetCardByIdAsync(Guid cardId);
+
+        /// <summary>
+        /// Get card by id for specific user
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<CreditCardPayViewModel>> GetCardByIdAsync(Guid cardId, Guid userId);
 
         /// <summary>
         /// Pay order with saved card 
@@ -64,6 +79,13 @@ namespace GR.Card.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<CreditCardPayViewModel>> GetDefaultCardAsync();
+
+        /// <summary>
+        /// Get default card for specific user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<CreditCardPayViewModel>> GetDefaultCardAsync(Guid userId);
 
         /// <summary>
         /// Set default credit card

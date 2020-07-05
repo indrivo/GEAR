@@ -6,6 +6,7 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.UserPreferences.Abstractions.Events;
 using GR.UserPreferences.Abstractions.Helpers;
 using GR.UserPreferences.Abstractions.Helpers.PreferenceTypes;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,7 @@ namespace GR.UserPreferences.Abstractions.Extensions
             where TUserPreferencesService : class, IUserPreferencesService
         {
             services.AddGearScoped<IUserPreferencesService, TUserPreferencesService>();
+            UserPreferencesEvents.RegisterEvents();
             return services;
         }
 

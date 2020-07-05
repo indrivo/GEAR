@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core;
+using Microsoft.AspNetCore.Http;
 
 namespace GR.Identity.Abstractions
 {
@@ -175,6 +176,13 @@ namespace GR.Identity.Abstractions
         Task<ResultModel<byte[]>> GetUserImageAsync(Guid? userId);
 
         /// <summary>
+        /// Change user photo
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeUserPhotoAsync(IFormFile image);
+
+        /// <summary>
         /// Get all users with pagination
         /// </summary>
         /// <param name="parameters"></param>
@@ -221,5 +229,22 @@ namespace GR.Identity.Abstractions
         /// <param name="next"></param>
         /// <returns></returns>
         Task<ResultModel> ChangeUserPasswordAsync(string current, string next);
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeUserPasswordAsync(TUser user, string password);
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="current"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeUserPasswordAsync(TUser user, string current, string next);
     }
 }

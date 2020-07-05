@@ -110,6 +110,14 @@ namespace GR.AccountActivity.Abstractions
         Task<DTResult<UserActivityViewModel>> GetPagedUserActivityAsync(DTParameters parameters);
 
         /// <summary>
+        /// Get paged user activities
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<DTResult<UserActivityViewModel>> GetPagedUserActivityAsync(DTParameters parameters, Guid userId);
+
+        /// <summary>
         /// Delete all other confirmed and non confirmed
         /// </summary>
         /// <param name="context"></param>

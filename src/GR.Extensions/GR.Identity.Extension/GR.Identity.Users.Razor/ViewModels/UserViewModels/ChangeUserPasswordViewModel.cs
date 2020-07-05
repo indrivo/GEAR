@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
 
 namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
@@ -41,7 +40,7 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         /// <summary>
         /// Authentication type
         /// </summary>
-        public AuthenticationType AuthenticationType { get; set; }
+        public string AuthenticationType { get; set; }
 
         public string CallBackUrl { get; set; }
     }

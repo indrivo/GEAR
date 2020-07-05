@@ -26,9 +26,9 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Extensions
             serviceCollection.Services.AddTransient<EventType>();
             serviceCollection.Services.AddTransient<UserType>();
             serviceCollection.Services.AddTransient<EventMemberType>();
-
-            var sp = serviceCollection.Services.BuildServiceProvider();
-            serviceCollection.Services.AddSingleton<ICalendarSchema>(new CalendarSchema(new FuncDependencyResolver(type => sp.GetService(type))));
+            serviceCollection.Services.AddSingleton<ICalendarSchema, CalendarSchema>();
+            //var sp = serviceCollection.Services.BuildServiceProvider();
+            //serviceCollection.Services.AddSingleton<ICalendarSchema>(new CalendarSchema(new FuncDependencyResolver(type => sp.GetService(type))));
             return serviceCollection;
         }
 

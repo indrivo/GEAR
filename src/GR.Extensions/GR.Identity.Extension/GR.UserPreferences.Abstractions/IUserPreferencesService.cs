@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.UserPreferences.Abstractions.Helpers.ResponseModels;
@@ -16,6 +17,22 @@ namespace GR.UserPreferences.Abstractions
         /// <param name="key"></param>
         /// <returns></returns>
         Task<ResultModel<string>> GetValueByKeyAsync(string key);
+
+        /// <summary>
+        /// The value is provided for {userId} parameter
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<ResultModel<string>> GetValueByKeyAsync(Guid userId, string key);
+
+        /// <summary>
+        /// Get boolean value by key
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<ResultModel<bool>> GetBoolValueByKeyAsync(Guid userId, string key);
 
         /// <summary>
         /// Set value for some key on user preference
