@@ -73,9 +73,7 @@ using GR.MobilPay.Razor.Extensions;
 using GR.MultiTenant.Abstractions.Extensions;
 using GR.MultiTenant.Razor.Extensions;
 using GR.MultiTenant.Services;
-using GR.Notifications;
 using GR.Notifications.Abstractions.Extensions;
-using GR.Notifications.Data;
 using GR.Notifications.Razor.Extensions;
 using GR.Orders;
 using GR.Orders.Abstractions.Extensions;
@@ -186,6 +184,10 @@ using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 using GR.Localization.ExternalProviders;
 using GR.Notifications.Dynamic;
 using GR.Notifications.Dynamic.Seeders;
+using GR.Notifications.Subscriptions.Abstractions.Extensions;
+using GR.Notifications.Subscriptions.EFCore;
+using GR.Notifications.Subscriptions.EFCore.Data;
+using GR.Notifications.Subscriptions.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Helpers;
 using GR.TwoFactorAuthentication.Abstractions.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -347,18 +349,32 @@ namespace GR.Cms
 				})
 				.RegisterProgramAssembly(typeof(Program));
 
-			//-------------------------------Notification Module-------------------------------------
+			//-------------------------------Dynamic Notification Module-------------------------------------
 			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSeeder<DynamicNotificationSeederService>()
-				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
+				.RegisterNotificationsHubModule<CommunicationHub>()
+				.AddNotificationRazorUIModule();
+
+			////-------------------------------EF core Notification Module-------------------------------------
+			//config.GearServices.AddNotificationModule<Notify<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
+			//	.AddNotificationSeeder<EfCoreNotificationSeederService>()
+			//	.AddNotificationModuleStorage<NotificationDbContext>(options =>
+			//	{
+			//		options.GetDefaultOptions(Configuration);
+			//		options.EnableSensitiveDataLogging();
+			//	})
+			//	.RegisterNotificationsHubModule<CommunicationHub>()
+			//	.AddNotificationRazorUIModule();
+
+			//-------------------------------Notification subscriptions Module-------------------------------------
+			config.GearServices.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
-				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
+				.AddNotificationSubscriptionModuleStorage<NotificationsSubscriptionDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterNotificationsHubModule<CommunicationHub>()
-				.AddNotificationRazorUIModule();
+				.AddNotificationSubscriptionRazorUiModule();
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices

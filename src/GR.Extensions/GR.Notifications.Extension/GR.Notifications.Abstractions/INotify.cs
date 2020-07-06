@@ -88,7 +88,7 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
-        Task<ResultModel<Dictionary<string, object>>> GetNotificationByIdAsync(Guid? notificationId);
+        Task<ResultModel<Notification>> GetNotificationByIdAsync(Guid? notificationId);
 
         /// <summary>
         /// Clear all notifications

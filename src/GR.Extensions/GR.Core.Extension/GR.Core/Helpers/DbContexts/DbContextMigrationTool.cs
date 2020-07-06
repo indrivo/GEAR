@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using GR.Core.Abstractions;
 using GR.Core.Attributes;
+using GR.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Core.Helpers.DbContexts
@@ -30,8 +32,16 @@ namespace GR.Core.Helpers.DbContexts
                 var pendingMigrations = dbContext.Database.GetPendingMigrations().ToList();
                 if (pendingMigrations.Any())
                 {
+                    var appliedMigrations = dbContext.Database.GetContextAppliedMigrations(dbContext);
+                    var invokeSeed = !appliedMigrations.Any();
                     ConsoleWriter.ColoredWriteLine($"Pending migrations: {pendingMigrations.Count}", ConsoleColor.DarkYellow);
                     dbContext.Database.Migrate();
+                    if (!invokeSeed) continue;
+                    if (dbContext is IDbContext gearContext)
+                    {
+                        ConsoleWriter.ColoredWriteLine($"Context is migrated for first time, seed will be invoked", ConsoleColor.DarkYellow);
+                        gearContext.InvokeSeedAsync(IoC.Resolve<IServiceProvider>()).Wait();
+                    }
                 }
                 else
                 {

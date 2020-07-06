@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
+    <ProjectReference Include="..\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

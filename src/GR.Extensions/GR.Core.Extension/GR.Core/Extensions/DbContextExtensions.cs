@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Helpers.Responses;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Core.Extensions
@@ -272,6 +275,44 @@ namespace GR.Core.Extensions
             action(entry);
             context.Update(entry);
             return await context.PushAsync();
+        }
+
+        /// <summary>
+        /// Get context migrations
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="databaseFacade"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetContextMigrations<TContext>(this DatabaseFacade databaseFacade, TContext context)
+            where TContext : DbContext
+        {
+            var contextMigrations = new List<string>();
+            var assembly = context.GetType().Assembly;
+            foreach (var aType in assembly.GetTypes())
+            {
+                if (!aType.IsClass || aType.IsAbstract || !aType.IsSubclassOf(typeof(Migration))) continue;
+                var migrationName = aType.GetCustomAttribute<MigrationAttribute>();
+                if (migrationName == null) continue;
+                contextMigrations.Add(migrationName.Id);
+            }
+
+            return contextMigrations;
+        }
+
+        /// <summary>
+        /// Get context applied migrations
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="databaseFacade"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetContextAppliedMigrations<TContext>(this DatabaseFacade databaseFacade, TContext context)
+            where TContext : DbContext
+        {
+            var appliedMigrations = databaseFacade.GetAppliedMigrations().ToList();
+            var contextMigrations = databaseFacade.GetContextMigrations(context);
+            return appliedMigrations.Where(x => contextMigrations.Contains(x)).ToList();
         }
     }
 }

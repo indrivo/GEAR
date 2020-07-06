@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions;
-using GR.Notifications.Abstractions.Models.Data;
-using GR.Notifications.Extensions;
+using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.EntityFrameworkCore;
 
-namespace GR.Notifications.Data
+namespace GR.Notifications.EFCore.Data
 {
-    public class NotificationDbContext : TrackerDbContext, INotificationSubscriptionsDbContext
+    public class NotificationDbContext : TrackerDbContext, INotificationsContext
     {
         /// <summary>
         /// Context schema
         /// Do not remove this
         /// </summary>
         public const string Schema = "Notifications";
+
+        /// <summary>
+        /// Check if is migration mode
+        /// </summary>
+        public static bool IsMigrationMode { get; set; } = false;
 
         /// <summary>
         /// Constructor
@@ -28,19 +33,15 @@ namespace GR.Notifications.Data
 
         #region Entities
         /// <summary>
-        /// Notifications events
+        /// Notifications
         /// </summary>
-        public virtual DbSet<NotificationEvent> NotificationEvents { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
 
         /// <summary>
-        /// Subscriptions
+        /// Notification types
         /// </summary>
-        public virtual DbSet<NotificationSubscription> NotificationSubscriptions { get; set; }
+        public virtual DbSet<NotificationTypes> NotificationTypes { get; set; }
 
-        /// <summary>
-        /// Notification templates
-        /// </summary>
-        public virtual DbSet<NotificationTemplate> NotificationTemplates { get; set; }
         #endregion
 
         /// <summary>
@@ -50,7 +51,13 @@ namespace GR.Notifications.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.RegisterNotificationDbContextBuilder();
+            builder.HasDefaultSchema(Schema);
+
+            if (IsMigrationMode)
+            {
+                builder.Ignore<TrackAudit>();
+                builder.Ignore<TrackAuditDetails>();
+            }
         }
 
 

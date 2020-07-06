@@ -16,6 +16,7 @@ using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ViewModels;
+using GR.Notifications.Dynamic.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -234,7 +235,7 @@ namespace GR.Notifications.Dynamic
                 PerPage = paginatedResult.Result.PerPage,
                 Page = paginatedResult.Result.Page,
                 Total = paginatedResult.Result.Total,
-                Notifications = paginatedResult.Result.ViewModel.Values
+                Notifications = NotificationsDictionaryConvertor.Convert(paginatedResult.Result.ViewModel.Values)
             };
 
             return new SuccessResultModel<PaginatedNotificationsViewModel>(result);
@@ -246,10 +247,10 @@ namespace GR.Notifications.Dynamic
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Dictionary<string, object>>> GetNotificationByIdAsync(Guid? notificationId)
+        public virtual async Task<ResultModel<Notification>> GetNotificationByIdAsync(Guid? notificationId)
         {
-            if (notificationId == null) return new NotFoundResultModel<Dictionary<string, object>>();
-            return await _dataService.GetById<SystemNotifications>(notificationId.Value);
+            if (notificationId == null) return new NotFoundResultModel<Notification>();
+            return await _dataService.GetByIdWithReflection<SystemNotifications, Notification>(notificationId.Value);
         }
 
         /// <inheritdoc />

@@ -12,13 +12,25 @@ namespace GR.Notifications.Dynamic.Seeders
 {
     public class DynamicNotificationSeederService : INotificationSeederService
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject dynamic service
+        /// </summary>
+        private readonly IDynamicService _dynamicService;
+
+        #endregion
+
+        public DynamicNotificationSeederService(IDynamicService dynamicService)
+        {
+            _dynamicService = dynamicService;
+        }
+
         /// <summary>
         /// Seed notification types
         /// </summary>
         public async Task SeedNotificationTypesAsync()
         {
-            var dataService = IoC.Resolve<IDynamicService>();
-            if (dataService == null) throw new Exception("IDynamicService is not registered");
             var types = JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/NotificationTypes.json"));
             if (types == null)
                 return;
@@ -27,11 +39,11 @@ namespace GR.Notifications.Dynamic.Seeders
             {
                 foreach (var item in types.NotificationTypes)
                 {
-                    var exist = await dataService.GetAll<NotificationTypes>(x => x["Name"].Equals(item.Name));
+                    var exist = await _dynamicService.GetAll<NotificationTypes>(x => x["Name"].Equals(item.Name));
                     if (exist.Result?.Any() ?? false) continue;
                     item.Author = "admin";
                     item.ModifiedBy = "admin";
-                    var response = await dataService.AddWithReflection(item);
+                    var response = await _dynamicService.AddWithReflection(item);
                     if (!response.IsSuccess)
                     {
                         Console.WriteLine("Fail to add");

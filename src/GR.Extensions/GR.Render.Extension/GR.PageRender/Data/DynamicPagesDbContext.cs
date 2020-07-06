@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using GR.Audit.Contexts;
 using Microsoft.EntityFrameworkCore;
 using GR.Entities.Abstractions.Models.Tables;
-using GR.Entities.Data;
-using GR.Entities.Security.Abstractions.Models;
-using GR.Entities.Security.Data;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
@@ -16,21 +14,21 @@ using GR.PageRender.Extensions;
 
 namespace GR.PageRender.Data
 {
-    public class DynamicPagesDbContext : EntitiesDbContext, IDynamicPagesContext
+    public class DynamicPagesDbContext : TrackerDbContext, IDynamicPagesContext
     {
         /// <summary>
         /// Schema
         /// Do not remove this
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
-        public new const string Schema = "Pages";
+        public const string Schema = "Pages";
 
         private const string ParentSchema = "Entities";
 
         public static bool IsMigrationMode { get; set; } = false;
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public DynamicPagesDbContext(DbContextOptions<EntitySecurityDbContext> options) : base(options)
+        public DynamicPagesDbContext(DbContextOptions<DynamicPagesDbContext> options) : base(options)
         {
         }
 
@@ -97,43 +95,43 @@ namespace GR.PageRender.Data
         /// Entity types
         /// </summary>
         [NotMapped]
-        public override DbSet<EntityType> EntityTypes { get; set; }
+        public DbSet<EntityType> EntityTypes { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Tables
         /// </summary>
         [NotMapped]
-        public override DbSet<TableModel> Table { get; set; }
+        public DbSet<TableModel> Table { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Table configs
         /// </summary>
         [NotMapped]
-        public override DbSet<TableFieldConfigs> TableFieldConfigs { get; set; }
+        public DbSet<TableFieldConfigs> TableFieldConfigs { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Table config values
         /// </summary>
         [NotMapped]
-        public override DbSet<TableFieldConfigValue> TableFieldConfigValues { get; set; }
+        public DbSet<TableFieldConfigValue> TableFieldConfigValues { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Field groups
         /// </summary>
         [NotMapped]
-        public override DbSet<TableFieldGroups> TableFieldGroups { get; set; }
+        public DbSet<TableFieldGroups> TableFieldGroups { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Table fields
         /// </summary>
         [NotMapped]
-        public override DbSet<TableModelField> TableFields { get; set; }
+        public DbSet<TableModelField> TableFields { get; set; }
         /// <inheritdoc />
         /// <summary>
         /// Field types
         /// </summary>
         [NotMapped]
-        public override DbSet<TableFieldType> TableFieldTypes { get; set; }
+        public DbSet<TableFieldType> TableFieldTypes { get; set; }
         #endregion
 
         /// <inheritdoc />
@@ -155,15 +153,17 @@ namespace GR.PageRender.Data
             builder.Entity<TableFieldGroups>().ToTable(nameof(TableFieldGroups), ParentSchema);
             builder.Entity<TableModelField>().ToTable(nameof(TableFields), ParentSchema);
             builder.Entity<TableFieldType>().ToTable(nameof(TableFieldTypes), ParentSchema);
-            builder.Entity<EntityPermission>().ToTable(nameof(EntityPermissions), ParentSchema);
-            builder.Entity<EntityFieldPermission>().ToTable(nameof(EntityFieldPermissions), ParentSchema);
-            builder.Entity<EntityPermissionAccess>().ToTable(nameof(EntityPermissionAccesses), ParentSchema);
             builder.Entity<ViewModelFieldCode>().HasKey(x => x.Code);
             builder.Entity<ViewModelFieldConfiguration>().HasKey(x => new
             {
                 x.ViewModelFieldCodeId,
                 x.ViewModelFieldId
             });
+
+            builder.Entity<TableFieldType>().HasKey(ug => new { ug.Id });
+            builder.Entity<TableFieldConfigs>().HasKey(ug => new { ug.Id });
+            builder.Entity<TableFieldConfigValue>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
+            builder.Entity<TableModelField>().HasOne(typeof(TableFieldType), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
 
             #region Entity base dependecies
             //This block eliminate the base entities to be included on migration
@@ -176,9 +176,6 @@ namespace GR.PageRender.Data
                 builder.Ignore<TableFieldGroups>();
                 builder.Ignore<TableModelField>();
                 builder.Ignore<TableFieldType>();
-                builder.Ignore<EntityPermission>();
-                builder.Ignore<EntityFieldPermission>();
-                builder.Ignore<EntityPermissionAccess>();
             }
 
             #endregion

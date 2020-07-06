@@ -114,7 +114,9 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Dynamic\GR.Notifications.Dynamic.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Hub\GR.Notifications.Hub.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Subscriptions.EFCore\GR.Notifications.Subscriptions.EFCore.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Subscriptions.Razor\GR.Notifications.Subscriptions.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.EFCore.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Process.Razor\GR.Process.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Processes.Extension\GR.Processes\GR.Procesess.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />

@@ -9,7 +9,6 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Enums;
-using GR.Identity.Data;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
 using GR.PageRender.Abstractions.Models.ViewModels;
@@ -25,6 +24,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using GR.Identity.Abstractions;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -41,7 +41,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <summary>
         /// App Context
         /// </summary>
-        private readonly GearIdentityDbContext _appContext;
+        private readonly IIdentityContext _appContext;
 
         /// <summary>
         /// Inject Data Service
@@ -68,7 +68,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="pageRender"></param>
         /// <param name="pagesContext"></param>
         /// <param name="viewModelService"></param>
-        public PageRenderController(GearIdentityDbContext appContext,
+        public PageRenderController(IIdentityContext appContext,
             IDynamicService service,
             IPageRender pageRender,
             IDynamicPagesContext pagesContext, IViewModelService viewModelService)
