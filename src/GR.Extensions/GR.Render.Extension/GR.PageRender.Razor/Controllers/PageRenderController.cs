@@ -9,13 +9,10 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Enums;
-using GR.Forms.Abstractions;
-using GR.Identity.Data;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
 using GR.PageRender.Abstractions.Models.ViewModels;
 using GR.PageRender.Razor.Attributes;
-using GR.PageRender.Razor.ViewModels.PageViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +24,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using GR.Identity.Abstractions;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -43,7 +41,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <summary>
         /// App Context
         /// </summary>
-        private readonly GearIdentityDbContext _appContext;
+        private readonly IIdentityContext _appContext;
 
         /// <summary>
         /// Inject Data Service
@@ -54,11 +52,6 @@ namespace GR.PageRender.Razor.Controllers
         /// Inject page render
         /// </summary>
         private readonly IPageRender _pageRender;
-
-        /// <summary>
-        /// Inject form context
-        /// </summary>
-        private readonly IFormContext _formContext;
 
         /// <summary>
         /// Inject view model service
@@ -73,17 +66,15 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="appContext"></param>
         /// <param name="service"></param>
         /// <param name="pageRender"></param>
-        /// <param name="formContext"></param>
         /// <param name="pagesContext"></param>
         /// <param name="viewModelService"></param>
-        public PageRenderController(GearIdentityDbContext appContext,
+        public PageRenderController(IIdentityContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IFormContext formContext, IDynamicPagesContext pagesContext, IViewModelService viewModelService)
+            IDynamicPagesContext pagesContext, IViewModelService viewModelService)
         {
             _appContext = appContext;
             _service = service;
-            _formContext = formContext;
             _pagesContext = pagesContext;
             _viewModelService = viewModelService;
             _pageRender = pageRender;
@@ -459,18 +450,6 @@ namespace GR.PageRender.Razor.Controllers
         }
 
         /// <summary>
-        /// Get all forms
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public JsonResult GetForms()
-        {
-            var forms = _formContext.Forms.Where(x => !x.IsDeleted).ToList();
-
-            return new JsonResult(forms);
-        }
-
-        /// <summary>
         /// Get all pages
         /// </summary>
         /// <returns></returns>
@@ -513,131 +492,6 @@ namespace GR.PageRender.Razor.Controllers
             if (pageId == Guid.Empty) return string.Empty;
             var page = await _pageRender.GetPageAsync(pageId);
             return page == null ? string.Empty : page.Settings?.JsCode;
-        }
-
-        /// <summary>
-        /// Post Form
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<JsonResult> PostForm(PostFormViewModel model)
-        {
-            var result = new ResultModel
-            {
-                IsSuccess = false,
-                Errors = new List<IErrorModel>()
-            };
-
-            if (model == null)
-            {
-                result.Errors.Add(new ErrorModel("Null", "Data is not defined!"));
-                return Json(result);
-            }
-
-            var form = _formContext.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
-            if (form == null)
-            {
-                result.Errors.Add(new ErrorModel("Null", "Form not found!"));
-                return Json(result);
-            }
-
-            var table = _pagesContext.Table.Include(x => x.TableFields)
-                .FirstOrDefault(x => x.Id.Equals(form.TableId));
-            if (table == null)
-            {
-                result.Errors.Add(new ErrorModel("Null", "Form entity reference not found"));
-                return Json(result);
-            }
-
-            if (model.IsEdit && !model.SystemFields.Any())
-            {
-                result.Errors
-                    .Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
-                return Json(result);
-            }
-
-            var id = model.SystemFields?.FirstOrDefault(x => x.Key == "Id");
-
-            var instance = _service.Table(table.Name);
-            var fields = table.TableFields.ToList();
-            var obj = Activator.CreateInstance(instance.Type);
-
-            if (model.IsEdit)
-            {
-                if (id == null)
-                {
-                    result.Errors
-                        .Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
-                    return Json(result);
-                }
-
-                var oldObj = await instance.GetById<object>(id.Value.ToGuid());
-                if (!oldObj.IsSuccess)
-                {
-                    result.Errors
-                        .Add(new ErrorModel("Fail", "Data missed, check if this data exist!"));
-                    return Json(result);
-                }
-
-                obj = oldObj.Result;
-            }
-
-            foreach (var item in model.Data)
-            {
-                var field = fields.FirstOrDefault(x => x.Id.Equals(Guid.Parse(item.Key)));
-                if (field == null) continue;
-                try
-                {
-                    var prop = obj.GetType().GetProperty(field.Name);
-                    if (prop == null) continue;
-
-                    if (prop.PropertyType == typeof(Guid))
-                    {
-                        if (item.Value == null)
-                        {
-                            prop.SetValue(obj, null);
-                        }
-                        else
-                        {
-                            prop.SetValue(obj, Guid.Parse(item.Value));
-                        }
-                    }
-                    else if (prop.PropertyType == typeof(bool))
-                    {
-                        bool.TryParse(item.Value, out var value);
-                        prop.SetValue(obj, value);
-                    }
-                    else if (prop.PropertyType == typeof(int))
-                    {
-                        int.TryParse(item.Value, out var value);
-                        prop.SetValue(obj, value);
-                    }
-                    else
-                    {
-                        prop.SetValue(obj, item.Value);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
-
-            var req = (model.IsEdit) ? await instance.Update(obj) : await instance.Add(obj);
-
-            if (req.IsSuccess)
-            {
-                result.IsSuccess = true;
-                result.Result = new
-                {
-                    IdOfCreatedObject = req.Result,
-                    form.RedirectUrl
-                };
-                return Json(result);
-            }
-
-            return Json(result);
         }
 
         /// <summary>

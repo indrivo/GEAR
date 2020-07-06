@@ -115,7 +115,7 @@
 				"orderMulti": false, // for disable multiple column at once
 				"destroy": true,
 				"ajax": {
-					"url": '@Url.Action("LoadUsers")',
+					"url": '@Url.Action("GetUsersWithPagination", "UsersApi")',
 					"type": "POST"
 				},
 				"columns": [
@@ -166,9 +166,7 @@
             invokeDeleteRowModal(object);
         }
 
-
-
-		$("#adTrigger").on("click",
+        $("#adTrigger").on("click",
 			function() {
 				$.ajax({
 					url: "@Url.Action("GetAdUsers")",

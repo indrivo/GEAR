@@ -41,8 +41,17 @@ namespace GR.ECommerce.Payments.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<PaymentMethodViewModel>>))]
-        public async Task<JsonResult> GetPaymentMethods()
+        public async Task<JsonResult> GetAllPaymentMethods()
             => await JsonAsync(_service.GetAllPaymentMethodsAsync());
+
+        /// <summary>
+        /// Get active payment methods
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<PaymentMethodViewModel>>))]
+        public async Task<JsonResult> GetActivePaymentMethods()
+            => await JsonAsync(_service.GetActivePaymentMethodsAsync());
 
         /// <summary>
         /// Activate payment method

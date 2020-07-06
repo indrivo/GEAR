@@ -11,11 +11,11 @@ using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
-using GR.Entities.Data;
-using GR.Identity.Data;
+using GR.Entities.Abstractions;
+using GR.Identity.Abstractions;
 using GR.Logger.Extensions;
 using GR.Modules.Abstractions.Helpers;
-using GR.UI.Menu.Data;
+using GR.UI.Menu.Abstractions;
 using GR.WebApplication.Extensions;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
@@ -162,9 +162,9 @@ namespace GR.WebApplication
             AppState.InstallOnProgress = true;
 
             GlobalWebHost?
-                .MigrateDbContext<EntitiesDbContext>()
-                .MigrateDbContext<GearIdentityDbContext>()
-                .MigrateDbContext<MenuDbContext>();
+                .MigrateAbstractDbContext<IEntityContext>()
+                .MigrateAbstractDbContext<IIdentityContext>()
+                .MigrateAbstractDbContext<IMenuDbContext>();
 
             SystemEvents.Database.MigrateAll(EventArgs.Empty);
         }

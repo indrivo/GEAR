@@ -38,6 +38,9 @@ The framework has developed the following modules:
 		- Braintree payment method
 		- Paypal payment method
 		- Mobil pay payment method
+		- Apple Pay
+		- Google Pay
+		- Authorize.net pay
 - Dashboard module
 - Database backup module (postgres)
 - Audit module
@@ -45,3 +48,5 @@ The framework has developed the following modules:
 - Installer module
 - Logger module
 - Modules module
+- Webhooks module
+- 2-Factor authentication module 

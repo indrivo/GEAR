@@ -1,16 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Validation;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace GR.Identity.Profile.Api.Controllers
 {
@@ -63,40 +66,28 @@ namespace GR.Identity.Profile.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
-        public virtual async Task<JsonResult> UploadUserPhoto([Required]IFormFile file)
+        public virtual async Task<JsonResult> UploadUserPhoto([Required][AllowedExtensions(new[]
         {
-            var resultModel = new ResultModel();
-            if (file == null || file.Length == 0)
+            ".png", ".jpeg", ".jpg", ".tiff", ".pjp", ".pjpeg", ".jfif",".tif", ".gif", ".svg", ".bmp"
+        })] IFormFile file)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            using (var image = await Image.LoadAsync(file.OpenReadStream()))
             {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image not found" });
-                return Json(resultModel);
-            }
+                if (image.Width <= 256 && image.Height <= 256) return await JsonAsync(_userManager.ChangeUserPhotoAsync(file));
 
-            var currentUser = (await _userManager.GetCurrentUserAsync()).Result;
-            if (currentUser == null)
-            {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
-                return Json(resultModel);
-            }
+                image.Mutate(x => x.Resize(256, 256));
+                using (var ms = new MemoryStream())
+                {
+                    image.SaveAsPng(ms);
+                    var newFile = new FormFile(ms, 0, ms.Length, file.Name, file.FileName)
+                    {
+                        Headers = file.Headers
+                    };
 
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                currentUser.UserPhoto = memoryStream.ToArray();
+                    return await JsonAsync(_userManager.ChangeUserPhotoAsync(newFile));
+                }
             }
-
-            var result = await _userManager.UserManager.UpdateAsync(currentUser);
-            if (result.Succeeded)
-            {
-                resultModel.IsSuccess = true;
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = false;
-            resultModel.AppendIdentityErrors(result.Errors);
-            return Json(resultModel);
         }
 
         /// <summary>
@@ -116,7 +107,7 @@ namespace GR.Identity.Profile.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
-        public virtual async Task<JsonResult> UserPasswordChange([Required]ChangePasswordViewModel model)
+        public virtual async Task<JsonResult> UserPasswordChange([Required] ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid) return JsonModelStateErrors();
             return await JsonAsync(_userManager.ChangeUserPasswordAsync(model.CurrentPassword, model.Password));

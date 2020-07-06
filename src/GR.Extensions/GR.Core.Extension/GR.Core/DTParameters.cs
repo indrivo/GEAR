@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+// ReSharper disable InconsistentNaming
 
 namespace GR.Core
 {
@@ -194,5 +195,11 @@ namespace GR.Core
                 /// Note that normally server-side processing scripts will not perform regular expression searching for performance reasons on large data sets, but it is technically possible and at the discretion of your script.
                 /// </summary>
         public bool Regex { get; set; }
+    }
+
+    public class DTColumnMap
+    {
+        public virtual string FromColumn { get; set; }
+        public virtual string ToColumn { get; set; }
     }
 }

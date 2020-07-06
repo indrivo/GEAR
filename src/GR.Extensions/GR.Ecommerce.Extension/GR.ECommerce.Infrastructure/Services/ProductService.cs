@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using GR.Cache.Abstractions.Extensions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -214,7 +215,7 @@ namespace GR.ECommerce.Infrastructure.Services
         /// </summary>
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync() =>
-            new SuccessResultModel<IEnumerable<Currency>>(await Context.Currencies.ToListAsync());
+            new SuccessResultModel<IEnumerable<Currency>>(await Context.Currencies.FromCache(TimeSpan.MaxValue).ToListAsync());
 
         /// <summary>
         /// Get setting

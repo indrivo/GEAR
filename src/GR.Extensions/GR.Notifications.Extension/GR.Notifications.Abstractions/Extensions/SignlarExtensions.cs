@@ -1,7 +1,6 @@
 ﻿using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Notifications.Abstractions.ServiceBuilder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,16 +35,16 @@ namespace GR.Notifications.Abstractions.Extensions
         /// <param name="services"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static INotificationServiceCollection RegisterNotificationsHubModule<TCommunicationHub>(this INotificationServiceCollection services, string path = "/rtn")
+        public static IServiceCollection RegisterNotificationsHubModule<TCommunicationHub>(this IServiceCollection services, string path = "/rtn")
         where TCommunicationHub : class, ICommunicationHub
         {
             Arg.NotNull(services, nameof(services));
-            services.Services.AddGearSingleton<ICommunicationHub, TCommunicationHub>();
-            services.Services.AddSignalR(options =>
+            services.AddGearSingleton<ICommunicationHub, TCommunicationHub>();
+            services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
             });
-            services.Services.AddHealthChecks()
+            services.AddHealthChecks()
                 .AddSignalRHub(GearApplication.SystemConfig.EntryUri + path.Substring(1), "signalr-hub");
             return services;
         }

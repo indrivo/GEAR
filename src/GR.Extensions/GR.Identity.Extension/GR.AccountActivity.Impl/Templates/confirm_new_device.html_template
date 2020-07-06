@@ -27,6 +27,31 @@
             font-family: Gilroy-semibold;
             src: url(https://gist.githubusercontent.com/mfd/09b70eb47474836f25a21660282ce0fd/raw/2923dc0cccd912c217ef244f5c42d547deab5b60/Gilroy-Semibold.ttf);
         }
+
+		@font-face {
+			font-family: "Gilroy";
+			src: url("fonts/Gilroy/Gilroy-Bold.ttf");
+			font-style: normal;
+			font-weight: 700;
+		}
+
+		@font-face {
+			font-family: "Gilroy";
+			src: url("fonts/Gilroy/Gilroy-SemiBold.ttf");
+			font-style: normal;
+			font-weight: 600;
+		}
+
+		@font-face {
+			font-family: "Gilroy";
+			src: url("fonts/Gilroy/Gilroy-Regular.ttf");
+			font-style: normal;
+			font-weight: 500;
+		}
+
+		* {
+			font-family: "Gilroy";
+		}
     </style>
 </head>
 

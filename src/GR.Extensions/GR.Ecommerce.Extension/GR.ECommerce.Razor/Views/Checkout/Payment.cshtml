@@ -1,5 +1,5 @@
 @using GR.ECommerce.Payments.Abstractions
-@using GR.ECommerce.Payments.Abstractions.Models
+@using GR.ECommerce.Payments.Abstractions.ViewModels
 
 @model GR.Orders.Abstractions.Models.Order
 
@@ -8,7 +8,7 @@
 @{
     ViewData["Title"] = Localizer["system_payments"];
 
-    var providers = (await PaymentService.GetActivePaymentMethodsAsync()).Result?.ToList() ?? new List<PaymentMethod>();
+    var providers = (await PaymentService.GetActivePaymentMethodsAsync()).Result?.ToList() ?? new List<PaymentMethodViewModel>();
 }
 
 @section Styles {

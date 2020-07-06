@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GR.Identity.Abstractions;
 using GR.Subscriptions.Abstractions.Models;
 
@@ -54,5 +55,13 @@ namespace GR.Subscriptions.Abstractions.Helpers
         /// Delete on upgrade
         /// </summary>
         public virtual bool DeleteOtherSubscriptionsOnUpgrade { get; set; } = false;
+
+        /// <summary>
+        /// Notification providers
+        /// </summary>
+        public virtual IEnumerable<string> NotificationProviders { get; set; } = new List<string>
+        {
+            "email", "notification.local"
+        };
     }
 }

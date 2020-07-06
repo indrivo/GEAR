@@ -5,7 +5,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
-using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Events;
@@ -41,11 +40,6 @@ namespace GR.PageRender.Razor.Controllers
         private readonly IPageRender _pageRender;
 
         /// <summary>
-        /// Inject form service
-        /// </summary>
-        private readonly IFormService _formService;
-
-        /// <summary>
         /// Inject pages context
         /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
@@ -67,10 +61,9 @@ namespace GR.PageRender.Razor.Controllers
 
         #endregion Injectable
 
-        public PageController(IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext, IEntityContext context, RoleManager<GearRole> roleManager, ICacheService cacheService)
+        public PageController(IPageRender pageRender, IDynamicPagesContext pagesContext, IEntityContext context, RoleManager<GearRole> roleManager, ICacheService cacheService)
         {
             _pageRender = pageRender;
-            _formService = formService;
             _pagesContext = pagesContext;
             _context = context;
             _roleManager = roleManager;
@@ -651,25 +644,6 @@ namespace GR.PageRender.Razor.Controllers
             var viewModel = await _pageRender.GenerateViewModel(tableId.Value);
             var listPath = $"{table.Name}-{Guid.NewGuid()}-page";
             if (!viewModel.IsSuccess) return NotFound();
-            var createForm = await _formService.GenerateFormByEntity(table.Id, $"Add {table.Name} {Guid.NewGuid()}", $"/{listPath}", $"Add {table.Name}");
-            if (createForm != null)
-            {
-                var resCreate = _formService.CreateForm(createForm);
-                if (resCreate.IsSuccess)
-                {
-                    await _pageRender.GenerateFormPage(resCreate.Result, $"/{listPath}/add", $"Add {table.Name}");
-                }
-            }
-
-            var editForm = await _formService.GenerateFormByEntity(table.Id, $"Edit {table.Name} {Guid.NewGuid()}", $"/{listPath}", $"Edit {table.Name}");
-            if (editForm != null)
-            {
-                var resEdit = _formService.CreateForm(editForm);
-                if (resEdit.IsSuccess)
-                {
-                    await _pageRender.GenerateFormPage(resEdit.Result, $"/{listPath}/edit", $"Edit {table.Name}");
-                }
-            }
 
             var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result, $"/{listPath}/add", $"/{listPath}/edit");
             if (listPage == null) return NotFound();

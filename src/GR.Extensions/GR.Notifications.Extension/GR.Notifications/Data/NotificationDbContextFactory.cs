@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
-using GR.Core.Helpers.DbContexts;
+﻿using GR.Core.Helpers.DbContexts;
+using Microsoft.EntityFrameworkCore.Design;
 
-namespace GR.Notifications.Data
+namespace GR.Notifications.EFCore.Data
 {
     /// <summary>
     /// Do not remove this

@@ -122,9 +122,10 @@ namespace GR.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <param name="parameters"></param>
+        /// <param name="mappings"></param>
         /// <returns></returns>
         public static async Task<PagedResult<T>> GetPagedAsync<T>(this IQueryable<T> query,
-            DTParameters parameters)
+            DTParameters parameters, IEnumerable<DTColumnMap> mappings = null)
             where T : class
         {
             if (query == null) throw new NullReferenceException("Invalid query");
@@ -148,7 +149,18 @@ namespace GR.Core.Extensions
                 var split = parameters.SortOrder.Split(' ');
                 var propName = split[0].ToLower().FirstCharToUpper();
                 var isAsc = split.Length != 2;
-                query = query.OrderByWithDirection(x => x.GetPropertyValue(propName), !isAsc);
+
+                if (mappings != null)
+                {
+                    var hasMap = mappings.FirstOrDefault(x => x.FromColumn == propName);
+                    query = hasMap != null
+                        ? query.OrderByWithDirection(x => x.GetPropertyValue(hasMap.ToColumn), !isAsc)
+                        : query.OrderByWithDirection(x => x.GetPropertyValue(propName), !isAsc);
+                }
+                else
+                {
+                    query = query.OrderByWithDirection(x => x.GetPropertyValue(propName), !isAsc);
+                }
             }
             else
             {
@@ -170,12 +182,12 @@ namespace GR.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <param name="parameters"></param>
+        /// <param name="mappings"></param>
         /// <returns></returns>
-        public static async Task<DTResult<T>> GetPagedAsDtResultAsync<T>(this IQueryable<T> query,
-            DTParameters parameters)
+        public static async Task<DTResult<T>> GetPagedAsDtResultAsync<T>(this IQueryable<T> query, DTParameters parameters, IEnumerable<DTColumnMap> mappings = null)
             where T : class
         {
-            var paged = await query.GetPagedAsync(parameters);
+            var paged = await query.GetPagedAsync(parameters, mappings);
             return new DTResult<T>
             {
                 Draw = paged.CurrentPage,

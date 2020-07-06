@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using GR.Calendar.Abstractions.Enums;
 using GR.Core.Abstractions;
-using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Calendar.Abstractions.Models.ViewModels
@@ -57,7 +56,6 @@ namespace GR.Calendar.Abstractions.Models.ViewModels
 
     public sealed class CalendarUserViewModel : UserInfoViewModel
     {
-        public CalendarUserViewModel(GearUser user) : base(user) { }
         public EventAcceptance Acceptance { get; set; } = EventAcceptance.Tentative;
     }
 }

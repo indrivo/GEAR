@@ -11,8 +11,8 @@ using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
+using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
-using GR.Entities.Data;
 using GR.Entities.Security.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -42,7 +42,7 @@ namespace GR.PageRender
         /// <summary>
         /// Context
         /// </summary>
-        private readonly EntitiesDbContext _context;
+        private readonly IEntityContext _context;
 
         /// <summary>
         /// Inject page context
@@ -80,7 +80,7 @@ namespace GR.PageRender
         private readonly IEntityRoleAccessService _entityRoleAccessService;
         #endregion
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IClientsService appProvider, IEntityRoleAccessService entityRoleAccessService)
+        public PageRender(IEntityContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IClientsService appProvider, IEntityRoleAccessService entityRoleAccessService)
         {
             _context = context;
             _cacheService = cacheService;

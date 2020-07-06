@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -21,7 +21,6 @@ using GR.Orders.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.Orders.Abstractions.Helpers;
 using GR.Orders.Abstractions.Models;
 using GR.Orders.Abstractions.ViewModels.OrderViewModels;
-using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Orders
@@ -48,11 +47,6 @@ namespace GR.Orders
         private readonly IOrderDbContext _orderDbContext;
 
         /// <summary>
-        /// Inject data filter
-        /// </summary>
-        private readonly IDataFilter _dataFilter;
-
-        /// <summary>
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
@@ -62,25 +56,30 @@ namespace GR.Orders
         /// </summary>
         private readonly ICartService _cartService;
 
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="commerceContext"></param>
-        /// <param name="dataFilter"></param>
         /// <param name="userManager"></param>
         /// <param name="cartService"></param>
         /// <param name="orderDbContext"></param>
         /// <param name="productService"></param>
-        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
+        /// <param name="mapper"></param>
+        public OrderProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService, IMapper mapper)
         {
             _commerceContext = commerceContext;
-            _dataFilter = dataFilter;
             _userManager = userManager;
             _cartService = cartService;
             _orderDbContext = orderDbContext;
             _productService = productService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -274,7 +273,7 @@ namespace GR.Orders
         public virtual async Task<DTResult<GetOrdersViewModel>> GetMyOrdersWithPaginationWayAsync(DTParameters param)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
-            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id);
+            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : await GetPaginatedOrdersByUserIdAsync(param, userRequest.Result.Id);
         }
 
         /// <summary>
@@ -282,29 +281,15 @@ namespace GR.Orders
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param)
+        public virtual async Task<DTResult<GetOrdersViewModel>> GetAllOrdersWithPaginationWayAsync(DTParameters param)
         {
             if (param == null) return new DTResult<GetOrdersViewModel>();
-            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).ToList();
+            var paged = await _orderDbContext.Orders
+                .Include(x => x.Currency)
+                .Include(x => x.ProductOrders)
+                .GetPagedAsDtResultAsync(param);
 
-            var list = filtered.Select(async x =>
-            {
-                var map = x.Adapt<GetOrdersViewModel>();
-                map.ProductOrders =
-                    await _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id)).ToListAsync();
-                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.Equals(x.UserId));
-                return map;
-            }).Select(x => x.Result);
-
-            return new DTResult<GetOrdersViewModel>
-            {
-                Draw = param.Draw,
-                Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
+            return _mapper.Map<DTResult<GetOrdersViewModel>>(paged);
         }
 
         /// <summary>
@@ -445,28 +430,16 @@ namespace GR.Orders
         /// <param name="param"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual DTResult<GetOrdersViewModel> GetPaginatedOrdersByUserId(DTParameters param, Guid? userId)
+        public virtual async Task<DTResult<GetOrdersViewModel>> GetPaginatedOrdersByUserIdAsync(DTParameters param, Guid? userId)
         {
             if (param == null || userId == null) return new DTResult<GetOrdersViewModel>();
-            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => x.UserId.Equals(userId)).ToList();
+            var paginated = await _orderDbContext.Orders
+                .Include(x => x.ProductOrders)
+                .Include(x => x.Currency)
+                .Where(x => x.UserId.Equals(userId))
+                .GetPagedAsDtResultAsync(param);
 
-            var list = filtered.Select(x =>
-            {
-                x.Currency = _commerceContext.Currencies.FirstOrDefault(y => y.Code.Equals(x.CurrencyId));
-                var map = x.Adapt<GetOrdersViewModel>();
-                map.ProductOrders = _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id));
-                return map;
-            });
-
-            return new DTResult<GetOrdersViewModel>
-            {
-                Draw = param.Draw,
-                Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
+            return _mapper.Map<DTResult<GetOrdersViewModel>>(paginated);
         }
     }
 }

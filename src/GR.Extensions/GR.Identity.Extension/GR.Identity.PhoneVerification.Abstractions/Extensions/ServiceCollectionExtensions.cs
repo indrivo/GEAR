@@ -1,6 +1,6 @@
-﻿using GR.Core.Extensions;
+﻿using GR.Core.Abstractions;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Core.Services;
 using GR.Identity.PhoneVerification.Abstractions.Events;
 using GR.Identity.PhoneVerification.Abstractions.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -46,7 +46,7 @@ namespace GR.Identity.PhoneVerification.Abstractions.Extensions
             where TSmsSender : class, ISmsSender
         {
             services.AddTransient<ISmsSender, TSmsSender>();
-            var appSender = IoC.Resolve<AppSender>();
+            var appSender = IoC.Resolve<IAppSender>();
             appSender.RegisterProvider<TSmsSender>("sms");
             return services;
         }

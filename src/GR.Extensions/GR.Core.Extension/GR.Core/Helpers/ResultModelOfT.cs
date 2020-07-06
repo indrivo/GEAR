@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
 namespace GR.Core.Helpers
 {
+    /// <summary>
+    /// This class is a common Gear model result, it is used everywhere, in api and in services
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ResultModel<T> : IResultModel<T>
     {
         /// <inheritdoc />
@@ -62,6 +67,16 @@ namespace GR.Core.Helpers
         }
 
         /// <summary>
+        /// Add error
+        /// </summary>
+        /// <param name="exception"></param>
+        public virtual ResultModel<T> AddError(Exception exception)
+        {
+            Errors?.Add(new ErrorModel(string.Empty, exception.Message));
+            return this;
+        }
+
+        /// <summary>
         /// Add error from results
         /// </summary>
         /// <param name="results"></param>
@@ -92,6 +107,21 @@ namespace GR.Core.Helpers
             var response = new ResultModel<T>
             {
                 IsSuccess = collection.All(x => x.IsSuccess)
+            };
+            foreach (var error in collection.SelectMany(result => result.Errors))
+            {
+                response.Errors.Add(error);
+            }
+
+            return response;
+        }
+
+        public virtual ResultModel<T> JoinErrors(IEnumerable<ResultModel> results)
+        {
+            var collection = results.ToList();
+            var response = new ResultModel<T>
+            {
+                IsSuccess = IsSuccess
             };
             foreach (var error in collection.SelectMany(result => result.Errors))
             {

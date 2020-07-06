@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Helpers.Responses;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Core.Extensions
@@ -248,11 +251,68 @@ namespace GR.Core.Extensions
         /// <param name="id"></param>
         /// <returns></returns>
         public static async Task<TEntity> FindByIdAsync<TEntity>(this DbSet<TEntity> self, Guid? id)
-            where TEntity : class, IBaseModel, IBase<Guid>
+            where TEntity : class, IBase<Guid>
         {
             Arg.NotNull(self, nameof(FindByIdAsync));
             if (id == null) return default;
             return await self.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(id));
+        }
+
+        /// <summary>
+        /// Update entry
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TId"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entryId"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel> UpdateAsync<TEntity, TId>(this IDbContext context, TId entryId, Action<TEntity> action)
+            where TEntity : class, IBase<TId>
+        {
+            var entry = await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(entryId));
+            if (entry == null) return new NotFoundResultModel();
+            action(entry);
+            context.Update(entry);
+            return await context.PushAsync();
+        }
+
+        /// <summary>
+        /// Get context migrations
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="databaseFacade"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetContextMigrations<TContext>(this DatabaseFacade databaseFacade, TContext context)
+            where TContext : DbContext
+        {
+            var contextMigrations = new List<string>();
+            var assembly = context.GetType().Assembly;
+            foreach (var aType in assembly.GetTypes())
+            {
+                if (!aType.IsClass || aType.IsAbstract || !aType.IsSubclassOf(typeof(Migration))) continue;
+                var migrationName = aType.GetCustomAttribute<MigrationAttribute>();
+                if (migrationName == null) continue;
+                contextMigrations.Add(migrationName.Id);
+            }
+
+            return contextMigrations;
+        }
+
+        /// <summary>
+        /// Get context applied migrations
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="databaseFacade"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetContextAppliedMigrations<TContext>(this DatabaseFacade databaseFacade, TContext context)
+            where TContext : DbContext
+        {
+            var appliedMigrations = databaseFacade.GetAppliedMigrations().ToList();
+            var contextMigrations = databaseFacade.GetContextMigrations(context);
+            return appliedMigrations.Where(x => contextMigrations.Contains(x)).ToList();
         }
     }
 }

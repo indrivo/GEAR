@@ -16,6 +16,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Encryption;
 using GR.Core.Helpers.Global;
+using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Validators;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions;
@@ -81,6 +82,29 @@ namespace GR.Card.AuthorizeDotNet
                 ItemElementName = ItemChoiceType.transactionKey,
                 Item = _options.Value.TransactionKey,
             };
+        }
+
+        /// <summary>
+        /// Pay order with saved card
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> PayOrderAsyncWithExistentCardAsync([Required] OrderWithSavedCreditCardPayViewModel model)
+        {
+            var state = ModelValidator.IsValid<OrderWithSavedCreditCardPayViewModel, Guid>(model);
+            if (!state.IsSuccess) return state;
+            var choseCardRequest = await GetCardByIdAsync(model.CardId);
+            if (!choseCardRequest.IsSuccess) return choseCardRequest.Map<Guid>();
+            var card = choseCardRequest.Result;
+            return await PayOrderAsync(new OrderCreditCardPayViewModel
+            {
+                CardNumber = card.CardNumber,
+                Month = card.Month,
+                Year = card.Year,
+                Owner = card.Owner,
+                CardCode = card.CardCode,
+                OrderId = model.OrderId
+            });
         }
 
         /// <summary>
@@ -278,37 +302,246 @@ namespace GR.Card.AuthorizeDotNet
         /// <returns></returns>
         public virtual async Task<ResultModel> SaveCardAsync(GearUser user, CreditCardPayViewModel card)
         {
-            var serializedCard = card.Is<CreditCardPayViewModel>()?.SerializeAsJson();
-            var key = GenerateKey(user);
-            var encrypted = EncryptHelper.Encrypt(serializedCard, key);
-            var saveRequest = await _userManager.UserManager.SetAuthenticationTokenAsync(user, CreditCardResources.CreditCardProvider, "card", encrypted);
-            return saveRequest.ToResultModel();
+            var result = new ResultModel();
+            var cards = new List<CreditCardPayViewModel>();
+            var savedCardsRequest = await GetSavedCreditCardsAsync();
+            if (savedCardsRequest.IsSuccess) cards = savedCardsRequest.Result.ToList();
+            if (cards.Select(x => x.CardNumber).Contains(card.CardNumber))
+            {
+                result.AddError("Card already exists");
+                return result;
+            }
+
+            var newCard = card.Is<CreditCardPayViewModel>();
+            newCard.CardId = Guid.NewGuid();
+            cards.Add(newCard);
+
+            return await UpdateCardsAsync(cards);
         }
 
         /// <summary>
         /// Get saved card
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<ResultModel<CreditCardPayViewModel>> GetSavedCreditCardAsync()
+        public virtual async Task<ResultModel<IEnumerable<CreditCardPayViewModel>>> GetSavedCreditCardsAsync()
         {
-            var result = new ResultModel<CreditCardPayViewModel>();
+            var result = new ResultModel<IEnumerable<CreditCardPayViewModel>>();
             var userRequest = await _userManager.GetCurrentUserAsync();
-            if (!userRequest.IsSuccess) return new UserNotFoundResult<CreditCardPayViewModel>();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<CreditCardPayViewModel>>();
             var user = userRequest.Result;
 
             var key = GenerateKey(user);
-            var cardHash = await _userManager.UserManager.GetAuthenticationTokenAsync(user, CreditCardResources.CreditCardProvider, "card");
+            var cardHash = await _userManager.UserManager.GetAuthenticationTokenAsync(user, CreditCardResources.CreditCardProvider, "cards");
             if (cardHash.IsNullOrEmpty())
             {
-                result.AddError("No credit card saved");
+                result.AddError("No credit cards saved");
                 return result;
             }
 
             var serializedString = EncryptHelper.Decrypt(cardHash, key);
-            var card = serializedString.Deserialize<CreditCardPayViewModel>();
+            var cards = serializedString.Deserialize<IEnumerable<CreditCardPayViewModel>>();
 
-            result.IsSuccess = card != null;
-            result.Result = card;
+            result.IsSuccess = cards != null;
+            result.Result = cards;
+            return result;
+        }
+
+        /// <summary>
+        /// Get saved cards for specific user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<CreditCardPayViewModel>>> GetSavedCreditCardsAsync(Guid userId)
+        {
+            var result = new ResultModel<IEnumerable<CreditCardPayViewModel>>();
+            var userRequest = await _userManager.FindUserByIdAsync(userId);
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<CreditCardPayViewModel>>();
+            var user = userRequest.Result;
+
+            var key = GenerateKey(user);
+            var cardHash = await _userManager.UserManager.GetAuthenticationTokenAsync(user, CreditCardResources.CreditCardProvider, "cards");
+            if (cardHash.IsNullOrEmpty())
+            {
+                result.AddError("No credit cards saved");
+                return result;
+            }
+
+            var serializedString = EncryptHelper.Decrypt(cardHash, key);
+            var cards = serializedString.Deserialize<IEnumerable<CreditCardPayViewModel>>();
+
+            result.IsSuccess = cards != null;
+            result.Result = cards;
+            return result;
+        }
+
+        /// <summary>
+        /// Get card by id
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<CreditCardPayViewModel>> GetCardByIdAsync(Guid cardId)
+        {
+            var result = new ResultModel<CreditCardPayViewModel>();
+            var cardsRequest = await GetSavedCreditCardsAsync();
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit card found");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.ToList();
+            var card = cards.FirstOrDefault(x => x.CardId.Equals(cardId));
+            if (card != null) return new SuccessResultModel<CreditCardPayViewModel>(card);
+
+            result.AddError("No credit card found");
+            return result;
+        }
+
+        /// <summary>
+        /// Get card by id
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<CreditCardPayViewModel>> GetCardByIdAsync(Guid cardId, Guid userId)
+        {
+            var result = new ResultModel<CreditCardPayViewModel>();
+            var cardsRequest = await GetSavedCreditCardsAsync(userId);
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit card found");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.ToList();
+            var card = cards.FirstOrDefault(x => x.CardId.Equals(cardId));
+            if (card != null) return new SuccessResultModel<CreditCardPayViewModel>(card);
+
+            result.AddError("No credit card found");
+            return result;
+        }
+
+        /// <summary>
+        /// Get default card for current user
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<CreditCardPayViewModel>> GetDefaultCardAsync()
+        {
+            var result = new ResultModel<CreditCardPayViewModel>();
+            var cardsRequest = await GetSavedCreditCardsAsync();
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit card founds");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.ToList();
+            var card = cards.FirstOrDefault(x => x.IsDefault) ?? cards.FirstOrDefault();
+            if (card != null) return new SuccessResultModel<CreditCardPayViewModel>(card);
+
+            result.AddError("No credit card found");
+            return result;
+        }
+
+        /// <summary>
+        /// Get default card for user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<CreditCardPayViewModel>> GetDefaultCardAsync(Guid userId)
+        {
+            var result = new ResultModel<CreditCardPayViewModel>();
+            var cardsRequest = await GetSavedCreditCardsAsync(userId);
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit card founds");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.ToList();
+            var card = cards.FirstOrDefault(x => x.IsDefault) ?? cards.FirstOrDefault();
+            if (card != null) return new SuccessResultModel<CreditCardPayViewModel>(card);
+
+            result.AddError("No credit card found");
+            return result;
+        }
+
+        /// <summary>
+        /// Remove credit card
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RemoveCreditCardAsync(Guid cardId)
+        {
+            var result = new ResultModel();
+            if (cardId == Guid.Empty) return new InvalidParametersResultModel($"{nameof(cardId)} is required");
+            var cardsRequest = await GetSavedCreditCardsAsync();
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit cards available");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.Where(x => x.CardId != cardId).ToList();
+            return await UpdateCardsAsync(cards);
+        }
+
+        /// <summary>
+        /// Set default card
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SetDefaultCardAsync(Guid cardId)
+        {
+            var result = new ResultModel();
+            if (cardId == Guid.Empty) return new InvalidParametersResultModel($"{nameof(cardId)} is required");
+            var cardsRequest = await GetSavedCreditCardsAsync();
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit cards available");
+                return result;
+            }
+
+            var cards = cardsRequest.Result.ToList();
+            var existCard = cards.FirstOrDefault(x => x.CardId != null && x.CardId.Value == cardId);
+            if (existCard == null)
+            {
+                result.AddError("The selected card was not found");
+                return result;
+            }
+
+            foreach (var card in cards)
+            {
+                card.IsDefault = card.CardId == cardId;
+            }
+            return await UpdateCardsAsync(cards);
+        }
+
+        /// <summary>
+        /// Get hidden cards 
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<HiddenCreditCardPayViewModel>>> GetHiddenCardsAsync()
+        {
+            var result = new ResultModel<IEnumerable<HiddenCreditCardPayViewModel>>();
+            var cardsRequest = await GetSavedCreditCardsAsync();
+            if (!cardsRequest.IsSuccess)
+            {
+                result.AddError("No credit cards available");
+                return result;
+            }
+
+            var cards = cardsRequest.Result;
+
+            result.Result = cards.Select(card => new HiddenCreditCardPayViewModel(card.CardNumber)
+            {
+                Owner = card.Owner,
+                Month = card.Month,
+                Year = card.Year,
+                CardId = card.CardId,
+                IsDefault = card.IsDefault
+            }).ToList();
+            result.IsSuccess = true;
             return result;
         }
 
@@ -317,6 +550,18 @@ namespace GR.Card.AuthorizeDotNet
         private static string GenerateKey(GearUser user)
         {
             return $"key_{user.Id}_{user.UserName}";
+        }
+
+        private async Task<ResultModel> UpdateCardsAsync(IEnumerable<CreditCardPayViewModel> cards)
+        {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<object>().ToBase();
+            var user = userRequest.Result;
+            var serializedCard = cards.SerializeAsJson();
+            var key = GenerateKey(user);
+            var encrypted = EncryptHelper.Encrypt(serializedCard, key);
+            var saveRequest = await _userManager.UserManager.SetAuthenticationTokenAsync(user, CreditCardResources.CreditCardProvider, "cards", encrypted);
+            return saveRequest.ToResultModel();
         }
 
         #endregion

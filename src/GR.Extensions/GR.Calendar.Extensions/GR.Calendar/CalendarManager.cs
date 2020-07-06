@@ -8,7 +8,6 @@ using GR.Calendar.Abstractions;
 using GR.Calendar.Abstractions.Enums;
 using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.Events.EventArgs;
-using GR.Calendar.Abstractions.Helpers.Mappers;
 using GR.Calendar.Abstractions.Models;
 using GR.Calendar.Abstractions.Models.ViewModels;
 using GR.Core.Extensions;
@@ -42,6 +41,7 @@ namespace GR.Calendar
         /// Inject http context
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
+
         #endregion
 
 
@@ -265,9 +265,16 @@ namespace GR.Calendar
                 return response;
             }
 
-            var updateModel = EventMapper.Map(evt, model);
-            _context.CalendarEvents.Update(updateModel);
-            var dbResult = await _context.PushAsync();
+            var dbResult = await _context.UpdateAsync<CalendarEvent, Guid>(model.Id, options =>
+            {
+                options.Title = model.Title;
+                options.Details = model.Details;
+                options.StartDate = model.StartDate;
+                options.EndDate = model.EndDate;
+                options.Location = model.Location;
+                options.Priority = model.Priority;
+                options.MinutesToRemind = model.MinutesToRemind;
+            });
             CalendarEvents.SystemCalendarEvents.EventUpdated(new EventUpdatedEventArgs
             {
                 EventId = evt.Id,
@@ -452,7 +459,7 @@ namespace GR.Calendar
             {
                 return evtRequest.ToBase();
             }
-      
+
             var memberState = evtRequest.Result.EventMembers.FirstOrDefault(x => x.UserId.Equals(memberId));
             if (memberState == null)
             {

@@ -59,6 +59,21 @@ namespace GR.Identity
         }
 
         /// <summary>
+        /// Log in user with password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <param name="rememberMe"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> LoginAsync(GearUser user, string password, bool rememberMe = false)
+        => await LoginAsync(new LoginViewModel
+        {
+            UserName = user.UserName,
+            Password = password,
+            RememberMe = rememberMe
+        });
+
+        /// <summary>
         /// Login
         /// </summary>
         /// <param name="user"></param>

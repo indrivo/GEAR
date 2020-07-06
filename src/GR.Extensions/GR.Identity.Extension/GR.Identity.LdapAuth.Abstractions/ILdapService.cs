@@ -1,5 +1,6 @@
 ﻿using GR.Identity.LdapAuth.Abstractions.Models;
 using System.Collections.Generic;
+using GR.Core.Helpers;
 
 namespace GR.Identity.LdapAuth.Abstractions
 {
@@ -73,6 +74,6 @@ namespace GR.Identity.LdapAuth.Abstractions
         /// <param name="distinguishedName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        bool Authenticate(string distinguishedName, string password);
+        ResultModel Authenticate(string distinguishedName, string password);
     }
 }

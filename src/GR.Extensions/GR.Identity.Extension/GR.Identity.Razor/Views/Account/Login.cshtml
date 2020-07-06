@@ -43,7 +43,7 @@
             <form class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
                 <div class="form-content px-2">
                     <div class="form-group mt-5">
-                        <label for="username">@Localizer["email"]</label>
+                        <label for="username">@Localizer["system_auth_username"]</label>
                         <input id="username" class="form-control" asp-for="UserName" placeholder="Ex: John">
                         <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
@@ -115,8 +115,8 @@
                 </div>
             </form>
         </div>
-        <div class="image-area col" style="background-image: url(../images/public/home-background.svg);
-    background-color: hsla(220, 92%, 41%, 0.1);"></div>
+        <div class="image-area col" style="background-image: url(../images/background/login-register.jpg);
+        background-color: hsla(220, 92%, 41%, 0.1);"></div>
     </section>
 
     <div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

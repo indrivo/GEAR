@@ -11,6 +11,8 @@ using GR.AccountActivity.Abstractions.Events.EventArgs;
 using GR.AccountActivity.Abstractions.Helpers;
 using GR.AccountActivity.Abstractions.Models;
 using GR.AccountActivity.Abstractions.ViewModels;
+using GR.AccountActivity.Impl.Models;
+using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -25,6 +27,7 @@ using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using UAParser;
 using Wangkanai.Detection;
 
@@ -65,6 +68,16 @@ namespace GR.AccountActivity.Impl
         /// </summary>
         private readonly IHttpContextAccessor _accessor;
 
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        private readonly ILogger<UserActivityService> _logger;
+
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
         #endregion
 
         /// <summary>
@@ -76,7 +89,9 @@ namespace GR.AccountActivity.Impl
         /// <param name="urlHelper"></param>
         /// <param name="mapper"></param>
         /// <param name="accessor"></param>
-        public UserActivityService(IActivityContext context, IDetection detection, IUserManager<GearUser> userManager, IUrlHelper urlHelper, IMapper mapper, IHttpContextAccessor accessor)
+        /// <param name="logger"></param>
+        /// <param name="cacheService"></param>
+        public UserActivityService(IActivityContext context, IDetection detection, IUserManager<GearUser> userManager, IUrlHelper urlHelper, IMapper mapper, IHttpContextAccessor accessor, ILogger<UserActivityService> logger, ICacheService cacheService)
         {
             _context = context;
             _detection = detection;
@@ -84,6 +99,8 @@ namespace GR.AccountActivity.Impl
             _urlHelper = urlHelper;
             _mapper = mapper;
             _accessor = accessor;
+            _logger = logger;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -99,15 +116,16 @@ namespace GR.AccountActivity.Impl
             var user = userRequest.Result;
 
             var ip = context.Connection.RemoteIpAddress;
-            var (platform, browser) = ExtractPlatformAndBrowserVersions(context);
+            var platformRequest = ExtractPlatformAndBrowserVersions(context);
+            if (!platformRequest.IsSuccess) return platformRequest.Map<Guid>();
 
             var device = new UserDevice
             {
                 IpAddress = ip.ToString(),
                 Location = GetLocationOfDevice(context),
                 UserId = user.Id,
-                Browser = browser,
-                Platform = platform
+                Browser = platformRequest.Result.Browser,
+                Platform = platformRequest.Result.Platform
             };
 
 
@@ -116,39 +134,6 @@ namespace GR.AccountActivity.Impl
             if (dbResult.IsSuccess) await SendConfirmNewDeviceMailAsync(user, device, context);
 
             return dbResult.Map(device.Id);
-        }
-
-        /// <summary>
-        /// Extract platform and browser
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        private (string, string) ExtractPlatformAndBrowserVersions(HttpContext context)
-        {
-            var response = (string.Empty, string.Empty);
-            var uaParser = Parser.GetDefault();
-            var clientInfo = uaParser.Parse(context.Request.Headers["User-Agent"]);
-
-            if (context.Request.Headers.ContainsKey("REQ-MOBILE"))
-            {
-                var model = context.Request.Headers["REQ-MOBILE"];
-                var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
-                var platform = $"Mobile App {_detection.Device.Type} ({os})";
-
-                response.Item1 = platform;
-                response.Item2 = model;
-            }
-            else
-            {
-                var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
-                var platform = $"Web {_detection.Device.Type} ({os})";
-                var browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}";
-
-                response.Item1 = platform;
-                response.Item2 = browser;
-            }
-
-            return response;
         }
 
         /// <summary>
@@ -203,21 +188,22 @@ namespace GR.AccountActivity.Impl
         {
             var ip = context.Connection.RemoteIpAddress;
             var location = GetLocationOfDevice(context);
-            var (platform, browser) = ExtractPlatformAndBrowserVersions(context);
+            var platformRequest = ExtractPlatformAndBrowserVersions(context);
+            if (!platformRequest.IsSuccess) return platformRequest.Map<UserDevice>();
 
-            var device = await _context.Devices
+            var key = AccountActivityResources.GetDeviceCacheKey(userId, ip.ToString(), platformRequest.Result.Platform, location, platformRequest.Result.Browser);
+            var device = await _cacheService.GetOrSetResponseAsync(key, async () => await _context.Devices
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.IpAddress.Equals(ip.ToString())
-                                          && x.Platform.Equals(platform)
+                                          && x.Platform.Equals(platformRequest.Result.Platform)
                                           && x.Location.Equals(location)
                                           && x.UserId.Equals(userId)
-                                          && x.Browser.Equals(browser));
+                                          && x.Browser.Equals(platformRequest.Result.Browser)));
 
             if (device == null) return new NotFoundResultModel<UserDevice>();
 
             return new SuccessResultModel<UserDevice>(device);
         }
-
 
         /// <summary>
         /// Get location of device
@@ -344,6 +330,7 @@ namespace GR.AccountActivity.Impl
                .AddError("Invalid token")
                .ToBase();
 
+
             device.IsConfirmed = true;
             device.ConfirmDate = DateTime.Now;
             _context.Devices.Update(device);
@@ -357,6 +344,8 @@ namespace GR.AccountActivity.Impl
                     Device = device,
                     HttpContext = _accessor.HttpContext
                 });
+
+                await _cacheService.RemoveAsync(device.GetDeviceCacheKey());
             }
             return dbResult;
         }
@@ -427,6 +416,17 @@ namespace GR.AccountActivity.Impl
         public virtual async Task<DTResult<UserActivityViewModel>> GetPagedUserActivityAsync(DTParameters parameters)
         {
             var userId = _userManager.FindUserIdInClaims().Result;
+            return await GetPagedUserActivityAsync(parameters, userId);
+        }
+
+        /// <summary>
+        /// Get paged user activities fro user
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<UserActivityViewModel>> GetPagedUserActivityAsync(DTParameters parameters, Guid userId)
+        {
             var paginationResponse = await _context.Activities
                 .Include(x => x.Device)
                 .Where(x => x.Device.UserId.Equals(userId))
@@ -473,7 +473,10 @@ namespace GR.AccountActivity.Impl
                 .ToListAsync();
 
             _context.Devices.RemoveRange(other);
-            return await _context.PushAsync();
+            var dbResponse = await _context.PushAsync();
+            if (!dbResponse.IsSuccess) return dbResponse;
+            foreach (var otherDevice in other) await _cacheService.RemoveAsync(otherDevice.GetDeviceCacheKey());
+            return dbResponse;
         }
 
         /// <summary>
@@ -496,7 +499,12 @@ namespace GR.AccountActivity.Impl
             }
 
             _context.Devices.Remove(deviceGet.Result);
-            return await _context.PushAsync();
+            var dbResponse = await _context.PushAsync();
+            if (dbResponse.IsSuccess)
+            {
+                await _cacheService.RemoveAsync(deviceGet.Result.GetDeviceCacheKey());
+            }
+            return dbResponse;
         }
 
         /// <summary>
@@ -520,7 +528,13 @@ namespace GR.AccountActivity.Impl
 
             await _context.Activities.AddAsync(activity);
 
-            return await _context.PushAsync();
+            var dbResponse = await _context.PushAsync();
+            if (!dbResponse.IsSuccess)
+            {
+                _logger.LogError($"Fail to save user activity errors => {dbResponse.SerializeAsJson()}, entry => {activity.SerializeAsJson()}");
+            }
+
+            return dbResponse;
         }
 
         /// <summary>
@@ -535,7 +549,11 @@ namespace GR.AccountActivity.Impl
             if (activityName.IsNullOrEmpty()) return new InvalidParametersResultModel();
             if (context == null) context = _accessor.HttpContext;
             var deviceGet = await FindDeviceAsync(userId, context);
-            if (!deviceGet.IsSuccess) return deviceGet.ToBase();
+            if (!deviceGet.IsSuccess)
+            {
+                _logger.LogError($"Method: {nameof(RegisterUserNotAuthenticatedActivityAsync)} Can't detect device for register user {userId} {activityName} activity, context: {context.Request.Headers.SerializeAsJson()}");
+                return deviceGet.ToBase();
+            }
 
             var activity = new UserActivity
             {
@@ -545,7 +563,61 @@ namespace GR.AccountActivity.Impl
 
             await _context.Activities.AddAsync(activity);
 
-            return await _context.PushAsync();
+            var dbResponse = await _context.PushAsync();
+            if (!dbResponse.IsSuccess)
+            {
+                _logger.LogError($"Fail to save user activity errors => {dbResponse.SerializeAsJson()}, entry => {activity.SerializeAsJson()}");
+            }
+            return dbResponse;
         }
+
+        #region Helpers
+
+        /// <summary>
+        /// Extract platform and browser
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private ResultModel<ExtractedInfoFromHttpContext> ExtractPlatformAndBrowserVersions(HttpContext context)
+        {
+            var response = new ResultModel<ExtractedInfoFromHttpContext>();
+            var uaParser = Parser.GetDefault();
+            if (!context.Request.Headers.ContainsKey("User-Agent"))
+            {
+                response.AddError("G-UserAgent-Missing", "User agent is not defined and can't extract device info");
+                return response;
+            }
+
+            var clientInfo = uaParser.Parse(context.Request.Headers["User-Agent"]);
+            if (context.Request.Headers.ContainsKey("REQ-MOBILE"))
+            {
+                var model = context.Request.Headers["REQ-MOBILE"];
+                var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
+                var platform = $"Mobile App ({os})";
+                response.Result = new ExtractedInfoFromHttpContext
+                {
+                    Browser = model,
+                    IsMobile = true,
+                    Platform = platform
+                };
+                response.IsSuccess = true;
+            }
+            else
+            {
+                var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
+                var platform = $"Web {_detection.Device.Type} ({os})";
+                var browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}";
+                response.Result = new ExtractedInfoFromHttpContext
+                {
+                    Browser = browser,
+                    Platform = platform
+                };
+                response.IsSuccess = true;
+            }
+
+            return response;
+        }
+
+        #endregion
     }
 }

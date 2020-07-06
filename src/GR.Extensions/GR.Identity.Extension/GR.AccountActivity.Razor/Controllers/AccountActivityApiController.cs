@@ -13,8 +13,6 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace GR.AccountActivity.Razor.Controllers
 {
@@ -24,15 +22,6 @@ namespace GR.AccountActivity.Razor.Controllers
     [Route(DefaultApiRouteTemplate)]
     public class AccountActivityApiController : BaseGearController
     {
-        #region Configuration
-
-        /// <summary>
-        /// Json serialize settings
-        /// </summary>
-        private readonly JsonSerializerSettings _serializerSettings;
-
-        #endregion
-
         #region Injectable
 
         /// <summary>
@@ -56,12 +45,6 @@ namespace GR.AccountActivity.Razor.Controllers
         {
             _activityService = activityService;
             _userManager = userManager;
-            _serializerSettings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                DateFormatString = GearSettings.Date.DateFormatWithTime
-            };
         }
 
         /// <summary>
@@ -80,7 +63,7 @@ namespace GR.AccountActivity.Razor.Controllers
         /// <returns></returns>
         [HttpPost, AllowAnonymous]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
-        public virtual async Task<JsonResult> SendConfirmNewDeviceMail([Required]Guid? deviceId)
+        public virtual async Task<JsonResult> SendConfirmNewDeviceMail([Required] Guid? deviceId)
             => await JsonAsync(_activityService.SendConfirmNewDeviceMailAsync(deviceId, HttpContext));
 
         /// <summary>
@@ -101,7 +84,20 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
         public virtual async Task<JsonResult> GetUserActivityWithPagination(DTParameters parameters)
-            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters), _serializerSettings);
+            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters), DateFormatWithTimeSerializerSettings);
+
+
+        /// <summary>
+        /// Get user activity with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Admin]
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
+        public virtual async Task<JsonResult> GetActivitiesForUserWithPagination(DTParameters parameters, Guid userId)
+            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters, userId), DateFormatWithTimeSerializerSettings);
 
         /// <summary>
         /// Get web sessions
@@ -111,7 +107,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<WebSessionViewModel>))]
         public virtual async Task<JsonResult> GetWebSessionsWithPagination(DTParameters parameters)
-            => await JsonAsync(_activityService.GetWebSessionsAsync(parameters), _serializerSettings);
+            => await JsonAsync(_activityService.GetWebSessionsAsync(parameters), DateFormatWithTimeSerializerSettings);
 
         /// <summary>
         /// Delete all other confirmed and non confirmed
@@ -120,7 +116,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpDelete]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public virtual async Task<JsonResult> DeleteOtherConfirmedDevices()
-            => await JsonAsync(_activityService.DeleteOtherConfirmedDevicesAsync(HttpContext), _serializerSettings);
+            => await JsonAsync(_activityService.DeleteOtherConfirmedDevicesAsync(HttpContext), DateFormatWithTimeSerializerSettings);
 
         /// <summary>
         /// Delete user device

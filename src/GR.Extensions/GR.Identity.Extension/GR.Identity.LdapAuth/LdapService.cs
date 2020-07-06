@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using GR.Core.Helpers;
 using LdapEntry = GR.Identity.LdapAuth.Abstractions.Models.LdapEntry;
 
 namespace GR.Identity.LdapAuth
@@ -354,20 +355,22 @@ namespace GR.Identity.LdapAuth
         /// <param name="distinguishedName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public virtual bool Authenticate(string distinguishedName, string password)
+        public virtual ResultModel Authenticate(string distinguishedName, string password)
         {
-            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapSettings.UseSSL })
+            var result = new ResultModel();
+            using (var ldapConnection = new LdapConnection { SecureSocketLayer = _ldapSettings.UseSSL })
             {
                 try
                 {
                     ldapConnection.Connect(_ldapSettings.ServerName, _ldapSettings.ServerPort);
                     ldapConnection.Bind(distinguishedName, password);
-
-                    return true;
+                    result.IsSuccess = true;
+                    return result;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return false;
+                    result.AddError(ex);
+                    return result;
                 }
             }
         }

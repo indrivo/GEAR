@@ -36,7 +36,7 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> UpdateSubscriptionAsync(SubscriptionAddViewModel model);
+        Task<ResultModel<Guid>> AddOrUpdateSubscriptionAsync(SubscriptionAddViewModel model);
 
         /// <summary>
         /// Has valid subscription

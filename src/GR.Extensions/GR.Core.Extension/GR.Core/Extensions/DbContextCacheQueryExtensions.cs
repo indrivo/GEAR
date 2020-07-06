@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Patterns;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -10,8 +11,8 @@ namespace GR.Core.Extensions
     public static class DbContextCacheQueryExtensions
     {
         //TODO: Write methods for delete, update, get all
-        private static IMemoryCache ProtectedPropCacheService { get; set; }
-        private static IMemoryCache CacheService => ProtectedPropCacheService ?? (ProtectedPropCacheService = IoC.Resolve<IMemoryCache>());
+        private static IMemoryCache CacheService => Singleton<IMemoryCache, IMemoryCache>
+            .GetOrSetInstance(() => Task.FromResult(IoC.Resolve<IMemoryCache>()));
 
         /// <summary>
         /// Find by id on memory cache

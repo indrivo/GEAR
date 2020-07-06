@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using GR.Core.Helpers.DbContexts;
-using GR.Entities.Data;
 
 namespace GR.PageRender.Data
 {
@@ -18,7 +17,7 @@ namespace GR.PageRender.Data
         /// <returns></returns>
         public DynamicPagesDbContext CreateDbContext(string[] args)
         {
-            return DbContextFactory<DynamicPagesDbContext, EntitiesDbContext>.CreateFactoryDbContext();
+            return DbContextFactory<DynamicPagesDbContext, DynamicPagesDbContext>.CreateFactoryDbContext();
         }
     }
 }

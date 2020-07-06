@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +57,7 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         /// </summary>
         [Required]
         [Display(Name = "Select Authentication Type")]
-        public AuthenticationType AuthenticationType { get; set; }
+        public string AuthenticationType { get; set; }
 
         public string ProfilesJson { get; set; }
 

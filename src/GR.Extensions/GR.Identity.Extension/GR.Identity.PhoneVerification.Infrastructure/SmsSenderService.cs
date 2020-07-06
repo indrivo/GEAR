@@ -8,6 +8,7 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Identity.PhoneVerification.Abstractions;
 using GR.Identity.PhoneVerification.Abstractions.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -35,7 +36,6 @@ namespace GR.Identity.PhoneVerification.Infrastructure
         {
             _userManager = userManager;
             _options = options;
-            TwilioClient.Init(options.Value.AccountSid, options.Value.AuthToken);
         }
 
         /// <summary>
@@ -54,6 +54,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             if (!phoneResponse.IsSuccess) return phoneResponse.ToBase();
             try
             {
+                TwilioClient.Init(_options.Value.AccountSid, _options.Value.AuthToken);
                 var sendResponse = MessageResource.Create(
                     body: message,
                     from: new PhoneNumber(_options.Value.PhoneNumber),
@@ -73,6 +74,19 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                 result.AddError(e.Message);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Send sms
+        /// </summary>
+        /// <typeparam name="TUser"></typeparam>
+        /// <param name="user"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> SendAsync<TUser>(TUser user, string subject, string message) where TUser : IdentityUser<Guid>
+        {
+            return await SendAsync(subject, message, user.PhoneNumber);
         }
 
         /// <summary>

@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
+using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -18,7 +20,6 @@ using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
-using GR.Notifications.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -67,19 +68,25 @@ namespace GR.Identity
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// Inject communication hub
+        /// Inject cache service
         /// </summary>
-        private readonly ICommunicationHub _hub;
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
 
         #endregion
 
-        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext, ICommunicationHub hub)
+        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext, ICacheService cacheService, IMapper mapper)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             RoleManager = roleManager;
             IdentityContext = identityContext;
-            _hub = hub;
+            _cacheService = cacheService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -143,6 +150,20 @@ namespace GR.Identity
             result.IsSuccess = id != Guid.Empty;
             result.Result = id;
             return result;
+        }
+
+        /// <summary>
+        /// Find user by id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<GearUser>> FindUserByIdAsync(Guid? userId)
+        {
+            if (userId == null) return InvalidParametersResultModel<GearUser>.Instance;
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+            return user == null
+                ? NotFoundResultModel<GearUser>.Instance
+                : new SuccessResultModel<GearUser>(user);
         }
 
         /// <inheritdoc />
@@ -375,8 +396,11 @@ namespace GR.Identity
             var currentUserRequest = await GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<UserInfoViewModel>>();
             var allUsers = await UserManager.GetUsersInRoleAsync(roleName);
-            var filterUsers = allUsers.Where(x => x.TenantId.Equals(currentUserRequest.Result.TenantId)).Select(x => new UserInfoViewModel(x)).ToList();
-            return new SuccessResultModel<IEnumerable<UserInfoViewModel>>(filterUsers);
+            var filterUsers = allUsers.Where(x => x.TenantId
+                .Equals(currentUserRequest.Result.TenantId)).ToList();
+
+            var mapped = _mapper.Map<IEnumerable<UserInfoViewModel>>(filterUsers);
+            return new SuccessResultModel<IEnumerable<UserInfoViewModel>>(mapped);
         }
 
         /// <summary>
@@ -520,20 +544,21 @@ namespace GR.Identity
         /// <returns></returns>
         public virtual async Task<ResultModel<byte[]>> GetUserImageAsync(Guid? userId)
         {
-            if (userId == null)
+            if (userId == null) return new InvalidParametersResultModel<byte[]>();
+
+            var requestImageResult = await _cacheService.GetOrSetResponseAsync<ResultModel<byte[]>>($"image_user_{userId}", async () =>
             {
-                return new InvalidParametersResultModel<byte[]>();
-            }
+                var user = (await FindUserByIdAsync(userId)).Result;
 
-            var user = await UserManager.FindByIdAsync(userId.ToString());
+                if (user == null) return new NotFoundResultModel<byte[]>();
+                if (user.UserPhoto != null) return new SuccessResultModel<byte[]>(user.UserPhoto);
 
-            if (user == null) return new NotFoundResultModel<byte[]>();
-            if (user.UserPhoto == null)
-            {
-                return new SuccessResultModel<byte[]>(GetUserDefaultImage());
-            }
+                var defaultImage = GetUserDefaultImage();
+                return new SuccessResultModel<byte[]>(defaultImage);
 
-            return new SuccessResultModel<byte[]>(user.UserPhoto);
+            });
+
+            return requestImageResult;
         }
 
         /// <summary>
@@ -551,6 +576,49 @@ namespace GR.Identity
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
+                await _cacheService.RemoveAsync($"image_user_{currentUser.Id}");
+                return resultModel;
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.AppendIdentityErrors(result.Errors);
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Change user photo
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeUserPhotoAsync(IFormFile image)
+        {
+            var resultModel = new ResultModel();
+            if (image == null || image.Length == 0)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image is required" });
+                return resultModel;
+            }
+
+            var currentUser = (await GetCurrentUserAsync()).Result;
+            if (currentUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                return resultModel;
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await image.CopyToAsync(memoryStream);
+                currentUser.UserPhoto = memoryStream.ToArray();
+            }
+
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                await _cacheService.RemoveAsync($"image_user_{currentUser.Id}");
                 return resultModel;
             }
 
@@ -566,38 +634,8 @@ namespace GR.Identity
         /// <returns></returns>
         public virtual async Task<DTResult<UserListItemViewModel>> GetAllUsersWithPaginationAsync(DTParameters parameters)
         {
-            var filtered = await IdentityContext.Users.GetPagedAsDtResultAsync(parameters);
-
-            var usersList = filtered.Data.Select(async o =>
-            {
-                var sessions = _hub.GetSessionsCountByUserId(o.Id);
-                var roles = await UserManager.GetRolesAsync(o);
-                var org = await IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
-                return new UserListItemViewModel
-                {
-                    Id = o.Id,
-                    UserName = o.UserName,
-                    CreatedDate = o.Created.ToShortDateString(),
-                    CreatedBy = o.Author,
-                    ModifiedBy = o.ModifiedBy,
-                    Changed = o.Changed.ToShortDateString(),
-                    Roles = roles,
-                    Sessions = sessions,
-                    AuthenticationType = o.AuthenticationType.ToString(),
-                    LastLogin = o.LastLogin,
-                    Organization = org?.Name
-                };
-            }).Select(x => x.Result);
-
-            var finalResult = new DTResult<UserListItemViewModel>
-            {
-                Draw = filtered.Draw,
-                Data = usersList.ToList(),
-                RecordsFiltered = filtered.RecordsFiltered,
-                RecordsTotal = filtered.RecordsTotal
-            };
-
-            return finalResult;
+            var request = await IdentityContext.Users.GetPagedAsDtResultAsync(parameters);
+            return _mapper.Map<DTResult<UserListItemViewModel>>(request);
         }
 
         /// <summary>
@@ -622,6 +660,62 @@ namespace GR.Identity
                     UserName = currentUser.UserName,
                     UserId = currentUser.Id,
                     Password = next
+                });
+                return resultModel;
+            }
+
+            resultModel.AppendIdentityErrors(result.Errors);
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="current"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeUserPasswordAsync(GearUser user, string current, string next)
+        {
+            var resultModel = new ResultModel();
+            var result = await UserManager.ChangePasswordAsync(user, current, next);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id,
+                    Password = next
+                });
+                return resultModel;
+            }
+
+            resultModel.AppendIdentityErrors(result.Errors);
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeUserPasswordAsync(GearUser user, string password)
+        {
+            var resultModel = new ResultModel();
+            var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+            var result = await UserManager.ResetPasswordAsync(user, token, password);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id,
+                    Password = password
                 });
                 return resultModel;
             }

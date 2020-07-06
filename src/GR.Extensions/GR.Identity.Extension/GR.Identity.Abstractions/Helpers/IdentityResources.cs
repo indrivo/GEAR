@@ -2,6 +2,8 @@
 {
     public static class IdentityResources
     {
+        public const string LocalAuthenticationType = "Local";
+
         public static class Translations
         {
             public const string CONTACT_NAME = "user_contact_name";

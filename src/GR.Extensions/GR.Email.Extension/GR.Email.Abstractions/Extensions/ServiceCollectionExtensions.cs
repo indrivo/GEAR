@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GR.Core.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Core.Services;
 using GR.Email.Abstractions.Events;
 using GR.Email.Abstractions.Models.EmailViewModels;
 
@@ -20,7 +20,7 @@ namespace GR.Email.Abstractions.Extensions
         {
             services.AddTransient<IEmailSender, TEmailSender>();
             EmailEvents.RegisterEvents();
-            var appSender = IoC.Resolve<AppSender>();
+            var appSender = IoC.Resolve<IAppSender>();
             appSender.RegisterProvider<TEmailSender>("email");
             return services;
         }

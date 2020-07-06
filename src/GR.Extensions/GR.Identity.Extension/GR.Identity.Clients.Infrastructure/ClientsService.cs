@@ -57,10 +57,13 @@ namespace GR.Identity.Clients.Infrastructure
         /// Get all clients
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Client>> GetAllClientsAsync()
+        public virtual async Task<IEnumerable<Client>> GetAllClientsAsync(bool resetCache = false)
         {
-            var cacheClients = await _cacheService.GetAsync<IEnumerable<Client>>(ClientsCacheKey);
-            if (cacheClients != null) return cacheClients.ToList();
+            if (!resetCache)
+            {
+                var cacheClients = await _cacheService.GetAsync<IEnumerable<Client>>(ClientsCacheKey);
+                if (cacheClients != null) return cacheClients.ToList();
+            }
 
             var clients = await _clientsContext.Clients
                 .Include(x => x.AllowedCorsOrigins)
@@ -73,6 +76,11 @@ namespace GR.Identity.Clients.Infrastructure
                 .Include(x => x.Properties)
                 .Include(x => x.PostLogoutRedirectUris)
                 .ToListAsync();
+            foreach (var client in clients)
+            {
+                client.AllowedGrantTypes = client.AllowedGrantTypes.DistinctBy(x => x.GrantType).ToList();
+                client.AllowedScopes = client.AllowedScopes.DistinctBy(x => x.Scope).ToList();
+            }
             await _cacheService.SetAsync(ClientsCacheKey, clients);
             return clients;
         }

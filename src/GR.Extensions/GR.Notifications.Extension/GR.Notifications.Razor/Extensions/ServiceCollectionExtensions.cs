@@ -1,10 +1,5 @@
-﻿using GR.Core;
-using GR.Core.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using GR.Notifications.Abstractions.ServiceBuilder;
+﻿using Microsoft.Extensions.DependencyInjection;
 using GR.Notifications.Razor.Helpers;
-using GR.UI.Menu.Abstractions;
-using GR.UI.Menu.Abstractions.Events;
 
 namespace GR.Notifications.Razor.Extensions
 {
@@ -15,18 +10,9 @@ namespace GR.Notifications.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static INotificationServiceCollection AddNotificationRazorUIModule(this INotificationServiceCollection services)
+        public static IServiceCollection AddNotificationRazorUIModule(this IServiceCollection services)
         {
-            services.Services.ConfigureOptions(typeof(NotificationRazorFileConfiguration));
-
-            MenuEvents.Menu.OnMenuSeed += (sender, args) =>
-            {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
-                {
-                    await x.InjectService<IMenuService>()
-                        .AppendMenuItemsAsync(new NotificationsMenuInitializer());
-                });
-            };
+            services.ConfigureOptions(typeof(NotificationRazorFileConfiguration));
             return services;
         }
     }

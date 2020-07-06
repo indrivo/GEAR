@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -73,6 +74,11 @@ namespace GR.MultiTenant.Services
         /// </summary>
         private readonly ICountryService _countryService;
 
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+
         #endregion
 
         /// <summary>
@@ -86,8 +92,9 @@ namespace GR.MultiTenant.Services
         /// <param name="localizer"></param>
         /// <param name="hub"></param>
         /// <param name="countryService"></param>
+        /// <param name="mapper"></param>
         public OrganizationService(IIdentityContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub, ICountryService countryService)
+            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, ICommunicationHub hub, ICountryService countryService, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
@@ -97,6 +104,7 @@ namespace GR.MultiTenant.Services
             _localizer = localizer;
             _hub = hub;
             _countryService = countryService;
+            _mapper = mapper;
         }
 
         /// <inheritdoc />
@@ -410,30 +418,12 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<DTResult<OrganizationListViewModel>> GetFilteredList(DTParameters param)
+        public virtual async Task<DTResult<OrganizationListViewModel>> GetTenantsWithPaginationAsync(DTParameters param)
         {
             if (param == null) return new DTResult<OrganizationListViewModel>();
             var filtered = await _context.Tenants.GetPagedAsDtResultAsync(param);
-
-            var list = filtered.Data.Select(x => new OrganizationListViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Description = x.Description,
-                Created = x.Created,
-                Changed = x.Changed,
-                ModifiedBy = x.ModifiedBy,
-                Author = x.Author,
-                Users = GetUsersByOrganization(x).Count()
-            });
-
-            return new DTResult<OrganizationListViewModel>
-            {
-                Draw = param.Draw,
-                Data = list.ToList(),
-                RecordsFiltered = filtered.RecordsFiltered,
-                RecordsTotal = filtered.RecordsTotal
-            };
+            var mapped = _mapper.Map<DTResult<OrganizationListViewModel>>(filtered);
+            return mapped;
         }
 
         /// <summary>

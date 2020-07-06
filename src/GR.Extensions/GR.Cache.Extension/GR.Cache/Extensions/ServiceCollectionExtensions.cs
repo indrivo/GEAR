@@ -20,8 +20,7 @@ namespace GR.Cache.Extensions
         /// <param name="configuration"></param>
         /// <param name="customSystemIdentifier"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRedisCacheConfiguration<TRedisConnection>(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
-            where TRedisConnection : class, IRedisConnection
+        public static IServiceCollection AddRedisCacheConfiguration(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
         {
             if (customSystemIdentifier == null)
             {
@@ -29,7 +28,7 @@ namespace GR.Cache.Extensions
                     .GetValue<string>(nameof(SystemConfig.MachineIdentifier));
 
                 if (string.IsNullOrEmpty(systemIdentifier))
-                    throw new NullReferenceException("System identifier was not registered in appsettings file");
+                    throw new NullReferenceException("System identifier was not registered in app settings file");
                 customSystemIdentifier = systemIdentifier;
             }
             var redisSection = configuration.GetSection("RedisConnection");
@@ -48,6 +47,18 @@ namespace GR.Cache.Extensions
                     "cache", "redis", "gear"
                 });
 
+            return services;
+        }
+
+        /// <summary>
+        /// Add redis connection
+        /// </summary>
+        /// <typeparam name="TRedisConnection"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRedisCacheConnection<TRedisConnection>(this IServiceCollection services)
+            where TRedisConnection : class, IRedisConnection
+        {
             services.AddSingleton<IRedisConnection, TRedisConnection>();
             IoC.RegisterSingletonService<IRedisConnection, TRedisConnection>();
             return services;

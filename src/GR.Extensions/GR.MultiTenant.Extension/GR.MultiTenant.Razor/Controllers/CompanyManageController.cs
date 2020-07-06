@@ -14,7 +14,6 @@ using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using GR.Entities.Abstractions;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -192,7 +191,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 UserName = data.UserName,
                 FirstName = data.FirstName,
                 LastName = data.LastName,
-                AuthenticationType = AuthenticationType.Local,
+                AuthenticationType = IdentityResources.LocalAuthenticationType,
                 EmailConfirmed = false,
                 IsEditable = true
             };

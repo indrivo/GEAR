@@ -1,14 +1,10 @@
 ﻿using System;
+using GR.Core;
 
 namespace GR.Notifications.Abstractions.Models.Notifications
 {
-    public class Notification
+    public class Notification : BaseModel
     {
-        /// <summary>
-        /// Notification id
-        /// </summary>
-        public Guid? Id { get; set; }
-
         /// <summary>
         /// Subject
         /// </summary>
@@ -22,21 +18,12 @@ namespace GR.Notifications.Abstractions.Models.Notifications
         /// <summary>
         /// Notification type
         /// </summary>
-        public Guid NotificationTypeId { get; set; } = NotificationType.Info;
+        public Guid NotificationTypeId { get; set; } = Notifications.NotificationType.Info;
+        public NotificationTypes NotificationType { get; set; }
 
         /// <summary>
         /// User
         /// </summary>
         public Guid UserId { get; set; }
-
-        /// <summary>
-        /// Send local
-        /// </summary>
-        public bool SendLocal { get; set; } = true;
-
-        /// <summary>
-        /// Send email
-        /// </summary>
-        public bool SendEmail { get; set; } = true;
     }
 }

@@ -76,6 +76,7 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
         public async Task<JsonResult> VerifyCode(TokenVerificationModel tokenVerification)
         {
             var result = new ResultModel();
+            var user = (await _userManager.GetCurrentUserAsync()).Result;
             var verificationRequest = HttpContext.Session.Get<ChangePhoneViewModel>("phone_change_request");
             if (verificationRequest == null)
             {
@@ -98,11 +99,11 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
             {
                 CountryCode = verificationRequest.CountryCode,
                 PhoneNumber = verificationRequest.PhoneNumber,
-                UserName = verificationRequest.PhoneNumber
+                UserName = verificationRequest.PhoneNumber,
+                Email = user.Email.ToLowerInvariant()
             });
 
             if (!addNewUserRequest.IsSuccess) return Json(addNewUserRequest);
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
             var setTokenResult = await _userManager
                 .UserManager
                 .SetAuthenticationTokenAsync(user, PhoneVerificationResources.LOGIN_PROVIDER_NAME, PhoneVerificationResources.AUTHY_TOKEN,

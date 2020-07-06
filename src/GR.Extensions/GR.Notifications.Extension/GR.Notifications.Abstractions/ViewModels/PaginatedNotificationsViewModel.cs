@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GR.Notifications.Abstractions.Models.Notifications;
 
 namespace GR.Notifications.Abstractions.ViewModels
 {
@@ -7,6 +8,6 @@ namespace GR.Notifications.Abstractions.ViewModels
         public uint Page { get; set; } = 1;
         public uint Total { get; set; } = 0;
         public uint PerPage { get; set; } = 10;
-        public List<Dictionary<string, object>> Notifications { get; set; }
+        public IEnumerable<Notification> Notifications { get; set; }
     }
 }

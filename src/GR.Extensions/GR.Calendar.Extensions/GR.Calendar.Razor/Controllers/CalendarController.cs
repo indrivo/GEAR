@@ -11,11 +11,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using GR.Calendar.Abstractions.Enums;
 using GR.Calendar.Abstractions.ExternalProviders;
-using GR.Calendar.Abstractions.Helpers.Mappers;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Calendar.Razor.ViewModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
@@ -63,9 +63,14 @@ namespace GR.Calendar.Razor.Controllers
         /// </summary>
         private readonly ICalendarUserSettingsService _userSettingsService;
 
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+
         #endregion
 
-        public CalendarController(ICalendarManager calendarManager, IUserManager<GearUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<GearUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider, ICalendarUserSettingsService userSettingsService)
+        public CalendarController(ICalendarManager calendarManager, IUserManager<GearUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<GearUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider, ICalendarUserSettingsService userSettingsService, IMapper mapper)
         {
             _calendarManager = calendarManager;
             _userManager = userManager;
@@ -73,6 +78,7 @@ namespace GR.Calendar.Razor.Controllers
             _signInManager = signInManager;
             _externalTokenProvider = externalTokenProvider;
             _userSettingsService = userSettingsService;
+            _mapper = mapper;
             _serializeSettings = CalendarServiceCollection.JsonSerializerSettings;
         }
 
@@ -92,7 +98,7 @@ namespace GR.Calendar.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
-        public async Task<JsonResult> AddEvent([Required]BaseEventViewModel newEvent)
+        public async Task<JsonResult> AddEvent([Required] BaseEventViewModel newEvent)
         {
             var response = new ResultModel<Guid>();
             if (ModelState.IsValid) return Json(await _calendarManager.AddEventAsync(newEvent));
@@ -107,7 +113,7 @@ namespace GR.Calendar.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> UpdateEvent([Required]UpdateEventViewModel model)
+        public async Task<JsonResult> UpdateEvent([Required] UpdateEventViewModel model)
         {
             var response = new ResultModel();
             if (ModelState.IsValid)
@@ -146,7 +152,12 @@ namespace GR.Calendar.Razor.Controllers
         public async Task<JsonResult> GetAllEventsOrganizedByMe()
         {
             var eventRequest = await _calendarManager.GetAllEventsOrganizedByMeAsync();
-            return Json(EventMapper.MapWithHelpers(eventRequest), _serializeSettings);
+            var mapped = _mapper.Map<ResultModel<IEnumerable<GetEventViewModel>>>(eventRequest);
+            var data = mapped.Map(new GetEventWithHelpersViewModel
+            {
+                Events = mapped.Result
+            });
+            return Json(data, _serializeSettings);
         }
 
         /// <summary>
@@ -158,7 +169,7 @@ namespace GR.Calendar.Razor.Controllers
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<GetEventViewModel>>))]
-        public async Task<JsonResult> GetOrganizationUserEvents(Guid? userId, [Required]DateTime startDate, [Required]DateTime endDate)
+        public async Task<JsonResult> GetOrganizationUserEvents(Guid? userId, [Required] DateTime startDate, [Required] DateTime endDate)
         {
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
             if (!await _organizationService.IsUserPartOfOrganizationAsync(userId, _userManager.CurrentUserTenantId))
@@ -168,7 +179,8 @@ namespace GR.Calendar.Razor.Controllers
             }
 
             var eventRequest = await _calendarManager.GetEventsAsync(userId, startDate, endDate);
-            return Json(EventMapper.Map(eventRequest), _serializeSettings);
+            var mapped = _mapper.Map<ResultModel<IEnumerable<GetEventViewModel>>>(eventRequest);
+            return Json(mapped, _serializeSettings);
         }
 
         /// <summary>
@@ -179,10 +191,15 @@ namespace GR.Calendar.Razor.Controllers
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<GetEventViewModel>>))]
-        public async Task<JsonResult> GetMyEvents([Required]DateTime startDate, [Required]DateTime endDate)
+        public async Task<JsonResult> GetMyEvents([Required] DateTime startDate, [Required] DateTime endDate)
         {
             var eventRequest = await _calendarManager.GetMyEventsAsync(startDate, endDate);
-            return Json(EventMapper.MapWithHelpers(eventRequest), _serializeSettings);
+            var mapped = _mapper.Map<ResultModel<IEnumerable<GetEventViewModel>>>(eventRequest);
+            var data = mapped.Map(new GetEventWithHelpersViewModel
+            {
+                Events = mapped.Result
+            });
+            return Json(data, _serializeSettings);
         }
 
         /// <summary>
@@ -206,7 +223,12 @@ namespace GR.Calendar.Razor.Controllers
             }
 
             var eventRequest = await _calendarManager.GetUserEventsByTimeLineAsync(userId, origin, timeLineType, expandDayPrecision);
-            return Json(EventMapper.MapWithHelpers(eventRequest), _serializeSettings);
+            var mapped = _mapper.Map<ResultModel<IEnumerable<GetEventViewModel>>>(eventRequest);
+            var data = mapped.Map(new GetEventWithHelpersViewModel
+            {
+                Events = mapped.Result
+            });
+            return Json(data, _serializeSettings);
         }
 
         /// <summary>
@@ -219,7 +241,8 @@ namespace GR.Calendar.Razor.Controllers
         public async Task<JsonResult> GetEventById([Required] Guid? eventId)
         {
             var eventRequest = await _calendarManager.GetEventByIdAsync(eventId);
-            return Json(EventMapper.Map(eventRequest), _serializeSettings);
+            var mapped = _mapper.Map<ResultModel<GetEventViewModel>>(eventRequest);
+            return Json(mapped, _serializeSettings);
         }
 
         /// <summary>
@@ -276,10 +299,11 @@ namespace GR.Calendar.Razor.Controllers
         public JsonResult GetOrganizationUsers()
         {
             var users = _organizationService.GetAllowedUsersByOrganizationId(_userManager.CurrentUserTenantId.GetValueOrDefault());
+            var mapped = _mapper.Map<IEnumerable<UserInfoViewModel>>(users);
             return Json(new ResultModel
             {
                 IsSuccess = true,
-                Result = users.Select(x => new UserInfoViewModel(x))
+                Result = mapped.ToList()
             });
         }
 

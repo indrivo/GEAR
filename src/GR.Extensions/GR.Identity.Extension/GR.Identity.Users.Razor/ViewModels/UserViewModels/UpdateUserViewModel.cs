@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +48,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         public string RepeatPassword { get; set; }
 
         [Required, EmailAddress] public string Email { get; set; }
-
         public string ProfilesJson { get; set; }
         [Display(Name = "User Photo")] public byte[] UserPhoto { get; set; }
         [Display(Name = "User Photo")] public IFormFile UserPhotoUpdateFile { get; set; }
@@ -56,6 +55,6 @@ namespace GR.Identity.Users.Razor.ViewModels.UserViewModels
         /// <summary>
         /// Authentication Type
         /// </summary>
-        public AuthenticationType AuthenticationType { get; set; } = AuthenticationType.Local;
+        public string AuthenticationType { get; set; } = IdentityResources.LocalAuthenticationType;
     }
 }

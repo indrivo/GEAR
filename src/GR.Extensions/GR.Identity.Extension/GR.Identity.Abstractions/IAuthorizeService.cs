@@ -47,5 +47,14 @@ namespace GR.Identity.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> CheckPasswordAsync(LoginViewModel model);
+
+        /// <summary>
+        /// Log in user with password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <param name="rememberMe"></param>
+        /// <returns></returns>
+        Task<ResultModel> LoginAsync(GearUser user, string password, bool rememberMe = false);
     }
 }

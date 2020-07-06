@@ -55,5 +55,27 @@ namespace GR.Core.Extensions
 
             return null;
         }
+
+        /// <summary>
+        /// Guid to int 32
+        /// </summary>
+        /// <param name="uuid"></param>
+        /// <returns></returns>
+        public static int ToInt32(Guid uuid)
+        {
+            var gb = uuid.ToByteArray();
+            return BitConverter.ToInt32(gb, 0);
+        }
+
+        /// <summary>
+        /// Guid to long
+        /// </summary>
+        /// <param name="uuid"></param>
+        /// <returns></returns>
+        public static long ToLong(Guid uuid)
+        {
+            var gb = uuid.ToByteArray();
+            return BitConverter.ToInt64(gb, 0);
+        }
     }
 }

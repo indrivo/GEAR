@@ -2,13 +2,17 @@
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Identity.Abstractions.Extensions;
 using GR.PageRender.Abstractions;
+using GR.PageRender.Razor.Controllers;
 using GR.PageRender.Razor.Helpers;
+using GR.PageRender.Razor.ViewModels.ConfigurationViewModels;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GR.PageRender.Razor.Extensions
 {
@@ -19,6 +23,7 @@ namespace GR.PageRender.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
+        // ReSharper disable once InconsistentNaming
         public static IServiceCollection AddPageRenderUIModule<TPageRenderService>(this IServiceCollection services)
             where TPageRenderService : class, IPageRender
         {
@@ -52,13 +57,18 @@ namespace GR.PageRender.Razor.Extensions
         /// Use custom url rewrite module
         /// </summary>
         /// <param name="app"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static void UseUrlRewriteModule(this IApplicationBuilder app)
-            => app.Use(async (ctx, next) =>
+        public static void UseUrlRewriteModule(this IApplicationBuilder app,
+            Action<UrlRewriteConfigurationVm> configuration = null)
+        {
+            var conf = new UrlRewriteConfigurationVm();
+            configuration?.Invoke(conf);
+            app.Use(async (ctx, next) =>
             {
                 try
                 {
-                    if (GearApplication.Configured) await ctx.ConfiguredSystem(next);
+                    if (GearApplication.Configured) await ctx.ConfiguredSystem(next, conf);
                     else await ctx.NonConfiguredSystem(next);
                 }
                 catch (Exception e)
@@ -66,6 +76,7 @@ namespace GR.PageRender.Razor.Extensions
                     Console.WriteLine(e);
                 }
             });
+        }
 
 
         /// <summary>
@@ -94,13 +105,32 @@ namespace GR.PageRender.Razor.Extensions
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="next"></param>
+        /// <param name="conf"></param>
         /// <returns></returns>
-        public static async Task ConfiguredSystem(this HttpContext ctx, Func<Task> next)
+        public static async Task ConfiguredSystem(this HttpContext ctx, Func<Task> next, UrlRewriteConfigurationVm conf)
         {
             try
             {
+                if (ctx.IsBearerRequest() || ctx.Request.IsAjaxRequest())
+                {
+                    await next();
+                    return;
+                }
+
+                if (ctx.Response.HasStarted)
+                {
+                    await next();
+                    return;
+                }
+
                 UrlRewriteHelper.CheckLanguage(ref ctx);
-                await next();
+
+                if (!conf.UseDynamicPageUrlRewrite)
+                {
+                    await next();
+                    return;
+                }
+
                 var isClientUrl = await UrlRewriteHelper.ParseClientRequestAsync(ctx);
                 if (isClientUrl) await next();
                 else if (ctx.Response.StatusCode == StatusCodes.Status404NotFound && !ctx.Response.HasStarted)
@@ -108,13 +138,19 @@ namespace GR.PageRender.Razor.Extensions
                     //Re-execute the request so the user gets the error page
                     var originalPath = ctx.Request.Path.Value;
                     ctx.Items["originalPath"] = originalPath;
-                    ctx.Request.Path = "/Handler/NotFound";
+                    ctx.Request.Path = conf.NotFoundPageRelativeUrl;
+                    await next();
+                }
+                else
+                {
                     await next();
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                var logger = ctx.RequestServices.GetRequiredService<ILogger<PageRenderController>>();
+                logger.LogError(e, $"Error with redirect on PageRender url rewrite, request started: {ctx.Response.HasStarted}");
+                await next();
             }
         }
     }

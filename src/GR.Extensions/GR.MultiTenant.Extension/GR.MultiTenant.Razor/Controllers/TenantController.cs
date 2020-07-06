@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Razor.BaseControllers;
 using GR.Entities.Abstractions;
+using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
 using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.ViewModels;
 
@@ -20,14 +21,14 @@ namespace GR.MultiTenant.Razor.Controllers
     /// Tenant manipulation
     /// </summary>
     [Authorize]
-    public class TenantController : Controller
+    public class TenantController : BaseGearController
     {
         #region Services
 
         /// <summary>
         /// Inject context
         /// </summary>
-        private GearIdentityDbContext Context { get; }
+        private readonly IIdentityContext _context;
 
         /// <summary>
         /// Inject dynamic service
@@ -48,9 +49,9 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="service"></param>
         /// <param name="organizationService"></param>
         public TenantController(
-            GearIdentityDbContext context, IEntityService service, IOrganizationService<Tenant> organizationService)
+            IIdentityContext context, IEntityService service, IOrganizationService<Tenant> organizationService)
         {
-            Context = context;
+            _context = context;
             _service = service;
             _organizationService = organizationService;
         }
@@ -68,7 +69,8 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderList(DTParameters param) => Json(_organizationService.GetFilteredList(param));
+        public async Task<JsonResult> GetTenantsWithPagination(DTParameters param)
+            => await JsonAsync(_organizationService.GetTenantsWithPaginationAsync(param));
 
         /// <summary>
         /// View for create a tenant
@@ -90,7 +92,7 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([Required]CreateTenantViewModel data)
+        public async Task<IActionResult> Create([Required] CreateTenantViewModel data)
         {
             if (!ModelState.IsValid)
             {
@@ -121,7 +123,7 @@ namespace GR.MultiTenant.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = Context.Tenants.FirstOrDefault(x => x.Id == id);
+            var response = _context.Tenants.FirstOrDefault(x => x.Id == id);
             if (response == null) return RedirectToAction(nameof(Index), "Tenant");
             var model = new EditTenantViewModel(response)
             {
@@ -156,9 +158,9 @@ namespace GR.MultiTenant.Razor.Controllers
                 updateModel.MachineName = dbTenant.MachineName;
             }
 
-            Context.Tenants.Update(updateModel);
+            _context.Tenants.Update(updateModel);
 
-            var dbResult = await Context.SaveAsync();
+            var dbResult = await _context.PushAsync();
             if (dbResult.IsSuccess && !string.IsNullOrEmpty(callBack))
             {
                 return Redirect(callBack);

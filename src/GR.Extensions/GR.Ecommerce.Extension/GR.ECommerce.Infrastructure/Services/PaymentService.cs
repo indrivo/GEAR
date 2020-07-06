@@ -52,14 +52,15 @@ namespace GR.ECommerce.Infrastructure.Services
         /// Get payments methods
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<PaymentMethod>>> GetActivePaymentMethodsAsync()
+        public async Task<ResultModel<IEnumerable<PaymentMethodViewModel>>> GetActivePaymentMethodsAsync()
         {
-            var response = new ResultModel<IEnumerable<PaymentMethod>>();
+            var response = new ResultModel<IEnumerable<PaymentMethodViewModel>>();
             var methods = await _paymentContext.PaymentMethods
                 .AsNoTracking()
                 .Where(x => x.IsEnabled).ToListAsync();
+            var mapped = _mapper.Map<IEnumerable<PaymentMethodViewModel>>(methods);
             response.IsSuccess = true;
-            response.Result = methods;
+            response.Result = mapped;
             return response;
         }
 
@@ -114,6 +115,17 @@ namespace GR.ECommerce.Infrastructure.Services
             if (paymentRequest.Result.Any(x => x.PaymentStatus == PaymentStatus.Succeeded))
                 response.IsSuccess = true;
             return response;
+        }
+
+        /// <summary>
+        /// Is payment method supported
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> IsPaymentMethodSupportedAsync(string method)
+        {
+            var match = await _paymentContext.PaymentMethods.AnyAsync(x => x.Name.Equals(method) && x.IsEnabled);
+            return new ResultModel { IsSuccess = match };
         }
 
         /// <summary>

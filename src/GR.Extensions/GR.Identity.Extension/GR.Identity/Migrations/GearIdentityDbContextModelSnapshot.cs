@@ -141,7 +141,7 @@ namespace GR.Identity.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
-                    b.Property<int>("AuthenticationType");
+                    b.Property<string>("AuthenticationType");
 
                     b.Property<string>("Author");
 

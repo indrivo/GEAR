@@ -9,23 +9,37 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using GR.Cache.Abstractions;
 using GR.Cache.Abstractions.Models;
+using GR.Cache.Helpers;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
 
 namespace GR.Cache.Services
 {
     public class DistributedCacheService : ICacheService
     {
+        #region Injectable
+
         /// <summary>
         /// Inject distributed cache
         /// </summary>
         private readonly IDistributedCache _cache;
 
+        /// <summary>
+        /// Serializer
+        /// </summary>
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         /// <summary>
         /// Inject redis manager
         /// </summary>
         private readonly IRedisConnection _redisConnection;
+
+        #endregion
+
+        /// <summary>
+        /// Container
+        /// </summary>
+        private readonly CacheServiceTemplate _extendedContainer;
 
         /// <summary>
         /// Constructor
@@ -41,6 +55,7 @@ namespace GR.Cache.Services
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects
             };
+            _extendedContainer = new CacheServiceTemplate(this);
         }
 
         /// <summary>
@@ -127,6 +142,29 @@ namespace GR.Cache.Services
         /// <returns></returns>
         public virtual string GetImplementationProviderName() => GetType().Name;
 
+        /// <summary>
+        /// Get or set request
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<T>> GetOrSetResponseAsync<T>(string key, Func<Task<ResultModel<T>>> func)
+            where T : class
+            => await _extendedContainer.GetOrSetResponseAsync(key, func);
+
+        /// <summary>
+        /// Get or set request
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public virtual async Task<T> GetOrSetResponseAsync<T>(string key, Func<Task<T>> func) where T : class
+            => await _extendedContainer.GetOrSetResponseAsync(key, func);
+
+        public virtual async Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func) where T : class
+            => await _extendedContainer.GetOrSetWithExpireTimeAsync(key, life, func);
 
         #region Helpers
 

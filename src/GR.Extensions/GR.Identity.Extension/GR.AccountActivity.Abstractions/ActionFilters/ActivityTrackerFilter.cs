@@ -91,7 +91,14 @@ namespace GR.AccountActivity.Abstractions.ActionFilters
         {
             if (context.HttpContext.IsBearerRequest())
             {
-                context.Result = new JsonResult(new NotConfirmedDeviceResultModel());
+                context.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary(new
+                    {
+                        controller = "AccountActivity",
+                        action = "NotConfirmedDeviceJsonResponse",
+                        deviceId
+                    })
+                );
             }
             else context.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(new

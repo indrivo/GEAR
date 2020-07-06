@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Cache.Abstractions.Models;
+using GR.Core.Helpers;
 
 namespace GR.Cache.Abstractions
 {
@@ -60,5 +62,36 @@ namespace GR.Cache.Abstractions
         /// </summary>
         /// <returns></returns>
         string GetImplementationProviderName();
+
+        /// <summary>
+        /// Get or set request
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        Task<ResultModel<T>> GetOrSetResponseAsync<T>(string key, Func<Task<ResultModel<T>>> func) where T : class;
+
+        /// <summary>
+        /// Get or set value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        Task<T> GetOrSetResponseAsync<T>(string key, Func<Task<T>> func) where T : class;
+
+        /// <summary>
+        /// Get or set in cache with expiration period
+        /// Once time is left, the value is refreshed in cache
+        /// This process is not automatic, is due on method call
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="life">The time for value</param>
+        /// <param name="func">Value resolver</param>
+        /// <returns></returns>
+        Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func)
+            where T : class;
     }
 }

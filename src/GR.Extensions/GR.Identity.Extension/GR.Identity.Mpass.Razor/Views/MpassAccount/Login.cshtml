@@ -1,0 +1,64 @@
+@using GR.Identity.Mpass.Abstractions
+
+@inject IMPassService _mpassService
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Localizer["system_log_in"] with Mpass</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+        </svg>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <section id="wrapper" class="login-register login-sidebar d-flex">
+        <div class="login-box col-12 col-md-8 col-lg-7 col-xl-5 col-xlg-4 p-3 p-md-5 mx-lg-5 my-lg-4">
+            <a href="/" class="text-center db">
+
+            </a>
+
+            <h2 class="mt-5 pt-5 fw-600">Log in with Mpass account</h2>
+            <form action="http://testmpass.gov.md/login/saml" method="post" class="form-horizontal hidden-md hidden-lg">
+                <input type="hidden" name="SAMLRequest" value="@ViewData["SAMLRequest"]" />
+                <button type="submit" class="btn btn-primary btn-block btn-flat">
+                    Sign in using MPass
+                </button>
+            </form>
+        </div>
+        <div class="image-area col" style="background-image: url(../images/background/login-register.jpg);
+    background-color: hsla(220, 92%, 41%, 0.1);"></div>
+    </section>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/tether/js/tether.min.js"></script>
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/themes/admin/js/admin-theme-script.js"></script>
+    <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/js/core.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

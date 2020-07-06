@@ -73,9 +73,7 @@ using GR.MobilPay.Razor.Extensions;
 using GR.MultiTenant.Abstractions.Extensions;
 using GR.MultiTenant.Razor.Extensions;
 using GR.MultiTenant.Services;
-using GR.Notifications;
 using GR.Notifications.Abstractions.Extensions;
-using GR.Notifications.Data;
 using GR.Notifications.Razor.Extensions;
 using GR.Orders;
 using GR.Orders.Abstractions.Extensions;
@@ -131,7 +129,6 @@ using GR.Card.Razor.Extensions;
 using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
-using GR.Notifications.Services;
 using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
@@ -155,6 +152,10 @@ using GR.Identity.Clients.Razor.Extensions;
 using GR.Identity.Groups.Abstractions.Extensions;
 using GR.Identity.Groups.Infrastructure;
 using GR.Identity.Groups.Infrastructure.Data;
+using GR.Identity.Mpass;
+using GR.Identity.Mpass.Abstractions.Extensions;
+using GR.Identity.Mpass.Abstractions.Helpers;
+using GR.Identity.Mpass.Abstractions.Security;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
@@ -181,6 +182,12 @@ using GR.UserPreferences.Impl.Data;
 using Microsoft.Extensions.Logging;
 using ProfileService = GR.Identity.Clients.Infrastructure.ProfileService;
 using GR.Localization.ExternalProviders;
+using GR.Notifications.Dynamic;
+using GR.Notifications.Dynamic.Seeders;
+using GR.Notifications.Subscriptions.Abstractions.Extensions;
+using GR.Notifications.Subscriptions.EFCore;
+using GR.Notifications.Subscriptions.EFCore.Data;
+using GR.Notifications.Subscriptions.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Helpers;
 using GR.TwoFactorAuthentication.Abstractions.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -212,10 +219,12 @@ namespace GR.Cms
 				config.HostingEnvironment = HostingEnvironment;
 				config.UseHealthCheck = false;
 				config.Configuration = Configuration;
+				config.MvcTemplate = "{controller=Home}/{action=Index}";
 				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 				{
 					{ "/admin", context => context.MapTo("/Account/Login") }
 				};
+				config.AutoApplyPendingMigrations = true;
 			});
 
 			app.UseIdentityServer();
@@ -340,17 +349,32 @@ namespace GR.Cms
 				})
 				.RegisterProgramAssembly(typeof(Program));
 
-			//-------------------------------Notification Module-------------------------------------
+			//-------------------------------Dynamic Notification Module-------------------------------------
 			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
-				.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
+				.AddNotificationSeeder<DynamicNotificationSeederService>()
+				.RegisterNotificationsHubModule<CommunicationHub>()
+				.AddNotificationRazorUIModule();
+
+			////-------------------------------EF core Notification Module-------------------------------------
+			//config.GearServices.AddNotificationModule<Notify<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
+			//	.AddNotificationSeeder<EfCoreNotificationSeederService>()
+			//	.AddNotificationModuleStorage<NotificationDbContext>(options =>
+			//	{
+			//		options.GetDefaultOptions(Configuration);
+			//		options.EnableSensitiveDataLogging();
+			//	})
+			//	.RegisterNotificationsHubModule<CommunicationHub>()
+			//	.AddNotificationRazorUIModule();
+
+			//-------------------------------Notification subscriptions Module-------------------------------------
+			config.GearServices.AddNotificationSubscriptionModule<NotificationSubscriptionService>()
 				.AddNotificationModuleEvents()
-				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
+				.AddNotificationSubscriptionModuleStorage<NotificationsSubscriptionDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterNotificationsHubModule<CommunicationHub>()
-				.AddNotificationRazorUIModule();
+				.AddNotificationSubscriptionRazorUiModule();
 
 			//---------------------------------Localization Module-------------------------------------
 			config.GearServices
@@ -476,8 +500,19 @@ namespace GR.Cms
 
 			//----------------------------------------Ldap Module-------------------------------------
 			config.GearServices
-				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(
-					Configuration);
+				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(Configuration)
+				.AddLdapAuthentication<LdapAuthorizeService>(options =>
+				{
+					options.AutoImportOnLogin = true;
+				});
+
+			//-------------------------------------------MPass Module-------------------------------------
+			config.GearServices.AddMPassModuleSigningCredentials(new MPassSigningCredentials
+				{
+					ServiceProviderCertificate = MPassResources.GetSandboxServiceProviderCertificate(),
+					IdentityProviderCertificate = MPassResources.GetSandboxIdentityProviderCertificate()
+				})
+				.AddMPassService<MPassService>();
 
 			//-------------------------------------Commerce module-------------------------------------
 			config.GearServices.RegisterCommerceModule<CommerceDbContext>()

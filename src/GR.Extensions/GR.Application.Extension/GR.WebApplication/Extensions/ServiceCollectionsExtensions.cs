@@ -23,6 +23,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using AutoMapper;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Validation;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Razor.Extensions;
@@ -45,7 +46,7 @@ namespace GR.WebApplication.Extensions
         {
             IoC.Container.Register(Component.For<IConfiguration>().Instance(conf));
             IoC.Container.Register(Component.For<IHostingEnvironment>().Instance(hostingEnvironment));
-            IoC.RegisterSingletonService<AppSender>();
+            IoC.RegisterSingletonService<IAppSender, AppSender>();
 
             var configuration = new GearServiceCollectionConfig
             {
@@ -77,6 +78,8 @@ namespace GR.WebApplication.Extensions
 
             services.Configure<FormOptions>(x => x.ValueCountLimit =
                 configuration.ServerConfiguration.UploadMaximSize);
+
+            services.AddResponseCaching();
 
             //Global settings
             var mvcBuilder = services.AddMvc(options =>
@@ -119,11 +122,13 @@ namespace GR.WebApplication.Extensions
                 configuration.CacheConfiguration.UseInMemoryCache)
                 throw new InvalidCacheConfigurationException("Both types of cached storage cannot be used");
 
+            services.AddDistributedMemoryCache()
+                .AddRedisCacheConfiguration(configuration.HostingEnvironment, configuration.Configuration);
+
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
-                services.AddDistributedMemoryCache()
-                .AddCacheModule<DistributedCacheService>()
-                .AddRedisCacheConfiguration<RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                services.AddCacheModule<DistributedCacheService>()
+                    .AddRedisCacheConnection<RedisConnection>();
             }
             else if (configuration.CacheConfiguration.UseInMemoryCache)
             {

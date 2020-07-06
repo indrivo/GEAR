@@ -195,5 +195,22 @@ namespace GR.Core.Extensions
             }
             return number != 1;
         }
+
+        /// <summary>
+        /// Round
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static decimal RoundTo(this decimal value, int count) => Math.Round(value, count);
+
+
+        /// <summary>
+        /// Round
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static double RoundTo(this double value, int count) => Math.Round(value, count);
     }
 }
