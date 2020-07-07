@@ -62,7 +62,7 @@
                 });
             });
             $.ajax({
-                url: '@Url.Action("EditProductCategories", "ProductsApi")',
+                url: '@Url.Action("AddOrUpdateProductCategories", "ProductCategoriesApi")',
                 method: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(model),

@@ -2,11 +2,13 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Castle.Windsor;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using GR.Core.Helpers.Patterns;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Core
@@ -56,18 +58,15 @@ namespace GR.Core
             return parent.Name.StartsWith("netcoreapp");
         }
 
-        /// <summary>
-        /// Get system config
-        /// </summary>
-        private static SystemConfig PrivateSystemConfig { get; set; }
-        public static SystemConfig SystemConfig =>
-            PrivateSystemConfig ?? (PrivateSystemConfig = IoC.Resolve<IConfiguration>().GetSection("SystemConfig").Get<SystemConfig>());
+        public static SystemConfig SystemConfig => Singleton<SystemConfig, SystemConfig>.GetOrSetInstance(
+            () => Task.FromResult(IoC.Resolve<IConfiguration>().GetSection("SystemConfig").Get<SystemConfig>()));
 
         /// <summary>
-        /// Background task queue
+        /// Execute tasks in queue
         /// </summary>
-        private static IBackgroundTaskQueue _internBackgroundTaskQueue;
-        public static IBackgroundTaskQueue BackgroundTaskQueue => _internBackgroundTaskQueue ?? (_internBackgroundTaskQueue = IoC.ResolveNonRequired<IBackgroundTaskQueue>());
+        public static IBackgroundTaskQueue BackgroundTaskQueue =>
+            Singleton<IBackgroundTaskQueue, IBackgroundTaskQueue>.GetOrSetInstance(() =>
+                Task.FromResult(IoC.ResolveNonRequired<IBackgroundTaskQueue>()));
 
         /// <summary>
         /// Services container

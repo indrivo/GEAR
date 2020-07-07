@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.ECommerce.Abstractions.Models;
+using GR.Identity.Abstractions;
 using GR.Subscriptions.Abstractions.ViewModels;
 using GR.Subscriptions.Abstractions.Models;
 
@@ -103,5 +104,19 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<SubscriptionGetViewModel>> GetLastSubscriptionAsync();
+
+        /// <summary>
+        /// Get users in subscription by name. Subscription must be valid
+        /// </summary>
+        /// <param name="subscriptionName"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<GearUser>>> GetUsersInSubscriptionAsync(string subscriptionName);
+
+        /// <summary>
+        /// Get users in subscription by name. Subscription must be valid
+        /// </summary>
+        /// <param name="subscriptionName"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Guid>>> GetUsersIdInSubscriptionAsync(string subscriptionName);
     }
 }

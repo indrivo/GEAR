@@ -5,104 +5,104 @@
 @inject IProductService<Product> ProductService
 
 @{
-	var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
+    var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
 }
 
 <div class="row">
-	<div class="col-lg-12 col-md-12">
-		<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add variation</a>
+    <div class="col-lg-12 col-md-12">
+        <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Add variation</a>
 
-		<div class="card card-outline-info mt-2">
-			<div class="tab-content">
-				<div class="card-body">
-					<div class="col-lg-12 col-md-12 row mt-3" id="listVariationProduct">
+        <div class="card card-outline-info mt-2">
+            <div class="tab-content">
+                <div class="card-body">
+                    <div class="col-lg-12 col-md-12 row mt-3" id="listVariationProduct">
 
-					</div>
-				</div>
+                    </div>
+                </div>
 
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="card">
-					<div class="card-body">
-						<form id="createOptionForm">
-							<input type="text" id="VariationId" name="VariationId" class="form-control" value="" hidden />
-							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-							<div class="col-md-12 p-t-20">
-								<div class="form-group">
-									<label for="ProductOptionId">Select Option</label>
-									<div class="input-group mb-3">
-										<select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
-											<option value="">Select option</option>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="createOptionForm">
+                            <input type="text" id="VariationId" name="VariationId" class="form-control" value="" hidden />
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="col-md-12 p-t-20">
+                                <div class="form-group">
+                                    <label for="ProductOptionId">Select Option</label>
+                                    <div class="input-group mb-3">
+                                        <select id="ProductOptionId" class="form-control" aria-describedby="addOptionBtn">
+                                            <option value="">Select option</option>
 
-											@foreach (var productOption in Model.ProductOption)
-											{
-												<option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
-											}
+                                            @foreach (var productOption in Model.ProductOption)
+                                            {
+                                                <option label="@productOption.Text" value="@productOption.Value" id="select_@productOption.Value"></option>
+                                            }
 
-										</select>
-										<div class="input-group-append">
-											<a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<table class="table">
-									<thead>
-										<tr>
-											<th scope="col">Option</th>
-											<th scope="col">Value</th>
-											<th scope="col">Actions</th>
-										</tr>
-									</thead>
-									<tbody id="appendTableOption">
-										<tr class="empty">
-											<td colspan="3">No option set</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-							<div class="mb-2 col-md-12 ">
-								<div class="form-group">
-									<label for="PriceVariation">Price variation</label>
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<span class="input-group-text" id="basic-addon1">@currency.Symbol</span>
-										</div>
-										<input id="PriceVariation" type="text" class="form-control" aria-describedby="basic-addon1">
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<a href="javascript:void(0)" class="btn btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
-						<a href="#" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <a id="addOptionBtn" href="#" class="btn btn-secondary">Add</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Option</th>
+                                            <th scope="col">Value</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="appendTableOption">
+                                        <tr class="empty">
+                                            <td colspan="3">No option set</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mb-2 col-md-12 ">
+                                <div class="form-group">
+                                    <label for="PriceVariation">Price variation</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">@currency.Symbol</span>
+                                        </div>
+                                        <input id="PriceVariation" type="text" class="form-control" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn btn-success" data-dismiss="modal" id="saveOptionBtn"> @Localizer["save"]</a>
+                        <a href="#" class="btn btn-secondary" data-dismiss="modal" onclick="clearForm()">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 @using (Html.BeginPartialViewScripts())
 {
-	<script type="text/javascript">
+    <script type="text/javascript">
 	const optionList = $("#listVariationProduct");
 	$(document).ready(function () {
 		getProductVariation();
@@ -155,7 +155,7 @@
 	        };
 
 	        $.ajax({
-		        url: '@Url.Action("SaveProductVariation", "ProductsApi")',
+		        url: '@Url.Action("AddOrUpdateProductVariation", "ProductsApi")',
 		        method: 'POST',
 		        contentType: "application/json; charset=utf-8",
 		        data: JSON.stringify(model),
@@ -186,14 +186,14 @@
         optionList.empty();
 
 		$.ajax({
-			url: '@Url.Action("getProductVariation", "ProductsApi")',
+			url: '@Url.Action("GetProductVariations", "ProductsApi")',
 			method: 'get',
 			contentType: "application/json; charset=utf-8",
 			data: {
 				productId: '@Model.Id'
 			},
 			success: function(data) {
-				listProductVariation(data);
+                if (data.is_success) listProductVariation(data.result);
 			},
 			error: function(error) {
 				console.log(error);
@@ -245,7 +245,7 @@
 
 	function removeVariation(idVariation) {
 		$.ajax({
-			url: '@Url.Action("RemoveOption", "ProductsApi")',
+			url: '@Url.Action("RemoveProductVariationOption", "ProductsApi")',
 			method: 'POST',
 			data: {
 				productId: '@Model.Id',
@@ -269,7 +269,7 @@
 
 	function getVariationById(idVariation) {
 		$.ajax({
-			url: '@Url.Action("getProductVariationById", "ProductsApi")',
+			url: '@Url.Action("GetProductVariationById", "ProductsApi")',
 			method: 'get',
 			contentType: "application/json; charset=utf-8",
 			data: {
@@ -277,7 +277,11 @@
 				variationId: idVariation
 			},
 			success: function(data) {
-                editVariation(data);
+				if (data.is_success) {
+                    editVariation(data.result);
+				} else{
+                    toast.notifyErrorList(data.error_keys);
+                }
 			},
 			error: function(error) {
 				console.log(error);
@@ -306,5 +310,5 @@
         $("#PriceVariation").val(data.price);
         $("#VariationId").val(data.variationId);
     }
-	</script>
+    </script>
 }

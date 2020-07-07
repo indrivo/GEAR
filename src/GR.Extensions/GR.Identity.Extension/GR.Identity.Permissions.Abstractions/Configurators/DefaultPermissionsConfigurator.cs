@@ -1,5 +1,4 @@
 ﻿using GR.Core.Helpers;
-using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions.Events.EventArgs;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Patterns;
 using GR.Identity.Permissions.Abstractions.Permissions;
 using Activator = System.Activator;
 
@@ -24,7 +24,8 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// <summary>
         /// Inject context
         /// </summary>
-        protected IPermissionsContext Context => IoC.Resolve<IPermissionsContext>();
+        protected IPermissionsContext Context => Singleton<IPermissionsContext, IPermissionsContext>.GetOrSetInstance(
+            () => Task.FromResult(IoC.Resolve<IPermissionsContext>()));
 
         /// <summary>
         /// On permissions seed
@@ -45,11 +46,6 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// Permissions
         /// </summary>
         public virtual Dictionary<string, string> Permissions => _permissions;
-
-        /// <summary>
-        /// Inject identity context
-        /// </summary>
-        protected IIdentityContext IdentityContext => IoC.Resolve<IIdentityContext>();
 
         /// <summary>
         /// Trigger

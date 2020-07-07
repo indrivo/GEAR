@@ -88,7 +88,59 @@ namespace GR.ECommerce.Abstractions.Extensions
         public static IServiceCollection RegisterCartService<TCartService>(this IServiceCollection services)
             where TCartService : class, ICartService
         {
-            IoC.RegisterTransientService<ICartService, TCartService>();
+            services.AddGearScoped<ICartService, TCartService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register brand service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterBrandService<TService>(this IServiceCollection services)
+            where TService : class, IBrandsService
+        {
+            services.AddGearScoped<IBrandsService, TService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register product attribute service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterProductAttributeService<TService>(this IServiceCollection services)
+            where TService : class, IProductAttributeService
+        {
+            services.AddGearScoped<IProductAttributeService, TService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register product type service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterProductTypeService<TService>(this IServiceCollection services)
+            where TService : class, IProductTypeService
+        {
+            services.AddGearScoped<IProductTypeService, TService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register product category service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterProductCategoryService<TService>(this IServiceCollection services)
+            where TService : class, IProductCategoryService
+        {
+            services.AddGearScoped<IProductCategoryService, TService>();
             return services;
         }
     }

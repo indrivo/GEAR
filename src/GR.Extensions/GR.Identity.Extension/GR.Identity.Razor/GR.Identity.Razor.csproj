@@ -37,6 +37,7 @@
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Identity.Permissions.Api\GR.Identity.Permissions.Api.csproj" />
     <ProjectReference Include="..\GR.Identity.Users.Razor\GR.Identity.Users.Razor.csproj" />
     <ProjectReference Include="..\GR.Identity.Roles.Razor\GR.Identity.Roles.Razor.csproj" />
   </ItemGroup>

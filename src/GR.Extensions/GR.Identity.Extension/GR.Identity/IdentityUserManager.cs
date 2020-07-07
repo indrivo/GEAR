@@ -551,7 +551,7 @@ namespace GR.Identity
                 var user = (await FindUserByIdAsync(userId)).Result;
 
                 if (user == null) return new NotFoundResultModel<byte[]>();
-                if (user.UserPhoto != null) return new SuccessResultModel<byte[]>(user.UserPhoto);
+                if (user.UserPhoto != null && user.UserPhoto.Length > 0) return new SuccessResultModel<byte[]>(user.UserPhoto);
 
                 var defaultImage = GetUserDefaultImage();
                 return new SuccessResultModel<byte[]>(defaultImage);

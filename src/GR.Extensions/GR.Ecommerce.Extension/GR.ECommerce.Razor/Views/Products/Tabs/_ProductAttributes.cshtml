@@ -1,80 +1,82 @@
-﻿@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
+@model GR.ECommerce.Abstractions.ViewModels.ProductViewModels.ProductViewModel
 
 <div class="row">
-    <div class="col-lg-12 col-md-12">
-        <div class="card card-outline-info">
-            <div class="tab-content">
-                <div class="card-body">
-                    <form id="createAttributeForm">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="row p-t-20">
-                            <div class="col-md-6">
-                                <div class="input-group mb-3">
-                                    <label asp-for="ProductAttributeId" class="col-md-12"></label>
-                                    <select asp-for="ProductAttributeId" class="form-control" aria-describedby="addAttributeBtn">
-                                        <option value="">Select available attribute</option>
-                                        @foreach (var item in @Model.ProductAttributesList)
-                                        {
-                                            <optgroup label="@item.Key" id="opt_@item.Key">
-                                                @foreach (var attribute in item.Value)
-                                                {
-                                                    <option label="@attribute.Text" value="@attribute.Value"></option>
-                                                }
-                                            </optgroup>
-                                        }
-                                    </select>
-                                    <div class="input-group-append">
-                                        <a id="addAttributeBtn" href="#" class="btn btn-secondary">Add</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Attribute</th>
-                                        <th scope="col">Value</th>
-                                        <th scope="col">Is Published</th>
-                                        <th scope="col">Is Available</th>
-                                        <th scope="col">Show in filters</th>
-                                        <th scope="col">@Localizer["list_actions"]</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody"></tbody>
-                            </table>
-                        </div>
-                        <div class="row button-group">
-                            <div class="col-lg-2 col-md-3">
-                                <a href="javascript:void(0)" class="btn btn-block btn-success" id="saveAttributeBtn"> @Localizer["save"]</a>
-                            </div>
-                            <div class="col-lg-2 col-md-3">
-                                <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="col-lg-12 col-md-12">
+		<div class="card card-outline-info">
+			<div class="tab-content">
+				<div class="card-body">
+					<form id="createAttributeForm">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="row p-t-20">
+							<div class="col-md-6">
+								<div class="input-group mb-3">
+									<label asp-for="ProductAttributeId" class="col-md-12"></label>
+									<select asp-for="ProductAttributeId" class="form-control" aria-describedby="addAttributeBtn">
+										<option value="">Select available attribute</option>
+										@foreach (var item in @Model.ProductAttributesList)
+										{
+											<optgroup label="@item.Key" id="opt_@item.Key">
+												@foreach (var attribute in item.Value)
+												{
+													<option label="@attribute.Text" value="@attribute.Value"></option>
+												}
+											</optgroup>
+										}
+									</select>
+									<div class="input-group-append">
+										<a id="addAttributeBtn" href="#" class="btn btn-secondary">Add</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col">Attribute</th>
+										<th scope="col">Value</th>
+										<th scope="col">Is Published</th>
+										<th scope="col">Is Available</th>
+										<th scope="col">Show in filters</th>
+										<th scope="col">@Localizer["list_actions"]</th>
+									</tr>
+								</thead>
+								<tbody id="tableBody"></tbody>
+							</table>
+						</div>
+						<div class="row button-group">
+							<div class="col-lg-2 col-md-3">
+								<a href="javascript:void(0)" class="btn btn-block btn-success" id="saveAttributeBtn"> @Localizer["save"]</a>
+							</div>
+							<div class="col-lg-2 col-md-3">
+								<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 @using (Html.BeginPartialViewScripts())
 {
-    <script type="text/javascript">
+	<script type="text/javascript">
     const toast = new ToastNotifier();
     $(document).ready(function () {
         $.ajax({
-            url: '@Url.Action("GetProductAttributes", "ProductsApi")',
+            url: '@Url.Action("GetProductAttributes", "ProductAttributesApi")',
             method: 'get',
             contentType: "application/json; charset=utf-8",
             data: {
                 productId: '@Model.Id'
             },
-                success: function (data) {
-                    $(data).each(function (index, element) {
+            success: function (data) {
+                if (data.is_success) {
+	                $(data.result).each(function (index, element) {
                         appendTable(element);
                     });
+                    }
                 },
                 error: function (error) {
                     console.log(error);
@@ -110,7 +112,7 @@
             });
 
             $.ajax({
-                url: '@Url.Action("EditProductAttributes", "ProductsApi")',
+                url: '@Url.Action("AddOrUpdateProductAttributes", "ProductAttributesApi")',
                 method: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(model),
@@ -133,7 +135,7 @@
         $($("#ProductAttributeId option[value=" + id + "]").removeAttr("hidden")[0].parentElement).removeAttr("hidden");
 
         $.ajax({
-            url: '@Url.Action("RemoveAttribute", "ProductsApi")',
+            url: '@Url.Action("RemoveAttribute", "ProductAttributesApi")',
             method: 'POST',
             data: {
                 productId: '@Model.Id',
@@ -192,5 +194,5 @@
         };
     }
 
-    </script>
+	</script>
 }

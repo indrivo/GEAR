@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using GR.Cache.Abstractions.Extensions;
+using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -23,7 +25,6 @@ using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.Orders.Abstractions;
-using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Infrastructure.Services
@@ -32,6 +33,8 @@ namespace GR.ECommerce.Infrastructure.Services
     [Documentation("Basic Implementation of product service")]
     public class ProductService : IProductService<Product>
     {
+        #region Injectable
+
         /// <summary>
         /// Inject commerce context
         /// </summary>
@@ -52,12 +55,20 @@ namespace GR.ECommerce.Infrastructure.Services
         /// </summary>
         private readonly IOrderDbContext _orderDbContext;
 
-        public ProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext)
+        /// <summary>
+        /// Inject mapper
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        #endregion
+
+        public ProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext, IMapper mapper)
         {
             Context = commerceContext;
             _userManager = userManager;
             _paymentContext = paymentContext;
             _orderDbContext = orderDbContext;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -77,6 +88,17 @@ namespace GR.ECommerce.Infrastructure.Services
             result.IsSuccess = true;
             result.Result = data;
             return result;
+        }
+
+        /// <summary>
+        /// Get products with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<ProductsPaginatedViewModel>> GetProductsWithPaginationAsync(DTParameters parameters)
+        {
+            var paginated = await Context.Products.GetPagedAsDtResultAsync(parameters);
+            return _mapper.Map<DTResult<ProductsPaginatedViewModel>>(paginated);
         }
 
         /// <summary>
@@ -238,7 +260,7 @@ namespace GR.ECommerce.Infrastructure.Services
         /// <param name="value"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text)
+        public virtual async Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text)
         {
             var setting = await Context.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
             if (setting == null)
@@ -260,58 +282,6 @@ namespace GR.ECommerce.Infrastructure.Services
 
         #endregion
 
-        #region Attributes
-
-        /// <summary>
-        /// Remove product attribute
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="attributeId"></param>
-        /// <returns></returns>
-        public async Task<ResultModel> RemoveAttributeAsync(Guid? productId, Guid? attributeId)
-        {
-            if (productId == null || attributeId == null) return new InvalidParametersResultModel();
-            var result = await Context.ProductAttributes
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.ProductAttributeId == attributeId && x.ProductId == productId);
-
-            if (result == null) return new NotFoundResultModel();
-            Context.ProductAttributes.Remove(result);
-            var dbResult = await Context.PushAsync();
-            return dbResult;
-        }
-
-        #endregion
-
-        #region Brands
-
-        /// <summary>
-        /// Add new brand
-        /// </summary>
-        /// <param name="brand"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> AddBrandAsync(Brand brand)
-        {
-            if (brand == null) return new InvalidParametersResultModel<Guid>();
-            var modelState = ModelValidator.IsValid(brand);
-            if (!modelState.IsSuccess) return modelState.Map<Guid>();
-            await Context.Brands.AddAsync(brand);
-            var dbResponse = await Context.PushAsync();
-            return dbResponse.Map(brand.Id);
-        }
-
-        /// <summary>
-        /// Get all brands
-        /// </summary>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Brand>>> GetAllBrandsAsync()
-        {
-            var data = await Context.Brands.ToListAsync();
-            return new SuccessResultModel<IEnumerable<Brand>>(data);
-        }
-
-        #endregion
-
         #region Filters
 
         /// <summary>
@@ -319,7 +289,7 @@ namespace GR.ECommerce.Infrastructure.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Product>>> GetProductsWithFiltersAsync([Required]ProductsFilterRequest model)
+        public virtual async Task<ResultModel<IEnumerable<Product>>> GetProductsWithFiltersAsync([Required] ProductsFilterRequest model)
         {
             var modelState = ModelValidator.IsValid(model);
             if (!modelState.IsSuccess) return modelState.Map<IEnumerable<Product>>();
@@ -391,28 +361,6 @@ namespace GR.ECommerce.Infrastructure.Services
             response.IsSuccess = true;
             response.Result = products;
             return response;
-        }
-
-        /// <summary>
-        /// Get attributes for filters
-        /// </summary>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<FilterAttributeValuesViewModel>>> GetAttributesForFiltersAsync()
-        {
-            var attributes = await Context.ProductAttribute
-                .Include(x => x.AttributeGroup)
-                .ToListAsync();
-
-            var data = attributes.Adapt<IEnumerable<FilterAttributeValuesViewModel>>().ToList();
-            foreach (var item in data)
-            {
-                item.Values = Context.ProductAttributes
-                    .Where(m => m.ShowInFilters && m.ProductAttributeId == item.Id)
-                    .Select(x => x.Value)
-                    .Distinct();
-            }
-
-            return new SuccessResultModel<IEnumerable<FilterAttributeValuesViewModel>>(data);
         }
 
         #endregion
@@ -519,7 +467,7 @@ namespace GR.ECommerce.Infrastructure.Services
         /// <param name="productId"></param>
         /// <param name="variationId"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> RemoveVariationOptionAsync([Required]Guid? productId, [Required]Guid? variationId)
+        public virtual async Task<ResultModel> RemoveVariationOptionAsync([Required] Guid? productId, [Required] Guid? variationId)
         {
             var resultModel = new ResultModel();
             if (productId == null || variationId == null) return new InvalidParametersResultModel();
@@ -534,6 +482,113 @@ namespace GR.ECommerce.Infrastructure.Services
             return dbResult;
         }
 
+        /// <summary>
+        /// Add or update variation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddOrUpdateVariationAsync(UpdateProductVariationViewModel model)
+        {
+            var validate = ModelValidator.IsValid(model);
+            if (!validate.IsSuccess) return validate;
+            var prod = await Context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == model.ProductId);
+
+            if (prod == null) return new NotFoundResultModel();
+
+            var variation = await Context.ProductVariations
+                .FirstOrDefaultAsync(i => i.Id == model.VariationId && i.ProductId == model.ProductId);
+
+            if (variation != null)
+            {
+                variation.Price = model.Price;
+                Context.ProductVariations.Update(variation);
+
+                var listProductVariationDetails =
+                   Context.ProductVariationDetails.Where(x => x.ProductVariationId == variation.Id);
+
+                Context.ProductVariationDetails.RemoveRange(listProductVariationDetails);
+            }
+            else
+            {
+                variation = new ProductVariation
+                {
+                    ProductId = model.ProductId,
+                    Price = model.Price,
+                };
+
+                await Context.ProductVariations.AddAsync(variation);
+            }
+
+            var variationDetails = model.ProductVariationDetails.Select(x => new ProductVariationDetail()
+            {
+                ProductVariationId = variation.Id,
+                Value = x.Value,
+                ProductOptionId = x.ProductOptionId
+            });
+
+            await Context.ProductVariationDetails.AddRangeAsync(variationDetails);
+
+
+            var dbResult = await Context.PushAsync();
+            return dbResult;
+        }
+
+        /// <summary>
+        /// Get product variations
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<ProductVariationViewModel>>> GetProductVariationsAsync(Guid productId)
+        {
+            var variations = await Context.ProductVariations
+                .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
+                .Where(x => x.ProductId == productId)
+                .Select(x => new ProductVariationViewModel
+                {
+                    VariationId = x.Id,
+                    Price = x.Price,
+                    VariationDetails = x.ProductVariationDetails.Select(s => new ProductVariationDetailsViewModel
+                    {
+                        Value = s.Value,
+                        Option = s.ProductOption.Name,
+                        OptionId = s.ProductOptionId
+                    })
+                }).ToListAsync();
+
+            return new SuccessResultModel<IEnumerable<ProductVariationViewModel>>(variations);
+        }
+
+        /// <summary>
+        /// Get product variation by id
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<ProductVariationViewModel>> GetProductVariationByIdAsync(Guid productId, Guid variationId)
+        {
+            if (productId == Guid.Empty || variationId == Guid.Empty) return new InvalidParametersResultModel<ProductVariationViewModel>();
+            var variation = await Context
+                .ProductVariations
+                .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
+                .Where(x => x.ProductId == productId && x.Id == variationId)
+                .Select(x => new ProductVariationViewModel
+                {
+                    ProductId = x.ProductId,
+                    VariationId = x.Id,
+                    Price = x.Price,
+                    VariationDetails = x.ProductVariationDetails.Select(s => new ProductVariationDetailsViewModel
+                    {
+                        Value = s.Value,
+                        Option = s.ProductOption.Name,
+                        OptionId = s.ProductOptionId
+                    })
+                }).FirstOrDefaultAsync();
+            if (variation == null) return new NotFoundResultModel<ProductVariationViewModel>();
+
+            return new SuccessResultModel<ProductVariationViewModel>(variation);
+        }
         #endregion
 
         #region Helpers

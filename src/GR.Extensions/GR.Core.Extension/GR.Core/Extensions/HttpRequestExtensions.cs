@@ -29,6 +29,20 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Is api request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public static bool IsApiRequest(this HttpRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var path = request.Path;
+            return path.ToString().ToLowerInvariant().StartsWith("/api");
+        }
+
+        /// <summary>
         /// Get app base url
         /// </summary>
         /// <param name="accessor"></param>
