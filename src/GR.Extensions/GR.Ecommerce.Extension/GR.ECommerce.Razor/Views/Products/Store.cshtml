@@ -359,7 +359,7 @@
 				const self = this;
 				return new Promise((resolve, reject) => {
 					$.ajax({
-						url: "/api/products/GetCategories",
+                        url: "/api/product-categories/GetActiveCategories",
 						success: function (data) {
 							if (data.is_success) {
 								self.categories = data.result;
@@ -377,7 +377,7 @@
 				const self = this;
 				return new Promise((resolve, reject) => {
 					$.ajax({
-						url: "/api/products/GetBrands",
+						url: "/api/product-brands/GetBrands",
 						success: function (data) {
 							if (data.is_success) {
 								self.brands = data.result;
@@ -397,7 +397,7 @@
 				const self = this;
 				return new Promise((resolve, reject) => {
 					$.ajax({
-						url: "/api/products/GetAttributes",
+                        url: "/api/product-attributes/GetAttributeFilters",
 						success: function (data) {
 							if (data.is_success) {
 								self.attributes = data.result;

@@ -6,6 +6,7 @@ using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using GR.Core.Razor.Attributes;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
@@ -45,6 +46,7 @@ namespace GR.Orders.Razor.Api
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [JsonProduces(typeof(ResultModel<Guid>))]
         public async Task<JsonResult> CreateOrder([Required] OrderCartViewModel model)
         {
             var createOrderRequest = await _orderProductService.CreateOrderAsync(model);

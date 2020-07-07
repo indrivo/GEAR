@@ -278,6 +278,22 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Add new record
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TId"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static async Task<ResultModel<TId>> AddAsync<TEntity, TId>(this IDbContext context, TEntity model)
+            where TEntity : class, IBase<TId>
+        {
+            await context.Set<TEntity>().AddAsync(model);
+            var dbResult = await context.PushAsync();
+            return dbResult.Map(model.Id);
+        }
+
+        /// <summary>
         /// Get context migrations
         /// </summary>
         /// <typeparam name="TContext"></typeparam>

@@ -133,6 +133,7 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.ECommerce.Abstractions.Helpers.PermissionConfigurations;
 using GR.ECommerce.Infrastructure.Data;
 using GR.ECommerce.Infrastructure.Services;
 using GR.EmailTwoFactorAuth;
@@ -523,6 +524,11 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterCartService<CartService>()
+				.RegisterBrandService<BrandService>()
+				.RegisterProductAttributeService<ProductAttributeService>()
+				.RegisterProductTypeService<ProductTypeService>()
+				.RegisterProductCategoryService<ProductCategoryService>()
+				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<BrandPermissions>, BrandPermissions>()
 				.RegisterCommerceEvents()
 				.AddCommerceRazorUIModule();
 

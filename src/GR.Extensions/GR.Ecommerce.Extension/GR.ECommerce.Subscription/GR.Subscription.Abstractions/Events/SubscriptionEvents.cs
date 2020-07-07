@@ -69,6 +69,7 @@ namespace GR.Subscriptions.Abstractions.Events
             Subscriptions.OnSubscriptionSeed += async (sender, args) =>
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
+                var brandService = IoC.Resolve<IBrandsService>();
 
                 //add subscription product type
                 await productService.AddProductTypeAsync(new ProductType
@@ -79,7 +80,7 @@ namespace GR.Subscriptions.Abstractions.Events
                 });
 
                 //add brand subscription
-                await productService.AddBrandAsync(new Brand
+                await brandService.AddBrandAsync(new Brand
                 {
                     Id = SubscriptionResources.SubscriptionBrand,
                     Name = nameof(Subscription),

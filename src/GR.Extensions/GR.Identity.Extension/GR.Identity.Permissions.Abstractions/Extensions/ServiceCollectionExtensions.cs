@@ -55,13 +55,32 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         /// <typeparam name="TConfiguration"></typeparam>
         /// <typeparam name="TPermissionsConstants"></typeparam>
         /// <param name="services"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterModulePermissionConfigurator<TConfiguration, TPermissionsConstants>(this IServiceCollection services)
+        public static IServiceCollection RegisterModulePermissionConfigurator<TConfiguration, TPermissionsConstants>(this IServiceCollection services, Action<PermissionConfig> options = null)
             where TConfiguration : DefaultPermissionsConfigurator<TPermissionsConstants>
             where TPermissionsConstants : class
         {
-            var instance = Activator.CreateInstance<TConfiguration>();
-            PermissionsProvider.Configurators.Enqueue(instance);
+            var config = new PermissionConfig();
+            options?.Invoke(config);
+
+            if (config.SeedOnApplicationStarted)
+            {
+                SystemEvents.Application.OnApplicationStarted += (sender, args) =>
+                {
+                    GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async cancellationToken =>
+                    {
+                        var instance = Activator.CreateInstance<TConfiguration>();
+                        await instance.SeedAsync();
+                    });
+                };
+            }
+            else
+            {
+                var instance = Activator.CreateInstance<TConfiguration>();
+                PermissionsProvider.Configurators.Enqueue(instance);
+            }
+
             return services;
         }
     }

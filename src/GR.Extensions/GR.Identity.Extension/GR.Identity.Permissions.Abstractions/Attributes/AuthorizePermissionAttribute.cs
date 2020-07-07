@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Abstractions.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace GR.Identity.Permissions.Abstractions.Attributes
 {
@@ -68,7 +71,7 @@ namespace GR.Identity.Permissions.Abstractions.Attributes
                     var hasPermission = await _permissionService.HasPermissionAsync(roles, permissions);
                     if (!hasPermission)
                     {
-                        context.Result = new RedirectToActionResult("AccessDenied", "Account", null);
+                        context.Result = GetRedirectResult(context.HttpContext);
                         await context.Result.ExecuteResultAsync(context);
                     }
                     else await del();
@@ -76,9 +79,24 @@ namespace GR.Identity.Permissions.Abstractions.Attributes
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    context.Result = new RedirectToActionResult("AccessDenied", "Account", null);
+                    context.Result = GetRedirectResult(context.HttpContext);
                     await context.Result.ExecuteResultAsync(context);
                 }
+            }
+
+            /// <summary>
+            /// Get redirect result
+            /// </summary>
+            /// <param name="context"></param>
+            /// <returns></returns>
+            private static IActionResult GetRedirectResult(HttpContext context)
+            {
+                if (context.IsBearerRequest() || context.Request.IsAjaxRequest() || context.Request.IsApiRequest())
+                {
+                    return new RedirectToActionResult("AccessDeniedResult", "PermissionsApi", null);
+                }
+
+                return new RedirectToActionResult("AccessDenied", "Account", null);
             }
         }
     }

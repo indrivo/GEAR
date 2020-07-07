@@ -77,6 +77,15 @@ namespace GR.Core.Helpers
         }
 
         /// <summary>
+        /// Get first error
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetFirstError()
+        {
+            return Errors?.FirstOrDefault()?.Message;
+        }
+
+        /// <summary>
         /// Add error from results
         /// </summary>
         /// <param name="results"></param>

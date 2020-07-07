@@ -428,5 +428,34 @@ namespace GR.Subscriptions
 
             return response;
         }
+
+        /// <summary>
+        /// Get users in subscription by name. Subscription must be valid
+        /// </summary>
+        /// <param name="subscriptionName"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<GearUser>>> GetUsersInSubscriptionAsync(string subscriptionName)
+        {
+            var userIds = await _subscriptionDbContext.Subscription
+                .Where(x => x.IsValid && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
+
+            var users = await _userManager.UserManager.Users.Where(x => userIds.Contains(x.Id)).ToListAsync();
+            return new SuccessResultModel<IEnumerable<GearUser>>(users);
+        }
+
+        /// <summary>
+        /// Get users in subscription by name. Subscription must be valid
+        /// </summary>
+        /// <param name="subscriptionName"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Guid>>> GetUsersIdInSubscriptionAsync(string subscriptionName)
+        {
+            var userIds = await _subscriptionDbContext.Subscription
+                .Where(x => x.IsValid && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
+            return new SuccessResultModel<IEnumerable<Guid>>(userIds);
+        }
+
+
+
     }
 }

@@ -6,7 +6,7 @@
         ListIdentifier = "products",
         Api = new ListApiConfigurationViewModel
         {
-            Url = Url.Action("OrderedList", "Products")
+            Url = Url.Action("GetProductsWithPagination", "ProductsApi")
         },
         RenderColumns = new List<ListRenderColumn>
         {
