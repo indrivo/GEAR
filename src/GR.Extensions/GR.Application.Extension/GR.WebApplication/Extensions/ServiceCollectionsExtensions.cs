@@ -122,11 +122,11 @@ namespace GR.WebApplication.Extensions
                 configuration.CacheConfiguration.UseInMemoryCache)
                 throw new InvalidCacheConfigurationException("Both types of cached storage cannot be used");
 
-            services.AddDistributedMemoryCache()
-                .AddRedisCacheConfiguration(configuration.HostingEnvironment, configuration.Configuration);
-
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
+                services.AddDistributedMemoryCache()
+                    .AddRedisCacheConfiguration(configuration.HostingEnvironment, configuration.Configuration);
+
                 services.AddCacheModule<DistributedCacheService>()
                     .AddRedisCacheConnection<RedisConnection>();
             }
