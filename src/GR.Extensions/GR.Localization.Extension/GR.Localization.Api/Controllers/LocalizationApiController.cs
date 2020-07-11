@@ -21,6 +21,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using GR.Core.Helpers.Archiving;
+using GR.Core.Razor.Attributes;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 
 namespace GR.Localization.Api.Controllers
@@ -41,11 +43,17 @@ namespace GR.Localization.Api.Controllers
         /// </summary>
         private readonly ILocalizationService _service;
 
+        /// <summary>
+        /// Inject localizer
+        /// </summary>
+        private readonly IStringLocalizer _localizer;
+
         #endregion
 
-        public LocalizationApiController(ILocalizationService service)
+        public LocalizationApiController(ILocalizationService service, IStringLocalizer localizer)
         {
             _service = service;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -78,7 +86,7 @@ namespace GR.Localization.Api.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        public async Task<JsonResult> ImportLanguagePack([Required]string language, [Required]IFormFile filePack)
+        public async Task<JsonResult> ImportLanguagePack([Required] string language, [Required] IFormFile filePack)
         {
             if (!ModelState.IsValid) return JsonModelStateErrors();
 
@@ -99,7 +107,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="language"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetLanguagePack([StringLength(2), Required]string language)
+        public async Task<IActionResult> GetLanguagePack([StringLength(2), Required] string language)
         {
             var request = await _service.GetLanguagePackAsync(language);
             if (!request.IsSuccess) return NotFound();
@@ -124,6 +132,83 @@ namespace GR.Localization.Api.Controllers
             }
             var archive = ZipHelper.CreateZipArchive(items);
             return File(archive, ContentType.ApplicationZip, "LanguagePackArchive");
+        }
+
+        /// <summary>
+        /// Get languages with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [JsonProduces(typeof(DTResult<LanguageCreateViewModel>))]
+        public async Task<JsonResult> LanguageListWithPagination(DTParameters parameters)
+            => await JsonAsync(_service.GetLanguagesWithPaginationAsync(parameters));
+
+        /// <summary>
+        /// Get key list with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [JsonProduces(typeof(DTResult<LocalizedString>))]
+        public async Task<JsonResult> KeysListWithPagination(DTParameters parameters)
+            => await JsonAsync(_service.GetLocalizationKeysWithPaginationAsync(parameters));
+
+        /// <summary>
+        /// Get key configuration
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [JsonProduces(typeof(ResultModel<EditLocalizationViewModel>))]
+        public JsonResult GetKeyConfiguration(string key)
+            => Json(_service.GetKeyConfiguration(key));
+
+        /// <summary>
+        /// Get add new key configuration
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [JsonProduces(typeof(ResultModel<AddKeyViewModel>))]
+        public JsonResult GetAddKeyConfiguration()
+            => Json(_service.GetAddKeyConfiguration());
+
+        /// <summary>
+        /// Edit key
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [JsonProduces(typeof(ResultModel))]
+        public async Task<IActionResult> EditKey(EditLocalizationViewModel model)
+            => await JsonAsync(_service.EditKeyAsync(model));
+
+        /// <summary>
+        /// Add new key
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [JsonProduces(typeof(ResultModel))]
+        public async Task<JsonResult> AddKey(AddKeyViewModel model)
+        {
+            if (!ModelState.IsValid) return JsonModelStateErrors();
+            var result = new ResultModel();
+            var isValid = model.LocalizedStrings.All(x => !string.IsNullOrEmpty(x.Value));
+            if (!isValid)
+            {
+                result.AddError("Empty translations");
+                return Json(result);
+            }
+
+            if (!_localizer[model.NewKey].ResourceNotFound)
+            {
+                result.AddError("Key already exists");
+                return Json(result);
+            }
+
+            var addResponse = await _service.AddOrUpdateKeyAsync(model.NewKey, model.LocalizedStrings);
+            return Json(addResponse);
         }
 
         /// <summary>

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
+using Microsoft.Extensions.Localization;
 
 namespace GR.Localization.Abstractions
 {
@@ -39,7 +41,7 @@ namespace GR.Localization.Abstractions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        ResultModel ChangeStatusOfLanguage(LanguageCreateViewModel model);
+        Task<ResultModel> ChangeStatusOfLanguageAsync(LanguageCreateViewModel model);
 
         /// <summary>
         /// Import language translations
@@ -80,5 +82,32 @@ namespace GR.Localization.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<Dictionary<string, Dictionary<string, string>>>> GetLanguagePacksAsync();
+
+        /// <summary>
+        /// Get languages with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<DTResult<LanguageCreateViewModel>> GetLanguagesWithPaginationAsync(DTParameters parameters);
+
+        /// <summary>
+        /// Get localized strings
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters);
+
+        /// <summary>
+        /// Get key configuration
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        ResultModel<EditLocalizationViewModel> GetKeyConfiguration(string key);
+
+        /// <summary>
+        /// Get add key configuration
+        /// </summary>
+        /// <returns></returns>
+        ResultModel<AddKeyViewModel> GetAddKeyConfiguration();
     }
 }

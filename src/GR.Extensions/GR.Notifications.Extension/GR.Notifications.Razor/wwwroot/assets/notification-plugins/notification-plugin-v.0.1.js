@@ -366,7 +366,7 @@ $(document).ready(function () {
     function initExternalConnections() {
         const connPromise = new Promise((resolve, reject) => {
             var connection = new signalR.HubConnectionBuilder()
-                .withUrl("/rtn", { transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling })
+                .withUrl("/rtn", { transport: signalR.HttpTransportType.LongPolling })
                 .build();
             //Time for one connection
             //connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;

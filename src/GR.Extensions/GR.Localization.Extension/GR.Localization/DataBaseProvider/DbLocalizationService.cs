@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GR.Cache.Abstractions;
+using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -11,10 +11,12 @@ using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Validators;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace GR.Localization.DataBaseProvider
@@ -192,6 +194,8 @@ namespace GR.Localization.DataBaseProvider
         /// <param name="model"></param>
         public virtual async Task<ResultModel> EditKeyAsync(EditLocalizationViewModel model)
         {
+            var validate = ModelValidator.IsValid(model);
+            if (!validate.IsSuccess) return validate;
             var newStrings = model.LocalizedStrings;
             return await AddOrUpdateKeyAsync(model.Key, newStrings);
         }
@@ -266,9 +270,89 @@ namespace GR.Localization.DataBaseProvider
             return await _context.PushAsync();
         }
 
-        public virtual ResultModel ChangeStatusOfLanguage(LanguageCreateViewModel model)
+        /// <summary>
+        /// Change status of language
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeStatusOfLanguageAsync(LanguageCreateViewModel model)
         {
-            throw new NotImplementedException();
+            var languageRequest = await GetLanguageByIdentifierAsync(model.Identifier);
+            if (!languageRequest.IsSuccess) return languageRequest.ToBase();
+            var language = languageRequest.Result;
+            language.IsDeleted = model.IsDisabled;
+            return await _context.PushAsync();
+        }
+
+        /// <summary>
+        /// Get languages with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<LanguageCreateViewModel>> GetLanguagesWithPaginationAsync(DTParameters parameters)
+        {
+            var paginated = await _context.Languages.GetPagedAsDtResultAsync(parameters);
+            return _mapper.Map<DTResult<LanguageCreateViewModel>>(paginated);
+        }
+
+        /// <summary>
+        /// Get keys with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
+        {
+            var stringLocalizer = IoC.Resolve<IStringLocalizer>();
+            var paginated = await stringLocalizer.GetAllStrings()
+                .AsAsyncQueryable()
+                .GetPagedAsDtResultAsync(parameters);
+            return paginated;
+        }
+
+        /// <summary>
+        /// Get key configuration
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual ResultModel<EditLocalizationViewModel> GetKeyConfiguration(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return new NotFoundResultModel<EditLocalizationViewModel>();
+            }
+
+            var stringLocalizer = IoC.Resolve<IStringLocalizer>();
+
+            var rz = new Dictionary<string, string>();
+            foreach (var item in _options.Value.Languages)
+            {
+                var str = stringLocalizer.GetForLanguage(key, item.Identifier);
+                rz.Add(item.Identifier, str.Value != $"[{str.Name}]" ? str : string.Empty);
+            }
+
+            var model = new EditLocalizationViewModel
+            {
+                Key = key,
+                LocalizedStrings = rz,
+                Languages = _options.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
+            };
+            return new SuccessResultModel<EditLocalizationViewModel>(model);
+        }
+
+        /// <summary>
+        /// Get add key configuration
+        /// </summary>
+        /// <returns></returns>
+        public virtual ResultModel<AddKeyViewModel> GetAddKeyConfiguration()
+        {
+            var rz = _options.Value.Languages.ToDictionary(item => item.Identifier, item => string.Empty);
+
+            var model = new AddKeyViewModel
+            {
+                LocalizedStrings = rz,
+                Languages = _options.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
+            };
+            return new SuccessResultModel<AddKeyViewModel>(model);
         }
     }
 }

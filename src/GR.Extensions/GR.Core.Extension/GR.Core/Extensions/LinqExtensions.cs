@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GR.Core.Helpers.Async;
 
 namespace GR.Core.Extensions
 {
@@ -55,5 +57,14 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, bool condition, Expression<Func<T, bool>> whereClause)
             => condition ? query.Where(whereClause) : query;
+
+        /// <summary>
+        /// Transform to async list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<T> AsAsyncQueryable<T>(this IEnumerable<T> source)
+        => new AsyncEnumerable<T>(source);
     }
 }

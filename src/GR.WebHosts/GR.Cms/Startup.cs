@@ -509,10 +509,10 @@ namespace GR.Cms
 
 			//-------------------------------------------MPass Module-------------------------------------
 			config.GearServices.AddMPassModuleSigningCredentials(new MPassSigningCredentials
-				{
-					ServiceProviderCertificate = MPassResources.GetSandboxServiceProviderCertificate(),
-					IdentityProviderCertificate = MPassResources.GetSandboxIdentityProviderCertificate()
-				})
+			{
+				ServiceProviderCertificate = MPassResources.GetSandboxServiceProviderCertificate(),
+				IdentityProviderCertificate = MPassResources.GetSandboxIdentityProviderCertificate()
+			})
 				.AddMPassService<MPassService>();
 
 			//-------------------------------------Commerce module-------------------------------------
@@ -548,7 +548,11 @@ namespace GR.Cms
 				.RegisterApplePayProvider<ApplePayPaymentMethodService>()
 				.RegisterApplePayRazorProvider(Configuration)
 				//CreditCard
-				.RegisterCreditCardPayProvider<AuthorizeDotNetPaymentMethodService>()
+				.RegisterCreditCardPayProvider<AuthorizeDotNetPaymentMethodService>(options =>
+				{
+					options.VerificationCardCurrencyCode = "USD";
+					options.VerificationCardValue = 0.01M;
+				})
 				.RegisterCreditCardRazorProvider(Configuration)
 				//Mobil Pay
 				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()

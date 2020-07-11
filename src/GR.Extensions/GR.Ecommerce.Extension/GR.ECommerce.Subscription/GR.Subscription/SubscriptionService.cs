@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -12,6 +13,7 @@ using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Validators;
 using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
@@ -52,6 +54,11 @@ namespace GR.Subscriptions
         private readonly IOrderProductService<Order> _orderService;
 
         /// <summary>
+        /// Inject orders context
+        /// </summary>
+        private readonly IOrderDbContext _orderDbContext;
+
+        /// <summary>
         /// Inject payment service
         /// </summary>
         private readonly IPaymentService _paymentService;
@@ -78,7 +85,7 @@ namespace GR.Subscriptions
 
         #endregion
 
-        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger, IOrderDbContext orderDbContext)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
@@ -89,6 +96,7 @@ namespace GR.Subscriptions
             _commerceContext = commerceContext;
             _mapper = mapper;
             _logger = logger;
+            _orderDbContext = orderDbContext;
         }
 
         /// <summary>
@@ -455,7 +463,81 @@ namespace GR.Subscriptions
             return new SuccessResultModel<IEnumerable<Guid>>(userIds);
         }
 
+        /// <summary>
+        /// Get total incoming
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<SubscriptionsTotalViewModel>> GetTotalIncomeResourcesAsync()
+        {
+            var total = await _orderDbContext.ProductOrders
+                .Include(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
+                .Include(x => x.Product)
+                .ThenInclude(x => x.ProductDiscount)
+                .Include(x => x.Product)
+                .ThenInclude(x => x.ProductVariations)
+                .AsNoTracking()
+                .Where(x => x.Product.ProductTypeId.Equals(SubscriptionResources.SubscriptionPlanProductType) && x.Order.OrderState == OrderState.PaymentReceived)
+                .SumAsync(x => x.FinalPrice);
 
+            var data = new SubscriptionsTotalViewModel
+            {
+                Total = total,
+                Currency = (await _productService.GetGlobalCurrencyAsync()).Result
+            };
 
+            return new SuccessResultModel<SubscriptionsTotalViewModel>(data);
+        }
+
+        /// <summary>
+        /// Get user subscription info with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<SubscriptionUserInfoViewModel>> GetUsersSubscriptionInfoWithPaginationAsync(DTParameters parameters)
+        {
+            var subscriptionsPaged = await _subscriptionDbContext.Subscription
+                .Include(x => x.Order)
+                .ThenInclude(x => x.ProductOrders)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductVariations)
+                .ThenInclude(x => x.ProductVariationDetails)
+                .ThenInclude(x => x.ProductOption)
+                .GetPagedAsDtResultAsync(parameters);
+            var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
+            var data = new List<SubscriptionUserInfoViewModel>();
+            foreach (var subscription in subscriptionsPaged.Data)
+            {
+                var userRequest = await _userManager.FindUserByIdAsync(subscription.UserId);
+                if (!userRequest.IsSuccess) continue;
+
+                var subscriptionUser = _mapper.Map<SubscriptionUserInfoViewModel>(userRequest.Result);
+                subscriptionUser.Currency = currency;
+                subscriptionUser.CanExpire = !subscription.IsFree;
+                subscriptionUser.ExpirationDate = subscription.ExpirationDate;
+                subscriptionUser.DatePaid = subscription.Order?.Changed;
+                subscriptionUser.Amount = subscription.Order?.Total ?? 0;
+                subscriptionUser.Status = subscription.IsValid ? "Active" : "Expired";
+                var orderDetails = subscription.Order?.ProductOrders.FirstOrDefault();
+                if (orderDetails != null)
+                {
+                    foreach (var variation in orderDetails.ProductVariation.ProductVariationDetails)
+                    {
+                        subscriptionUser.Period += variation.Value + " ";
+                    }
+                }
+                data.Add(subscriptionUser);
+            }
+
+            return new DTResult<SubscriptionUserInfoViewModel>
+            {
+                Data = data,
+                Draw = subscriptionsPaged.Draw,
+                RecordsFiltered = subscriptionsPaged.RecordsFiltered,
+                RecordsTotal = subscriptionsPaged.RecordsTotal
+            };
+        }
     }
 }

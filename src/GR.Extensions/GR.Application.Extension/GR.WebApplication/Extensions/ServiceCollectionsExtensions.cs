@@ -80,6 +80,7 @@ namespace GR.WebApplication.Extensions
                 configuration.ServerConfiguration.UploadMaximSize);
 
             services.AddResponseCaching();
+            services.AddResponseCompression();
 
             //Global settings
             var mvcBuilder = services.AddMvc(options =>

@@ -176,25 +176,6 @@ namespace GR.ECommerce.Infrastructure.Services
             return resultModel;
         }
 
-        #region ProductTypes
-
-        /// <summary>
-        /// Add new product type
-        /// </summary>
-        /// <param name="productType"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType)
-        {
-            if (productType == null) return new InvalidParametersResultModel<Guid>();
-            var modelState = ModelValidator.IsValid(productType);
-            if (!modelState.IsSuccess) return modelState.Map<Guid>();
-            await Context.ProductTypes.AddAsync(productType);
-            var dbResponse = await Context.PushAsync();
-            return dbResponse.Map(productType.Id);
-        }
-
-        #endregion
-
         #region Settings
 
         /// <summary>
@@ -236,8 +217,22 @@ namespace GR.ECommerce.Infrastructure.Services
         /// Get all currencies
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync() =>
+        public virtual async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync() =>
             new SuccessResultModel<IEnumerable<Currency>>(await Context.Currencies.FromCache(TimeSpan.MaxValue).ToListAsync());
+
+        /// <summary>
+        /// Get currency by code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Currency>> GetCurrencyByCodeAsync(string code)
+        {
+            if (code.IsNullOrEmpty()) return new InvalidParametersResultModel<Currency>();
+            var currency = await Context.Currencies.FromCache(TimeSpan.MaxValue)
+                .FirstOrDefaultAsync(x => x.Code.Equals(code));
+            if (currency == null) return new NotFoundResultModel<Currency>();
+            return new SuccessResultModel<Currency>(currency);
+        }
 
         /// <summary>
         /// Get setting

@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
-using GR.Core.Helpers.Responses;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions.Helpers.Attributes;
@@ -67,6 +65,7 @@ namespace GR.Localization.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<AddCountryViewModel>>))]
         public async Task<JsonResult> GetAllCountries()
             => await JsonAsync(_countryService.GetAllCountriesAsync());
@@ -77,6 +76,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="countryId"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Country>))]
         public async Task<JsonResult> GetCountryById([Required] string countryId)
             => await JsonAsync(_countryService.GetCountryByIdAsync(countryId));
@@ -100,6 +100,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="maxItems"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<StateOrProvince>>))]
         public async Task<JsonResult> GetCitiesByCountry([Required] string countryId, string search, Guid? selectedCityId, int maxItems = 20)
         {

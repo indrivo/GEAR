@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Subscriptions.Abstractions.ViewModels;
@@ -118,5 +119,18 @@ namespace GR.Subscriptions.Abstractions
         /// <param name="subscriptionName"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<Guid>>> GetUsersIdInSubscriptionAsync(string subscriptionName);
+
+        /// <summary>
+        /// Get total incoming
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<SubscriptionsTotalViewModel>> GetTotalIncomeResourcesAsync();
+
+        /// <summary>
+        /// Get user subscription info
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        Task<DTResult<SubscriptionUserInfoViewModel>> GetUsersSubscriptionInfoWithPaginationAsync(DTParameters parameters);
     }
 }

@@ -46,10 +46,10 @@
 						</div>
 						<div class="row button-group">
 							<div class="col-lg-2 col-md-3">
-								<a href="javascript:void(0)" class="btn btn-block btn-success" id="saveAttributeBtn"> @Localizer["save"]</a>
+								<a href="javascript:void(0)" class="btn btn-block btn-success" id="saveAttributeBtn">@Localizer["save"]</a>
 							</div>
 							<div class="col-lg-2 col-md-3">
-								<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+								<button type="reset" class="btn btn-block  btn-inverse">@Localizer["reset"]</button>
 							</div>
 						</div>
 					</form>
@@ -84,7 +84,11 @@
         });
 
         $("#addAttributeBtn").on('click',function() {
-			var elm = $("#ProductAttributeId")[0].selectedOptions[0];
+            const elm = $("#ProductAttributeId")[0].selectedOptions[0];
+            if (!$(elm).attr("value")) {
+                toast.notifyWarning("Info", "No available attributes");
+                return;
+            }
 			const conf = {
 				label: $(elm).attr("label"),
 				attributeId: $(elm).attr("value"),
@@ -99,8 +103,7 @@
         $("#saveAttributeBtn").on("click", function () {
             var model = [];
             $($('#tableBody')[0].children).each(function (index, element) {
-				var attributeId = element.id.substring(3);
-				console.log(attributeId);
+				const attributeId = element.id.substring(3);
                 model.push({
                     productAttributeId: attributeId,
                     productId: '@Model.Id',

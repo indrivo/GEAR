@@ -105,7 +105,7 @@ namespace GR.ECommerce.Infrastructure.Data
         public override async Task InvokeSeedAsync(IServiceProvider services)
         {
             SubscriptionEvents.Subscriptions.TriggerSubscriptionSeed(new SeedSubscriptionEventArgs());
-            var service = services.GetRequiredService<IProductService<Product>>();
+            var service = services.GetRequiredService<IProductTypeService>();
             await service.AddProductTypeAsync(new ProductType
             {
                 Id = CommerceResources.DefaultProductType,

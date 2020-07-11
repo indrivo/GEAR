@@ -36,5 +36,12 @@ namespace GR.ECommerce.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel<Guid>> AddProductTypeAsync(CreateProductTypeViewModel model);
+
+        /// <summary>
+        /// Add new product type
+        /// </summary>
+        /// <param name="productType"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType);
     }
 }

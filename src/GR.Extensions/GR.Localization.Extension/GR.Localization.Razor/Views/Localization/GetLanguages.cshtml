@@ -15,7 +15,7 @@
         ListIdentifier = "languages",
         Api = new ListApiConfigurationViewModel
         {
-            Url = Url.Action("LanguageList")
+            Url = Url.Action("LanguageListWithPagination", "LocalizationApi")
         },
         RenderColumns = new List<ListRenderColumn>
 {
@@ -50,7 +50,7 @@
                 }
             }
 },
-        Documentation = "This tan allow to manage your dashboards"
+        Documentation = "This page allow to manage app languages"
     };
 }
 

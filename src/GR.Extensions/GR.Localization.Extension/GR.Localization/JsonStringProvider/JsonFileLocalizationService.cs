@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GR.Cache.Abstractions;
+using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -13,6 +14,7 @@ using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Validators;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
@@ -147,9 +149,12 @@ namespace GR.Localization.JsonStringProvider
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public ResultModel ChangeStatusOfLanguage(LanguageCreateViewModel model)
+        public virtual async Task<ResultModel> ChangeStatusOfLanguageAsync(LanguageCreateViewModel model)
         {
-            var response = new ResultModel { IsSuccess = true };
+            var response = new ResultModel
+            {
+                IsSuccess = true
+            };
             var existsInConfig =
                 _locConfig.Value.Languages.Any(m => m.Identifier == model.Identifier && m.Name == model.Name);
 
@@ -171,7 +176,7 @@ namespace GR.Localization.JsonStringProvider
                 using (var sReader = new StreamReader(str))
                 using (var reader = new JsonTextReader(sReader))
                 {
-                    var fileObj = JObject.Load(reader);
+                    var fileObj = await JObject.LoadAsync(reader);
                     var languages = _locConfig.Value.Languages;
                     var updLangs = new HashSet<LanguageCreateViewModel>();
                     foreach (var e in languages)
@@ -207,7 +212,7 @@ namespace GR.Localization.JsonStringProvider
 
                     fileObj[nameof(LocalizationConfig)] = updatedLangs;
                     reader.Close();
-                    File.WriteAllText(langsFile.PhysicalPath, fileObj.ToString());
+                    await File.WriteAllTextAsync(langsFile.PhysicalPath, fileObj.ToString());
                 }
             }
             else
@@ -323,6 +328,79 @@ namespace GR.Localization.JsonStringProvider
                 if (packRequest.IsSuccess) dict.Add(lang.Identifier, packRequest.Result);
             }
             return new SuccessResultModel<Dictionary<string, Dictionary<string, string>>>(dict);
+        }
+
+        /// <summary>
+        /// Get languages with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<LanguageCreateViewModel>> GetLanguagesWithPaginationAsync(DTParameters parameters)
+        {
+            var paginated = await _locConfig.Value.Languages
+                .AsAsyncQueryable()
+                .GetPagedAsDtResultAsync(parameters);
+            return paginated;
+        }
+
+        /// <summary>
+        /// Get keys with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
+        {
+            var stringLocalizer = IoC.Resolve<IStringLocalizer>();
+            var paginated = await stringLocalizer.GetAllStrings()
+                .AsAsyncQueryable()
+                .GetPagedAsDtResultAsync(parameters);
+            return paginated;
+        }
+
+        /// <summary>
+        /// Get key configuration
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual ResultModel<EditLocalizationViewModel> GetKeyConfiguration(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return new NotFoundResultModel<EditLocalizationViewModel>();
+            }
+
+            var stringLocalizer = IoC.Resolve<IStringLocalizer>();
+
+            var rz = new Dictionary<string, string>();
+            foreach (var item in _locConfig.Value.Languages)
+            {
+                var str = stringLocalizer.GetForLanguage(key, item.Identifier);
+                rz.Add(item.Identifier, str.Value != $"[{str.Name}]" ? str : string.Empty);
+            }
+
+            var model = new EditLocalizationViewModel
+            {
+                Key = key,
+                LocalizedStrings = rz,
+                Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
+            };
+            return new SuccessResultModel<EditLocalizationViewModel>(model);
+        }
+
+        /// <summary>
+        /// Get add key configuration
+        /// </summary>
+        /// <returns></returns>
+        public virtual ResultModel<AddKeyViewModel> GetAddKeyConfiguration()
+        {
+            var rz = _locConfig.Value.Languages.ToDictionary(item => item.Identifier, item => string.Empty);
+
+            var model = new AddKeyViewModel
+            {
+                LocalizedStrings = rz,
+                Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
+            };
+            return new SuccessResultModel<AddKeyViewModel>(model);
         }
 
         /// <summary>

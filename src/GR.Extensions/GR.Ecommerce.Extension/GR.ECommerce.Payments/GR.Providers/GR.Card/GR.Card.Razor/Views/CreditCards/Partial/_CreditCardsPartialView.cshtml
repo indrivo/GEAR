@@ -1,0 +1,199 @@
+﻿@using GR.Core.Razor.Extensions
+@using (Html.BeginPartialViewStyles())
+{
+    <style>
+        .card-type-img {
+            width: 100px;
+            height: 70px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-repeat: no-repeat;
+        }
+
+            .card-type-img.mastercard {
+                background-image: url(/assets/savecrypto/images/cardtype-mastercard.png);
+            }
+
+            .card-type-img.visa {
+                background-image: url(/assets/savecrypto/images/cardtype-visa.png);
+                background-size: 90%;
+            }
+
+            .card-type-img.maestro {
+                background-image: url(/assets/savecrypto/images/cardtype-maestro.png);
+            }
+
+            .card-type-img.americanexpress {
+                background-image: url(/assets/savecrypto/images/cardtype-americanexpress.png);
+                background-size: 90%;
+            }
+
+        .custom-control-label {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .default-card {
+            border: 1px solid #375DDA;
+        }
+
+        .card .default-card-label {
+            display: none;
+        }
+
+        .set-wrapper {
+            display: inline-block;
+        }
+
+        .default-card .set-wrapper {
+            display: none;
+        }
+
+        .card.default-card .default-card-label {
+            display: inline-block !important;
+        }
+
+        .default-card-label {
+            padding: 0px 16px;
+            border-radius: 10px;
+            border: 2px solid #375DDA;
+            margin-left: 1rem;
+            font-size: 12px;
+        }
+
+        .no-cards {
+            font-family: Gilroy-regular;
+        }
+    </style>
+}
+
+<div class="row" id="user-cards"></div>
+
+@using (Html.BeginPartialViewScripts())
+{
+    <script src="~/lib/jsrender/jsrender.min.js"></script>
+    <script src="~/lib/jsviews/jsviews.min.js"></script>
+
+    <script type="text/x-jsrender" id="cardTemplate">
+        <div class="col-12 mb-2 credit-card-container" data-card-id="{{:cardId}}">
+            <div class="card position-relative p-4 d-block {{:isDefault ? "default-card" : "" }}">
+                <div class="custom-control custom-radio d-flex align-items-center weight-600">
+                    <input type="radio" id="{{:cardId}}" name="selected-card" class="custom-control-input" />
+                    <label class="custom-control-label" for="{{:cardId}}">
+                        {{:cardNumber}}
+                        <span class="default-card-label">Default</span>
+                    </label>
+                </div>
+                <p class="mt-1 mb-0">{{:owner}}</p>
+                <p class="mb-4 fs-14p text-secondary">{{:expirationDate}}</p>
+                <div class="set-wrapper"><a href="javascript:void(0)" class="set-default-link d-inline-block fs-14p" data-card-id="{{:cardId}}">Set as default card</a><div class="vertical-divider"></div></div>
+                <a href="javascript:void(0)" class="delete-card-link d-inline-block fs-14p" data-card-id="{{:cardId}}">@Localizer["payment_delete_card"]</a>
+                <div class="card-type-img {{:type.toLowerCase()}}">
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-jsrender" id="noCardsTemplate">
+        <div class="d-flex p-3 no-cards">
+            <span>You have no cards added</span>
+        </div>
+    </script>
+
+    <script>
+		$(document).ready(() => {
+			const toast = new ToastNotifier();
+
+			$.ajax({
+				url: '@Url.Action("GetUserHiddenCards", "CardPayApi")',
+				type: "GET",
+				success: response => {
+					if (response.is_success) {
+						const cardTemplate = $.templates('#cardTemplate');
+						const noCardsTemplate = $.templates('#noCardsTemplate');
+						const htmlOutput = response.result
+							? cardTemplate.render(response.result)
+							: noCardsTemplate.render();
+						$("#user-cards").append(htmlOutput);
+					} else {
+						toast.notifyErrorList(response.error_keys);
+					}
+				},
+				error: error => {
+					toast.notifyError(error);
+				}
+			});
+
+			$(document).on("change", "input[name='selected-card']", function(e) {
+				const self = $(this);
+
+				if (self.attr("id") === "newcard" && self.is(":checked")) {
+					$("#card-form-collapse").collapse("show");
+					$("#payWithCreditCardBtn").attr("data-use-new-card", false).removeAttr("data-card-id");
+				} else {
+					$("#card-form-collapse").collapse("hide");
+					$("#payWithCreditCardBtn").attr("data-use-new-card", true).attr("data-card-id", self.attr("id"));
+				}
+
+				$(".pay-btn").removeClass("disabled").removeAttr("disabled");
+			});
+
+			$(document).on("click", ".set-default-link", function(e) {
+				const cardId = $(this).data("card-id");
+				const self = $(this);
+
+				$.ajax({
+					url: '@Url.Action("SetDefaultCard", "CardPayApi")',
+					type: "POST",
+					data: { cardId: cardId },
+					success: response => {
+						if (response.is_success) {
+							$(".default-card").removeClass("default-card");
+							self.closest(".card").addClass("default-card");
+						} else {
+							toast.notifyErrorList(response.error_keys);
+						}
+					},
+					error: error => {
+						toast.notifyError(error);
+					}
+				});
+			});
+
+			$(document).on("click", ".delete-card-link", function (e) {
+				const cardId = $(this).data("card-id");
+
+				swal({
+					title: "@Localizer["payment_delete_card_title"]",
+					text: "@Localizer["payment_delete_card_message"]",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "@Localizer["payment_delete_card_confirm"]",
+					cancelButtonText: window.translate("cancel"),
+					customClass: "log_out_swal custom_swal"
+				}).then(result => {
+					if (result.value === true) {
+						$.ajax({
+							url: '@Url.Action("RemoveCreditCard", "CardPayApi")',
+							type: "DELETE",
+							data: {
+								cardId: cardId
+							},
+							success: response => {
+								if (response.is_success) {
+									toast.notifySuccess("Info", "@Localizer["payment_delete_card_success"]");
+									$(`.credit-card-container[data-card-id='${cardId}']`).remove();
+								} else {
+									toast.notifyErrorList(response.error_keys);
+								}
+							},
+							error: error => toast.notifyError(error)
+						});
+					}
+				});
+			});
+		});
+    </script>
+}

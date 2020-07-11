@@ -63,15 +63,21 @@ namespace GR.Card.AuthorizeDotNet
         /// </summary>
         private readonly IUserAddressService _userAddressService;
 
+        /// <summary>
+        /// Inject configuration
+        /// </summary>
+        private readonly CreditCardsConfiguration _configuration;
+
         #endregion
 
-        public AuthorizeDotNetPaymentMethodService(IWritableOptions<CardSettingsViewModel> options, IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<GearUser> userManager, IUserAddressService userAddressService)
+        public AuthorizeDotNetPaymentMethodService(IWritableOptions<CardSettingsViewModel> options, IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<GearUser> userManager, IUserAddressService userAddressService, CreditCardsConfiguration configuration)
         {
             _options = options;
             _orderProductService = orderProductService;
             _paymentService = paymentService;
             _userManager = userManager;
             _userAddressService = userAddressService;
+            _configuration = configuration;
             ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = _options.Value.IsSandbox
                 ? AuthorizeNet.Environment.SANDBOX
                 : AuthorizeNet.Environment.PRODUCTION;
@@ -295,6 +301,201 @@ namespace GR.Card.AuthorizeDotNet
         }
 
         /// <summary>
+        /// Verify card
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> VerifyCardAsync(CreditCardPayViewModel card)
+        {
+            var state = ModelValidator.IsValid(card);
+            if (!state.IsSuccess) return state;
+            var result = new ResultModel();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess)
+            {
+                result.AddError("User not Found");
+                return result;
+            }
+            var user = userRequest.Result;
+
+            var sendMoneyRequest = await PayToBankAsync(user, card, _configuration.VerificationCardCurrencyCode, _configuration.VerificationCardValue);
+            if (!sendMoneyRequest.IsSuccess) return sendMoneyRequest.ToBase();
+
+            var transactionRequest = new transactionRequestType
+            {
+                transactionType = transactionTypeEnum.voidTransaction.ToString(),    // refund type
+                refTransId = sendMoneyRequest.Result
+            };
+
+            var request = new createTransactionRequest { transactionRequest = transactionRequest };
+
+            // instantiate the controller that will call the service
+            var controller = new createTransactionController(request);
+            controller.Execute();
+
+            // get the response from the service (errors contained if any)
+            var response = controller.GetApiResponse();
+            if (response != null)
+            {
+                var transactionDescription = new StringBuilder();
+                if (response.messages.resultCode == messageTypeEnum.Ok)
+                {
+                    if (response.transactionResponse.messages != null)
+                    {
+                        transactionDescription.AppendLine("Successfully created transaction with Transaction ID: " + response.transactionResponse.transId);
+                        transactionDescription.AppendLine("Response Code: " + response.transactionResponse.responseCode);
+                        transactionDescription.AppendLine("Message Code: " + response.transactionResponse.messages[0].code);
+                        transactionDescription.AppendLine("Description: " + response.transactionResponse.messages[0].description);
+                        transactionDescription.AppendLine("Success, Auth Code : " + response.transactionResponse.authCode);
+                        result.IsSuccess = true;
+                        result.Result = response.transactionResponse.transId;
+                    }
+                    else
+                    {
+                        transactionDescription.AppendLine("Failed Transaction.");
+                        if (response.transactionResponse.errors != null)
+                        {
+                            transactionDescription.AppendLine("Error Code: " + response.transactionResponse.errors[0].errorCode);
+                            transactionDescription.AppendLine("Error message: " + response.transactionResponse.errors[0].errorText);
+                            result.AddError(response.transactionResponse.errors[0].errorCode, response.transactionResponse.errors[0].errorText);
+                        }
+                    }
+                }
+                else
+                {
+                    transactionDescription.AppendLine("Failed Transaction.");
+                    if (response.transactionResponse?.errors != null)
+                    {
+                        transactionDescription.AppendLine("Error Code: " + response.transactionResponse.errors[0].errorCode);
+                        transactionDescription.AppendLine("Error message: " + response.transactionResponse.errors[0].errorText);
+                        result.AddError(response.transactionResponse.errors[0].errorCode, response.transactionResponse.errors[0].errorText);
+                    }
+                    else
+                    {
+                        transactionDescription.AppendLine("Error Code: " + response.messages.message[0].code);
+                        transactionDescription.AppendLine("Error message: " + response.messages.message[0].text);
+                        result.AddError(response.messages.message[0].code, response.messages.message[0].text);
+                    }
+                }
+            }
+            else
+            {
+                result.AddError("Something went wrong, try again");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Pay to bank
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="card"></param>
+        /// <param name="currency"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<string>> PayToBankAsync(GearUser user, CreditCardPayViewModel card, string currency, decimal value)
+        {
+            var result = new ResultModel<string>();
+            var creditCard = new creditCardType
+            {
+                cardNumber = card.CardNumber,
+                expirationDate = card.ExpirationDate,
+                cardCode = card.CardCode
+            };
+
+            var addressRequest = await _userAddressService.GetDefaultAddressAsync(user.Id);
+            if (!addressRequest.IsSuccess) return addressRequest.Map<string>();
+            var address = addressRequest.Result;
+            var billingAddress = new customerAddressType
+            {
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                address = address.AddressLine1,
+                city = address.StateOrProvince.Name,
+                zip = address.ZipCode,
+                country = address.Country.Name,
+                email = user.Email.ToLowerInvariant(),
+                phoneNumber = user.PhoneNumber
+            };
+
+            //standard api call to retrieve response
+            var paymentType = new paymentType
+            {
+                Item = creditCard
+            };
+
+            // Add line Items
+            var transactionRequest = new transactionRequestType
+            {
+                transactionType = transactionTypeEnum.authCaptureTransaction.ToString(),
+                currencyCode = currency,
+                amount = value,
+                payment = paymentType,
+                billTo = billingAddress
+            };
+
+            var request = new createTransactionRequest { transactionRequest = transactionRequest };
+
+            // instantiate the controller that will call the service
+            var controller = new createTransactionController(request);
+            controller.Execute();
+
+            // get the response from the service (errors contained if any)
+            var response = controller.GetApiResponse();
+
+            if (response != null)
+            {
+                var transactionDescription = new StringBuilder();
+                if (response.messages.resultCode == messageTypeEnum.Ok)
+                {
+                    if (response.transactionResponse.messages != null)
+                    {
+                        transactionDescription.AppendLine("Successfully created transaction with Transaction ID: " + response.transactionResponse.transId);
+                        transactionDescription.AppendLine("Response Code: " + response.transactionResponse.responseCode);
+                        transactionDescription.AppendLine("Message Code: " + response.transactionResponse.messages[0].code);
+                        transactionDescription.AppendLine("Description: " + response.transactionResponse.messages[0].description);
+                        transactionDescription.AppendLine("Success, Auth Code : " + response.transactionResponse.authCode);
+                        result.IsSuccess = true;
+                        result.Result = response.transactionResponse.transId;
+                    }
+                    else
+                    {
+                        transactionDescription.AppendLine("Failed Transaction.");
+                        if (response.transactionResponse.errors != null)
+                        {
+                            transactionDescription.AppendLine("Error Code: " + response.transactionResponse.errors[0].errorCode);
+                            transactionDescription.AppendLine("Error message: " + response.transactionResponse.errors[0].errorText);
+                            result.AddError(response.transactionResponse.errors[0].errorCode, response.transactionResponse.errors[0].errorText);
+                        }
+                    }
+                }
+                else
+                {
+                    transactionDescription.AppendLine("Failed Transaction.");
+                    if (response.transactionResponse?.errors != null)
+                    {
+                        transactionDescription.AppendLine("Error Code: " + response.transactionResponse.errors[0].errorCode);
+                        transactionDescription.AppendLine("Error message: " + response.transactionResponse.errors[0].errorText);
+                        result.AddError(response.transactionResponse.errors[0].errorCode, response.transactionResponse.errors[0].errorText);
+                    }
+                    else
+                    {
+                        transactionDescription.AppendLine("Error Code: " + response.messages.message[0].code);
+                        transactionDescription.AppendLine("Error message: " + response.messages.message[0].text);
+                        result.AddError(response.messages.message[0].code, response.messages.message[0].text);
+                    }
+                }
+            }
+            else
+            {
+                result.AddError("Something went wrong, try again");
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Save credit card
         /// </summary>
         /// <param name="user"></param>
@@ -304,7 +505,7 @@ namespace GR.Card.AuthorizeDotNet
         {
             var result = new ResultModel();
             var cards = new List<CreditCardPayViewModel>();
-            var savedCardsRequest = await GetSavedCreditCardsAsync();
+            var savedCardsRequest = await GetSavedCreditCardsAsync(user.Id);
             if (savedCardsRequest.IsSuccess) cards = savedCardsRequest.Result.ToList();
             if (cards.Select(x => x.CardNumber).Contains(card.CardNumber))
             {
@@ -316,7 +517,7 @@ namespace GR.Card.AuthorizeDotNet
             newCard.CardId = Guid.NewGuid();
             cards.Add(newCard);
 
-            return await UpdateCardsAsync(cards);
+            return await UpdateCardsAsync(cards, user);
         }
 
         /// <summary>
@@ -475,6 +676,10 @@ namespace GR.Card.AuthorizeDotNet
         {
             var result = new ResultModel();
             if (cardId == Guid.Empty) return new InvalidParametersResultModel($"{nameof(cardId)} is required");
+
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<object>().ToBase();
+            var user = userRequest.Result;
             var cardsRequest = await GetSavedCreditCardsAsync();
             if (!cardsRequest.IsSuccess)
             {
@@ -483,7 +688,7 @@ namespace GR.Card.AuthorizeDotNet
             }
 
             var cards = cardsRequest.Result.Where(x => x.CardId != cardId).ToList();
-            return await UpdateCardsAsync(cards);
+            return await UpdateCardsAsync(cards, user);
         }
 
         /// <summary>
@@ -493,9 +698,12 @@ namespace GR.Card.AuthorizeDotNet
         /// <returns></returns>
         public virtual async Task<ResultModel> SetDefaultCardAsync(Guid cardId)
         {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<object>().ToBase();
+            var user = userRequest.Result;
             var result = new ResultModel();
             if (cardId == Guid.Empty) return new InvalidParametersResultModel($"{nameof(cardId)} is required");
-            var cardsRequest = await GetSavedCreditCardsAsync();
+            var cardsRequest = await GetSavedCreditCardsAsync(user.Id);
             if (!cardsRequest.IsSuccess)
             {
                 result.AddError("No credit cards available");
@@ -514,7 +722,7 @@ namespace GR.Card.AuthorizeDotNet
             {
                 card.IsDefault = card.CardId == cardId;
             }
-            return await UpdateCardsAsync(cards);
+            return await UpdateCardsAsync(cards, user);
         }
 
         /// <summary>
@@ -545,6 +753,38 @@ namespace GR.Card.AuthorizeDotNet
             return result;
         }
 
+        /// <summary>
+        /// Add new card
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddNewCardAsync(CreditCardPayViewModel card)
+        {
+            var state = ModelValidator.IsValid(card);
+            if (!state.IsSuccess) return state;
+            var result = new ResultModel();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<object>().ToBase();
+            var user = userRequest.Result;
+            var cards = new List<CreditCardPayViewModel>();
+            var savedCardsRequest = await GetSavedCreditCardsAsync();
+            if (savedCardsRequest.IsSuccess) cards = savedCardsRequest.Result.ToList();
+            if (cards.Select(x => x.CardNumber).Contains(card.CardNumber))
+            {
+                result.AddError("Card already exists");
+                return result;
+            }
+
+            var newCard = card.Is<CreditCardPayViewModel>();
+            newCard.CardId = Guid.NewGuid();
+
+            var verifyResponse = await VerifyCardAsync(newCard);
+            if (!verifyResponse.IsSuccess) return verifyResponse;
+            cards.Add(newCard);
+
+            return await UpdateCardsAsync(cards, user);
+        }
+
         #region Helpers
 
         private static string GenerateKey(GearUser user)
@@ -552,11 +792,8 @@ namespace GR.Card.AuthorizeDotNet
             return $"key_{user.Id}_{user.UserName}";
         }
 
-        private async Task<ResultModel> UpdateCardsAsync(IEnumerable<CreditCardPayViewModel> cards)
+        private async Task<ResultModel> UpdateCardsAsync(IEnumerable<CreditCardPayViewModel> cards, GearUser user)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
-            if (!userRequest.IsSuccess) return new UserNotFoundResult<object>().ToBase();
-            var user = userRequest.Result;
             var serializedCard = cards.SerializeAsJson();
             var key = GenerateKey(user);
             var encrypted = EncryptHelper.Encrypt(serializedCard, key);

@@ -146,6 +146,8 @@ namespace GR.WebApplication.Extensions
             if (configuration.AppFileConfiguration.UseResponseCaching)
                 app.UseResponseCaching();
 
+            app.UseResponseCompression();
+
             //--------------------------------------Use compression-------------------------------------
             if (configuration.UseResponseCompression && configuration.HostingEnvironment.IsProduction()) app.UseResponseCompression();
 

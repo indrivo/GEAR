@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using GR.Core.Helpers;
+using GR.Localization.Abstractions.Events;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Hosting;
@@ -43,6 +44,8 @@ namespace GR.Localization.Abstractions.Extensions
                 opts.IdleTimeout = TimeSpan.FromDays(1);
                 opts.Cookie.HttpOnly = true;
             });
+
+            LocalizationEvents.RegisterEvents();
 
             //TODO: Translate form validations
             //services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();

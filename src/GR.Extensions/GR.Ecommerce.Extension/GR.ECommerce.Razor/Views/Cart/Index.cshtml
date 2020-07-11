@@ -44,7 +44,7 @@
 		}
 
 		$.ajax({
-			url: '@Url.Action("CreateOrder","Orders")',
+			url: '@Url.Action("CreateOrder","OrdersApi")',
 			method: 'post',
 			data: model,
 			success: function(data) {

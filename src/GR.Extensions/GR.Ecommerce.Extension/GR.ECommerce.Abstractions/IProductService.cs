@@ -67,6 +67,13 @@ namespace GR.ECommerce.Abstractions
         Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync();
 
         /// <summary>
+        /// Get currency by code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<ResultModel<Currency>> GetCurrencyByCodeAsync(string code);
+
+        /// <summary>
         /// Get setting by key
         /// </summary>
         /// <typeparam name="TOutput"></typeparam>
@@ -103,17 +110,6 @@ namespace GR.ECommerce.Abstractions
         /// <param name="attribute"></param>
         /// <returns></returns>
         Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute);
-
-        #region ProductTypes
-
-        /// <summary>
-        /// Add new product type
-        /// </summary>
-        /// <param name="productType"></param>
-        /// <returns></returns>
-        Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType);
-
-        #endregion
 
         #region Filters
 

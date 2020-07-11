@@ -81,6 +81,16 @@ namespace GR.Card.Razor.Controllers
         public async Task<JsonResult> GetUserHiddenCards() => await JsonAsync(_paymentMethodManager.GetHiddenCardsAsync());
 
         /// <summary>
+        /// Add new card
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public async Task<JsonResult> AddNewCard([Required] CreditCardPayViewModel card)
+            => await JsonAsync(_paymentMethodManager.AddNewCardAsync(card));
+
+        /// <summary>
         /// Remove credit card
         /// </summary>
         /// <param name="cardId"></param>

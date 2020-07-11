@@ -8,8 +8,10 @@ namespace GR.Localization.Abstractions.Helpers
     {
         public LocalizationMapperProfile()
         {
-            CreateMap<LanguageCreateViewModel, Language>()
+            CreateMap<Language, LanguageCreateViewModel>()
                 .IncludeAllDerived()
+                .ForMember(m => m.IsDisabled, o
+                    => o.MapFrom(x => x.IsDeleted))
                 .ReverseMap();
         }
     }

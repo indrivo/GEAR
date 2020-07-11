@@ -1,4 +1,7 @@
-﻿using GR.Card.Abstractions.Helpers;
+﻿using System;
+using GR.Card.Abstractions.Helpers;
+using GR.Card.Abstractions.Models;
+using GR.Core.Extensions;
 using GR.ECommerce.Payments.Abstractions.Configurator;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,10 +14,14 @@ namespace GR.Card.Abstractions.Extensions
         /// Register card provider
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterCreditCardPayProvider<TProvider>(this IServiceCollection services)
+        public static IServiceCollection RegisterCreditCardPayProvider<TProvider>(this IServiceCollection services, Action<CreditCardsConfiguration> options)
             where TProvider : class, ICardPayPaymentMethodService
         {
+            var config = new CreditCardsConfiguration();
+            options?.Invoke(config);
+            services.AddGearSingleton(config);
             services.RegisterPaymentProvider(new PaymentProvider<ICardPayPaymentMethodService, TProvider>
             {
                 Id = CreditCardResources.CreditCardProvider,

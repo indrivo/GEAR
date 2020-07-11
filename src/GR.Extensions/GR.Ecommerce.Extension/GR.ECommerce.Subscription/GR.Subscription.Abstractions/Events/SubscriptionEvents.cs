@@ -70,9 +70,10 @@ namespace GR.Subscriptions.Abstractions.Events
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
                 var brandService = IoC.Resolve<IBrandsService>();
+                var productTypeService = IoC.Resolve<IProductTypeService>();
 
                 //add subscription product type
-                await productService.AddProductTypeAsync(new ProductType
+                await productTypeService.AddProductTypeAsync(new ProductType
                 {
                     Id = SubscriptionResources.SubscriptionPlanProductType,
                     DisplayName = nameof(Subscription),

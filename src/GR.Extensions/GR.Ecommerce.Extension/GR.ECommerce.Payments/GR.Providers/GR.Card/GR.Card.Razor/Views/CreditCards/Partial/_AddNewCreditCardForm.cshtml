@@ -1,0 +1,59 @@
+﻿@using GR.Core.Razor.Extensions
+@model GR.Card.Abstractions.Models.CreditCardPayViewModel
+
+<form id="addCreditCardForm" role="form">
+    <div class="d-flex">
+        <div class="form-group blue-border-bordered w-100">
+            <input type="text" asp-for="Owner" class="form-control" />
+            <label class="animated-label" asp-for="Owner">@Localizer["payment_cardholder"]</label>
+            <span asp-validation-for="Owner" class="text-danger error-text"></span>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="form-group blue-border-bordered w-100">
+            <input type="text" asp-for="CardNumber" class="form-control credit-card-input" />
+            <label class="animated-label" asp-for="CardNumber">@Localizer["payment_card_number"]</label>
+            <span asp-validation-for="CardNumber" class="text-danger error-text"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="d-flex">
+                <div class="form-group blue-border-bordered w-100">
+                    <input type="text" asp-for="Month" class="form-control credit-card-input" />
+                    <label class="animated-label" asp-for="Month">MM</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="d-flex">
+                <div class="form-group blue-border-bordered w-100">
+                    <input type="text" asp-for="Year" class="form-control credit-card-input" />
+                    <label class="animated-label" asp-for="Year">YYYY</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="d-flex">
+                <div class="form-group blue-border-bordered w-100">
+                    <input type="text" asp-for="CardCode" class="form-control credit-card-input" />
+                    <label class="animated-label" asp-for="CardCode">CVV</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-block">
+            <span asp-validation-for="Month" class="text-danger d-block error-text"></span>
+            <span asp-validation-for="Year" class="text-danger d-block error-text"></span>
+            <span asp-validation-for="CardCode" class="text-danger d-block error-text"></span>
+        </div>
+    </div>
+</form>
+
+@using (Html.BeginPartialViewScripts())
+{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+}

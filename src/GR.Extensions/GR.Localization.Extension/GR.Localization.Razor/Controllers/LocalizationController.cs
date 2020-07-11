@@ -8,22 +8,30 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Razor.BaseControllers;
+using GR.Identity.Abstractions;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Events;
+using GR.Localization.Abstractions.Events.EventArgs;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace GR.Localization.Razor.Controllers
 {
     [Authorize]
-    public class LocalizationController : Controller
+    public class LocalizationController : BaseGearController
     {
+        #region Injectable
+
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IStringLocalizer _localize;
         private readonly ILocalizationService _localizationService;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
+        private readonly IUserManager<GearUser> _userManager;
+
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -32,13 +40,15 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="localize"></param>
         /// <param name="localizationService"></param>
         /// <param name="externalTranslationProvider"></param>
+        /// <param name="userManager"></param>
         public LocalizationController(IOptionsSnapshot<LocalizationConfigModel> locConfig,
-            IStringLocalizer localize, ILocalizationService localizationService, IExternalTranslationProvider externalTranslationProvider)
+            IStringLocalizer localize, ILocalizationService localizationService, IExternalTranslationProvider externalTranslationProvider, IUserManager<GearUser> userManager)
         {
             _locConfig = locConfig;
             _localize = localize;
             _localizationService = localizationService;
             _externalTranslationProvider = externalTranslationProvider;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -105,138 +115,32 @@ namespace GR.Localization.Razor.Controllers
                 var langIsValid = cLangs.Contains(identifier);
                 HttpContext.Session.SetString(sessionKey, langIsValid ? identifier : _locConfig.Value.DefaultLanguage);
                 HttpContext.Response.Cookies.Append("language", _locConfig.Value.Languages.FirstOrDefault(x => x.Identifier == identifier)?.Name);
+
+                LocalizationEvents.Languages.ChangeLanguage(new ChangeLanguageEventArgs
+                {
+                    Identifier = identifier,
+                    UserId = _userManager.FindUserIdInClaims().Result
+                });
             }
 
             var referer = Request.Headers["Referer"].ToString();
             return Redirect(string.IsNullOrEmpty(referer) ? Url.Action("Index", "Home") : referer);
         }
+
         /// <summary>
-        /// 
+        /// Get languages
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         public IActionResult GetLanguages()
         {
             return View();
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-
-        [HttpPost]
-        public JsonResult KeysList(DTParameters param)
-        {
-            var filtered = GetListOfKeysFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-                out var totalCount);
-            var finalResult = new DTResult<LocalizedString>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
-        }
-
-        /// <summary>
-        /// Get keys filtered
-        /// </summary>
-        /// <param name="search"></param>
-        /// <param name="sortOrder"></param>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="totalCount"></param>
-        /// <returns></returns>
-        private List<LocalizedString> GetListOfKeysFiltered(string search, string sortOrder, int start, int length,
-            out int totalCount)
-        {
-            var result = _localize.GetAllStrings().Where(p =>
-                search == null || p.Name != null &&
-                p.Name.ToLower().Contains(search.ToLower()) ||
-                p.Value != null && p.Value.ToLower().Contains(search.ToLower())).ToList();
-            totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-            switch (sortOrder)
-            {
-                case "name":
-                    result = result.OrderBy(a => a.Name).ToList();
-                    break;
-                case "value":
-                    result = result.OrderBy(a => a.Value).ToList();
-                    break;
-                case "name DESC":
-                    result = result.OrderByDescending(a => a.Name).ToList();
-                    break;
-                case "value DESC":
-                    result = result.OrderByDescending(a => a.Value).ToList();
-                    break;
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
         }
 
         [HttpGet]
         public IActionResult Index()
         {
             return View();
-        }
-
-        private List<LanguageCreateViewModel> GetLanguagesFiltered(string search, string sortOrder, out int totalCount)
-        {
-            var result = _locConfig.Value.Languages.Where(p =>
-                search == null || p.Name != null &&
-                p.Name.ToLower().Contains(search.ToLower()) || p.Identifier != null &&
-                p.Identifier.ToLower().Contains(search.ToLower())).ToList();
-            totalCount = result.Count;
-            switch (sortOrder)
-            {
-                case "name":
-                    result = result.OrderBy(a => a.Name).ToList();
-                    break;
-                case "identifier":
-                    result = result.OrderBy(a => a.Identifier).ToList();
-                    break;
-                case "IsDisabled":
-                    result = result.OrderBy(a => a.IsDisabled).ToList();
-                    break;
-                case "name DESC":
-                    result = result.OrderByDescending(a => a.Name).ToList();
-                    break;
-                case "identifier DESC":
-                    result = result.OrderByDescending(a => a.Identifier).ToList();
-                    break;
-                case "IsDisabled DESC":
-                    result = result.OrderByDescending(a => a.IsDisabled).ToList();
-                    break;
-
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
-        }
-
-        [HttpPost]
-        public JsonResult LanguageList(DTParameters param)
-        {
-            var filtered = GetLanguagesFiltered(param.Search.Value, param.SortOrder,
-                out var totalCount);
-            var finalResult = new DTResult<LanguageCreateViewModel>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
         }
 
         /// <summary>
@@ -247,25 +151,9 @@ namespace GR.Localization.Razor.Controllers
         [HttpGet]
         public IActionResult EditKey(string key)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return View();
-            }
-
-            var rz = new Dictionary<string, string>();
-            foreach (var item in _locConfig.Value.Languages)
-            {
-                var str = _localize.GetForLanguage(key, item.Identifier);
-                rz.Add(item.Identifier, str.Value != $"[{str.Name}]" ? str : string.Empty);
-            }
-
-            var model = new EditLocalizationViewModel
-            {
-                Key = key,
-                LocalizedStrings = rz,
-                Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
-            };
-            return View(model);
+            var config = _localizationService.GetKeyConfiguration(key);
+            if (!config.IsSuccess) return NotFound();
+            return View(config.Result);
         }
 
         /// <summary>
@@ -276,11 +164,6 @@ namespace GR.Localization.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> EditKey(EditLocalizationViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
             var editResponse = await _localizationService.EditKeyAsync(model);
             if (editResponse.IsSuccess)
                 return RedirectToAction("Index", "Localization");
@@ -298,18 +181,8 @@ namespace GR.Localization.Razor.Controllers
         [HttpGet]
         public IActionResult AddKey()
         {
-            var rz = new Dictionary<string, string>();
-            foreach (var item in _locConfig.Value.Languages)
-            {
-                rz.Add(item.Identifier, string.Empty);
-            }
-
-            var model = new AddKeyViewModel
-            {
-                LocalizedStrings = rz,
-                Languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name)
-            };
-            return View(model);
+            var conf = _localizationService.GetAddKeyConfiguration();
+            return View(conf.Result);
         }
 
         /// <summary>
@@ -358,7 +231,7 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="text"></param>
         /// <param name="from"></param>
         /// <returns></returns>
-        public async Task<JsonResult> Translate([Required]string text, [Required]string from)
+        public async Task<JsonResult> Translate([Required] string text, [Required] string from)
         {
             var result = new ResultModel
             {
@@ -430,9 +303,9 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult ChangeStatus(LanguageCreateViewModel model)
+        public async Task<IActionResult> ChangeStatus(LanguageCreateViewModel model)
         {
-            var response = _localizationService.ChangeStatusOfLanguage(model);
+            var response = await _localizationService.ChangeStatusOfLanguageAsync(model);
             if (!response.IsSuccess)
             {
                 foreach (var err in response.Errors)

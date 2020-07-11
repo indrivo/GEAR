@@ -71,5 +71,21 @@ namespace GR.ECommerce.Infrastructure.Services
                 DisplayName = model.DisplayName
             });
         }
+
+
+        /// <summary>
+        /// Add new product type
+        /// </summary>
+        /// <param name="productType"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> AddProductTypeAsync(ProductType productType)
+        {
+            if (productType == null) return new InvalidParametersResultModel<Guid>();
+            var modelState = ModelValidator.IsValid(productType);
+            if (!modelState.IsSuccess) return modelState.Map<Guid>();
+            await _commerceContext.ProductTypes.AddAsync(productType);
+            var dbResponse = await _commerceContext.PushAsync();
+            return dbResponse.Map(productType.Id);
+        }
     }
 }

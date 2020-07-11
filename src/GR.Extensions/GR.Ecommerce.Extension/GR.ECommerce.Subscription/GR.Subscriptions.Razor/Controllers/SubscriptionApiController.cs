@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using GR.Core.Razor.Attributes;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.ECommerce.Abstractions;
@@ -124,6 +125,23 @@ namespace GR.Subscriptions.Razor.Controllers
             return Json(createOrderRequest);
         }
 
+        /// <summary>
+        /// Get total resources
+        /// </summary>
+        /// <returns></returns>
+        [Admin, HttpGet]
+        [JsonProduces(typeof(ResultModel<SubscriptionsTotalViewModel>))]
+        public async Task<JsonResult> GetTotalIncomeResources()
+            => await JsonAsync(_subscriptionService.GetTotalIncomeResourcesAsync());
 
+        /// <summary>
+        /// Get user subscription info
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [Admin, HttpPost]
+        [JsonProduces(typeof(DTResult<SubscriptionUserInfoViewModel>))]
+        public async Task<JsonResult> GetUsersSubscriptionInfoWithPagination(DTParameters parameters)
+            => await JsonAsync(_subscriptionService.GetUsersSubscriptionInfoWithPaginationAsync(parameters), DateFormatWithTimeSerializerSettings);
     }
 }

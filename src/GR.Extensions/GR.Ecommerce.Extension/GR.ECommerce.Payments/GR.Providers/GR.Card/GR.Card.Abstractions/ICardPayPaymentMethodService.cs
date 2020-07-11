@@ -19,6 +19,24 @@ namespace GR.Card.Abstractions
         Task<ResultModel<Guid>> PayOrderAsync([Required] OrderCreditCardPayViewModel model);
 
         /// <summary>
+        /// Pay to bank
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="card"></param>
+        /// <param name="currency"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<ResultModel<string>> PayToBankAsync(GearUser user, CreditCardPayViewModel card, string currency,
+            decimal value);
+
+        /// <summary>
+        /// Verify card
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        Task<ResultModel> VerifyCardAsync(CreditCardPayViewModel card);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
@@ -93,5 +111,12 @@ namespace GR.Card.Abstractions
         /// <param name="cardId"></param>
         /// <returns></returns>
         Task<ResultModel> SetDefaultCardAsync(Guid cardId);
+
+        /// <summary>
+        /// Add new card
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddNewCardAsync(CreditCardPayViewModel card);
     }
 }
