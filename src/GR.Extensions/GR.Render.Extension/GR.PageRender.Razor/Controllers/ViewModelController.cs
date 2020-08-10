@@ -153,8 +153,8 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadViewModels(DTParameters param, Guid entityId)
-            => Json(_viewModelService.LoadViewModelsWithPagination(param, entityId));
+        public async Task<JsonResult> LoadViewModels(DTParameters param, Guid entityId)
+            => Json(await _viewModelService.LoadViewModelsWithPaginationAsync(param, entityId));
 
         /// <summary>
         /// Delete page type by id

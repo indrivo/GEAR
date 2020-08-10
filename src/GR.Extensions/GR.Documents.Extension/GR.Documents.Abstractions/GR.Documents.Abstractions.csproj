@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\GR.Files.Abstraction\GR.Files.Abstraction.csproj" />
     <ProjectReference Include="..\..\GR.WorkFlow.Extension\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>

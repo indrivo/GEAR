@@ -84,7 +84,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
         public virtual async Task<JsonResult> GetUserActivityWithPagination(DTParameters parameters)
-            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters));
 
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
         public virtual async Task<JsonResult> GetActivitiesForUserWithPagination(DTParameters parameters, Guid userId)
-            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters, userId), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters, userId));
 
         /// <summary>
         /// Get web sessions
@@ -107,7 +107,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<WebSessionViewModel>))]
         public virtual async Task<JsonResult> GetWebSessionsWithPagination(DTParameters parameters)
-            => await JsonAsync(_activityService.GetWebSessionsAsync(parameters), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_activityService.GetWebSessionsAsync(parameters));
 
         /// <summary>
         /// Delete all other confirmed and non confirmed
@@ -116,7 +116,7 @@ namespace GR.AccountActivity.Razor.Controllers
         [HttpDelete]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public virtual async Task<JsonResult> DeleteOtherConfirmedDevices()
-            => await JsonAsync(_activityService.DeleteOtherConfirmedDevicesAsync(HttpContext), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_activityService.DeleteOtherConfirmedDevicesAsync(HttpContext));
 
         /// <summary>
         /// Delete user device

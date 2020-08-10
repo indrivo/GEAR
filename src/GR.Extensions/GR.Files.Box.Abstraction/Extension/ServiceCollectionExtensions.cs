@@ -9,7 +9,6 @@ using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Files.Box.Abstraction.Models.ViewModels;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Files.Box.Abstraction.Extension
 {
@@ -32,7 +31,7 @@ namespace GR.Files.Box.Abstraction.Extension
             services.ConfigureWritable<List<FileBoxSettingsViewModel>>(configuration.GetSection("FileBoxSettings"));
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TFileBoxContext>();
+                GearApplication.GetHost().MigrateDbContext<TFileBoxContext>();
             };
             return services;
         }

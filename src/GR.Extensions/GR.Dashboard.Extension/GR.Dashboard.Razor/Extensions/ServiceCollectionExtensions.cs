@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Dashboard.Abstractions.ServiceBuilder;
 using GR.Dashboard.Razor.Helpers;
@@ -15,15 +14,15 @@ namespace GR.Dashboard.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IDashboardServiceCollection AddDashboardRazorUIModule(this IDashboardServiceCollection services)
+        public static IDashboardServiceCollection AddDashboardRazorUiModule(this IDashboardServiceCollection services)
         {
             services.Services.ConfigureOptions(typeof(DashBoardFileConfiguration));
 
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                 {
-                    await x.InjectService<IMenuService>().AppendMenuItemsAsync(new DashboardMenuInitializer());
+                    await s.GetService<IMenuService>().AppendMenuItemsAsync(new DashboardMenuInitializer());
                 });
             };
             return services;

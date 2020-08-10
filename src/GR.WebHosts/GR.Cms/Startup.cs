@@ -26,7 +26,6 @@ using GR.Documents;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Data;
-using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions.Extensions;
@@ -111,6 +110,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using GR.AccountActivity.Abstractions.ActionFilters;
 using GR.AccountActivity.Abstractions.Extensions;
 using GR.AccountActivity.Impl;
@@ -126,6 +126,7 @@ using GR.Calendar.Abstractions.Helpers;
 using GR.Card.Abstractions.Extensions;
 using GR.Card.AuthorizeDotNet;
 using GR.Card.Razor.Extensions;
+using GR.Core;
 using GR.Core.UI.Razor.DefaultTheme.Extensions;
 using GR.Forms;
 using GR.Localization.Razor.Extensions;
@@ -133,10 +134,13 @@ using GR.UI.Menu;
 using GR.UI.Menu.Abstractions.Extensions;
 using GR.UI.Menu.Data;
 using GR.Documents.Razor.Extensions;
+using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Helpers.PermissionConfigurations;
 using GR.ECommerce.Infrastructure.Data;
 using GR.ECommerce.Infrastructure.Services;
 using GR.EmailTwoFactorAuth;
+using GR.EmailTwoFactorAuth.Extensions;
+using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Helpers;
 using GR.Files.Razor.Extensions;
 using GR.Forms.Abstractions.Helpers;
@@ -158,6 +162,7 @@ using GR.Identity.Mpass.Abstractions.Extensions;
 using GR.Identity.Mpass.Abstractions.Helpers;
 using GR.Identity.Mpass.Abstractions.Security;
 using GR.Identity.Permissions.Abstractions.Configurators;
+using GR.Identity.Permissions.Api.Helpers;
 using GR.Identity.PhoneVerification.Abstractions.Extensions;
 using GR.Identity.PhoneVerification.Infrastructure;
 using GR.Identity.Profile;
@@ -165,6 +170,7 @@ using GR.Identity.Profile.Abstractions.Extensions;
 using GR.Identity.Profile.Data;
 using GR.Identity.Razor.Extensions;
 using GR.Localization.Abstractions.Models.Config;
+using GR.Localization.Api.Helpers;
 using GR.Localization.Data;
 using GR.Localization.Extensions;
 using GR.Localization.JsonStringProvider;
@@ -189,10 +195,13 @@ using GR.Notifications.Subscriptions.Abstractions.Extensions;
 using GR.Notifications.Subscriptions.EFCore;
 using GR.Notifications.Subscriptions.EFCore.Data;
 using GR.Notifications.Subscriptions.Razor.Extensions;
-using GR.Subscriptions.Abstractions.Helpers;
 using GR.TwoFactorAuthentication.Abstractions.Extensions;
+using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
+using Serilog;
 
 #endregion Usings
 
@@ -205,7 +214,7 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="configuration"></param>
 		/// <param name="env"></param>
-		public Startup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env) { }
+		public Startup(IConfiguration configuration, IWebHostEnvironment env) : base(configuration, env) { }
 
 		/// <summary>
 		/// Configure cms app
@@ -237,13 +246,22 @@ namespace GR.Cms
 		/// </summary>
 		/// <param name="services"></param>
 		/// <returns></returns>
-		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
+		public override void ConfigureServices(IServiceCollection services) =>
 			services.RegisterGearWebApp(Configuration, HostingEnvironment, config =>
 		{
 			//------------------------------Global Config----------------------------------------
 			config.CacheConfiguration.UseInMemoryCache = true;
 			config.UseHotReload = true;
 			config.UseHealthCheck = false;
+			config.SwaggerServicesConfiguration = new SwaggerServicesConfiguration
+			{
+				UseSwagger = true,
+				AuthenticationOperationFilterConfiguration = options =>
+				{
+					options.OpenApiOperations.Add(PermissionsOpenApiHelper.PermissionDocs);
+					options.OpenApiOperations.Add(LocalizationOpenApiHelper.LocalizationDocs);
+				}
+			};
 
 			//------------------------------Theme Config------------------------------------------
 			config.GearServices.RegisterDefaultThemeRazorModule();
@@ -274,9 +292,13 @@ namespace GR.Cms
 
 			//-----------------------------Authentication Module-------------------------------------
 			config.GearServices.AddAuthentication<AuthorizeService>()
-				.RegisterTwoFactorAuthenticatorProvider<EmailTwoFactorAuthService>();
+				.RegisterTwoFactorAuthenticatorProvider<EmailTwoFactorAuthService>()
+                .EmailTwoFactorAuthConfiguration(options =>
+				{
+					options.UseHtmlTemplate = false;
+				});
 
-			//-----------------------------Identity Clients Module-------------------------------------
+            //-----------------------------Identity Clients Module-------------------------------------
 			config.GearServices //DefaultClientsConfigurator
 				.AddIdentityClientsModule<GearUser, ClientsConfigurationDbContext, ClientsPersistedGrantDbContext,
 					ClientsConfigurator>(Configuration)
@@ -317,7 +339,7 @@ namespace GR.Cms
 				})
 				.AddEntityModuleEvents()
 				.RegisterEntityBuilderJob()
-				.AddEntityRazorUIModule();
+				.AddEntityRazorUiModule();
 
 			//------------------------------Entity Security Module-------------------------------------
 			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessService<EntitySecurityDbContext, GearIdentityDbContext>>()
@@ -326,7 +348,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddEntitySecurityRazorUIModule();
+				.AddEntitySecurityRazorUiModule();
 
 			//----------------------------------------Audit Module-------------------------------------
 			config.GearServices.AddAuditModule<AuditManager>();
@@ -342,7 +364,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterDashboardEvents()
-				.AddDashboardRazorUIModule()
+				.AddDashboardRazorUiModule()
 				.AddDashboardRenderServices(new Dictionary<Type, Type>
 				{
 					{typeof(IWidgetRenderer<ReportWidget>), typeof(ReportWidgetRender)},
@@ -414,7 +436,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddCalendarRazorUIModule()
+				.AddCalendarRazorUiModule()
 				.SetSerializationFormatSettings(settings =>
 				{
 					settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -458,7 +480,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddTaskManagerRazorUIModule();
+				.AddTaskManagerRazorUiModule();
 
 			//-----------------------------------------Forms Module-------------------------------------
 			config.GearServices.AddFormModule<FormDbContext>()
@@ -489,7 +511,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddReportUIModule();
+				.AddReportUiModule();
 
 			//----------------------------------------Installer Module-------------------------------------
 			config.GearServices.AddInstallerModule<GearWebInstallerService>();
@@ -530,7 +552,7 @@ namespace GR.Cms
 				.RegisterProductCategoryService<ProductCategoryService>()
 				.RegisterModulePermissionConfigurator<DefaultPermissionsConfigurator<BrandPermissions>, BrandPermissions>()
 				.RegisterCommerceEvents()
-				.AddCommerceRazorUIModule();
+				.AddCommerceRazorUiModule();
 
 			//-----------------------------------Commerce payments module------------------------------
 			config.GearServices.RegisterPayments<PaymentService>()
@@ -566,7 +588,10 @@ namespace GR.Cms
 			//-------------------------------------Subscription module---------------------------------
 			config.GearServices.RegisterSubscriptionServices<Subscription, SubscriptionService>(options =>
 				{
-					options.UserSubscriptionQuery = SubscriptionResources.QueryResolvers.UserOwnResolver;
+					options.NotificationProviders = new List<string>
+					{
+						"email", "notification.local"
+					};
 				})
 				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
 				.RegisterSubscriptionEvents()
@@ -575,7 +600,7 @@ namespace GR.Cms
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			config.GearServices.AddTenantModule<OrganizationService, Tenant>()
-				.AddMultiTenantRazorUIModule();
+				.AddMultiTenantRazorUiModule();
 
 			//-------------------------------------Workflow module-------------------------------------
 			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
@@ -596,7 +621,7 @@ namespace GR.Cms
 				.RegisterDocumentTypeServices<DocumentTypeService>()
 				.RegisterDocumentCategoryServices<DocumentCategoryService>()
 				.RegisterDocumentServices<DocumentWithWorkflowService>()
-				.AddDocumentRazorUIModule();
+				.AddDocumentRazorUiModule();
 
 
 			//------------------------------------ Logging Module -----------------------------------
@@ -604,10 +629,14 @@ namespace GR.Cms
 				.AddLoggingConfiguration(logging =>
 				{
 					logging.SetMinimumLevel(LogLevel.Trace);
-					logging.AddSeq(Configuration.GetSection("Logging:Seq"));
-					//logging.ClearProviders();
-					//logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
-					//logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
+					logging.AddSerilog(new LoggerConfiguration()
+						.ReadFrom.Configuration(Configuration)
+						.Destructure.AsScalar<JObject>()
+						.Destructure.AsScalar<JArray>()
+						.Enrich.WithProperty("ApplicationName", "Gear")
+						.Enrich.WithProperty("ApplicationVersion", GearApplication.AppVersion)
+						.CreateLogger(), true);
+					logging.AddSentry();
 				});
 
 
@@ -646,5 +675,18 @@ namespace GR.Cms
 				})
 				.AddProcessesRazorModule();
 		});
+
+		/// <summary>
+		/// Run before start migrations
+		/// </summary>
+		/// <param name="webHost"></param>
+		/// <returns></returns>
+		public override Task OnBeforeDatabaseMigrationsApply(IHost webHost)
+		{
+			webHost.MigrateAbstractDbContext<IEntityContext>()
+				.MigrateAbstractDbContext<IIdentityContext>();
+
+			return base.OnBeforeDatabaseMigrationsApply(webHost);
+		}
 	}
 }

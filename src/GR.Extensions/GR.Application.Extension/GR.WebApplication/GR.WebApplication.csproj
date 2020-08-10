@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Version>1.9.4</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
@@ -16,29 +16,41 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="2.2.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.Publisher.Seq" Version="2.2.2" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="2.2.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.35" />
-    <PackageReference Include="Microsoft.AspNetCore.All" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.4" />
+    <None Remove="AppSettings\HostSettings.Development.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Backup.Extension\GR.Backup.Abstractions\GR.Backup.Abstractions.csproj" />
+    <Content Include="AppSettings\HostSettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="3.1.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.Publisher.Seq" Version="3.1.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.1.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="3.1.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
-    <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Logger.Extension\GR.Logger\GR.Logger.csproj" />
     <ProjectReference Include="..\..\GR.Modules.Extension\GR.Modules.Abstractions\GR.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
   </ItemGroup>
 

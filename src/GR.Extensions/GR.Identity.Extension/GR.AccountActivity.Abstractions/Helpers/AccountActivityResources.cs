@@ -6,6 +6,7 @@ namespace GR.AccountActivity.Abstractions.Helpers
     {
         public const string TrackActivityTokenProvider = "TrackActivityProvider";
         public const string ConfirmDevicePurpose = "confirm-device";
+        public const string DeviceIdHeader = "X-Device-Id";
         public static TimeSpan TimeToDisableTrackingDevice = TimeSpan.FromDays(1);
 
         public static class ActivityTypes

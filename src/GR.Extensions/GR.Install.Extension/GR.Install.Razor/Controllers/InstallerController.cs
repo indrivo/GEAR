@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -12,7 +11,6 @@ using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.ViewModels.SeedViewModels;
 using GR.Install.Abstractions;
 using GR.Install.Abstractions.Models;
-using GR.WebApplication;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Install.Razor.Controllers
@@ -42,14 +40,13 @@ namespace GR.Install.Razor.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="hostingEnvironment"></param>
         /// <param name="configuration"></param>
         /// <param name="installerService"></param>
-        public InstallerController(IHostingEnvironment hostingEnvironment, IConfiguration configuration, IGearWebInstallerService installerService)
+        public InstallerController(IConfiguration configuration, IGearWebInstallerService installerService)
         {
             _configuration = configuration;
             _installerService = installerService;
-            _isConfigured = GearWebApplication.IsConfigured(hostingEnvironment);
+            _isConfigured = GearApplication.Configured;
         }
 
         /// <summary>

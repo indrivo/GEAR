@@ -8,7 +8,6 @@ using GR.Core.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -17,7 +16,6 @@ using GR.Core.Helpers;
 using GR.Localization.Abstractions.Events;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Localization.Abstractions.Extensions
@@ -37,7 +35,6 @@ namespace GR.Localization.Abstractions.Extensions
 
             services.AddTransient<ILocalizationService, TService>();
             services.AddTransient<IStringLocalizer, TStringLocalizer>();
-            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession(opts =>
             {
@@ -47,13 +44,6 @@ namespace GR.Localization.Abstractions.Extensions
 
             LocalizationEvents.RegisterEvents();
 
-            //TODO: Translate form validations
-            //services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
-            //services.AddMvc()
-            //    .AddDataAnnotationsLocalization(o =>
-            //        {
-            //            o.DataAnnotationLocalizerProvider = (type, factory) => services.BuildServiceProvider().GetRequiredService<IStringLocalizer>();
-            //        });
             return services;
         }
 
@@ -101,7 +91,7 @@ namespace GR.Localization.Abstractions.Extensions
             services.RegisterAuditFor<TContext>("Countries module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }
@@ -121,7 +111,7 @@ namespace GR.Localization.Abstractions.Extensions
             services.RegisterAuditFor<TContext>("Localization module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

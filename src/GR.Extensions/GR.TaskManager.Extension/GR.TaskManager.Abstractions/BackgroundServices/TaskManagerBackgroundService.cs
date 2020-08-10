@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GR.TaskManager.Abstractions.BackgroundServices
@@ -15,17 +16,23 @@ namespace GR.TaskManager.Abstractions.BackgroundServices
         /// </summary>
         private readonly ITaskManagerNotificationService _managerNotificationService;
 
+        /// <summary>
+        /// Scope
+        /// </summary>
+        private readonly IServiceScope _scope;
+
         #endregion
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="managerNotificationService"></param>
-        public TaskManagerBackgroundService(ILogger<TaskManagerBackgroundService> logger, ITaskManagerNotificationService managerNotificationService)
+        /// <param name="serviceProvider"></param>
+        public TaskManagerBackgroundService(ILogger<TaskManagerBackgroundService> logger, IServiceProvider serviceProvider)
             : base("Task manager", logger)
         {
-            _managerNotificationService = managerNotificationService;
+            _scope = serviceProvider.CreateScope();
+            _managerNotificationService = _scope.ServiceProvider.GetService<ITaskManagerNotificationService>();
             Interval = TimeSpan.FromHours(24);
         }
 
@@ -37,6 +44,12 @@ namespace GR.TaskManager.Abstractions.BackgroundServices
         {
             if (!GearApplication.Configured) return;
             await _managerNotificationService.TaskExpirationNotificationAsync();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _scope.Dispose();
         }
     }
 }

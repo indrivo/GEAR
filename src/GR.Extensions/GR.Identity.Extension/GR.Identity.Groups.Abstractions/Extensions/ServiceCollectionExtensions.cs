@@ -4,7 +4,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,7 +41,7 @@ namespace GR.Identity.Groups.Abstractions.Extensions
             services.RegisterAuditFor<TContext>("User Groups module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

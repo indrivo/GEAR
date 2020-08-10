@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Models;
@@ -41,7 +40,7 @@ namespace GR.Dashboard.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        JsonResult GetWidgetsInJqueryTableFormat(DTParameters param);
+        Task<DTResult<CustomWidget>> GetWidgetsInJqueryTableFormat(DTParameters param);
 
         /// <summary>
         /// Create new report widget

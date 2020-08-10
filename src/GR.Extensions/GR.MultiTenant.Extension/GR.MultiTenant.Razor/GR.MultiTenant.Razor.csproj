@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <Version>1.9.4</Version>
@@ -14,13 +15,6 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="libman.json" />
-    <None Remove="Static\EmbeddedResources\company.png" />
-    <None Remove="Templates\invite-new-user.html" />
-    <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage-invite.js" />
-    <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage.js" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Static\EmbeddedResources\company.png">
@@ -32,10 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" Condition="true" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.76" Condition="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,19 +46,6 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="wwwroot\**\*" />
-    <Content Update="**\*.cshtml" Pack="false" />
-    <Content Include="wwwroot\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="libman.json" Pack="false">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ViewModels\" />

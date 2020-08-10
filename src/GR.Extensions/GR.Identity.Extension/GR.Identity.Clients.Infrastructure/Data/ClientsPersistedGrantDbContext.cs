@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
+using GR.Core.Attributes;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GR.Identity.Clients.Infrastructure.Data
 {
     [Author(Authors.LUPEI_NICOLAE)]
+    [IgnoreContextAutoMigrations]
     public class ClientsPersistedGrantDbContext : PersistedGrantDbContext<ClientsPersistedGrantDbContext>, IClientsPersistedGrantContext
     {
         public ClientsPersistedGrantDbContext(DbContextOptions<ClientsPersistedGrantDbContext> options, OperationalStoreOptions storeOptions) : base(options, storeOptions)

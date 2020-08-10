@@ -150,7 +150,7 @@ namespace GR.Localization.Api.Controllers
         /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPost]
-        [JsonProduces(typeof(DTResult<LocalizedString>))]
+        [JsonProduces(typeof(DTResult<LocalizedStringViewModel>))]
         public async Task<JsonResult> KeysListWithPagination(DTParameters parameters)
             => await JsonAsync(_service.GetLocalizationKeysWithPaginationAsync(parameters));
 

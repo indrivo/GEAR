@@ -6,6 +6,7 @@ using GR.Audit.Contexts;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.UserPreferences.Abstractions;
 using GR.UserPreferences.Abstractions.Models;
@@ -76,35 +77,7 @@ namespace GR.UserPreferences.Impl.Data
 
 
             //Configure Identity table naming
-            builder.Entity<GearRole>().ToTable("Roles", Schema);
-            builder.Entity<GearUser>().ToTable("Users", Schema);
-            builder.Entity<IdentityUserRole<Guid>>(x =>
-            {
-                x.ToTable("UserRoles", Schema);
-                x.HasKey(k => new { k.UserId, k.RoleId });
-            });
-
-            builder.Entity<IdentityUserClaim<Guid>>(x =>
-            {
-                x.ToTable("UserClaims", Schema);
-            });
-
-            builder.Entity<IdentityUserLogin<Guid>>(x =>
-            {
-                x.ToTable("UserLogins", Schema);
-                x.HasKey(k => new { k.LoginProvider, k.ProviderKey });
-            });
-
-            builder.Entity<IdentityRoleClaim<Guid>>(x =>
-            {
-                x.ToTable("RoleClaims", Schema);
-            });
-
-            builder.Entity<IdentityUserToken<Guid>>(x =>
-            {
-                x.ToTable("UserTokens", Schema);
-                x.HasKey(v => new { v.Name, v.UserId, v.LoginProvider });
-            });
+            builder.ApplyIdentityDbContextConfiguration();
 
             if (IsMigrationMode)
             {

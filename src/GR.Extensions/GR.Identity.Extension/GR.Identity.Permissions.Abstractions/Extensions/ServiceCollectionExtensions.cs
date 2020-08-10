@@ -45,7 +45,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         public static IServiceCollection MapPermissionsModuleToContext<TContext>(this IServiceCollection services)
             where TContext : DbContext, IPermissionsContext, IIdentityContext
         {
-            services.AddGearSingleton<IPermissionsContext, TContext>();
+            services.AddGearScoped<IPermissionsContext, TContext>();
             return services;
         }
 
@@ -68,7 +68,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
             {
                 SystemEvents.Application.OnApplicationStarted += (sender, args) =>
                 {
-                    GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async cancellationToken =>
+                    GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                     {
                         var instance = Activator.CreateInstance<TConfiguration>();
                         await instance.SeedAsync();

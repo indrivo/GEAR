@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using GR.Notifications.Subscriptions.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
@@ -20,9 +19,9 @@ namespace GR.Notifications.Subscriptions.Razor.Extensions
 
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                 {
-                    await x.InjectService<IMenuService>()
+                    await serviceProvider.GetService<IMenuService>()
                         .AppendMenuItemsAsync(new NotificationsMenuInitializer());
                 });
             };

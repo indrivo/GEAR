@@ -5,7 +5,6 @@ using System;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Documents.Abstractions.Extensions
 {
@@ -68,7 +67,7 @@ namespace GR.Documents.Abstractions.Extensions
             IoC.RegisterTransientService<IDocumentContext, TDocumentContext>();
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TDocumentContext>();
+                GearApplication.GetHost().MigrateDbContext<TDocumentContext>();
             };
 
             return services;

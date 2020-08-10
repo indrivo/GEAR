@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Report.Dynamic.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
@@ -14,14 +13,14 @@ namespace GR.Report.Dynamic.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddReportUIModule(this IServiceCollection services)
+        public static IServiceCollection AddReportUiModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(ReportFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, c) =>
                 {
-                    await x.InjectService<IMenuService>().AppendMenuItemsAsync(new ReportsMenuInitializer());
+                    await s.GetService<IMenuService>().AppendMenuItemsAsync(new ReportsMenuInitializer());
                 });
             };
             return services;

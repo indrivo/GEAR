@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 2.2.402
+dotnet: 3.1
 dist: xenial
 notifications:
   webhooks: https://outlook.office.com/webhook/cd7d7fed-76d9-4425-a4d6-e0a3ff76b345@33217fd3-c997-41b5-807e-a9b68f7e8fae/TravisCI/0f49a58a5d264714b1faafc3c6e2885a/f0efd87f-9c96-4996-9f07-bc949607d298

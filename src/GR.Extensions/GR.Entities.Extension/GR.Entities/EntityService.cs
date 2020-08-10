@@ -400,7 +400,7 @@ namespace GR.Entities
         {
             var tableBuilder = IoC.Resolve<ITablesService>();
             var connection = _context.Database.GetDbConnection().ConnectionString;
-            if (!_context.EntityTypes.Any(x => x.MachineName.ToLowerInvariant().Equals(schema.ToLowerInvariant()))) return;
+            if (!_context.EntityTypes.Any(x => x.MachineName.ToLower().Equals(schema.ToLower()))) return;
             var entities = await _context.Table
                 .Include(x => x.TableFields)
                     .ThenInclude(x => x.TableFieldType)

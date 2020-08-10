@@ -102,7 +102,7 @@ namespace GR.Dashboard.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public virtual JsonResult OrderedList(DTParameters param) => _dashboardService.GetDashboards(param);
+        public virtual async Task<JsonResult> OrderedList(DTParameters param) => Json(await _dashboardService.GetDashboards(param));
 
         /// <summary>
         /// Index page

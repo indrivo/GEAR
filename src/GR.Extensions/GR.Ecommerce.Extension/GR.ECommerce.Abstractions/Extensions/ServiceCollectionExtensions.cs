@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Events;
 using GR.ECommerce.Abstractions.Models;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.ECommerce.Abstractions.Extensions
 {
@@ -23,11 +21,7 @@ namespace GR.ECommerce.Abstractions.Extensions
         public static IServiceCollection RegisterCommerceModule<TCommerceContext>(this IServiceCollection services) where TCommerceContext : DbContext, ICommerceContext
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<ICommerceContext, TCommerceContext>();
-            IoC.RegisterServiceCollection(new Dictionary<Type, Type>
-            {
-                { typeof(ICommerceContext), typeof(TCommerceContext) }
-            });
+            services.AddGearScoped<ICommerceContext, TCommerceContext>();
             return services;
         }
 
@@ -43,8 +37,7 @@ namespace GR.ECommerce.Abstractions.Extensions
             where TProduct : Product
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IProductService<TProduct>, TProductRepository>();
-            IoC.RegisterTransientService<IProductService<TProduct>, TProductRepository>();
+            services.AddGearScoped<IProductService<TProduct>, TProductRepository>();
             return services;
         }
 
@@ -62,7 +55,7 @@ namespace GR.ECommerce.Abstractions.Extensions
             services.AddDbContext<TContext>(storageOptions);
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

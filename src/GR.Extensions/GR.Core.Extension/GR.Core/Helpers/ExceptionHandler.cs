@@ -90,5 +90,20 @@ namespace GR.Core.Helpers
                 }).Cast<IErrorModel>().ToList()
             };
         }
+
+        /// <summary>
+        /// Join results
+        /// </summary>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        public static ResultModel JoinResults(this IEnumerable<ResultModel> results)
+        {
+            var enumerated = results.ToList();
+            return new ResultModel
+            {
+                IsSuccess = enumerated.All(x => x.IsSuccess),
+                Errors = enumerated.Aggregate(new List<IErrorModel>(), (list, model) => model.Errors.ToList())
+            };
+        }
     }
 }

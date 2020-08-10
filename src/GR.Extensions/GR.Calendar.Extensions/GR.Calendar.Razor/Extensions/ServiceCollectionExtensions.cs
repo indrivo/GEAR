@@ -5,7 +5,6 @@ using Newtonsoft.Json.Serialization;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Calendar.Razor.Helpers;
 using GR.Core;
-using GR.Core.Helpers;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
 
@@ -18,15 +17,15 @@ namespace GR.Calendar.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarRazorUIModule(this CalendarServiceCollection services)
+        public static CalendarServiceCollection AddCalendarRazorUiModule(this CalendarServiceCollection services)
         {
             services.Services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
 
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                 {
-                    var service = IoC.Resolve<IMenuService>();
+                    var service = s.GetService<IMenuService>();
                     await service.AppendMenuItemsAsync(new CalendarMenuInitializer());
                 });
             };

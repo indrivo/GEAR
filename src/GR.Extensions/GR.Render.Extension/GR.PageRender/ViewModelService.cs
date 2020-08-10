@@ -11,7 +11,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
@@ -50,7 +49,7 @@ namespace GR.PageRender
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<ViewModel>> GetViewModelByIdAsync([Required]Guid? id)
+        public virtual async Task<ResultModel<ViewModel>> GetViewModelByIdAsync([Required] Guid? id)
         {
             if (id == null) return new InvalidParametersResultModel<ViewModel>();
             var cacheGet = await _cacheService.GetAsync<ViewModel>($"{PrefixKey}_{id}");
@@ -74,7 +73,7 @@ namespace GR.PageRender
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<ViewModelFields>> GetViewModelFieldByIdAsync([Required]Guid? id)
+        public virtual async Task<ResultModel<ViewModelFields>> GetViewModelFieldByIdAsync([Required] Guid? id)
         {
             if (id == null) return new InvalidParametersResultModel<ViewModelFields>();
             var viewModelField = await PagesContext.ViewModelFields
@@ -314,16 +313,15 @@ namespace GR.PageRender
         /// <param name="param"></param>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public DTResult<object> LoadViewModelsWithPagination(DTParameters param, Guid entityId)
+        public async Task<DTResult<object>> LoadViewModelsWithPaginationAsync(DTParameters param, Guid entityId)
         {
-            var filtered = PagesContext.FilterAbstractContext<ViewModel>(param.Search.Value, param.SortOrder,
-                param.Start,
-                param.Length,
-                out var totalCount,
-                x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty);
+            var filtered = await PagesContext
+                .ViewModels
+                .Where(x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty)
+                .GetPagedAsDtResultAsync(param);
 
 
-            var sel = filtered.Select(x => new
+            var sel = filtered.Data.Select(x => new
             {
                 x.Author,
                 x.Changed,
@@ -339,8 +337,8 @@ namespace GR.PageRender
             {
                 Draw = param.Draw,
                 Data = sel.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
             return finalResult;
         }

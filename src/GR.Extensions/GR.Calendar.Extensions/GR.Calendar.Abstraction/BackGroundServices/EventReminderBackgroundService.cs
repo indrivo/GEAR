@@ -12,6 +12,7 @@ using GR.Core.Services;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Calendar.Abstractions.BackGroundServices
 {
@@ -27,14 +28,21 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         /// Notifier
         /// </summary>
         private readonly INotify<GearRole> _notify;
+
+        /// <summary>
+        /// Scope
+        /// </summary>
+        private readonly IServiceScope _scope;
+
         #endregion
 
 
-        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, ICalendarDbContext calendarDbContext, INotify<GearRole> notify)
+        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, IServiceProvider serviceProvider)
             : base("CalendarEvents", logger)
         {
-            _calendarDbContext = calendarDbContext;
-            _notify = notify;
+            _scope = serviceProvider.CreateScope();
+            _calendarDbContext = _scope.ServiceProvider.GetService<ICalendarDbContext>();
+            _notify = _scope.ServiceProvider.GetService<INotify<GearRole>>();
             Interval = TimeSpan.FromMinutes(15);
         }
 
@@ -69,14 +77,26 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         {
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
             var now = DateTime.Now;
+
+            var compareDate = DateTime.Now.AddMinutes(minutes);
+
             var events = await _calendarDbContext.CalendarEvents
                 .Include(x => x.EventMembers)
-                .Where(x => (x.StartDate - now).TotalMinutes <= minutes && (x.StartDate - now).TotalMinutes > 0 && !x.RemindSent)
+                .Where(x => x.StartDate <= compareDate && x.StartDate > now && !x.RemindSent)
                 .ToListAsync();
 
             response.IsSuccess = true;
             response.Result = events;
             return response;
+        }
+
+        /// <summary>
+        /// Dispose 
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            _scope.Dispose();
         }
     }
 }

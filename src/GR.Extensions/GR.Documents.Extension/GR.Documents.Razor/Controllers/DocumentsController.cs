@@ -61,7 +61,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> ListDocuments(DTParameters param)
         {
-            var list = _documentService.GetAllDocument(param);
+            var list = await _documentService.GetAllDocumentsAsync(param);
 
             var listDocument = list.Data;
             if (listDocument != null && listDocument.Any())

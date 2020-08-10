@@ -158,7 +158,7 @@ namespace GR.Entities.Abstractions.Extensions
                                 }
                                 else
                                 {
-                                    dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;
+                                    dbParameter.Value = value[item.ColumnName];
                                 }
                             }
                             else

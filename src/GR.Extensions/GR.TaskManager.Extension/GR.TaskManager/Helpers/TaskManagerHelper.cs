@@ -112,7 +112,8 @@ namespace GR.TaskManager.Helpers
                 CurrentPage = dbTasksResult.CurrentPage,
                 PageCount = dbTasksResult.PageCount,
                 RowCount = dbTasksResult.RowCount,
-                PageSize = dbTasksResult.PageSize
+                PageSize = dbTasksResult.PageSize,
+                Result = new List<GetTaskViewModel>()
             };
 
             if (dbTasksResult.Result.Count > 0)

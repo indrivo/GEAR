@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit.Abstractions\GR.Audit.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.Abstractions\GR.Entities.Abstractions.csproj" />
   </ItemGroup>

@@ -7,8 +7,6 @@ using GR.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
 using GR.Core;
-using GR.Core.Abstractions;
-using System.Linq;
 using Mapster;
 using System.Collections.Generic;
 using GR.Core.Attributes.Documentation;
@@ -27,38 +25,28 @@ namespace GR.Documents
         /// Inject db context 
         /// </summary>
         private readonly IDocumentContext _context;
-
-        protected readonly IDataFilter DataFilter;
         #endregion
 
-        public DocumentTypeService(IDocumentContext context, IDataFilter dataFilter)
+        public DocumentTypeService(IDocumentContext context)
         {
             _context = context;
-            DataFilter = dataFilter;
         }
 
         /// <summary>
         /// Get all document type
         /// </summary>
         /// <returns></returns>
-        public virtual DTResult<DocumentTypeViewModel> GetAllDocumentType(DTParameters param)
+        public virtual async Task<DTResult<DocumentTypeViewModel>> GetAllDocumentTypesAsync(DTParameters param)
         {
 
-            var filtered = DataFilter.FilterAbstractEntity<DocumentType, IDocumentContext>(_context, param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-            {
-                var listModel = x.Adapt<DocumentTypeViewModel>();
-                return listModel;
-            }).ToList();
+            var filtered = await _context.DocumentTypes.GetPagedAsDtResultAsync(param);
 
             var result = new DTResult<DocumentTypeViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                Data = filtered.Data.Adapt<List<DocumentTypeViewModel>>(),
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
 
             return result;

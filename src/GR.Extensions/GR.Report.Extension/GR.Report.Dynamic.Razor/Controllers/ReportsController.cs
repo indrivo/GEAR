@@ -49,9 +49,9 @@ namespace GR.Report.Dynamic.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPageData(DTParameters param)
+        public async Task<JsonResult> LoadPageData(DTParameters param)
         {
-            var result = _service.GetFilteredReports(param);
+            var result = await _service.GetFilteredReportsAsync(param);
             return Json(result);
         }
 

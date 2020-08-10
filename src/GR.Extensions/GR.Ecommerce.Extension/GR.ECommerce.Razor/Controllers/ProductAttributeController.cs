@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,7 +18,7 @@ namespace GR.ECommerce.Razor.Controllers
 {
     public class ProductAttributeController : CommerceBaseController<ProductAttribute, ProductAttributeViewModel>
     {
-        public ProductAttributeController(ICommerceContext context, IDataFilter dataFilter) : base(context, dataFilter)
+        public ProductAttributeController(ICommerceContext context) : base(context)
         {
         }
 
@@ -54,7 +54,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public override async Task<IActionResult> Edit([Required]Guid? id)
+        public override async Task<IActionResult> Edit([Required] Guid? id)
         {
             if (id == null) return NotFound();
             var model = await Context.ProductAttribute.FirstOrDefaultAsync(x => x.Id == id);
@@ -71,23 +71,21 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         public override JsonResult OrderedList(DTParameters param)
         {
-            var filtered = DataFilter.FilterAbstractEntity<ProductAttribute, ICommerceContext>(Context, param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-                {
-                    var listModel = x.Adapt<ProductAttributeListViewModel>();
-                    listModel.AttributeGroupName = Context.AttributeGroups
-                    .FirstOrDefault(y => y.Id == x.AttributeGroupId)?.Name;
-                    return listModel;
-                }).ToList();
+            var filtered = Context.ProductAttribute.GetPagedAsDtResultAsync(param).GetAwaiter().GetResult();
+            var mapped = filtered.Data.Select(x =>
+            {
+                var listModel = x.Adapt<ProductAttributeListViewModel>();
+                listModel.AttributeGroupName = Context.AttributeGroups
+                .FirstOrDefault(y => y.Id == x.AttributeGroupId)?.Name;
+                return listModel;
+            }).ToList();
 
             var result = new DTResult<ProductAttributeListViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                Data = mapped,
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
             return Json(result);
         }

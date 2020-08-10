@@ -33,6 +33,6 @@ namespace GR.Dashboard.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        JsonResult GetWidgetGroupsInJqueryTableFormat(DTParameters param);
+        Task<DTResult<WidgetGroup>> GetWidgetGroupsInJqueryTableFormat(DTParameters param);
     }
 }

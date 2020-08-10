@@ -4,6 +4,7 @@ using System.Linq;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Helpers;
 using GR.Localization.Abstractions.Models.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -52,14 +53,28 @@ namespace GR.Localization.DataBaseProvider
 
             var sessionKey = locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
             var defaultLanguage = locConfig.Value.DefaultLanguage ?? DefaultLanguage;
-
-            var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
-
-            if (string.IsNullOrEmpty(val))
+            if (httpAccessor.HttpContext == null)
             {
-                httpAccessor.HttpContext.Session.SetString(sessionKey, defaultLanguage);
+                _language = DefaultLanguage;
             }
-            _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
+            else
+            {
+                var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
+
+                if (string.IsNullOrEmpty(val))
+                {
+                    httpAccessor.HttpContext.Session.SetString(sessionKey, defaultLanguage);
+                }
+
+                if (httpAccessor.HttpContext.Request.Headers.ContainsKey(LocalizationResources.XLocalizationIdentifier))
+                {
+                    _language = httpAccessor.HttpContext.Request.Headers[LocalizationResources.XLocalizationIdentifier];
+                }
+                else
+                {
+                    _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
+                }
+            }
         }
 
         /// <summary>
@@ -70,7 +85,8 @@ namespace GR.Localization.DataBaseProvider
         public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         => _localizationContext.TranslationItems
             .Include(x => x.Translation)
-            .Where(x => x.Identifier.Equals(_language)).Select(x => new LocalizedString(x.Translation.Key, x.Value, false))
+            .Where(x => x.Identifier.Equals(_language))
+            .Select(x => new LocalizedString(x.Translation.Key, x.Value, false))
             .ToList();
 
         public virtual IStringLocalizer WithCulture(CultureInfo culture)

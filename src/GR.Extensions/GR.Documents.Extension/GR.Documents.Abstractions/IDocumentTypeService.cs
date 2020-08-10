@@ -4,7 +4,6 @@ using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GR.Documents.Abstractions
@@ -16,7 +15,7 @@ namespace GR.Documents.Abstractions
         /// Get all document types
         /// </summary>
         /// <returns></returns>
-        DTResult<DocumentTypeViewModel> GetAllDocumentType(DTParameters param);
+        Task<DTResult<DocumentTypeViewModel>> GetAllDocumentTypesAsync(DTParameters param);
 
         /// <summary>
         /// Get all document types async

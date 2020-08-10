@@ -5,9 +5,7 @@ using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
 using GR.TaskManager.Abstractions.BackgroundServices;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.TaskManager.Abstractions.Extensions
 {
@@ -23,8 +21,8 @@ namespace GR.TaskManager.Abstractions.Extensions
         public static IServiceCollection AddTaskModule<TTaskService, TTaskManagerNotificationService>(this IServiceCollection services)
             where TTaskService : class, ITaskManager where TTaskManagerNotificationService : class, ITaskManagerNotificationService
         {
-            services.AddGearTransient<ITaskManager, TTaskService>();
-            services.AddGearTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
+            services.AddGearScoped<ITaskManager, TTaskService>();
+            services.AddGearScoped<ITaskManagerNotificationService, TTaskManagerNotificationService>();
             services.RegisterBackgroundService<TaskManagerBackgroundService>();
             return services;
         }
@@ -39,12 +37,12 @@ namespace GR.TaskManager.Abstractions.Extensions
         public static IServiceCollection AddTaskModuleStorage<TTaskManagerContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TTaskManagerContext : DbContext, ITaskManagerContext
         {
-            services.AddScopedContextFactory<ITaskManagerContext, TTaskManagerContext>();
+            services.AddGearScoped<ITaskManagerContext, TTaskManagerContext>();
             services.AddDbContext<TTaskManagerContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<ITaskManagerContext>($"{nameof(TaskManager)} module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TTaskManagerContext>();
+                GearApplication.GetHost().MigrateDbContext<TTaskManagerContext>();
             };
             return services;
         }

@@ -74,7 +74,7 @@ namespace GR.Orders.Razor.Api
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<Order>))]
         public async Task<JsonResult> GetMyOrdersWithPagination(DTParameters param)
-            => await JsonAsync(_orderProductService.GetMyOrdersWithPaginationWayAsync(param), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_orderProductService.GetMyOrdersWithPaginationWayAsync(param));
 
         /// <summary>
         /// Get orders with pagination
@@ -84,7 +84,7 @@ namespace GR.Orders.Razor.Api
         [HttpPost, Admin]
         [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<Order>))]
         public async Task<JsonResult> GetAllOrdersWithPagination(DTParameters param)
-            => await JsonAsync(_orderProductService.GetAllOrdersWithPaginationWayAsync(param), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_orderProductService.GetAllOrdersWithPaginationWayAsync(param));
 
         /// <summary>
         /// Get orders count
@@ -104,7 +104,7 @@ namespace GR.Orders.Razor.Api
         public async Task<JsonResult> GetAllOrders()
         {
             var ordersRequest = await _orderProductService.GetAllOrdersAsync();
-            return Json(ordersRequest, SerializerSettings);
+            return Json(ordersRequest);
         }
     }
 }

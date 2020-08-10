@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
-using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Validators;
 using GR.Email.Abstractions.Events;
 using GR.Email.Abstractions.Events.EventArgs;
@@ -63,9 +61,8 @@ namespace GR.Identity.Profile
                 .Users
                 .AsNoTracking()
                 .AnyAsync(x => !x.Id.Equals(currentUser.Id)
-                                     && !x.Email.IsNullOrEmpty()
-                                     && x.Email.ToLowerInvariant()
-                                         .Equals(model.Email.ToLowerInvariant()));
+                               && !string.IsNullOrEmpty(x.Email)
+                               && x.Email.ToLower().Equals(model.Email.ToLower()));
 
             if (isUsed)
             {
@@ -126,9 +123,9 @@ namespace GR.Identity.Profile
                 .Users
                 .AsNoTracking()
                 .AnyAsync(x => !x.Id.Equals(currentUser.Id)
-                               && !x.Email.IsNullOrEmpty()
-                               && x.Email.ToLowerInvariant()
-                                   .Equals(model.Email.ToLowerInvariant()));
+                               && !string.IsNullOrEmpty(x.Email)
+                               && x.Email.ToLower()
+                                   .Equals(model.Email.ToLower()));
 
             if (isUsed)
             {

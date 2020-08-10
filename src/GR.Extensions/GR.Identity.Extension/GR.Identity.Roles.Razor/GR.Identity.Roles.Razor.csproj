@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Version>1.9.4</Version>
@@ -13,12 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
     <ProjectReference Include="..\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
   </ItemGroup>
 </Project>

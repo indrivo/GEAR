@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using GR.Core;
 using GR.Core.Extensions;
@@ -12,12 +12,13 @@ using GR.WebApplication.Helpers.AppConfigurations;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace GR.WebApplication.Extensions
@@ -34,6 +35,8 @@ namespace GR.WebApplication.Extensions
         {
             var configuration = new GearAppBuilderConfig();
             config(configuration);
+            GearApplication.SetAppName(configuration.AppName);
+
             //---------------------------------------Heath Check---------------------------------------
 
             if (configuration.UseHealthCheck)
@@ -49,20 +52,39 @@ namespace GR.WebApplication.Extensions
                     o.UIPath = "/gear-healthchecks-ui";
                 });
             }
+            var isConfigured = configuration.Configuration.GetValue<bool>("IsConfigured");
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Developed-By", "Indrivo");
+                context.Response.Headers.Add("X-Powered-By-Framework", "Gear");
+                context.Response.Headers.Add("X-App-Name", GearApplication.ApplicationName);
+                context.Response.Headers.Add("X-App-Version", GearApplication.AppVersion);
+                if (configuration.CustomMapRules == null || !isConfigured)
+                {
+                    await next();
+                }
+                else
+                {
+                    var match = configuration.CustomMapRules.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
+                    if (!match.IsNull())
+                    {
+                        match.Value.Invoke(context);
+                    }
+                    else
+                    {
+                        await next();
+                    }
+                }
+            });
 
-
-            GearApplication.SetAppName(configuration.AppName);
+            app.UseGearStatusCodeResponse();
 
             using (var serviceScope = app.ApplicationServices
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope())
             {
-                var sp = serviceScope.ServiceProvider;
-                var environment = sp.GetService<IHostingEnvironment>();
-                GearWebApplication.IsConfigured(environment);
-
                 //------------------------------------------App events-------------------------------------
-                var lifeTimeService = serviceScope.ServiceProvider.GetService<IApplicationLifetime>();
+                var lifeTimeService = serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
                 lifeTimeService.RegisterAppEvents(app, configuration.AppName);
 
                 //----------------------------------Localization Usage-------------------------------------
@@ -116,23 +138,19 @@ namespace GR.WebApplication.Extensions
                 }
             }
 
-            //----------------------------------Origin Cors Usage-------------------------------------
-            if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
-
-            app.UseCookiePolicy();
-            app.UseAuthentication();
-
-            //custom rules
-            app.UseAppMvc(configuration.Configuration, configuration.MvcTemplate, configuration.CustomMapRules);
-
             //--------------------------------------Swagger Usage-------------------------------------
             if (configuration.SwaggerConfiguration.UseSwaggerUI &&
                 (configuration.SwaggerConfiguration.UseOnlyInDevelopment && configuration.HostingEnvironment.IsDevelopment() || !configuration.SwaggerConfiguration.UseOnlyInDevelopment))
             {
                 app.UseSwagger()
-                    .UseSwaggerUI(c =>
+                    .UseSwaggerUI(options =>
                     {
-                        c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "GEAR API v1.0");
+                        options.SwaggerEndpoint($"/swagger/v{GearApplication.AppVersion}/swagger.json", $"{GearApplication.ApplicationName} API v{GearApplication.AppVersion}");
+                        options.OAuthClientId("clientId");
+                        options.OAuthAppName(GearApplication.ApplicationName);
+                        options.OAuthUsePkce();
+                        options.DisplayRequestDuration();
+                        options.EnableDeepLinking();
                     });
             }
 
@@ -141,15 +159,50 @@ namespace GR.WebApplication.Extensions
                 app.UseDefaultFiles();
 
             if (configuration.AppFileConfiguration.UseStaticFile)
+            {
                 app.UseStaticFiles();
+                var moduleContentFolder = Path.Combine(AppContext.BaseDirectory, "wwwroot/_content");
+                if (Directory.Exists(moduleContentFolder))
+                {
+                    var modulesFolders = Directory.GetDirectories(moduleContentFolder);
+                    foreach (var moduleFolder in modulesFolders)
+                    {
+                        app.UseStaticFiles(new StaticFileOptions
+                        {
+                            FileProvider = new PhysicalFileProvider(moduleFolder),
+                            HttpsCompression = Microsoft.AspNetCore.Http.Features.HttpsCompressionMode.Compress,
+                            OnPrepareResponse = context =>
+                            {
+                                var headers = context.Context.Response.GetTypedHeaders();
+                                headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
+                                {
+                                    Public = true,
+                                    MaxAge = TimeSpan.FromDays(1)
+                                };
+                            }
+                        });
+                    }
+                }
+            }
 
             if (configuration.AppFileConfiguration.UseResponseCaching)
                 app.UseResponseCaching();
 
-            app.UseResponseCompression();
-
             //--------------------------------------Use compression-------------------------------------
             if (configuration.UseResponseCompression && configuration.HostingEnvironment.IsProduction()) app.UseResponseCompression();
+
+
+            //----------------------------------Origin Cors Usage-------------------------------------
+            if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
+
+            app.UseRouting();
+
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            //custom rules
+            app.UseAppMvc(configuration.Configuration, configuration.MvcTemplate);
 
             return new GearAppBuilder(app.ApplicationServices);
         }
@@ -160,9 +213,8 @@ namespace GR.WebApplication.Extensions
         /// <param name="app"></param>
         /// <param name="configuration"></param>
         /// <param name="template"></param>
-        /// <param name="routeMapping"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseAppMvc(this IApplicationBuilder app, IConfiguration configuration, string template, Dictionary<string, Action<HttpContext>> routeMapping = null)
+        public static IApplicationBuilder UseAppMvc(this IApplicationBuilder app, IConfiguration configuration, string template)
         {
             var isConfigured = configuration.GetValue<bool>("IsConfigured");
 
@@ -170,35 +222,13 @@ namespace GR.WebApplication.Extensions
                 ? template
                 : "{controller=Installer}/{action=Index}";
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.ApplicationBuilder.Use(async (context, next) =>
-                {
-                    if (routeMapping == null || !isConfigured)
-                    {
-                        await next();
-                    }
-                    else
-                    {
-                        var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
-                        if (!match.IsNull())
-                        {
-                            match.Value.Invoke(context);
-                            await next();
-                        }
-                        else
-                        {
-                            await next();
-                        }
-                    }
-                });
-
-                routes.MapRoute(
-                    name: "default",
-                    template: mvcTemplate,
-                    defaults: mvcTemplate
-                );
+                endpoints.MapControllerRoute("default", mvcTemplate);
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
+
             return app;
         }
     }

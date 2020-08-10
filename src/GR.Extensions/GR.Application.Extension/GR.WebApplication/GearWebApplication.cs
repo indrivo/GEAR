@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using GR.Core.Events;
 using GR.Core.Helpers;
 using Microsoft.AspNetCore.Hosting;
@@ -11,14 +12,12 @@ using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers.Global;
-using GR.Entities.Abstractions;
-using GR.Identity.Abstractions;
-using GR.Logger.Extensions;
+using GR.Core.Helpers.Patterns;
 using GR.Modules.Abstractions.Helpers;
-using GR.UI.Menu.Abstractions;
 using GR.WebApplication.Extensions;
+using GR.WebApplication.Helpers;
 using GR.WebApplication.Models;
-using Microsoft.AspNetCore;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
 namespace GR.WebApplication
@@ -37,19 +36,34 @@ namespace GR.WebApplication
         /// <summary>
         /// Build web host
         /// </summary>
-        protected static IWebHost GlobalWebHost;
+        protected static IHost GlobalWebHost;
 
         /// <summary>
-        /// Get settings
+        /// Get startup configuration
         /// </summary>
-        public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
-            => JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(
-                ResourceProvider.AppSettingsFilepath(hostingEnvironment));
+        protected static GearCoreStartup StartupConfiguration => Singleton<GearCoreStartup, GearCoreStartup>.GetOrSetInstance(
+            () =>
+            {
+                var startupType = GlobalWebHost.GetTypeFromAssembliesByClassName("Startup");
+                if (startupType == null) throw new Exception("Can't find a Startup class, please define one and inherit from GearCoreStartup class");
+                var configuration = IoC.Resolve<IConfiguration>();
+                var hostingEnvironment = IoC.Resolve<IWebHostEnvironment>();
+                var instance = (GearCoreStartup)Activator.CreateInstance(startupType, configuration, hostingEnvironment);
+                return Task.FromResult(instance);
+            });
 
         /// <summary>
         /// Init migrations
         /// </summary>
-        public static void InitModulesMigrations() => Migrate();
+        public static void InitModulesMigrations()
+        {
+            AppState.InstallOnProgress = true;
+
+            StartupConfiguration.OnBeforeDatabaseMigrationsApply(GlobalWebHost)
+                .Wait();
+
+            SystemEvents.Database.MigrateAll(EventArgs.Empty);
+        }
 
         /// <summary>
         /// Run application
@@ -61,18 +75,6 @@ namespace GR.WebApplication
             ApplicationArgs = gearApplicationArgs ?? new GearApplicationArgs();
             SystemEvents.RegisterEvents();
             BuildWebHost<TStartUp>(args).Run();
-        }
-
-        /// <summary>
-        /// Is system configured
-        /// </summary>
-        /// <param name="hostingEnvironment"></param>
-        /// <returns></returns>
-        public static bool IsConfigured(IHostingEnvironment hostingEnvironment)
-        {
-            var settings = Settings(hostingEnvironment);
-            ConfigurationsApplied = settings != null && settings.IsConfigured;
-            return ConfigurationsApplied;
         }
 
         #region Helpers
@@ -88,8 +90,7 @@ namespace GR.WebApplication
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
+                .AddJsonFile("appsettings.json", true, true)
                 .Build();
 
             GlobalAppConfiguration = config;
@@ -133,41 +134,29 @@ namespace GR.WebApplication
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private static IWebHost BuildWebHost<TStartUp>(string[] args) where TStartUp : class
+        private static IHost BuildWebHost<TStartUp>(string[] args) where TStartUp : class
         {
-            if (GlobalWebHost != null) return GlobalWebHost;
-            var builder = WebHost.CreateDefaultBuilder(args)
-                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
-                .UseConfiguration(BuildConfiguration())
-                .RegisterGearLoggingProviders()
-                .CaptureStartupErrors(true)
-                .UseStartup<TStartUp>()
-                .ConfigureAppConfiguration((hostingContext, conf) => { ModulesProvider.Bind(conf); });
-
-            if (ApplicationArgs.UseKestrel)
+            var builder = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
             {
-                builder.UseKestrel(options => options.ConfigureEndpoints());
-            }
+                webBuilder.UseStartup<TStartUp>();
+                webBuilder.UseSetting(WebHostDefaults.DetailedErrorsKey, "true");
+                webBuilder.UseConfiguration(BuildConfiguration());
+                webBuilder.CaptureStartupErrors(true);
+                webBuilder.ConfigureAppConfiguration((hostingContext, conf) => { ModulesProvider.Bind(conf); });
+                if (ApplicationArgs.UseKestrel)
+                {
+                    webBuilder.UseKestrel(options => options.ConfigureEndpoints());
+                }
+            });
+
+
+            if (GlobalWebHost != null) return GlobalWebHost;
 
             GlobalAppHost = GlobalWebHost = builder.Build();
             return GlobalWebHost;
         }
 
-        /// <summary>
-        /// Migrate Web host extension
-        /// </summary>
-        /// <returns></returns>
-        private static void Migrate()
-        {
-            AppState.InstallOnProgress = true;
-
-            GlobalWebHost?
-                .MigrateAbstractDbContext<IEntityContext>()
-                .MigrateAbstractDbContext<IIdentityContext>()
-                .MigrateAbstractDbContext<IMenuDbContext>();
-
-            SystemEvents.Database.MigrateAll(EventArgs.Empty);
-        }
         #endregion
     }
 }

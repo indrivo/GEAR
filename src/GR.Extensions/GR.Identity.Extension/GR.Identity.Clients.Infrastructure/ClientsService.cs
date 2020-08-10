@@ -15,6 +15,7 @@ namespace GR.Identity.Clients.Infrastructure
     {
         private const string ClientsCacheKey = "Gear_Clients_";
         private const string ApiResourceCacheKey = "Gear_Api_Resources_";
+        private const string ApiScopesCacheKey = "Gear_Api_Scopes_";
         private const string IdentityResourceCacheKey = "Gear_Identity_Resources_";
 
         #region Injectable
@@ -101,6 +102,23 @@ namespace GR.Identity.Clients.Infrastructure
                 .ToListAsync();
             await _cacheService.SetAsync(ApiResourceCacheKey, apiResources);
             return apiResources;
+        }
+
+        /// <summary>
+        /// Get all api scopes
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<ApiScope>> GetApiScopesAsync()
+        {
+            var cacheApiResources = await _cacheService.GetAsync<IEnumerable<ApiScope>>(ApiScopesCacheKey);
+            if (cacheApiResources != null) return cacheApiResources.ToList();
+            var apiScopes = await _clientsContext.ApiScopes
+                .Include(x => x.Properties)
+                .Include(x => x.Properties)
+                .Include(x => x.UserClaims)
+                .ToListAsync();
+            await _cacheService.SetAsync(ApiScopesCacheKey, apiScopes);
+            return apiScopes;
         }
 
         /// <summary>

@@ -12,8 +12,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Razor.BaseControllers;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Extensions;
@@ -334,28 +332,12 @@ namespace GR.Entities.Razor.Controllers.Entity
             var result = await _context.PushAsync();
             if (result.IsSuccess)
             {
-                RefreshRuntimeTypes();
                 return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
             }
 
             ModelState.AppendResultModelErrors(result.Errors);
 
             return View(field);
-        }
-
-        /// <summary>
-        /// Refresh runtime types on entity change structure
-        /// </summary>
-        [NonAction]
-        private static void RefreshRuntimeTypes()
-        {
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
-            {
-                //TODO: Need to update only edited dynamic runtime type
-                TypeManager.Clear();
-                var dynService = IoC.Resolve<IDynamicService>();
-                await dynService.RegisterInMemoryDynamicTypesAsync();
-            });
         }
 
         /// <summary>
@@ -577,8 +559,6 @@ namespace GR.Entities.Razor.Controllers.Entity
             _context.TableFields.Remove(field);
             var updateResult = await _context.PushAsync();
             if (!updateResult.IsSuccess) return Json(false);
-            //Call to refresh runtime dynamic types
-            RefreshRuntimeTypes();
             return Json(true);
         }
 

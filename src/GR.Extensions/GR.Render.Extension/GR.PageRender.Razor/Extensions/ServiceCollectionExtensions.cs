@@ -31,9 +31,9 @@ namespace GR.PageRender.Razor.Extensions
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                     {
-                        await args.InjectService<IMenuService>().AppendMenuItemsAsync(new PagesMenuInitializer());
+                        await serviceProvider.GetService<IMenuService>().AppendMenuItemsAsync(new PagesMenuInitializer());
                     });
             };
             return services;

@@ -142,6 +142,6 @@ namespace GR.Subscriptions.Razor.Controllers
         [Admin, HttpPost]
         [JsonProduces(typeof(DTResult<SubscriptionUserInfoViewModel>))]
         public async Task<JsonResult> GetUsersSubscriptionInfoWithPagination(DTParameters parameters)
-            => await JsonAsync(_subscriptionService.GetUsersSubscriptionInfoWithPaginationAsync(parameters), DateFormatWithTimeSerializerSettings);
+            => await JsonAsync(_subscriptionService.GetUsersSubscriptionInfoWithPaginationAsync(parameters));
     }
 }

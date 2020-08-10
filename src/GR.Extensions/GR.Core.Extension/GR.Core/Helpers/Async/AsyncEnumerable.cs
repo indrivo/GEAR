@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 
 namespace GR.Core.Helpers.Async
 {
@@ -10,7 +11,7 @@ namespace GR.Core.Helpers.Async
 
         public AsyncEnumerable(Expression expression) : base(expression) { }
 
-        public IAsyncEnumerator<T> GetEnumerator()
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
         {
             return new AsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
         }

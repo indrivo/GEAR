@@ -15,7 +15,7 @@ using GR.Core.Helpers;
 
 namespace GR.Cache.Services
 {
-    public class DistributedCacheService : ICacheService
+    public class DistributedCacheService : ICacheService<IDistributedCache>
     {
         #region Injectable
 

@@ -10,7 +10,7 @@
     <FileVersion>1.9.4</FileVersion>
     <AssemblyVersion>1.9.4</AssemblyVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
+    <NoWarn>$(NoWarn);1591;NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,13 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GR.Card.Abstractions\GR.Card.Abstractions.csproj" />
+    <PackageReference Include="AuthorizeNet" Version="2.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="AuthorizeNET">
-      <HintPath>Assemblies\AuthorizeNET.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\GR.Card.Abstractions\GR.Card.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

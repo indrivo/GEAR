@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GR.Core.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.Orders.Abstractions.Events;
 using GR.Orders.Abstractions.Models;
@@ -17,7 +18,7 @@ namespace GR.Orders.Abstractions.Extensions
             where TOrderProductService : class, IOrderProductService<TOrder>
             where TOrder : Order
         {
-            IoC.RegisterTransientService<IOrderProductService<TOrder>, TOrderProductService>();
+            services.AddGearScoped<IOrderProductService<TOrder>, TOrderProductService>();
 
             return services;
         }
@@ -31,7 +32,7 @@ namespace GR.Orders.Abstractions.Extensions
         public static IServiceCollection RegisterOrdersStorage<TContext>(this IServiceCollection services)
             where TContext : DbContext, IOrderDbContext
         {
-            services.AddTransient<IOrderDbContext, TContext>();
+            services.AddScoped<IOrderDbContext, TContext>();
             IoC.RegisterService<IOrderDbContext>(nameof(IOrderDbContext), typeof(TContext));
             return services;
         }

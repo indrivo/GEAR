@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Lupei Nicolae</Authors>
     <Version>1.9.3</Version>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>commerce-ui gear orders razor</PackageTags>
-    <FileVersion>1.9.3</FileVersion>
-    <AssemblyVersion>1.9.3</AssemblyVersion>
+    <FileVersion>1.9.4</FileVersion>
+    <AssemblyVersion>1.9.4</AssemblyVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />

@@ -6,7 +6,6 @@ using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
 using GR.Core.Helpers.Responses;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Enums;
 using GR.PageRender.Abstractions;
@@ -22,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GR.Identity.Abstractions;
 
@@ -151,8 +149,7 @@ namespace GR.PageRender.Razor.Controllers
             if (config == null) return Json(new ResultModel());
             if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
             var table = config.Value;
-            var instance = _service.Table(table);
-            return Json(await instance.GetAllWithInclude<object>(filters: new List<Filter>
+            return Json(await _service.GetAllWithIncludeAsDictionaryAsync(table, filters: new List<Filter>
             {
                 new Filter
                 {
@@ -206,28 +203,9 @@ namespace GR.PageRender.Razor.Controllers
         {
             var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (entity == null) return Json(default(ResultModel));
-            var objType = _service.Table(entity.TableModel.Name).Type;
-            var obj = Activator.CreateInstance(objType);
-            var referenceFields = obj.GetType().GetProperties()
-                .Where(x => !x.PropertyType.GetTypeInfo()?.FullName?.StartsWith("System") ?? false)
-                .ToList();
-            foreach (var refField in referenceFields)
-            {
-                var refPropName = refField.Name;
-                try
-                {
-                    var refTypeProperty = obj.GetType().GetProperty(refPropName);
-                    if (refTypeProperty == null) continue;
-                    var newInstance = Activator.CreateInstance(refTypeProperty.PropertyType);
-                    refTypeProperty.SetValue(obj, newInstance);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
 
-            return Json(new { row = obj });
+            //entity.TableModel.Name
+            return Json(new { row = "" });
         }
 
         /// <summary>
@@ -353,8 +331,7 @@ namespace GR.PageRender.Razor.Controllers
             var table = _pagesContext.Table.Include(x => x.TableFields)
                 .FirstOrDefault(x => x.Id.Equals(entityId));
             if (table == null) return Json(null);
-            var instance = _service.Table(table.Name);
-            return Json(await instance.GetAllWithInclude<object>());
+            return Json(await _service.GetAllWithIncludeAsDictionaryAsync(table.Name));
         }
 
         /// <summary>
@@ -433,7 +410,7 @@ namespace GR.PageRender.Razor.Controllers
                         propName == null) continue;
                     foreach (var item in data)
                     {
-                        var referenceData = await _service.Table(storageEntity.Value).GetAllWithInclude<object>(filters: new List<Filter>
+                        var referenceData = await _service.GetAllWithIncludeAsDictionaryAsync(storageEntity.Value, filters: new List<Filter>
                         {
                             new Filter(nameof(BaseModel.IsDeleted), false),
                             new Filter(referencePropName.Value, item["Id"].ToString().ToGuid())
@@ -477,7 +454,7 @@ namespace GR.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> LoadDataFromEntity(string entityName)
         {
-            var list = await _service.Table(entityName).GetAllWithInclude<object>();
+            var list = await _service.GetAllWithIncludeAsDictionaryAsync(entityName);
             return new JsonResult(list.Result);
         }
 
@@ -515,11 +492,11 @@ namespace GR.PageRender.Razor.Controllers
                     if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
                     if (mode)
                     {
-                        await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                        await _service.DeleteAsync(viewModel.TableModel.Name, Guid.Parse(id));
                     }
                     else
                     {
-                        await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
+                        await _service.RestoreAsync(viewModel.TableModel.Name, Guid.Parse(id));
                     }
                 }
             }
@@ -561,7 +538,7 @@ namespace GR.PageRender.Razor.Controllers
                 foreach (var id in ids)
                 {
                     if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
-                    var deleteRequest = await _service.Table(viewModel.TableModel.Name).DeletePermanent<object>(Guid.Parse(id));
+                    var deleteRequest = await _service.DeletePermanentAsync(viewModel.TableModel.Name, Guid.Parse(id));
                     if (!deleteRequest.IsSuccess) fails++;
                 }
             }
@@ -592,7 +569,7 @@ namespace GR.PageRender.Razor.Controllers
             var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
-            var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
+            var response = await _service.RestoreAsync(viewModel.TableModel.Name, Guid.Parse(id));
             if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
 
             return Json(new { message = "Item was restored!", success = true });

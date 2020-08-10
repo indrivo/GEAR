@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Notifications.Abstractions;
@@ -39,11 +40,12 @@ namespace GR.Notifications.Dynamic.Seeders
             {
                 foreach (var item in types.NotificationTypes)
                 {
-                    var exist = await _dynamicService.GetAll<NotificationTypes>(x => x["Name"].Equals(item.Name));
+                    var exist = await _dynamicService.GetAllAsync(nameof(NotificationTypes), x => x["Name"].Equals(item.Name));
                     if (exist.Result?.Any() ?? false) continue;
                     item.Author = "admin";
                     item.ModifiedBy = "admin";
-                    var response = await _dynamicService.AddWithReflection(item);
+                    var dict = item.ToDictionary();
+                    var response = await _dynamicService.AddAsync(nameof(NotificationTypes), new Dictionary<string, object>(dict));
                     if (!response.IsSuccess)
                     {
                         Console.WriteLine("Fail to add");

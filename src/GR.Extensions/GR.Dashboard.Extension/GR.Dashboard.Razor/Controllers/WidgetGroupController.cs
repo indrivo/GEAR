@@ -103,6 +103,6 @@ namespace GR.Dashboard.Razor.Controllers
         /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(DTResult<WidgetGroup>))]
-        public JsonResult GetWidgetGroups(DTParameters parameters) => _repository.GetWidgetGroupsInJqueryTableFormat(parameters);
+        public async Task<JsonResult> GetWidgetGroups(DTParameters parameters) => Json(await _repository.GetWidgetGroupsInJqueryTableFormat(parameters));
     }
 }

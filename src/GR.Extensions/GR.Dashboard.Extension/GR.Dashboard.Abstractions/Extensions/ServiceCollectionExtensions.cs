@@ -10,7 +10,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Helpers.Compilers;
 using GR.Dashboard.Abstractions.ServiceBuilder;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Dashboard.Abstractions.Extensions
 {
@@ -31,9 +30,9 @@ namespace GR.Dashboard.Abstractions.Extensions
             where TWidgetGroupRepository : class, IWidgetGroupRepository
             where TWidgetService : class, IWidgetService
         {
-            IoC.RegisterTransientService<IDashboardService, TRepository>();
-            IoC.RegisterTransientService<IWidgetGroupRepository, TWidgetGroupRepository>();
-            IoC.RegisterTransientService<IWidgetService, TWidgetService>();
+            services.AddGearScoped<IDashboardService, TRepository>();
+            services.AddGearScoped<IWidgetGroupRepository, TWidgetGroupRepository>();
+            services.AddGearScoped<IWidgetService, TWidgetService>();
             return new DashboardServiceCollection(services);
         }
 
@@ -49,11 +48,11 @@ namespace GR.Dashboard.Abstractions.Extensions
             where TDbContext : DbContext, IDashboardDbContext
         {
             Arg.NotNull(configuration.Services, nameof(AddDashboardModuleStorage));
-            configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
-            configuration.Services.AddScopedContextFactory<IDashboardDbContext, TDbContext>();
+            configuration.Services.AddDbContext<TDbContext>(options);
+            configuration.Services.AddGearScoped<IDashboardDbContext, TDbContext>();
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+                GearApplication.GetHost().MigrateDbContext<TDbContext>();
             };
             return configuration;
         }

@@ -14,7 +14,7 @@ namespace GR.Audit.Abstractions.Extensions
     public static class TrackerExtensions
     {
         public static TrackAudit GetTrackAuditFromDictionary(this Dictionary<string, object> keys,
-            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
+            string contextName, Guid? tenantId, string objectType, TrackEventType eventType)
         {
             if (keys == null) return null;
             var details = new List<TrackAuditDetails>();
@@ -24,7 +24,7 @@ namespace GR.Audit.Abstractions.Extensions
                 Changed = DateTime.Now,
                 DatabaseContextName = contextName,
                 TenantId = tenantId,
-                TypeFullName = objectType?.FullName,
+                TypeFullName = objectType,
                 TrackEventType = eventType,
                 Version = 1
             };
@@ -72,22 +72,6 @@ namespace GR.Audit.Abstractions.Extensions
             audit.AuditDetailses = details;
             return audit;
         }
-
-        /// <summary>
-        /// Get track audit from object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="contextName"></param>
-        /// <param name="tenantId"></param>
-        /// <param name="objectType"></param>
-        /// <param name="eventType"></param>
-        /// <returns></returns>
-        public static TrackAudit GetTrackAuditFromObject(this object obj,
-            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
-        {
-            return GetTrackAuditFromDictionary(GetDictionary(obj), contextName, tenantId, objectType, eventType);
-        }
-
 
         /// <summary>
         /// Store audit in context

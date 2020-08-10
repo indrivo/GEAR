@@ -1,12 +1,9 @@
 ﻿using GR.Core;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
-using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentCategoryViewModels;
-using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
 
 namespace GR.Documents.Abstractions
 {
@@ -16,7 +13,7 @@ namespace GR.Documents.Abstractions
         /// Get all document category
         /// </summary>
         /// <returns></returns>
-        DTResult<DocumentCategoryViewModel> GetAllDocumentCategory(DTParameters param);
+        Task<DTResult<DocumentCategoryViewModel>> GetAllDocumentCategoryAsync(DTParameters param);
 
         /// <summary>
         /// Get all document category async

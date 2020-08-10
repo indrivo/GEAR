@@ -155,8 +155,7 @@ namespace GR.Email
         /// <returns></returns>
         public virtual ResultModel ChangeSettings(EmailSettingsViewModel newSettings)
         {
-            var result = new ResultModel();
-            _options.Update(options =>
+            return _options.Update(options =>
             {
                 options.NetworkCredential = newSettings.NetworkCredential;
                 options.Enabled = newSettings.Enabled;
@@ -164,9 +163,7 @@ namespace GR.Email
                 options.Port = newSettings.Port;
                 options.Timeout = newSettings.Timeout;
                 options.EnableSsl = newSettings.EnableSsl;
-            });
-            result.IsSuccess = true;
-            return result;
+            }, "AppSettings/SmtpConfiguration.json");
         }
 
         /// <summary>

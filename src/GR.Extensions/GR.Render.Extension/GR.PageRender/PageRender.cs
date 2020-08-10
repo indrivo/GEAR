@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GR.Cache.Abstractions;
 using GR.Core;
+using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
@@ -16,7 +17,6 @@ using GR.Entities.Abstractions.Constants;
 using GR.Entities.Security.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Clients.Abstractions;
 using GR.MultiTenant.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Constants;
@@ -72,7 +72,7 @@ namespace GR.PageRender
         /// <summary>
         /// Inject app provider
         /// </summary>
-        private readonly IClientsService _appProvider;
+        private readonly IGearAppInfo _appProvider;
 
         /// <summary>
         /// Inject role access manager
@@ -80,7 +80,7 @@ namespace GR.PageRender
         private readonly IEntityRoleAccessService _entityRoleAccessService;
         #endregion
 
-        public PageRender(IEntityContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IClientsService appProvider, IEntityRoleAccessService entityRoleAccessService)
+        public PageRender(IEntityContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IGearAppInfo appProvider, IEntityRoleAccessService entityRoleAccessService)
         {
             _context = context;
             _cacheService = cacheService;
@@ -115,7 +115,7 @@ namespace GR.PageRender
             var routeData = _contextAccessor.HttpContext.GetRouteData();
             var data = new Dictionary<string, string>
             {
-                { "AppName", await _appProvider.GetAppName("core")},
+                { "AppName", await _appProvider.GetAppNameAsync("core")},
                 { "SystemYear", DateTime.Now.Year.ToString() },
                 { "RouteController", routeData.Values["controller"].ToString() },
                 { "RouteView", routeData.Values["action"].ToString() }

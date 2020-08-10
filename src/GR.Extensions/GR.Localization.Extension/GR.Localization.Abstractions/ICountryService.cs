@@ -49,10 +49,11 @@ namespace GR.Localization.Abstractions
         /// <param name="countryId"></param>
         /// <param name="search"></param>
         /// <param name="selectedCityId"></param>
+        /// <param name="page"></param>
         /// <param name="maxItems"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId, string search,
-            Guid? selectedCityId, int maxItems = 20);
+            Guid? selectedCityId, int page = 1, int maxItems = 20);
 
         /// <summary>
         /// Add city to country

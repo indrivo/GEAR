@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models;
 using GR.Forms.Razor.ViewModels.FormsViewModels;
 using GR.Core;
 using GR.Core.Attributes;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Entities.Abstractions;
@@ -127,7 +127,7 @@ namespace GR.Forms.Razor.Controllers
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult UpdateForm(FormViewModel form, [Required]Guid formId,
+        public JsonResult UpdateForm(FormViewModel form, [Required] Guid formId,
             string name, string description, string postUrl, string redirectUrl)
         {
             var bdForm = _formContext.Forms.FirstOrDefault(x => x.Id.Equals(formId));
@@ -219,17 +219,16 @@ namespace GR.Forms.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadForms(DTParameters param, Guid entityId)
+        public async Task<JsonResult> LoadForms(DTParameters param, Guid entityId)
         {
-            var filtered = _formContext.FilterAbstractContext<Form>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => entityId != Guid.Empty && x.TableId == entityId || entityId == Guid.Empty);
-
+            var filtered = await _formContext.Forms
+                .Where(x => entityId != Guid.Empty && x.TableId == entityId || entityId == Guid.Empty)
+                .GetPagedAsDtResultAsync(param);
 
             var finalResult = new DTResult<FormListViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered.Select(x => new FormListViewModel
+                Data = filtered.Data.Select(x => new FormListViewModel
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -244,8 +243,8 @@ namespace GR.Forms.Razor.Controllers
                     ModifiedBy = x.ModifiedBy,
                     TableId = x.TableId
                 }).ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
             return Json(finalResult);
         }
@@ -324,7 +323,7 @@ namespace GR.Forms.Razor.Controllers
         /// <param name="itemId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetValuesFormObjectEditInForm([Required]Guid formId, [Required] Guid itemId)
+        public async Task<JsonResult> GetValuesFormObjectEditInForm([Required] Guid formId, [Required] Guid itemId)
         {
             var result = new ResultModel
             {
@@ -348,7 +347,7 @@ namespace GR.Forms.Razor.Controllers
                 result.Errors.Add(new ErrorModel(string.Empty, "Form table reference not found"));
                 return Json(result);
             }
-            var obj = await _service.GetById(model.Table.Name, itemId);
+            var obj = await _service.GetByIdAsync(model.Table.Name, itemId);
             if (!obj.IsSuccess)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, "Object not found"));
@@ -400,7 +399,7 @@ namespace GR.Forms.Razor.Controllers
         /// <param name="fieldId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetFieldAttributes([Required]Guid? fieldId)
+        public async Task<IActionResult> GetFieldAttributes([Required] Guid? fieldId)
         {
             if (fieldId == null) return NotFound();
             var field = await _formContext.Fields
@@ -448,7 +447,7 @@ namespace GR.Forms.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> GetFieldAttributes([Required]FieldValidationViewModel model)
+        public async Task<IActionResult> GetFieldAttributes([Required] FieldValidationViewModel model)
         {
             if (model.Field == null)
             {

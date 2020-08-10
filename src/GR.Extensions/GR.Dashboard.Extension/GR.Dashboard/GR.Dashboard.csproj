@@ -25,12 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
-    <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Report.Extension\GR.Report.Abstractions\GR.Report.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Dashboard.Abstractions\GR.Dashboard.Abstractions.csproj" />
   </ItemGroup>

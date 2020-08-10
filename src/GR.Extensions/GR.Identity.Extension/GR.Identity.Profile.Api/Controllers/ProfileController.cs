@@ -10,7 +10,6 @@ using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Profile.Abstractions;
 using GR.Identity.Profile.Abstractions.ViewModels.UserProfileViewModels;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;

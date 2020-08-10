@@ -441,7 +441,7 @@ namespace GR.WorkFlows
             var actions = transition.TransitionActions.Select(x => x.Action).ToList();
             var nextTransitions = await GetNextTransitionsAsync(transition);
 
-            _backgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
+            _backgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, c) =>
             {
                 foreach (var action in actions)
                 {

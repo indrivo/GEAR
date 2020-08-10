@@ -37,7 +37,7 @@ namespace GR.AccountActivity.Abstractions.Helpers.MapperResolvers
         public bool Resolve(UserDevice source, ConfirmedDevicesViewModel destination, bool member, ResolutionContext context)
         {
             var currentDevice = _userActivityService.FindDeviceAsync(_accessor.HttpContext).ExecuteAsync();
-            return source.Id.Equals(currentDevice.Result.Id);
+            return currentDevice.IsSuccess && source.Id.Equals(currentDevice.Result.Id);
         }
     }
 }

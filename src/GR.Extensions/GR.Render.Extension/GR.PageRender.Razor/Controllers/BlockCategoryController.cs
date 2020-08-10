@@ -1,13 +1,14 @@
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
@@ -35,20 +36,10 @@ namespace GR.PageRender.Razor.Controllers
 		/// <returns></returns>
 		[HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPages(DTParameters param)
+        public async Task<JsonResult> LoadPages(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<BlockCategory>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
-
-            var finalResult = new DTResult<BlockCategory>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
-            };
-            return Json(finalResult);
+            var filtered = await _pagesContext.BlockCategories.GetPagedAsDtResultAsync(param);
+            return Json(filtered);
         }
 
         /// <summary>
@@ -76,7 +67,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create([Required]BlockCategory model)
+        public IActionResult Create([Required] BlockCategory model)
         {
             try
             {

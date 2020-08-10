@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using GR.Backup.Abstractions.Models;
-using GR.Cache.Abstractions.Models;
 using GR.Core;
-using GR.Email.Abstractions.Models.EmailViewModels;
-using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace GR.WebApplication.Models
 {
@@ -31,34 +26,6 @@ namespace GR.WebApplication.Models
             /// Logging
             /// </summary>
             public Logging Logging { get; set; } = new Logging();
-
-            /// <summary>
-            /// Localization Config
-            /// </summary>
-            public LocalizationConfigModel LocalizationConfig { get; set; } = new LocalizationConfigModel();
-            /// <summary>
-            /// LdapSettings
-            /// </summary>
-            public LdapSettings LdapSettings { get; set; } = new LdapSettings();
-            /// <summary>
-            /// WebClients
-            /// </summary>
-            public Dictionary<string, Dictionary<string, string>> WebClients { get; set; } = new Dictionary<string, Dictionary<string, string>>();
-
-            /// <summary>
-            /// Backup settings
-            /// </summary>
-            public BackupSettings BackupSettings { get; set; } = new BackupSettings();
-
-            /// <summary>
-            /// Email settings
-            /// </summary>
-            public EmailSettingsViewModel EmailSettings { get; set; } = new EmailSettingsViewModel();
-
-            /// <summary>
-            /// Redis connection configuration
-            /// </summary>
-            public CacheConfiguration RedisConnection { get; set; } = new CacheConfiguration();
         }
 
         public sealed class ConnectionStrings
@@ -76,24 +43,6 @@ namespace GR.WebApplication.Models
         {
             public bool IncludeScopes { get; set; }
             public LogLevel LogLevel { get; set; }
-        }
-
-        public sealed class Credentials
-        {
-            public string DomainUserName { get; set; }
-            public string Password { get; set; }
-        }
-
-        public sealed class LdapSettings
-        {
-            public string ServerName { get; set; }
-            public int ServerPort { get; set; }
-            public bool UseSSL { get; set; }
-            public Credentials Credentials { get; set; } = new Credentials();
-            public string SearchBase { get; set; }
-            public string ContainerName { get; set; }
-            public string DomainName { get; set; }
-            public string DomainDistinguishedName { get; set; }
         }
     }
 }

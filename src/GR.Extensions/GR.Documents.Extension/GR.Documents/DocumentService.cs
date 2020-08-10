@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -41,21 +40,14 @@ namespace GR.Documents
         /// </summary>
         public readonly IFileManager FileManager;
 
-        /// <summary>
-        /// Inject data filter
-        /// </summary>
-        public readonly IDataFilter DataFilter;
-
-
         #endregion
 
 
-        public DocumentService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IDataFilter dataFilter)
+        public DocumentService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager)
         {
             _documentContext = documentContext;
             _userManager = userManager;
             FileManager = fileManager;
-            DataFilter = dataFilter;
         }
 
 
@@ -63,28 +55,22 @@ namespace GR.Documents
         /// Get all document from table model
         /// </summary>
         /// <returns></returns>
-        public virtual DTResult<DocumentViewModel> GetAllDocument(DTParameters param)
+        public virtual async Task<DTResult<DocumentViewModel>> GetAllDocumentsAsync(DTParameters param)
         {
 
-            var filtered = DataFilter.FilterAbstractEntity<Document, IDocumentContext>(_documentContext, param.Search.Value,
-                param.SortOrder,
-                param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-                {
-                    x.DocumentVersions = _documentContext.DocumentVersions.Where(i => i.DocumentId == x.Id).ToList();
-                    x.DocumentType = _documentContext.DocumentTypes.FirstOrDefault(i => x.DocumentTypeId == i.Id) ?? new DocumentType();
-                    x.DocumentCategory = _documentContext.DocumentCategories.FirstOrDefault(i => i.Id == x.DocumentCategoryId);
-                    var listModel = x.Adapt<DocumentViewModel>();
-                    return listModel;
-                }).Where(x => !x.IsDeleted && x.DocumentCategory?.Code == 1).ToList();
+            var filtered = await _documentContext.Documents
+                .Include(x => x.DocumentCategory)
+                .Include(x => x.DocumentVersions)
+                .Include(x => x.DocumentType)
+                .Where(x => !x.IsDeleted && x.DocumentCategory != null && x.DocumentCategory.Code == 1)
+                .GetPagedAsDtResultAsync(param);
 
             var result = new DTResult<DocumentViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                Data = filtered.Data.Select(x => x.Adapt<DocumentViewModel>()).ToList(),
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
 
             return result;

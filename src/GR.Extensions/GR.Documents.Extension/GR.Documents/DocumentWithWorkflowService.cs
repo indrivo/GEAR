@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Documents.Abstractions;
-using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using GR.Files.Abstraction;
 using GR.Identity.Abstractions;
@@ -26,12 +24,11 @@ namespace GR.Documents
         #endregion
 
 
-        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService, IDataFilter dataFilter) : base(documentContext, userManager, fileManager, dataFilter)
+        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService) : base(documentContext, userManager, fileManager)
         {
             WorkFlowExecutorService = workFlowExecutorService;
         }
 
-        
         /// <summary>
         /// Add new document version
         /// </summary>

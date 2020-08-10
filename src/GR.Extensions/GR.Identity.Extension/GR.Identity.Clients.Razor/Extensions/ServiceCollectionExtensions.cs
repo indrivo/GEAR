@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using GR.Identity.Clients.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
@@ -18,9 +17,9 @@ namespace GR.Identity.Clients.Razor.Extensions
         {
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                 {
-                    var service = x.InjectService<IMenuService>();
+                    var service = serviceProvider.GetService<IMenuService>();
                     await service.AppendMenuItemsAsync(new ClientsMenuInitializer());
                 });
             };

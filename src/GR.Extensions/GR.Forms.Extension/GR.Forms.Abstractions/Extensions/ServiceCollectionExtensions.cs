@@ -6,7 +6,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Forms.Abstractions.Extensions
 {
@@ -20,7 +19,7 @@ namespace GR.Forms.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddFormModule<TFormContext>(this IServiceCollection services) where TFormContext : DbContext, IFormContext
         {
-            services.AddScopedContextFactory<IFormContext, TFormContext>();
+            services.AddGearScoped<IFormContext, TFormContext>();
             return services;
         }
 
@@ -33,7 +32,7 @@ namespace GR.Forms.Abstractions.Extensions
         public static IServiceCollection RegisterFormService<TFormService>(this IServiceCollection services)
             where TFormService : class, IFormService
         {
-            services.AddTransient<IFormService, TFormService>();
+            services.AddGearScoped<IFormService, TFormService>();
             IoC.RegisterTransientService<IFormService, TFormService>();
             return services;
         }
@@ -53,7 +52,7 @@ namespace GR.Forms.Abstractions.Extensions
             services.RegisterAuditFor<IFormContext>("Form module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TFormContext>();
+                GearApplication.GetHost().MigrateDbContext<TFormContext>();
             };
             return services;
         }

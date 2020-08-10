@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
@@ -14,32 +15,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="libman.json" Pack="false">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.76" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.TaskManager.Abstractions\GR.TaskManager.Abstractions.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="wwwroot\**\*" />
-    <Content Update="**\*.cshtml" Pack="false" />
-    <Content Include="wwwroot\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-
 
   <ItemGroup>
     <Compile Remove="ViewModels\**" />
@@ -47,8 +33,6 @@
     <EmbeddedResource Remove="ViewModels\**" />
     <None Remove="ViewModels\**" />
   </ItemGroup>
-
-
 
   <ItemGroup>
     <EmbeddedResource Remove="wwwroot\assets\TaskManagerPlugins\task-manager-templates.js" />

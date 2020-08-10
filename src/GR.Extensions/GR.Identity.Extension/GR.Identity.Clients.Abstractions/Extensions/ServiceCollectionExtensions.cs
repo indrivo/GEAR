@@ -1,5 +1,6 @@
 ﻿using System;
 using GR.Core;
+using GR.Core.Abstractions;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions;
@@ -7,11 +8,12 @@ using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Clients.Abstractions.Helpers;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Stores;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using IProfileService = IdentityServer4.Services.IProfileService;
 
 namespace GR.Identity.Clients.Abstractions.Extensions
@@ -56,17 +58,17 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 30;
                 })
-                .AddResourceStore<CustomResourceStore>()
-                .AddClientStore<CustomClientStore>();
+                .AddResourceStore<ResourceStore>()
+                .AddClientStore<ClientStore>();
             //.AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
 
             services.AddTransient<ICorsPolicyService, CustomCorsPolicyService>();
-            services.AddGearSingleton<IClientsContext, TConfiguration>();
-            services.AddGearSingleton<IClientsPersistedGrantContext, TPersisted>();
+            services.AddGearScoped<IClientsContext, TConfiguration>();
+            services.AddGearScoped<IClientsPersistedGrantContext, TPersisted>();
 
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>()
+                GearApplication.GetHost()
                     .MigrateDbContext<TPersisted>()
                     .MigrateDbContext<TConfiguration>((context, servicesProvider) =>
                     {
@@ -74,6 +76,8 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                             .Wait();
                     });
             };
+
+            services.AddGearScoped<IGearAppInfo, GearAppInfo>();
 
             return services;
         }
@@ -87,7 +91,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
         {
             var hostingEnvironment = builder.Services
                 .BuildServiceProvider()
-                .GetRequiredService<IHostingEnvironment>();
+                .GetRequiredService<IHostEnvironment>();
             var isDevelopment = hostingEnvironment.IsDevelopment();
             if (isDevelopment)
             {

@@ -20,6 +20,7 @@ using GR.Notifications.Dynamic.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GR.Notifications.Dynamic
@@ -145,7 +146,7 @@ namespace GR.Notifications.Dynamic
                     notification.Id = Guid.NewGuid();
                     notification.UserId = userId;
                     var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
-                    var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
+                    var response = await _dataService.AddAsync(nameof(SystemNotifications), new Dictionary<string, object>(notification.ToDictionary()), tenant.MachineName);
                     if (!response.IsSuccess) _logger.LogError("Fail to add new notification in database");
                 }
 
@@ -190,13 +191,13 @@ namespace GR.Notifications.Dynamic
 
             if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
 
-            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, filters);
+            var notifications = await _dataService.GetAllWithIncludeAsDictionaryAsync(nameof(SystemNotifications), null, filters);
             if (notifications.IsSuccess)
             {
-                notifications.Result = notifications.Result.OrderBy(x => x.Created);
+                notifications.Result = notifications.Result.OrderBy(x => x["Created"]);
             }
 
-            return notifications;
+            return notifications.SerializeAsJson().Deserialize<ResultModel<IEnumerable<SystemNotifications>>>();
         }
 
         /// <summary>
@@ -223,7 +224,7 @@ namespace GR.Notifications.Dynamic
                 { nameof(SystemNotifications.Created), EntityOrderDirection.Desc }
             };
 
-            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters, sortableDirection, false);
+            var paginatedResult = await _dataService.GetPaginatedResultAsync(nameof(SystemNotifications), page, perPage, null, filters, sortableDirection, false);
             if (!paginatedResult.IsSuccess) return paginatedResult.Map(new PaginatedNotificationsViewModel
             {
                 Page = page,
@@ -250,7 +251,9 @@ namespace GR.Notifications.Dynamic
         public virtual async Task<ResultModel<Notification>> GetNotificationByIdAsync(Guid? notificationId)
         {
             if (notificationId == null) return new NotFoundResultModel<Notification>();
-            return await _dataService.GetByIdWithReflection<SystemNotifications, Notification>(notificationId.Value);
+            var notificationRequest = await _dataService.GetByIdAsync(nameof(SystemNotifications), notificationId.Value);
+            if (!notificationRequest.IsSuccess) return notificationRequest.Map<Notification>();
+            return notificationRequest.SerializeAsJson().Deserialize<ResultModel<Notification>>();
         }
 
         /// <inheritdoc />
@@ -262,9 +265,9 @@ namespace GR.Notifications.Dynamic
         public virtual async Task<ResultModel<Guid>> MarkAsReadAsync(Guid notificationId)
         {
             if (notificationId == Guid.Empty) return new NotFoundResultModel<Guid>();
-            var exists = await _dataService.Exists<SystemNotifications>(notificationId);
+            var exists = await _dataService.ExistsAsync(nameof(SystemNotifications), notificationId);
             if (!exists.IsSuccess) return default;
-            var response = await _dataService.Delete<SystemNotifications>(notificationId);
+            var response = await _dataService.DeleteAsync(nameof(SystemNotifications), notificationId);
             return response;
         }
 
@@ -277,9 +280,9 @@ namespace GR.Notifications.Dynamic
         public virtual async Task<ResultModel> PermanentlyDeleteNotificationAsync(Guid? notificationId)
         {
             if (notificationId == null) return new NotFoundResultModel();
-            var exists = await _dataService.Exists<SystemNotifications>(notificationId.Value);
+            var exists = await _dataService.ExistsAsync(nameof(SystemNotifications), notificationId.Value);
             if (!exists.IsSuccess) return default;
-            var response = await _dataService.DeletePermanent<SystemNotifications>(notificationId.Value);
+            var response = await _dataService.DeletePermanentAsync(nameof(SystemNotifications), notificationId.Value);
             return response.ToBase();
         }
 
@@ -297,7 +300,7 @@ namespace GR.Notifications.Dynamic
             var fails = 0;
             foreach (var notification in notifications)
             {
-                var response = await _dataService.Delete<SystemNotifications>(notification.Id);
+                var response = await _dataService.DeleteAsync(nameof(SystemNotifications), notification.Id);
                 if (!response.IsSuccess) fails++;
             }
             if (fails == 0) return new SuccessResultModel<object>().ToBase();
@@ -326,14 +329,14 @@ namespace GR.Notifications.Dynamic
         /// <returns></returns>
         public virtual Task SendNotificationInBackgroundAsync(IEnumerable<Guid> userId, Notification notification)
         {
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
             {
-                var notifier = IoC.Resolve<INotify<GearRole>>();
+                var notifier = s.GetService<INotify<GearRole>>();
                 await notifier.SendNotificationAsync(userId, notification);
             });
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Send notification
         /// </summary>

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.Entities.Controls.QueryAbstractions;
 using GR.Entities.EntityBuilder.MsSql.Controls.Query;
 using GR.Entities.EntityBuilder.Postgres.Controls.Query;
@@ -17,7 +17,7 @@ using GR.MultiTenant.Abstractions.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.WebApplication;
-using Microsoft.AspNetCore.Hosting;
+using GR.WebApplication.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -29,9 +29,9 @@ namespace GR.Install
         #region Injectable
 
         /// <summary>
-        /// Inject env
+        /// Inject resource provider
         /// </summary>
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IGearResourceProvider _resourceProvider;
 
         /// <summary>
         /// Inject application context
@@ -55,13 +55,13 @@ namespace GR.Install
 
         #endregion
 
-        public GearWebInstallerService(INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostingEnvironment hostingEnvironment)
+        public GearWebInstallerService(INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IGearResourceProvider resourceProvider)
         {
             _notify = notify;
             _permissionService = permissionService;
             _signInManager = signInManager;
             _applicationDbContext = applicationDbContext;
-            _hostingEnvironment = hostingEnvironment;
+            _resourceProvider = resourceProvider;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace GR.Install
         public virtual async Task<ResultModel> InstallAsync(SetupModel model)
         {
             var response = new ResultModel();
-            var settings = GearWebApplication.Settings(_hostingEnvironment);
+            var settings = JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(_resourceProvider.AppSettingsFilepath());
 
             TableQueryBuilder instance = null;
 
@@ -114,7 +114,7 @@ namespace GR.Install
             settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
             var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
             GearWebApplication.InitModulesMigrations();
-            await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
+            await System.IO.File.WriteAllTextAsync(_resourceProvider.AppSettingsFilepath(), result);
             await _permissionService.SetOrResetPermissionsOnCacheAsync();
 
             var tenant =
@@ -147,13 +147,6 @@ namespace GR.Install
 
             var contextRequest = await _applicationDbContext.PushAsync();
             if (!contextRequest.IsSuccess) return contextRequest;
-
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
-            {
-                var service = x.InjectService<IDynamicService>();
-                //Register in memory types
-                await service.RegisterInMemoryDynamicTypesAsync();
-            });
 
             //Send welcome message to user
             await _notify.SendNotificationAsync(new List<Guid>

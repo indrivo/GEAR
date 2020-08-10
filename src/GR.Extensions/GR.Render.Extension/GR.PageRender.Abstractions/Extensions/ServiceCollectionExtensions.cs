@@ -42,7 +42,7 @@ namespace GR.PageRender.Abstractions.Extensions
 
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TPageContext>();
+                GearApplication.GetHost().MigrateDbContext<TPageContext>();
             };
             return services;
         }

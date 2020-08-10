@@ -27,6 +27,12 @@ namespace GR.Identity.Clients.Abstractions
         Task<IEnumerable<ApiResource>> GetApiResourcesAsync();
 
         /// <summary>
+        /// Get all api scopes
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<ApiScope>> GetApiScopesAsync();
+
+        /// <summary>
         /// Get identity resources
         /// </summary>
         /// <returns></returns>

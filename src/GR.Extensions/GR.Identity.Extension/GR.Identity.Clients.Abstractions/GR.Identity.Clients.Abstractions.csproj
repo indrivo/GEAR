@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Version>1.9.4</Version>
@@ -13,18 +13,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AppSettings\WebClientsConfiguration.json" />
     <None Remove="Certificates\idsrv3test.pfx" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="AppSettings\WebClientsConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Certificates\idsrv3test.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.5.4" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.5.4" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.0.2" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="4.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

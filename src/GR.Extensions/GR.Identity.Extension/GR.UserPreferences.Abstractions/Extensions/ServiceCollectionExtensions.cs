@@ -9,7 +9,6 @@ using GR.Core.Helpers;
 using GR.UserPreferences.Abstractions.Events;
 using GR.UserPreferences.Abstractions.Helpers;
 using GR.UserPreferences.Abstractions.Helpers.PreferenceTypes;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,11 +42,11 @@ namespace GR.UserPreferences.Abstractions.Extensions
             where TContext : DbContext, IUserPreferencesContext
         {
             services.AddDbContext<TContext>(options);
-            services.AddScopedContextFactory<IUserPreferencesContext, TContext>();
+            services.AddGearScoped<IUserPreferencesContext, TContext>();
 
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
 
             return services;
@@ -62,7 +61,7 @@ namespace GR.UserPreferences.Abstractions.Extensions
         public static IServiceCollection RegisterPreferencesProvider<TPreferencesProvider>(this IServiceCollection services)
             where TPreferencesProvider : DefaultUserPreferenceProvider
         {
-            IoC.RegisterSingletonService<DefaultUserPreferenceProvider>("PreferencesProvider_Instance", typeof(TPreferencesProvider));
+            services.AddGearSingleton<DefaultUserPreferenceProvider, TPreferencesProvider>();
 
             //Register timeZone
             services.RegisterUserPreferenceKey<ListPreferenceItem>(UserPreferencesResources.UserTimeZoneKey, options =>
@@ -134,7 +133,7 @@ namespace GR.UserPreferences.Abstractions.Extensions
         {
             if (options == null)
                 options = o => o;
-            var provider = IoC.Resolve<DefaultUserPreferenceProvider>("PreferencesProvider_Instance");
+            var provider = services.BuildServiceProvider().GetRequiredService<DefaultUserPreferenceProvider>();
             provider.RegisterPreferenceItem(key, options(new TPreferenceItem
             {
                 Key = key

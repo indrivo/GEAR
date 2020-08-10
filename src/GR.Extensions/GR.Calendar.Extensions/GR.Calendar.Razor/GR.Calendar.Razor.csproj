@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <Authors>Lupei Nicolae, Girbu Nicolae</Authors>
     <Company>Indrivo SRL</Company>
@@ -19,32 +20,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="libman.json" Pack="false">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.76" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstractions.ExternalProviders\GR.Calendar.Abstractions.ExternalProviders.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstraction\GR.Calendar.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="wwwroot\**\*" />
-    <Content Update="**\*.cshtml" Pack="false" />
-    <Content Include="wwwroot\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

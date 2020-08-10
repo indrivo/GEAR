@@ -132,5 +132,32 @@ namespace GR.Subscriptions.Abstractions
         /// <param name="parameters"></param>
         /// <returns></returns>
         Task<DTResult<SubscriptionUserInfoViewModel>> GetUsersSubscriptionInfoWithPaginationAsync(DTParameters parameters);
+
+        /// <summary>
+        /// Extend user subscription
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> ExtendUserSubscriptionAsync(Guid orderId, Guid userId);
+
+        /// <summary>
+        ///     Replace subscription
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="productId"></param>
+        /// <param name="period"></param>
+        /// <param name="unit"></param>
+        /// <param name="multiplyIndex"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddSubscriptionAsync(Guid userId, Guid productId, string period,
+            string unit, int multiplyIndex = 1);
+
+        /// <summary>
+        /// Add default free subscription
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddDefaultFreeSubscriptionAsync(Guid userId);
     }
 }

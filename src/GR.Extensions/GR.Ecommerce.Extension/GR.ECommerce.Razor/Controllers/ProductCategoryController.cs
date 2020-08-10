@@ -7,18 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GR.Core;
-using GR.Core.Abstractions;
+using GR.Core.Extensions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
-using GR.ECommerce.Razor.ViewModels;
 
 namespace GR.ECommerce.Razor.Controllers
 {
     public class ProductCategoryController : CommerceBaseController<Category, ProductCategoryViewModel>
     {
-        public ProductCategoryController(ICommerceContext context, IDataFilter dataFilter) : base(context, dataFilter)
+        public ProductCategoryController(ICommerceContext context) : base(context)
         {
         }
 
@@ -50,7 +49,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public override async Task<IActionResult> Edit([Required]Guid? id)
+        public override async Task<IActionResult> Edit([Required] Guid? id)
         {
             if (id == null) return NotFound();
             var model = await Context.Set<Category>().FirstOrDefaultAsync(x => x.Id == id);
@@ -66,23 +65,22 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         public override JsonResult OrderedList(DTParameters param)
         {
-            var filtered = DataFilter.FilterAbstractEntity<Category, ICommerceContext>(Context, param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-            {
-                var listModel = x.Adapt<ProductCategoryViewModel>();
-                listModel.CategoryParentName = Context.Categories
-                    .FirstOrDefault(y => y.Id == x.ParentCategoryId)?.Name;
-                return listModel;
-            }).ToList();
+            var filtered = Context.Categories.GetPagedAsDtResultAsync(param).GetAwaiter().GetResult();
+
+            var mapped = filtered.Data.Select(x =>
+        {
+            var listModel = x.Adapt<ProductCategoryViewModel>();
+            listModel.CategoryParentName = Context.Categories
+                .FirstOrDefault(y => y.Id == x.ParentCategoryId)?.Name;
+            return listModel;
+        }).ToList();
 
             var result = new DTResult<ProductCategoryViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                Data = mapped,
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
             return Json(result);
         }

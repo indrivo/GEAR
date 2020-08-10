@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Core.Helpers.Options
 {
@@ -20,7 +20,7 @@ namespace GR.Core.Helpers.Options
     {
         #region Injectable
 
-        private readonly IHostingEnvironment _environment;
+        private readonly IHostEnvironment _environment;
         private readonly IOptionsMonitor<T> _options;
         private readonly string _section;
         private readonly string _file;
@@ -33,15 +33,16 @@ namespace GR.Core.Helpers.Options
         /// <param name="environment"></param>
         /// <param name="options"></param>
         /// <param name="section"></param>
+        /// <param name="resourceProvider"></param>
         public WritableOptions(
-            IHostingEnvironment environment,
+            IHostEnvironment environment,
             IOptionsMonitor<T> options,
-            string section)
+            string section, IGearResourceProvider resourceProvider)
         {
             _environment = environment;
             _options = options;
             _section = section;
-            _file = ResourceProvider.AppSettingsFilepath(environment);
+            _file = resourceProvider.AppSettingsFilepath();
         }
 
         public T Value => _options.CurrentValue;
@@ -75,7 +76,7 @@ namespace GR.Core.Helpers.Options
             }
 
             var jObject = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(physicalPath));
-            var sectionObject = jObject.TryGetValue(_section, out var section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : Value ?? new T();
+            var sectionObject = jObject.TryGetValue(_section, out var section) ? JsonConvert.DeserializeObject<T>(section?.ToString() ?? "") : Value ?? new T();
             applyChanges(sectionObject);
             if (!jObject.ContainsKey(_section))
             {

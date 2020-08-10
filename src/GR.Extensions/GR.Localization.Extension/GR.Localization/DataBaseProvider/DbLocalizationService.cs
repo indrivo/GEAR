@@ -300,13 +300,13 @@ namespace GR.Localization.DataBaseProvider
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public virtual async Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
+        public virtual Task<DTResult<LocalizedStringViewModel>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
         {
             var stringLocalizer = IoC.Resolve<IStringLocalizer>();
-            var paginated = await stringLocalizer.GetAllStrings()
-                .AsAsyncQueryable()
-                .GetPagedAsDtResultAsync(parameters);
-            return paginated;
+            var mapped = _mapper.Map<IEnumerable<LocalizedStringViewModel>>(stringLocalizer.GetAllStrings().ToList());
+            var paginated = mapped.AsQueryable()
+                .GetPagedAsDtResult(parameters);
+            return Task.FromResult(paginated);
         }
 
         /// <summary>

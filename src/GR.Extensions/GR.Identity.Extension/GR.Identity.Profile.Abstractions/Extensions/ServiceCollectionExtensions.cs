@@ -39,7 +39,7 @@ namespace GR.Identity.Profile.Abstractions.Extensions
             services.RegisterAuditFor<TContext>("Profile module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

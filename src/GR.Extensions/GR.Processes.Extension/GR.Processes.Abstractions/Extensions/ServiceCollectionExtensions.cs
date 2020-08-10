@@ -4,7 +4,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +19,7 @@ namespace GR.Processes.Abstractions.Extensions
         public static IServiceCollection AddProcessesModule<TParser>(this IServiceCollection services)
             where TParser : class, IProcessParser
         {
-            services.AddTransient<IProcessParser, TParser>();
+            services.AddGearScoped<IProcessParser, TParser>();
             return services;
         }
 
@@ -39,7 +38,7 @@ namespace GR.Processes.Abstractions.Extensions
             services.RegisterAuditFor<IProcessesDbContext>("Processes module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

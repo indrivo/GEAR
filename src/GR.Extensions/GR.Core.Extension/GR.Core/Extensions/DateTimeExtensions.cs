@@ -222,5 +222,19 @@ namespace GR.Core.Extensions
         {
             return (date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         }
+
+        /// <summary>
+        /// From time stamp to date time
+        /// </summary>
+        /// <param name="unixTime"></param>
+        /// <returns></returns>
+        public static DateTime UnixTimestampToDateTime<T>(this T unixTime)
+            where T : struct, IComparable, IComparable<T>, IConvertible, IEquatable<T>, IFormattable
+        {
+            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var lUnixTime = Convert.ToInt64(unixTime);
+            var unixTimeStampInTicks = lUnixTime * TimeSpan.TicksPerSecond;
+            return new DateTime(unixStart.Ticks + unixTimeStampInTicks, DateTimeKind.Utc);
+        }
     }
 }

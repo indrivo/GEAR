@@ -25,11 +25,11 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UAParser;
-using Wangkanai.Detection;
 
 namespace GR.AccountActivity.Impl
 {
@@ -44,19 +44,9 @@ namespace GR.AccountActivity.Impl
         private readonly IActivityContext _context;
 
         /// <summary>
-        /// Inject detection service
-        /// </summary>
-        private readonly IDetection _detection;
-
-        /// <summary>
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
-
-        /// <summary>
-        /// Inject url helper
-        /// </summary>
-        private readonly IUrlHelper _urlHelper;
 
         /// <summary>
         /// Inject mapper
@@ -78,29 +68,32 @@ namespace GR.AccountActivity.Impl
         /// </summary>
         private readonly ICacheService _cacheService;
 
+        /// <summary>
+        /// Inject link generator
+        /// </summary>
+        private readonly LinkGenerator _generator;
+
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="detection"></param>
         /// <param name="userManager"></param>
-        /// <param name="urlHelper"></param>
         /// <param name="mapper"></param>
         /// <param name="accessor"></param>
         /// <param name="logger"></param>
         /// <param name="cacheService"></param>
-        public UserActivityService(IActivityContext context, IDetection detection, IUserManager<GearUser> userManager, IUrlHelper urlHelper, IMapper mapper, IHttpContextAccessor accessor, ILogger<UserActivityService> logger, ICacheService cacheService)
+        /// <param name="generator"></param>
+        public UserActivityService(IActivityContext context, IUserManager<GearUser> userManager, IMapper mapper, IHttpContextAccessor accessor, ILogger<UserActivityService> logger, ICacheService cacheService, LinkGenerator generator)
         {
             _context = context;
-            _detection = detection;
             _userManager = userManager;
-            _urlHelper = urlHelper;
             _mapper = mapper;
             _accessor = accessor;
             _logger = logger;
             _cacheService = cacheService;
+            _generator = generator;
         }
 
         /// <summary>
@@ -115,7 +108,7 @@ namespace GR.AccountActivity.Impl
             if (!userRequest.IsSuccess) return userRequest.Map<Guid>();
             var user = userRequest.Result;
 
-            var ip = context.Connection.RemoteIpAddress;
+            var ip = GetIpAddress(context);
             var platformRequest = ExtractPlatformAndBrowserVersions(context);
             if (!platformRequest.IsSuccess) return platformRequest.Map<Guid>();
 
@@ -144,7 +137,7 @@ namespace GR.AccountActivity.Impl
         public virtual async Task<bool> IsNewDeviceAsync(HttpContext context)
         {
             Arg.NotNull(context, nameof(IsNewDeviceAsync));
-            var ip = context.Connection.RemoteIpAddress;
+            var ip = GetIpAddress(context);
             var checkDevice = await FindDeviceByIpAddressAsync(ip);
             if (checkDevice.IsSuccess) return !checkDevice.Result.IsConfirmed;
 
@@ -175,6 +168,7 @@ namespace GR.AccountActivity.Impl
         {
             var userIdReq = _userManager.FindUserIdInClaims();
             if (!userIdReq.IsSuccess) return userIdReq.Map<UserDevice>();
+
             return await FindDeviceAsync(userIdReq.Result, context);
         }
 
@@ -186,7 +180,20 @@ namespace GR.AccountActivity.Impl
         /// <returns></returns>
         public virtual async Task<ResultModel<UserDevice>> FindDeviceAsync(Guid userId, HttpContext context)
         {
-            var ip = context.Connection.RemoteIpAddress;
+            if (context.Request.Headers.ContainsKey(AccountActivityResources.DeviceIdHeader)
+                && context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().IsGuid())
+            {
+                var deviceId = context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().ToGuid();
+                var deviceFromId = await _context.Devices
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id.Equals(deviceId) && x.UserId.Equals(userId));
+                if (deviceFromId != null)
+                {
+                    return new SuccessResultModel<UserDevice>(deviceFromId);
+                }
+            }
+
+            var ip = GetIpAddress(context);
             var location = GetLocationOfDevice(context);
             var platformRequest = ExtractPlatformAndBrowserVersions(context);
             if (!platformRequest.IsSuccess) return platformRequest.Map<UserDevice>();
@@ -212,10 +219,11 @@ namespace GR.AccountActivity.Impl
         /// <returns></returns>
         public virtual string GetLocationOfDevice(HttpContext context)
         {
-            var ipAddress = context.Connection.RemoteIpAddress;
+            var ipAddress = GetIpAddress(context);
             if (ipAddress.IsLocalIpAddress()) return ipAddress.ToString();
+            if (ipAddress.IsInternal()) return ipAddress.ToString();
 
-            var path = Path.Combine(AppContext.BaseDirectory, "Configuration\\GeoLite2-City.mmdb");
+            var path = Path.Combine(AppContext.BaseDirectory, "Configuration/GeoLite2-City.mmdb");
             try
             {
                 using (var reader = new DatabaseReader(path))
@@ -226,7 +234,7 @@ namespace GR.AccountActivity.Impl
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, $"Fail to detect ip address location, ip: {ipAddress}");
             }
 
             return ipAddress.ToString();
@@ -253,12 +261,11 @@ namespace GR.AccountActivity.Impl
             if (!templateReq.IsSuccess) return result;
 
             var code = await _userManager.UserManager.GenerateUserTokenAsync(user, AccountActivityResources.TrackActivityTokenProvider, AccountActivityResources.ConfirmDevicePurpose);
-            var url = _urlHelper.ActionLink("ConfirmDevice", "AccountActivity",
-            new
+            var url = _generator.GetUriByAction(context, "ConfirmDevice", "AccountActivity", new
             {
                 deviceId = userDevice.Id,
                 code
-            }, context);
+            });
 
             var location = $"({userDevice.IpAddress}) {userDevice.Location}";
             var body = templateReq.Result.Inject(new Dictionary<string, string>
@@ -268,9 +275,9 @@ namespace GR.AccountActivity.Impl
                 { "Device", userDevice.Platform }
             });
 
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
             {
-                var emailSender = x.InjectService<IEmailSender>();
+                var emailSender = serviceProvider.GetService<IEmailSender>();
                 await emailSender.SendEmailAsync(user.Email, subject, body);
             });
 
@@ -604,18 +611,58 @@ namespace GR.AccountActivity.Impl
             }
             else
             {
-                var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
-                var platform = $"Web {_detection.Device.Type} ({os})";
-                var browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}";
-                response.Result = new ExtractedInfoFromHttpContext
+                if (clientInfo.String.StartsWith("Postman"))
                 {
-                    Browser = browser,
-                    Platform = platform
-                };
+                    response.Result = new ExtractedInfoFromHttpContext
+                    {
+                        Browser = "Postman",
+                        Platform = "Postman"
+                    };
+                }
+                else
+                {
+                    var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
+                    var model = clientInfo.Device.Model != "Other" ? clientInfo.Device.Model : string.Empty;
+                    var platform = $"Web {model} ({os})";
+                    var browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}";
+                    response.Result = new ExtractedInfoFromHttpContext
+                    {
+                        Browser = browser,
+                        Platform = platform
+                    };
+                }
+
                 response.IsSuccess = true;
             }
 
             return response;
+        }
+
+
+        /// <summary>
+        /// Get ip address
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private IPAddress GetIpAddress(HttpContext context)
+        {
+            const string forwardAddress = "X-Forwarded-For";
+            var ipAddress = context.Connection.RemoteIpAddress;
+
+            if (ipAddress.IsLocalIpAddress())
+            {
+                _logger.LogWarning($"Remote ip address is local, ip: {ipAddress}");
+                return ipAddress;
+            }
+
+            if (!ipAddress.ToString().StartsWith("192")) return ipAddress;
+
+            if (context.Request.Headers.ContainsKey(forwardAddress))
+            {
+                ipAddress = IPAddress.Parse(context.Request.Headers[forwardAddress]);
+            }
+
+            return ipAddress;
         }
 
         #endregion

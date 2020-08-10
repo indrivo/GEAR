@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2.402 AS build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS build
 COPY ./ /app
 WORKDIR /app/src/GR.WebHosts/GR.Cms
 

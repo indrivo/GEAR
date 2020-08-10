@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Models;
@@ -23,7 +22,7 @@ namespace GR.Dashboard.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        JsonResult GetDashboards(DTParameters param);
+        Task<DTResult<DashBoard>> GetDashboards(DTParameters param);
 
         /// <summary>
         /// Get active dashboard

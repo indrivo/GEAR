@@ -1,0 +1,56 @@
+{
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.Seq",
+      "Serilog.Exceptions",
+      "Serilog.Enrichers.AssemblyName",
+      "Serilog.Enrichers.Thread",
+      "Serilog.Enrichers.Memory",
+      "Serilog.Enrichers.Environment",
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "restrictedToMinimumLevel": "Information"
+        }
+      },
+      {
+        "Name": "Seq",
+        "Args": {
+          "ServerUrl": "http://192.168.1.40:31105",
+          "ApiKey": "1234567890",
+          "MinimumLevel": "Trace",
+          "LevelOverride": {
+            "System": "Information",
+            "Microsoft": "Warning"
+          }
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithClientIp",
+      "WithClientAgent",
+      "WithMachineName",
+      "WithMemoryUsage",
+      "WithExceptionDetails",
+      "WithEnvironmentUserName",
+      "WithThreadName",
+      "WithThreadId",
+      "WithAssemblyName",
+      "WithAssemblyVersion"
+    ],
+    "Properties": {
+      
+    }
+  }
+}

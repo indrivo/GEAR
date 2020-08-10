@@ -4,17 +4,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using GR.Core.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Core.Services
 {
     public class QueuedHostedService : BackgroundService
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject logger
+        /// </summary>
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Inject service provider
+        /// </summary>
+        private readonly IServiceProvider _serviceProvider;
+
+        #endregion
+
+
         public QueuedHostedService(IBackgroundTaskQueue taskQueue,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
             TaskQueue = taskQueue;
+            _serviceProvider = serviceProvider;
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
         }
 
@@ -31,7 +46,10 @@ namespace GR.Core.Services
 
                 try
                 {
-                    await workItem(cancellationToken);
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        await workItem(scope.ServiceProvider, cancellationToken);
+                    }
                 }
                 catch (Exception ex)
                 {

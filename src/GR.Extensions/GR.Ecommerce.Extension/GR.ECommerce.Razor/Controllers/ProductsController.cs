@@ -7,7 +7,6 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
@@ -40,7 +39,7 @@ namespace GR.ECommerce.Razor.Controllers
         private readonly ProductGalleryManager _galleryManager;
         #endregion
 
-        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService, ProductGalleryManager galleryManager) : base(context, dataFilter)
+        public ProductsController(ICommerceContext context, IProductService<Product> productService, ProductGalleryManager galleryManager) : base(context)
         {
             _productService = productService;
             _galleryManager = galleryManager;
@@ -420,7 +419,9 @@ namespace GR.ECommerce.Razor.Controllers
                 Value = x.Id.ToString()
             }));
 
-            model.ProductAttributesList = Context.ProductAttribute.Include(x => x.AttributeGroup)
+            model.ProductAttributesList = Context.ProductAttribute
+                .Include(x => x.AttributeGroup)
+                .ToList()
                 .GroupBy(x => x.AttributeGroup.Name)
                 .ToDictionary(grouping => grouping.Key, x => x.ToList().Select(w => new SelectListItem
                 {

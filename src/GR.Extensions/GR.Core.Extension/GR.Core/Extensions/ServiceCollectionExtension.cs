@@ -4,10 +4,9 @@ using Microsoft.Extensions.Options;
 using GR.Core.Abstractions;
 using GR.Core.Helpers.Options;
 using GR.Core.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Core.Extensions
 {
@@ -24,6 +23,7 @@ namespace GR.Core.Extensions
             services.Configure<SystemConfig>(configuration.GetSection(nameof(SystemConfig)));
             services.AddGearSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
+            services.AddHostedService<GearApplicationQueuedHostedService>();
             return services;
         }
 
@@ -40,9 +40,10 @@ namespace GR.Core.Extensions
             services.Configure<T>(section);
             services.AddTransient<IWritableOptions<T>>(provider =>
             {
-                var environment = provider.GetService<IHostingEnvironment>();
+                var environment = provider.GetService<IHostEnvironment>();
                 var options = provider.GetService<IOptionsMonitor<T>>();
-                return new WritableOptions<T>(environment, options, section.Key);
+                var resourceProvider = provider.GetService<IGearResourceProvider>();
+                return new WritableOptions<T>(environment, options, section.Key, resourceProvider);
             });
         }
 
@@ -66,12 +67,14 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IServiceCollection AddUrlHelper(this IServiceCollection services)
         {
-            services.AddSingleton<IUrlHelper>(factory =>
+            services.AddScoped(factory =>
             {
                 var actionContext = factory.GetService<IActionContextAccessor>()
                     ?.ActionContext;
-                return actionContext != null ? new UrlHelper(actionContext) : null;
+                var urlFactory = factory.GetService<IUrlHelperFactory>();
+                return actionContext != null ? urlFactory.GetUrlHelper(actionContext) : null;
             });
+
             return services;
         }
     }

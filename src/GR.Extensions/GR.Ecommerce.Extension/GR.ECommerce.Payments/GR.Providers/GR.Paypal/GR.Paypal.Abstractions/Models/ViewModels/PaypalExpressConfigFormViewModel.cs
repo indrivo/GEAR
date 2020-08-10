@@ -1,6 +1,6 @@
 ﻿using GR.Core.Attributes;
 
-namespace GR.Paypal.Models.ViewModels
+namespace GR.Paypal.Abstractions.Models.ViewModels
 {
     public class PaypalExpressConfigFormViewModel
     {

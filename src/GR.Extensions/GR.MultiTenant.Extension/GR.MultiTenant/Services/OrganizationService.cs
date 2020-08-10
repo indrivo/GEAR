@@ -558,7 +558,7 @@ namespace GR.MultiTenant.Services
         public async Task<bool> IsTenantNameUsedAsync(string tenantName)
         {
             var tenantMachineName = TenantUtils.GetTenantMachineName(tenantName).ToLowerInvariant();
-            return await _context.Tenants.AnyAsync(x => x.MachineName.ToLowerInvariant().Equals(tenantMachineName));
+            return await _context.Tenants.AnyAsync(x => x.MachineName.ToLower().Equals(tenantMachineName));
         }
 
         /// <summary>

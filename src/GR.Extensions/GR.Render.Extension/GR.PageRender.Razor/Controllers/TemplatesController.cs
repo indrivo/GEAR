@@ -2,7 +2,6 @@ using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.RenderTemplates;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Razor.BaseControllers;
 
 namespace GR.PageRender.Razor.Controllers
@@ -48,20 +48,10 @@ namespace GR.PageRender.Razor.Controllers
 		[HttpPost]
         [AjaxOnly]
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        public JsonResult LoadPages(DTParameters param)
+        public async Task<JsonResult> LoadPages(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<Template>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
-
-            var finalResult = new DTResult<Template>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-            return Json(finalResult);
+            var filtered = await _pagesContext.Templates.GetPagedAsDtResultAsync(param);
+            return Json(filtered);
         }
 
         /// <summary>
@@ -92,7 +82,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        public async Task<IActionResult> Create([Required]Template model)
+        public async Task<IActionResult> Create([Required] Template model)
         {
             if (_pagesContext.Templates.Any(x => x.Name == model.Name))
             {

@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Entities.Security.Abstractions.ServiceBuilder;
 using GR.Entities.Security.Razor.Helpers;
@@ -15,14 +14,14 @@ namespace GR.Entities.Security.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IEntitySecurityServiceCollection AddEntitySecurityRazorUIModule(this IEntitySecurityServiceCollection services)
+        public static IEntitySecurityServiceCollection AddEntitySecurityRazorUiModule(this IEntitySecurityServiceCollection services)
         {
             services.Services.ConfigureOptions(typeof(EntitySecurityRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                     {
-                        await x.InjectService<IMenuService>().AppendMenuItemsAsync(new EntitiesPermissionsMenuInitializer());
+                        await serviceProvider.GetService<IMenuService>().AppendMenuItemsAsync(new EntitiesPermissionsMenuInitializer());
                     });
             };
 

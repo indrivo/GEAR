@@ -1,4 +1,5 @@
 ﻿using System;
+using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Core.Helpers;
@@ -22,9 +23,10 @@ namespace GR.Subscriptions.Abstractions.Extensions
             where TSubscriptionService : class, ISubscriptionService<TSubscription>
             where TSubscription : Subscription
         {
-            IoC.RegisterTransientService<ISubscriptionService<TSubscription>, TSubscriptionService>();
-
-            options?.Invoke(SubscriptionResources.Configuration);
+            services.AddGearScoped<ISubscriptionService<TSubscription>, TSubscriptionService>();
+            var conf = new SubscriptionConfiguration();
+            options?.Invoke(conf);
+            services.AddGearSingleton(conf);
             return services;
         }
 
@@ -37,7 +39,7 @@ namespace GR.Subscriptions.Abstractions.Extensions
         public static IServiceCollection RegisterSubscriptionStorage<TContext>(this IServiceCollection services)
             where TContext : DbContext, ISubscriptionDbContext
         {
-            services.AddTransient<ISubscriptionDbContext, TContext>();
+            services.AddScoped<ISubscriptionDbContext, TContext>();
             IoC.RegisterService<ISubscriptionDbContext>(nameof(ISubscriptionDbContext), typeof(TContext));
             return services;
         }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -10,6 +12,8 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Patterns;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Core
 {
@@ -58,6 +62,9 @@ namespace GR.Core
             return parent.Name.StartsWith("netcoreapp");
         }
 
+        /// <summary>
+        /// Retrieve system config
+        /// </summary>
         public static SystemConfig SystemConfig => Singleton<SystemConfig, SystemConfig>.GetOrSetInstance(
             () => Task.FromResult(IoC.Resolve<IConfiguration>().GetSection("SystemConfig").Get<SystemConfig>()));
 
@@ -69,6 +76,12 @@ namespace GR.Core
                 Task.FromResult(IoC.ResolveNonRequired<IBackgroundTaskQueue>()));
 
         /// <summary>
+        /// Service provider
+        /// </summary>
+        public static IServiceProvider ServiceProvider =>
+            Singleton<IServiceProvider, IServiceProvider>.GetOrSetInstance(() => Task.FromResult(IoC.Resolve<IServiceProvider>()));
+
+        /// <summary>
         /// Services container
         /// </summary>
         public static IWindsorContainer ServicesContainer => IoC.Container;
@@ -76,17 +89,20 @@ namespace GR.Core
         /// <summary>
         /// Is configured
         /// </summary>
-        protected static bool ConfigurationsApplied { get; set; }
-
-        /// <summary>
-        /// Is configured
-        /// </summary>
-        public static bool Configured => ConfigurationsApplied;
+        public static bool Configured
+        {
+            get
+            {
+                var configuration = IoC.Resolve<IConfiguration>();
+                var isConfigured = configuration.GetValue<bool>("IsConfigured");
+                return isConfigured;
+            }
+        }
 
         /// <summary>
         /// App host
         /// </summary>
-        protected static dynamic GlobalAppHost { get; set; }
+        protected static IHost GlobalAppHost { get; set; }
 
         /// <summary>
         /// Configuration
@@ -96,9 +112,8 @@ namespace GR.Core
         /// <summary>
         /// Get app host
         /// </summary>
-        /// <typeparam name="THost"></typeparam>
         /// <returns></returns>
-        public static THost GetHost<THost>() => (THost)GlobalAppHost;
+        public static IHost GetHost() => GlobalAppHost;
 
         /// <summary>
         /// App configuration
@@ -112,6 +127,47 @@ namespace GR.Core
         /// </summary>
         /// <returns></returns>
         public static bool IsHostedOnLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        /// <summary>
+        /// Run in scope
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static Task<T> RunInScopeAsync<T, TService>(Func<TService, Task<T>> task)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var service = scope.ServiceProvider.GetRequiredService<TService>();
+                return task(service);
+            }
+        }
+
+        /// <summary>
+        /// Run in scope
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static T RunInScope<T, TService>(Func<TService, T> task)
+        {
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var service = scope.ServiceProvider.GetRequiredService<TService>();
+                return task(service);
+            }
+        }
+
+        /// <summary>
+        /// Get assemblies
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Assembly> GetAssemblies()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("GR.")).ToList();
+        }
 
         /// <summary>
         /// Running project path

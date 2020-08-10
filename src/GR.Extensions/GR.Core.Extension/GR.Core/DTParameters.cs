@@ -201,5 +201,6 @@ namespace GR.Core
     {
         public virtual string FromColumn { get; set; }
         public virtual string ToColumn { get; set; }
+        public virtual bool IsSubProperty { get; set; }
     }
 }

@@ -107,18 +107,18 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var obj = JObject.Parse(strResponse);
             if (!result.IsSuccessStatusCode)
             {
-                var apiError = obj.SelectToken("errors").SelectToken("message").Value<string>();
+                var apiError = obj.SelectToken("errors")?.SelectToken("message")?.Value<string>() ?? "Unknown error";
                 return new ApiNotRespondResultModel<string>(apiError);
             }
 
-            var isSuccess = obj.SelectToken("success").Value<bool>();
+            var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
             if (isSuccess)
             {
-                var userId = obj.SelectToken("user").SelectToken("id").Value<string>();
+                var userId = obj.SelectToken("user")?.SelectToken("id")?.Value<string>() ?? string.Empty;
                 return new SuccessResultModel<string>(userId);
             }
 
-            var error = obj.SelectToken("errors").SelectToken("message").Value<string>();
+            var error = obj.SelectToken("errors")?.SelectToken("message")?.Value<string>() ?? string.Empty;
 
             return new ResultModel<string>()
                 .AddError(error);
@@ -149,8 +149,8 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var clientResponse = await result.Content.ReadAsStringAsync();
             _logger.LogDebug(clientResponse);
             var obj = JObject.Parse(clientResponse);
-            var isSuccess = obj.SelectToken("success").Value<bool>();
-            var message = obj.SelectToken("message").Value<string>();
+            var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
+            var message = obj.SelectToken("message")?.Value<string>() ?? string.Empty;
 
             return new ResultModel<string>
             {
@@ -189,12 +189,18 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var result = await _client.GetAsync(
                 $"/protected/json/phones/verification/check?phone_number={phoneNumber}&country_code={countryCode}&verification_code={token}"
             );
-            if (!result.IsSuccessStatusCode) return new ApiNotRespondResultModel<string>();
-            _logger.LogDebug(result.ToString());
+
             var message = await result.Content.ReadAsStringAsync();
-            _logger.LogDebug(message);
             var obj = JObject.Parse(message);
-            var isSuccess = obj.SelectToken("success").Value<bool>();
+            if (!result.IsSuccessStatusCode)
+            {
+                _logger.LogDebug("Fail to verify code, response: {Response}", message);
+                return new ResultModel<string>()
+                    .AddError(obj.SelectToken("error_code")?.Value<string>(), obj.SelectToken("message")?.Value<string>());
+            }
+
+            _logger.LogDebug(message);
+            var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
             if (isSuccess)
             {
                 PhoneVerificationEvents.Events.PhoneVerified(new PhoneConfirmedEventArgs
@@ -226,8 +232,8 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             if (!result.IsSuccessStatusCode) return new ApiNotRespondResultModel<string>();
             var smsResponse = await result.Content.ReadAsStringAsync();
             var obj = JObject.Parse(smsResponse);
-            var isSuccess = obj.SelectToken("success").Value<bool>();
-            var message = obj.SelectToken("message").Value<string>();
+            var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
+            var message = obj.SelectToken("message")?.Value<string>();
             var res = new ResultModel<string>
             {
                 IsSuccess = isSuccess,
@@ -273,14 +279,19 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                 null
             );
 
-            if (!result.IsSuccessStatusCode) return new ApiNotRespondResultModel<object>();
             var content = await result.Content.ReadAsStringAsync();
+            var obj = JObject.Parse(content);
+            if (!result.IsSuccessStatusCode)
+            {
+                response.AddError(obj.SelectToken("error_code")?.Value<string>(), obj.SelectToken("message")?.Value<string>());
+                _logger.LogError("Fail to send sms verification code, country: {Country}, phone: {Phone} response: {Response}", countryCode, phoneNumber, content);
+                return response;
+            }
 
             _logger.LogDebug(result.ToString());
             _logger.LogDebug(content);
 
-            var obj = JObject.Parse(content);
-            var isSuccess = obj.SelectToken("success").Value<bool>();
+            var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
             response.IsSuccess = isSuccess;
 
             response.Result = content.Deserialize<object>();

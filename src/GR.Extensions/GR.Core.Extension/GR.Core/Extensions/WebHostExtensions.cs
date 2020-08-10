@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using GR.Core.Abstractions;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs.Database;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Polly;
 
@@ -15,7 +15,7 @@ namespace GR.Core.Extensions
 {
     public static class WebHostExtensions
     {
-        public static bool IsInKubernetes(this IWebHost webHost)
+        public static bool IsInKubernetes(this IHost webHost)
         {
             var cfg = webHost.Services.GetService<IConfiguration>();
             var orchestratorType = cfg.GetValue<string>("OrchestratorType");
@@ -28,7 +28,7 @@ namespace GR.Core.Extensions
         /// <typeparam name="TContext"></typeparam>
         /// <param name="webHost"></param>
         /// <returns></returns>
-        public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost) where TContext : DbContext
+        public static IHost MigrateDbContext<TContext>(this IHost webHost) where TContext : DbContext
         {
             return webHost.MigrateDbContext<TContext>((context, services) => { });
         }
@@ -40,7 +40,7 @@ namespace GR.Core.Extensions
         /// <param name="webHost"></param>
         /// <param name="seeder"></param>
         /// <returns></returns>
-        public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : DbContext
+        public static IHost MigrateDbContext<TContext>(this IHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : DbContext
         {
             var watch = new Stopwatch();
             watch.Start();
@@ -102,7 +102,7 @@ namespace GR.Core.Extensions
         /// <typeparam name="TContext"></typeparam>
         /// <param name="webHost"></param>
         /// <returns></returns>
-        public static IWebHost MigrateAbstractDbContext<TContext>(this IWebHost webHost) where TContext : class, IDbContext
+        public static IHost MigrateAbstractDbContext<TContext>(this IHost webHost) where TContext : class, IDbContext
         {
             return webHost.MigrateAbstractDbContext<TContext>((context, services) => { });
         }
@@ -114,7 +114,7 @@ namespace GR.Core.Extensions
         /// <param name="webHost"></param>
         /// <param name="seeder"></param>
         /// <returns></returns>
-        public static IWebHost MigrateAbstractDbContext<TContext>(this IWebHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : class, IDbContext
+        public static IHost MigrateAbstractDbContext<TContext>(this IHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : class, IDbContext
         {
             var watch = new Stopwatch();
             watch.Start();

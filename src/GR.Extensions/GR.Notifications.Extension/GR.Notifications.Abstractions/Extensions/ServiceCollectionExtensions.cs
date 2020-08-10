@@ -8,7 +8,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions.Helpers;
 using GR.Notifications.Abstractions.Models.Notifications;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +41,7 @@ namespace GR.Notifications.Abstractions.Extensions
         public static IServiceCollection AddNotificationSeeder<TSeeder>(this IServiceCollection services)
             where TSeeder : class, INotificationSeederService
         {
-            services.AddGearSingleton<INotificationSeederService, TSeeder>();
+            services.AddGearScoped<INotificationSeederService, TSeeder>();
             return services;
         }
 
@@ -58,11 +57,11 @@ namespace GR.Notifications.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(AddNotificationModuleStorage));
             services.AddDbContext<TContext>(options);
-            services.AddScopedContextFactory<INotificationsContext, TContext>();
+            services.AddGearScoped<INotificationsContext, TContext>();
             services.RegisterAuditFor<INotificationsContext>($"{nameof(Notification)} module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

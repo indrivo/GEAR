@@ -1,6 +1,6 @@
 {
   "HttpServer": {
-    "Enabled": false,
+    "Enabled": true,
     "Endpoints": {
       "Http": {
         "Host": "localhost",

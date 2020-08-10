@@ -8,8 +8,8 @@ namespace GR.Core.Services
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
-        private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems =
-            new ConcurrentQueue<Func<CancellationToken, Task>>();
+        private readonly ConcurrentQueue<Func<IServiceProvider, CancellationToken, Task>> _workItems =
+            new ConcurrentQueue<Func<IServiceProvider, CancellationToken, Task>>();
 
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
 
@@ -18,7 +18,7 @@ namespace GR.Core.Services
         /// </summary>
         /// <param name="workItem"></param>
         public void PushBackgroundWorkItemInQueue(
-            Func<CancellationToken, Task> workItem)
+            Func<IServiceProvider, CancellationToken, Task> workItem)
         {
             if (workItem == null)
             {
@@ -34,7 +34,7 @@ namespace GR.Core.Services
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Func<CancellationToken, Task>> RemoveBackgroundWorkItemFromQueueAsync(
+        public async Task<Func<IServiceProvider, CancellationToken, Task>> RemoveBackgroundWorkItemFromQueueAsync(
             CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
@@ -46,14 +46,14 @@ namespace GR.Core.Services
         /// <summary>
         /// Work items on pending
         /// </summary>
-        private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItemsOnPending =
-            new ConcurrentQueue<Func<CancellationToken, Task>>();
+        private readonly ConcurrentQueue<Func<IServiceProvider, CancellationToken, Task>> _workItemsOnPending =
+            new ConcurrentQueue<Func<IServiceProvider, CancellationToken, Task>>();
 
         /// <summary>
         /// Push new item to be executed after install
         /// </summary>
         /// <param name="workItem"></param>
-        public void PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(Func<CancellationToken, Task> workItem)
+        public void PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(Func<IServiceProvider, CancellationToken, Task> workItem)
         {
             if (workItem == null)
             {

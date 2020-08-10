@@ -36,14 +36,23 @@ namespace GR.Core.Helpers.Async
             return _inner.Execute<TResult>(expression);
         }
 
+        public TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            var expectedResultType = typeof(TResult).GetGenericArguments()[0];
+            var methods = typeof(IQueryProvider).GetMethods().Where(x => x.Name.Equals(nameof(IQueryProvider.Execute)) && x.IsGenericMethod)
+                .ToList();
+            var executionResult = methods.FirstOrDefault()
+                .MakeGenericMethod(expectedResultType)
+                .Invoke(this, new[] { expression });
+
+            return (TResult)typeof(Task).GetMethod(nameof(Task.FromResult))
+                .MakeGenericMethod(expectedResultType)
+                .Invoke(null, new[] { executionResult });
+        }
+
         public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
             return new AsyncEnumerable<TResult>(expression);
-        }
-
-        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(Execute<TResult>(expression));
         }
     }
 }

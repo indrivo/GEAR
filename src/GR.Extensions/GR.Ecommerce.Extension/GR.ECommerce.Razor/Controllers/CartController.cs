@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
@@ -14,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GR.ECommerce.Razor.Controllers
 {
     [Authorize]
-    public class CartController  : CommerceBaseController<Cart, AddToCartViewModel>
+    public class CartController : CommerceBaseController<Cart, AddToCartViewModel>
     {
         #region Injectable
 
@@ -25,7 +24,7 @@ namespace GR.ECommerce.Razor.Controllers
 
         #endregion
 
-        public CartController(ICommerceContext context, IDataFilter dataFilter, ICartService cartService) : base(context, dataFilter)
+        public CartController(ICommerceContext context, ICartService cartService) : base(context)
         {
             _cartService = cartService;
         }
@@ -46,20 +45,18 @@ namespace GR.ECommerce.Razor.Controllers
                 return Json(model);
             }
             var result = await _cartService.AddToCardAsync(model);
-         
-            return Json(result, SerializerSettings);
-        }
-       
 
-        public async Task<JsonResult> DeleteCartItem([Required]Guid? cartItemId)
+            return Json(result);
+        }
+
+        public async Task<JsonResult> DeleteCartItem([Required] Guid? cartItemId)
         {
             return Json(await _cartService.DeleteCartItemAsync(cartItemId));
         }
 
-
         public async Task<JsonResult> SetQuantity([Required] Guid? cartItemId, [Required] int? quantity)
         {
-           
+
             return Json(await _cartService.SetQuantityAsync(cartItemId, quantity));
         }
     }

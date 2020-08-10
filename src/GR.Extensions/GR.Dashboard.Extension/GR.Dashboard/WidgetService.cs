@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GR.Core;
 using GR.Core.Extensions;
@@ -12,7 +11,6 @@ using GR.Dashboard.Abstractions.Helpers.Enums;
 using GR.Dashboard.Abstractions.Models;
 using GR.Dashboard.Abstractions.Models.ViewModels;
 using GR.Dashboard.Abstractions.Models.WidgetTypes;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Report.Abstractions;
 
 namespace GR.Dashboard
@@ -102,21 +100,10 @@ namespace GR.Dashboard
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual JsonResult GetWidgetsInJqueryTableFormat(DTParameters param)
+        public virtual async Task<DTResult<CustomWidget>> GetWidgetsInJqueryTableFormat(DTParameters param)
         {
-            var filtered = _context.FilterAbstractContext<CustomWidget>(param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).ToList();
-
-            var result = new DTResult<CustomWidget>
-            {
-                Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-            return new JsonResult(result);
+            var filtered = await _context.CustomWidgets.GetPagedAsDtResultAsync(param);
+            return filtered;
         }
 
         /// <inheritdoc />

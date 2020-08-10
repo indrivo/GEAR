@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
 using GR.WorkFlows.Razor.Helpers;
@@ -19,9 +18,9 @@ namespace GR.WorkFlows.Razor.Extensions
             services.ConfigureOptions(typeof(WorkflowRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                     {
-                        await x.InjectService<IMenuService>().AppendMenuItemsAsync(new WorkflowMenuInitializer());
+                        await s.GetService<IMenuService>().AppendMenuItemsAsync(new WorkflowMenuInitializer());
                     });
             };
             return services;

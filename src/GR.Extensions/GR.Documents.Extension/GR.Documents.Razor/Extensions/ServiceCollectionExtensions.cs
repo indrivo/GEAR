@@ -2,7 +2,6 @@
 using GR.Documents.Razor.Helpers;
 using GR.UI.Menu.Abstractions.Events;
 using GR.Core;
-using GR.Core.Extensions;
 using GR.UI.Menu.Abstractions;
 
 namespace GR.Documents.Razor.Extensions
@@ -14,14 +13,14 @@ namespace GR.Documents.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDocumentRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddDocumentRazorUiModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(DocumentRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, c) =>
                 {
-                    await x.InjectService<IMenuService>().AppendMenuItemsAsync(new DocumentMenuInitializer());
+                    await s.GetService<IMenuService>().AppendMenuItemsAsync(new DocumentMenuInitializer());
                 });
             };
             return services;

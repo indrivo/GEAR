@@ -83,9 +83,11 @@ namespace GR.Subscriptions
         /// </summary>
         private readonly ILogger<SubscriptionService> _logger;
 
+        private readonly SubscriptionConfiguration _subscriptionConfiguration;
+
         #endregion
 
-        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger, IOrderDbContext orderDbContext)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger, IOrderDbContext orderDbContext, SubscriptionConfiguration subscriptionConfiguration)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
@@ -97,6 +99,7 @@ namespace GR.Subscriptions
             _mapper = mapper;
             _logger = logger;
             _orderDbContext = orderDbContext;
+            _subscriptionConfiguration = subscriptionConfiguration;
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace GR.Subscriptions
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
-                .Where(x => SubscriptionResources.Configuration.UserSubscriptionQuery(x, user))
+                .Where(x => x.UserId.Equals(user.Id))
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -141,7 +144,7 @@ namespace GR.Subscriptions
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
-                .Where(x => SubscriptionResources.Configuration.UserSubscriptionQuery(x, user) && x.IsValid)
+                .Where(x => x.UserId.Equals(user.Id) && (x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree))
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -163,6 +166,7 @@ namespace GR.Subscriptions
                 return new InvalidParametersResultModel<Subscription>();
 
             var subscription = await _subscriptionDbContext.Subscription
+                .AsNoTracking()
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
@@ -205,20 +209,35 @@ namespace GR.Subscriptions
                 }
             }
 
-            var existSubscription = await GetSubscriptionByIdAsync(model.Id);
+            var subscription = await _subscriptionDbContext.Subscription
+                .AsNoTracking()
+                .Include(i => i.Order)
+                .ThenInclude(i => i.ProductOrders)
+                .Include(x => x.SubscriptionPermissions)
+                .FirstOrDefaultAsync(x => x.Id == model.Id);
 
             Guid subscriptionId;
 
-            if (existSubscription.IsSuccess)
+            if (subscription != null)
             {
-                var subscription = existSubscription.Result;
+                _subscriptionDbContext.SubscriptionPermissions.RemoveRange(subscription.SubscriptionPermissions);
+                var removeCurrentPermissions = await _subscriptionDbContext.PushAsync();
+                if (!removeCurrentPermissions.IsSuccess)
+                {
+                    _logger.LogError("Fail to remove existent permissions for subscription: {Subscription}", subscription.Id);
+                }
                 subscription.OrderId = model.OrderId;
                 subscription.Availability = model.Availability;
                 subscription.Name = model.Name;
-                subscription.SubscriptionPermissions = model.SubscriptionPermissions;
+                subscription.SubscriptionPermissions = null;
                 subscription.IsFree = model.IsFree;
-
                 _subscriptionDbContext.Subscription.Update(subscription);
+                var newPermissions = model.SubscriptionPermissions.ToList();
+                foreach (var permission in newPermissions)
+                {
+                    permission.SubscriptionId = subscription.Id;
+                }
+                await _subscriptionDbContext.SubscriptionPermissions.AddRangeAsync(newPermissions);
                 subscriptionId = subscription.Id;
             }
             else
@@ -232,7 +251,7 @@ namespace GR.Subscriptions
                     return result;
                 }
 
-                var subscription = (Subscription)model;
+                subscription = model;
                 await _subscriptionDbContext.Subscription.AddAsync(subscription);
                 subscriptionId = subscription.Id;
             }
@@ -272,10 +291,13 @@ namespace GR.Subscriptions
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionsThatExpireInAsync(TimeSpan timeSpan)
         {
+            var days = timeSpan.TotalDays;
             var data = await _subscriptionDbContext.Subscription
                 .AsNoTracking()
-                .Where(x => !x.IsFree && x.IsValid && TimeSpan.FromDays(x.RemainingDays) < timeSpan).ToListAsync();
-            return new SuccessResultModel<IEnumerable<Subscription>>(data);
+                .Where(x => !x.IsFree && (x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree))
+                .ToListAsync();
+            //TODO: TimeSpan issue on EF Core 3.1
+            return new SuccessResultModel<IEnumerable<Subscription>>(data.Where(x => (x.StartDate.AddDays(x.Availability) - DateTime.Now).Days < days).ToList());
         }
 
         /// <summary>
@@ -285,7 +307,8 @@ namespace GR.Subscriptions
         public async Task<ResultModel<IEnumerable<Subscription>>> GetExpiredSubscriptionsAsync()
         {
             var data = await _subscriptionDbContext.Subscription
-                .Where(x => !x.IsValid).ToListAsync();
+                .AsNoTracking()
+                .Where(x => !(x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree)).ToListAsync();
             return new SuccessResultModel<IEnumerable<Subscription>>(data);
         }
 
@@ -339,7 +362,7 @@ namespace GR.Subscriptions
                 if (!userReq.IsSuccess) continue;
                 var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
                               $"to {subscription.ExpirationDate}, has expired";
-                await _sender.SendAsync(userReq.Result, $"Subscription {subscription.Name} expired", message, SubscriptionResources.Configuration.NotificationProviders.ToArray());
+                await _sender.SendAsync(userReq.Result, $"Subscription {subscription.Name} expired", message, _subscriptionConfiguration.NotificationProviders.ToArray());
             }
 
             return removeRequest;
@@ -359,7 +382,7 @@ namespace GR.Subscriptions
                 if (!userReq.IsSuccess) continue;
                 var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
                               $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days";
-                await _sender.SendAsync(userReq.Result, "The subscription expires soon", message, SubscriptionResources.Configuration.NotificationProviders.ToArray());
+                await _sender.SendAsync(userReq.Result, "The subscription expires soon", message, _subscriptionConfiguration.NotificationProviders.ToArray());
             }
         }
 
@@ -377,20 +400,30 @@ namespace GR.Subscriptions
             if (user == null) return UserNotFoundResult<Subscription>.Instance;
 
             var userSubscription = await _subscriptionDbContext.Subscription
+                .AsNoTracking()
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
-                .Where(x => SubscriptionResources.Configuration.UserSubscriptionQuery(x, user))
+                .Where(x => x.UserId.Equals(user.Id))
                 .ToListAsync();
 
             if (!userSubscription.Any())
             {
                 result.AddError("Subscription not found");
+
+                if (_subscriptionConfiguration.MissingSubscriptionCreateFreeDefault)
+                {
+                    var response = await AddDefaultFreeSubscriptionAsync(user.Id);
+                    if (response.IsSuccess) return await GetLastSubscriptionForUserAsync(user.Id);
+                }
+
                 return result;
             }
 
             result.IsSuccess = true;
-            result.Result = userSubscription.OrderByDescending(o => o.Created).FirstOrDefault();
+            var orderedSubscriptions = userSubscription.OrderByDescending(o => o.Created).ToList();
+            result.Result = orderedSubscriptions.FirstOrDefault(x => !x.IsFree && x.IsValid)
+                            ?? orderedSubscriptions.FirstOrDefault();
             return result;
         }
 
@@ -445,7 +478,8 @@ namespace GR.Subscriptions
         public virtual async Task<ResultModel<IEnumerable<GearUser>>> GetUsersInSubscriptionAsync(string subscriptionName)
         {
             var userIds = await _subscriptionDbContext.Subscription
-                .Where(x => x.IsValid && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
+                .AsNoTracking()
+                .Where(x => (x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree) && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
 
             var users = await _userManager.UserManager.Users.Where(x => userIds.Contains(x.Id)).ToListAsync();
             return new SuccessResultModel<IEnumerable<GearUser>>(users);
@@ -459,7 +493,8 @@ namespace GR.Subscriptions
         public virtual async Task<ResultModel<IEnumerable<Guid>>> GetUsersIdInSubscriptionAsync(string subscriptionName)
         {
             var userIds = await _subscriptionDbContext.Subscription
-                .Where(x => x.IsValid && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
+                .AsNoTracking()
+                .Where(x => (x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree) && x.Name.Equals(subscriptionName)).Select(x => x.UserId).ToListAsync();
             return new SuccessResultModel<IEnumerable<Guid>>(userIds);
         }
 
@@ -469,7 +504,8 @@ namespace GR.Subscriptions
         /// <returns></returns>
         public virtual async Task<ResultModel<SubscriptionsTotalViewModel>> GetTotalIncomeResourcesAsync()
         {
-            var total = await _orderDbContext.ProductOrders
+            var productType = SubscriptionResources.SubscriptionPlanProductType;
+            var productOrders = await _orderDbContext.ProductOrders
                 .Include(x => x.Product)
                 .ThenInclude(x => x.ProductPrices)
                 .Include(x => x.Product)
@@ -477,8 +513,12 @@ namespace GR.Subscriptions
                 .Include(x => x.Product)
                 .ThenInclude(x => x.ProductVariations)
                 .AsNoTracking()
-                .Where(x => x.Product.ProductTypeId.Equals(SubscriptionResources.SubscriptionPlanProductType) && x.Order.OrderState == OrderState.PaymentReceived)
-                .SumAsync(x => x.FinalPrice);
+                .Where(x => x.Product.ProductTypeId.Equals(productType) &&
+                            x.Order.OrderState == OrderState.PaymentReceived)
+                .Select(x => x.FinalPrice)
+                .ToListAsync();
+
+            var total = productOrders.Sum();
 
             var data = new SubscriptionsTotalViewModel
             {
@@ -500,11 +540,10 @@ namespace GR.Subscriptions
                 .Include(x => x.Order)
                 .ThenInclude(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
-                .ThenInclude(x => x.ProductPrices)
-                .ThenInclude(x => x.Product)
                 .ThenInclude(x => x.ProductVariations)
                 .ThenInclude(x => x.ProductVariationDetails)
                 .ThenInclude(x => x.ProductOption)
+                .AsNoTracking()
                 .GetPagedAsDtResultAsync(parameters);
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             var data = new List<SubscriptionUserInfoViewModel>();
@@ -521,7 +560,7 @@ namespace GR.Subscriptions
                 subscriptionUser.Amount = subscription.Order?.Total ?? 0;
                 subscriptionUser.Status = subscription.IsValid ? "Active" : "Expired";
                 var orderDetails = subscription.Order?.ProductOrders.FirstOrDefault();
-                if (orderDetails != null)
+                if (orderDetails?.ProductVariation?.ProductVariationDetails != null)
                 {
                     foreach (var variation in orderDetails.ProductVariation.ProductVariationDetails)
                     {
@@ -538,6 +577,114 @@ namespace GR.Subscriptions
                 RecordsFiltered = subscriptionsPaged.RecordsFiltered,
                 RecordsTotal = subscriptionsPaged.RecordsTotal
             };
+        }
+
+        /// <summary>
+        /// Extend user subscription
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ExtendUserSubscriptionAsync(Guid orderId, Guid userId)
+        {
+            var orderRequest = await _orderService.GetOrderByIdAsync(orderId);
+            if (orderRequest.IsSuccess.Negate()) return orderRequest.ToBase();
+            var order = orderRequest.Result;
+            var checkIfProductIsSubscription = order.ProductOrders
+                .FirstOrDefault(x => x.Product?.ProductTypeId == SubscriptionResources.SubscriptionPlanProductType)?.ProductId;
+            if (checkIfProductIsSubscription == null) return new NotFoundResultModel();
+            var planRequest = await _productService.GetProductByIdAsync(checkIfProductIsSubscription);
+            if (planRequest.IsSuccess.Negate()) return planRequest.ToBase();
+            var plan = planRequest.Result;
+            var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
+            var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId;
+            var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
+
+            var userSubscriptionRequest = await GetLastSubscriptionForUserAsync(userId);
+
+            var newSubscription = new SubscriptionAddViewModel
+            {
+                Name = plan.Name,
+                OrderId = orderId,
+                StartDate = DateTime.Now,
+                Availability = GetSubscriptionDuration(variation),
+                UserId = order.UserId,
+                SubscriptionPermissions = permissions,
+            };
+
+            if (!userSubscriptionRequest.IsSuccess || userSubscriptionRequest.Result.IsFree)
+                return (await AddOrUpdateSubscriptionAsync(newSubscription)).ToBase();
+
+            var userSubscription = userSubscriptionRequest.Result;
+            newSubscription.Id = userSubscription.Id;
+            newSubscription.Availability += userSubscription.Availability;
+            newSubscription.IsFree = false;
+
+            return (await AddOrUpdateSubscriptionAsync(newSubscription)).ToBase();
+        }
+
+        /// <summary>
+        ///     Replace subscription
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="productId"></param>
+        /// <param name="period"></param>
+        /// <param name="unit"></param>
+        /// <param name="multiplyIndex"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddSubscriptionAsync(Guid userId, Guid productId, string period,
+            string unit, int multiplyIndex = 1)
+        {
+            var planRequest = await _productService.GetProductByIdAsync(productId);
+            if (planRequest.IsSuccess.Negate()) return planRequest.ToBase();
+            var plan = planRequest.Result;
+            var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
+            var variation = plan.ProductVariations.FirstOrDefault(
+                x => x.ProductVariationDetails.Any(c => c.ProductOption.Name.Equals("Unit") && c.Value == unit)
+                && x.ProductVariationDetails.Any(c => c.ProductOption.Name.Equals("Period") && c.Value == period));
+
+            var result = new ResultModel();
+            if (variation == null)
+            {
+                _logger.LogError($"Variation not found for productId: {productId}, period: {period}, unit: {unit}");
+                result.AddError("Variation not found");
+                return result;
+            }
+
+            var subscription = new Subscription
+            {
+                Name = plan.Name,
+                StartDate = DateTime.Now,
+                Availability = GetSubscriptionDuration(variation) * multiplyIndex,
+                UserId = userId,
+                SubscriptionPermissions = permissions,
+                IsFree = false
+            };
+            await _subscriptionDbContext.Subscription.AddAsync(subscription);
+            return await _subscriptionDbContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Add default free subscription
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddDefaultFreeSubscriptionAsync(Guid userId)
+        {
+            var planRequest = await _productService.GetProductByIdAsync(SubscriptionResources.DefaultSubscriptionPlan);
+
+            if (!planRequest.IsSuccess) return planRequest.ToBase();
+            var plan = planRequest.Result;
+            var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
+            return (await AddOrUpdateSubscriptionAsync(new SubscriptionAddViewModel
+            {
+                Name = plan.DisplayName,
+                StartDate = DateTime.Now,
+                Availability = 0,
+                UserId = userId,
+                IsFree = true,
+                SubscriptionPermissions = permissions
+            })).ToBase();
         }
     }
 }

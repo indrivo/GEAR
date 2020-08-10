@@ -1,12 +1,13 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GR.Core;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Core.Extensions;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
@@ -50,21 +51,10 @@ namespace GR.Entities.Razor.Controllers.Entity
         }
 
         [HttpPost]
-        public JsonResult OrderList(DTParameters param)
+        public async Task<JsonResult> OrderList(DTParameters param)
         {
-            var filtered = _context.FilterAbstractContext<EntityType>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
-
-            var finalResult = new DTResult<EntityType>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
+            var filtered = await _context.EntityTypes.GetPagedAsDtResultAsync(param);
+            return Json(filtered);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
+using GR.Core.Attributes;
 using GR.Core.Helpers;
 using GR.Identity.Clients.Abstractions;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Clients.Infrastructure.Data
 {
+    [IgnoreContextAutoMigrations]
     public class ClientsConfigurationDbContext : ConfigurationDbContext<ClientsConfigurationDbContext>, IClientsContext
     {
         public ClientsConfigurationDbContext(DbContextOptions<ClientsConfigurationDbContext> options, ConfigurationStoreOptions storeOptions) : base(options, storeOptions)

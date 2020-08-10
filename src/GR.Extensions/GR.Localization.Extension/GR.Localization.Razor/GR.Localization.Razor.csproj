@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <LangVersion>7.3</LangVersion>
     <Authors>Lupei Nicolae</Authors>
@@ -16,22 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="libman.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="libman.json" Pack="false">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" Condition="true" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.76" Condition="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,11 +30,5 @@
     <ProjectReference Include="..\GR.Localization.Api\GR.Localization.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="wwwroot\**\*" />
-    <Content Update="**\*.cshtml" Pack="false" />
-    <Content Include="wwwroot\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+
 </Project>

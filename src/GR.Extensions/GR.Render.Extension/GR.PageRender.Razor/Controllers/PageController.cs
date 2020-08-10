@@ -3,7 +3,6 @@ using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
@@ -139,7 +138,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> Save([Required]CodeUpdateViewModel model)
+        public async Task<JsonResult> Save([Required] CodeUpdateViewModel model)
         {
             var saveRequest = await _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
             return Json(saveRequest);
@@ -152,7 +151,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetCode([Required]Guid id, [Required]string type)
+        public async Task<IActionResult> GetCode([Required] Guid id, [Required] string type)
         {
             if (Guid.Empty == id) return NotFound();
             var page = await _pageRender.GetPageAsync(id);
@@ -436,67 +435,30 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPages(DTParameters param)
+        public async Task<JsonResult> LoadPages(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<Page>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => !x.IsLayout && !x.IsDeleted).Select(x => new Page
-                {
-                    Id = x.Id,
-                    Created = x.Created,
-                    Changed = x.Changed,
-                    Author = x.Author,
-                    Settings = _pagesContext.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
-                    PageType = x.PageType,
-                    ModifiedBy = x.ModifiedBy,
-                    IsDeleted = x.IsDeleted,
-                    Layout = _pagesContext.Pages.Include(g => g.Settings).FirstOrDefault(y => y.Id == x.LayoutId),
-                    SettingsId = x.SettingsId,
-                    PageTypeId = x.PageTypeId,
-                    IsSystem = x.IsSystem,
-                    Path = x.Path
-                }).ToList();
+            var filtered = await _pagesContext.Pages
+                .Include(x => x.PageType)
+                .Include(x => x.Layout)
+                .Include(x => x.Settings)
+                .Where(x => !x.IsLayout && !x.IsDeleted)
+                .GetPagedAsDtResultAsync(param);
 
-            var finalResult = new DTResult<Page>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
-            };
-            return Json(finalResult);
+            return Json(filtered);
         }
 
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadLayouts(DTParameters param)
+        public async Task<JsonResult> LoadLayouts(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<Page>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount, x => x.IsLayout && !x.IsDeleted).Select(x => new Page
-                {
-                    Id = x.Id,
-                    Created = x.Created,
-                    Changed = x.Changed,
-                    Author = x.Author,
-                    Settings = _pagesContext.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
-                    PageType = x.PageType,
-                    ModifiedBy = x.ModifiedBy,
-                    IsDeleted = x.IsDeleted,
-                    SettingsId = x.SettingsId,
-                    PageTypeId = x.PageTypeId,
-                    IsSystem = x.IsSystem,
-                    Path = x.Path
-                }).ToList();
+            var filtered = await _pagesContext.Pages
+                .Include(x => x.PageType)
+                .Include(x => x.Layout)
+                .Include(x => x.Settings)
+                .Where(x => x.IsLayout && !x.IsDeleted)
+                .GetPagedAsDtResultAsync(param);
 
-            var finalResult = new DTResult<Page>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
-            };
-            return Json(finalResult);
+            return Json(filtered);
         }
 
         /// <summary>
@@ -532,7 +494,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="scripts"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> UpdateScripts([Required]IEnumerable<PageScript> scripts)
+        public async Task<JsonResult> UpdateScripts([Required] IEnumerable<PageScript> scripts)
         {
             return await UpdateItemsAsync(scripts.ToList());
         }
@@ -543,7 +505,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="styles"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> UpdateStyles([Required]IEnumerable<PageStyle> styles)
+        public async Task<JsonResult> UpdateStyles([Required] IEnumerable<PageStyle> styles)
         {
             return await UpdateItemsAsync(styles.ToList());
         }
@@ -685,7 +647,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="pageId"></param>
         /// <param name="enableAcl"></param>
         /// <returns></returns>
-        public async Task<JsonResult> ChangeAclEnableStateAsync([Required]Guid pageId, bool enableAcl)
+        public async Task<JsonResult> ChangeAclEnableStateAsync([Required] Guid pageId, bool enableAcl)
         {
             var rs = new ResultModel();
             var page = await _pagesContext.Pages
@@ -734,7 +696,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="state"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> ChangeAccessToPageByRole([Required]Guid roleId, [Required]Guid pageId, bool state)
+        public async Task<JsonResult> ChangeAccessToPageByRole([Required] Guid roleId, [Required] Guid pageId, bool state)
         {
             var rs = new ResultModel();
             var page = await _pagesContext.Pages

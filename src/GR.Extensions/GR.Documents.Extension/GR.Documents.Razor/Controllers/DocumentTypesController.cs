@@ -36,14 +36,14 @@ namespace GR.Documents.Razor.Controllers
 
 
         /// <summary>
-        /// Get all Documet types from table model
+        /// Get all Document types from table model
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public  JsonResult ListDocumentTypes(DTParameters param)
+        public async Task<JsonResult> ListDocumentTypes(DTParameters param)
         {
-            var list =  _documentTypeService.GetAllDocumentType(param);
+            var list = await _documentTypeService.GetAllDocumentTypesAsync(param);
             return Json(list);
         }
 
@@ -98,7 +98,7 @@ namespace GR.Documents.Razor.Controllers
             var result = await _documentTypeService.EditDocumentTypeAsync(model);
 
 
-            return RedirectToAction("Edit", new {id = result.Result.Id});
+            return RedirectToAction("Edit", new { id = result.Result.Id });
 
             //return View(result.Result);
         }
@@ -111,9 +111,8 @@ namespace GR.Documents.Razor.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Delete(Guid? id)
         {
-            var result = await _documentTypeService.DeleteDocumentTypeAsync(id);
-
-           return  RedirectToAction("Index");
+            await _documentTypeService.DeleteDocumentTypeAsync(id);
+            return RedirectToAction("Index");
         }
     }
 }

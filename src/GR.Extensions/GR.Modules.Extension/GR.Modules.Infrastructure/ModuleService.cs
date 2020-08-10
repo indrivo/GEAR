@@ -8,7 +8,7 @@ namespace GR.Modules.Infrastructure
 {
     public class ModuleService : IModuleService
     {
-        public async Task<ResultModel<IEnumerable<Module>>> GetAllModulesAsync()
+        public  Task<ResultModel<IEnumerable<Module>>> GetAllModulesAsync()
         {
             throw new System.NotImplementedException();
         }

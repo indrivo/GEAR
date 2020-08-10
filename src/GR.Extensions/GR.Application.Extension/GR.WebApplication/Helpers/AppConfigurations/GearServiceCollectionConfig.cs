@@ -1,6 +1,7 @@
 ﻿using System;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers.Global;
+using GR.Core.Razor.Models;
 using GR.WebApplication.Helpers.Versioning;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +30,12 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         public bool UseHealthCheck { get; set; } = true;
 
         private static IServiceProvider BuildServices { get; set; }
-        public IServiceProvider BuildGearServices => BuildServices ?? (BuildServices = GearServices.BuildServiceProvider());
+        public IServiceProvider BuildGearServices => BuildServices ??= GearServices.BuildServiceProvider();
 
         /// <summary>
         /// Hosting environment
         /// </summary>
-        public virtual IHostingEnvironment HostingEnvironment { get; set; }
+        public virtual IWebHostEnvironment HostingEnvironment { get; set; }
 
         /// <summary>
         /// App configuration
@@ -98,8 +99,15 @@ namespace GR.WebApplication.Helpers.AppConfigurations
 
     public sealed class SwaggerServicesConfiguration
     {
+        /// <summary>
+        /// Check if use or not swagger
+        /// </summary>
         public bool UseSwagger { get; set; } = true;
-        public bool UseDefaultConfiguration { get; set; } = true;
+
+        /// <summary>
+        /// Auth operation configuration
+        /// </summary>
+        public Action<SwaggerAuthOperationFilterConfig> AuthenticationOperationFilterConfiguration { get; set; }
     }
 
     public sealed class ServerConfiguration

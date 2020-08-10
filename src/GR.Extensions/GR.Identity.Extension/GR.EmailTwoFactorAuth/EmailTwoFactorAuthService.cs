@@ -4,17 +4,21 @@ using System.Text;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Email.Abstractions.Events;
 using GR.Email.Abstractions.Events.EventArgs;
 using GR.EmailTwoFactorAuth.Helpers;
+using GR.EmailTwoFactorAuth.Models;
 using GR.Identity.Abstractions;
 using GR.TwoFactorAuthentication.Abstractions;
 using GR.TwoFactorAuthentication.Abstractions.Events;
 using GR.TwoFactorAuthentication.Abstractions.Events.EventArgs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 
 namespace GR.EmailTwoFactorAuth
 {
@@ -33,12 +37,24 @@ namespace GR.EmailTwoFactorAuth
         /// </summary>
         private readonly IHttpContextAccessor _accessor;
 
+        /// <summary>
+        /// Inject configuration
+        /// </summary>
+        private readonly EmailTwoFactorConfiguration _configuration;
+
+        /// <summary>
+        /// Inject localizer
+        /// </summary>
+        private readonly IStringLocalizer _localizer;
+
         #endregion
 
-        public EmailTwoFactorAuthService(IEmailSender emailSender, IHttpContextAccessor accessor)
+        public EmailTwoFactorAuthService(IEmailSender emailSender, IHttpContextAccessor accessor, EmailTwoFactorConfiguration configuration, IStringLocalizer localizer)
         {
             _emailSender = emailSender;
             _accessor = accessor;
+            _configuration = configuration;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -74,6 +90,23 @@ namespace GR.EmailTwoFactorAuth
             message.AppendLine($"{code}");
             message.AppendLine(lineDelimiter + lineDelimiter);
             message.AppendLine($"Yours securely, Team {GearApplication.ApplicationName}");
+
+            if (_configuration.UseHtmlTemplate)
+            {
+                var templateResponse = TemplateManager.GetTemplateBody(_configuration.HtmlTemplateName);
+                if (templateResponse.IsSuccess)
+                {
+                    var args = new Dictionary<string, string>
+                    {
+                        { "Title", subject },
+                        { "Content", message.ToString() }
+                    };
+
+                    message = new StringBuilder(templateResponse.Result.Inject(args));
+                }
+            }
+
+
             await _emailSender.SendEmailAsync(user.Email, subject, message.ToString());
             result.IsSuccess = true;
             CodeProcessor.Push(user.Id, code);
@@ -120,7 +153,7 @@ namespace GR.EmailTwoFactorAuth
         /// <returns></returns>
         public virtual async Task<string> GetActionMessageAsync(GearUser user)
         {
-            var message = $"Enter the verification code that was sent on {user?.Email}.";
+            var message = _localizer.GetString("enter_email_verification_code", user?.Email);
             return await Task.FromResult(message);
         }
     }

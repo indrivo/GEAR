@@ -38,9 +38,9 @@ namespace GR.Documents.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult ListDocumentCategories(DTParameters param)
+        public async Task<JsonResult> ListDocumentCategories(DTParameters param)
         {
-            var list = _documentCategoryService.GetAllDocumentCategory(param);
+            var list = await _documentCategoryService.GetAllDocumentCategoryAsync(param);
             return Json(list);
         }
 

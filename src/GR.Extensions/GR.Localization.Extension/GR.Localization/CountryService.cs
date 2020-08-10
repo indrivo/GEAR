@@ -127,9 +127,10 @@ namespace GR.Localization
         /// <param name="countryId"></param>
         /// <param name="search"></param>
         /// <param name="selectedCityId"></param>
+        /// <param name="page"></param>
         /// <param name="maxItems"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId, string search, Guid? selectedCityId, int maxItems = 20)
+        public virtual async Task<ResultModel<IEnumerable<StateOrProvince>>> GetCitiesByCountryAsync(string countryId, string search, Guid? selectedCityId, int page = 1, int maxItems = 20)
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<StateOrProvince>>();
             var query = _context.StateOrProvinces
@@ -138,12 +139,11 @@ namespace GR.Localization
                 .Where(x => x.CountryId.Equals(countryId));
             if (!search.IsNullOrEmpty())
             {
-                query = query.Where(x => x.Name.ToLowerInvariant().StartsWith(search.ToLowerInvariant()));
+                query = query.Where(x => x.Name.ToLower().StartsWith(search.ToLower()));
             }
 
-            query = query.Take(maxItems);
+            var data = (await query.GetPagedAsync(page, maxItems)).Result.ToList();
 
-            var data = await query.ToListAsync();
             if (selectedCityId == null || data.Select(x => x.Id).Contains(selectedCityId.Value))
                 return new SuccessResultModel<IEnumerable<StateOrProvince>>(data);
 

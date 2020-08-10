@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GR.Paypal.Models
+namespace GR.Paypal.Abstractions.Models
 {
     public class PaypalExpressConfigForm
     {

@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Extensions;
+using GR.UI.Menu.Abstractions;
 using GR.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WebApplication.Helpers
 {
+    /// <summary>
+    /// Base Startup.cs configuration for gear .net core web app
+    /// </summary>
     public abstract class GearCoreStartup
     {
         #region Injectable
@@ -21,15 +28,15 @@ namespace GR.WebApplication.Helpers
         /// <summary>
         /// Hosting configuration
         /// </summary>
-        protected virtual IHostingEnvironment HostingEnvironment { get; }
+        protected virtual IWebHostEnvironment HostingEnvironment { get; }
 
         #endregion
 
-        protected GearCoreStartup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        protected GearCoreStartup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             Configuration = configuration;
             HostingEnvironment = hostingEnvironment;
-            var appVersion = Assembly.GetAssembly(GetType()).GetName().Version.ToString();
+            var appVersion = Assembly.GetAssembly(GetType())?.GetName().Version?.ToString() ?? "1.0.1";
             GearApplication.SetAppVersion(appVersion);
         }
 
@@ -49,6 +56,17 @@ namespace GR.WebApplication.Helpers
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public abstract IServiceProvider ConfigureServices(IServiceCollection services);
+        public abstract void ConfigureServices(IServiceCollection services);
+
+        /// <summary>
+        /// This method is called when the migrations start to be applied
+        /// </summary>
+        /// <param name="webHost"></param>
+        /// <returns></returns>
+        public virtual Task OnBeforeDatabaseMigrationsApply(IHost webHost)
+        {
+            webHost.MigrateAbstractDbContext<IMenuDbContext>();
+            return Task.CompletedTask;
+        }
     }
 }

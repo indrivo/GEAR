@@ -4,9 +4,9 @@ using GR.Cache.Exceptions;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Cache.Extensions
 {
@@ -20,7 +20,7 @@ namespace GR.Cache.Extensions
         /// <param name="configuration"></param>
         /// <param name="customSystemIdentifier"></param>
         /// <returns></returns>
-        public static IServiceCollection AddRedisCacheConfiguration(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
+        public static IServiceCollection AddRedisCacheConfiguration(this IServiceCollection services, IHostEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
         {
             if (customSystemIdentifier == null)
             {

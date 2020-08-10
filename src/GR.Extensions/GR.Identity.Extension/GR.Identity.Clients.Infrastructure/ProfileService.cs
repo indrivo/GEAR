@@ -112,7 +112,7 @@ namespace GR.Identity.Clients.Infrastructure
                 new Claim(GearClaimTypes.UserPhotoUrl, $"/Users/GetImage?id={user.Id}"),
                 new Claim(GearClaimTypes.BirthDay, user.Birthday.ToString(CultureInfo.InvariantCulture))
             };
-            var identityRequestResources = context.RequestedResources?.IdentityResources?.Select(x => x.Name).ToList() ?? new List<string>();
+            var identityRequestResources = context.RequestedResources?.Resources?.IdentityResources?.Select(x => x.Name).ToList() ?? new List<string>();
             if (identityRequestResources.Contains("email"))
             {
                 claims.Add(new Claim("mail", user.Email ?? string.Empty));

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
@@ -32,11 +31,6 @@ namespace GR.UI.Menu
         /// </summary>
         private readonly IMemoryCache _cacheService;
 
-        /// <summary>
-        /// Inject filter
-        /// </summary>
-        private readonly IDataFilter _filter;
-
         #endregion
 
         /// <summary>
@@ -44,12 +38,10 @@ namespace GR.UI.Menu
         /// </summary>
         /// <param name="context"></param>
         /// <param name="cacheService"></param>
-        /// <param name="filter"></param>
-        public MenuService(IMenuDbContext context, IMemoryCache cacheService, IDataFilter filter)
+        public MenuService(IMenuDbContext context, IMemoryCache cacheService)
         {
             _context = context;
             _cacheService = cacheService;
-            _filter = filter;
         }
 
         /// <summary>
@@ -283,23 +275,14 @@ namespace GR.UI.Menu
         /// <param name="menuId"></param>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public DTResult<MenuItem> GetPaginatedMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
+        public async Task<DTResult<MenuItem>> GetPaginatedMenuItemsAsync(DTParameters param, Guid menuId, Guid? parentId = null)
         {
-            var data = _filter.FilterAbstractEntity<MenuItem, IMenuDbContext>(_context, param.Search.Value,
-                               param.SortOrder, param.Start,
-                               param.Length, out var totalCount,
-                               x => x.MenuId.Equals(menuId) && x.ParentMenuItemId.Equals(parentId))
-                           ?.ToList() ?? new List<MenuItem>();
+            var data = await _context.MenuItems
+                .Where(x => x.MenuId.Equals(menuId) && x.ParentMenuItemId.Equals(parentId))
+                .OrderBy(x => x.Order)
+                .GetPagedAsDtResultAsync(param);
 
-            var finalResult = new DTResult<MenuItem>
-            {
-                Draw = param.Draw,
-                Data = data.OrderBy(x => x.Order).ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = data.Count()
-            };
-
-            return finalResult;
+            return data;
         }
 
         /// <summary>
@@ -307,22 +290,10 @@ namespace GR.UI.Menu
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public DTResult<MenuGroup> GetPaginatedMenuGroups(DTParameters param)
+        public async Task<DTResult<MenuGroup>> GetPaginatedMenuGroupsAsync(DTParameters param)
         {
-            var data = _filter.FilterAbstractEntity<MenuGroup, IMenuDbContext>(_context, param.Search.Value,
-                               param.SortOrder, param.Start,
-                               param.Length, out var totalCount)
-                           ?.ToList() ?? new List<MenuGroup>();
-
-            var finalResult = new DTResult<MenuGroup>
-            {
-                Draw = param.Draw,
-                Data = data.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = data.Count()
-            };
-
-            return finalResult;
+            var data = await _context.Menus.GetPagedAsDtResultAsync(param);
+            return data;
         }
 
         /// <summary>

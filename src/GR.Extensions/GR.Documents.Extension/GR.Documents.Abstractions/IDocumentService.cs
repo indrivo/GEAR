@@ -1,6 +1,5 @@
 ﻿using GR.Core;
 using GR.Core.Helpers;
-using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace GR.Documents.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        DTResult<DocumentViewModel> GetAllDocument(DTParameters param);
+        Task<DTResult<DocumentViewModel>> GetAllDocumentsAsync(DTParameters param);
 
         /// <summary>
         /// Get all documents

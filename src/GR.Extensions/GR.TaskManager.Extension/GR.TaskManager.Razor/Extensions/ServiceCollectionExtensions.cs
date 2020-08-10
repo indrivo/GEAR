@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using GR.TaskManager.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
@@ -14,14 +13,14 @@ namespace GR.TaskManager.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddTaskManagerRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddTaskManagerRazorUiModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(TaskManagerRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
            {
-               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                {
-                   var service = IoC.Resolve<IMenuService>();
+                   var service = s.GetService<IMenuService>();
                    await service.AppendMenuItemsAsync(new TaskManagerMenuInitializer());
                });
            };

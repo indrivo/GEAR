@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -12,14 +10,13 @@ using GR.Core.Helpers.Global;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentCategoryViewModels;
-using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Documents
 {
     [Author(Authors.DOROSENCO_ION, 1.1)]
-    public class DocumentCategoryService: IDocumentCategoryService
+    public class DocumentCategoryService : IDocumentCategoryService
     {
 
         #region Injectable
@@ -29,46 +26,34 @@ namespace GR.Documents
         /// </summary>
         private readonly IDocumentContext _context;
 
-        protected readonly IDataFilter DataFilter;
         #endregion
 
-        public DocumentCategoryService(IDocumentContext context, IDataFilter dataFilter)
+        public DocumentCategoryService(IDocumentContext context)
         {
             _context = context;
-            DataFilter = dataFilter;
         }
 
         /// <summary>
         /// Get all document category
         /// </summary>
         /// <returns></returns>
-        public virtual DTResult<DocumentCategoryViewModel> GetAllDocumentCategory(DTParameters param)
+        public virtual async Task<DTResult<DocumentCategoryViewModel>> GetAllDocumentCategoryAsync(DTParameters param)
         {
-            var filtered = DataFilter.FilterAbstractEntity<DocumentCategory, IDocumentContext>(_context, param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-            {
-                var listModel = x.Adapt<DocumentCategoryViewModel>();
-                return listModel;
-            }).ToList();
+            var filtered = await _context.DocumentCategories.GetPagedAsDtResultAsync(param);
+
+            var mapped = filtered.Data.Select(x =>
+        {
+            var listModel = x.Adapt<DocumentCategoryViewModel>();
+            return listModel;
+        }).ToList();
 
             var result = new DTResult<DocumentCategoryViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                Data = mapped,
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
-
-            //var result = new ResultModel<IEnumerable<DocumentType>>();
-            //var listDocumentTypes = await _context.DocumentTypes.ToListAsync();
-
-            //if(listDocumentTypes is null || !listDocumentTypes.Any())
-            //    new NotFoundResultModel<IEnumerable<DocumentType>>();
-
-            //result.IsSuccess = true;
-            //result.Result = listDocumentTypes;
 
             return result;
         }
@@ -126,7 +111,7 @@ namespace GR.Documents
         public virtual async Task<ResultModel> SaveDocumentCategoryAsync(DocumentCategoryViewModel model)
         {
 
-            var code = (await _context.DocumentCategories.OrderByDescending(o=> o.Created).FirstOrDefaultAsync())?.Code ?? 0;
+            var code = (await _context.DocumentCategories.OrderByDescending(o => o.Created).FirstOrDefaultAsync())?.Code ?? 0;
             code++;
 
             model.Code = code;

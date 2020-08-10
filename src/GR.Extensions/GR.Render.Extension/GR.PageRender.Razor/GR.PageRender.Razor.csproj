@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Version>1.9.3</Version>
@@ -12,34 +13,24 @@
     <AssemblyVersion>1.9.3</AssemblyVersion>
   </PropertyGroup>
   
-  <ItemGroup>
-    <Content Include="libman.json" Pack="false">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" Condition="true" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.76" Condition="true" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.UI.Menu.Extension\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
     <ProjectReference Include="..\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="wwwroot\**\*" />
-    <Content Update="**\*.cshtml" Pack="false" />
-    <Content Include="wwwroot\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+
   
   <ItemGroup>
     <EmbeddedResource Include="Templates\formDefaultTemplate.html">

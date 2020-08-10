@@ -16,9 +16,9 @@
 										@foreach (var item in @Model.ProductAttributesList)
 										{
 											<optgroup label="@item.Key" id="opt_@item.Key">
-												@foreach (var attribute in item.Value)
+												@foreach (var attr in item.Value)
 												{
-													<option label="@attribute.Text" value="@attribute.Value"></option>
+													<option label="@attr.Text" value="@attr.Value"></option>
 												}
 											</optgroup>
 										}

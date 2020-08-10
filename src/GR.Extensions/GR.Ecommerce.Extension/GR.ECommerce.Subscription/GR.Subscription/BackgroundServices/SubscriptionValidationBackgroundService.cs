@@ -8,6 +8,7 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
 using GR.Subscriptions.Abstractions.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GR.Subscriptions.BackgroundServices
@@ -17,21 +18,15 @@ namespace GR.Subscriptions.BackgroundServices
         #region Injectable
 
         /// <summary>
-        /// Inject subscription service
+        /// Inject service provider
         /// </summary>
-        private readonly ISubscriptionService<Subscription> _subscriptionService;
-
-        /// <summary>
-        /// Inject product service
-        /// </summary>
-        private readonly IProductService<Product> _productService;
+        private readonly IServiceProvider _serviceProvider;
 
         #endregion
-        public SubscriptionValidationBackgroundService(ILogger<SubscriptionValidationBackgroundService> logger, ISubscriptionService<Subscription> subscriptionService, IProductService<Product> productService)
+        public SubscriptionValidationBackgroundService(ILogger<SubscriptionValidationBackgroundService> logger, IServiceProvider serviceProvider)
             : base("Subscription Validation", logger)
         {
-            _subscriptionService = subscriptionService;
-            _productService = productService;
+            _serviceProvider = serviceProvider;
             Interval = TimeSpan.FromDays(1);
         }
 
@@ -42,14 +37,19 @@ namespace GR.Subscriptions.BackgroundServices
         public override async Task Execute(object state)
         {
             if (!GearApplication.Configured) return;
-            var daysNotifySubscription = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";
-            var expiredRequest = await _subscriptionService.GetExpiredSubscriptionsAsync();
-            if (expiredRequest.IsSuccess)
-                await _subscriptionService.NotifyAndRemoveExpiredSubscriptionsAsync(expiredRequest.Result.ToList());
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var subscriptionService = scope.ServiceProvider.GetRequiredService<ISubscriptionService<Subscription>>();
+                var productService = scope.ServiceProvider.GetRequiredService<IProductService<Product>>();
+                var daysNotifySubscription = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";
+                var expiredRequest = await subscriptionService.GetExpiredSubscriptionsAsync();
+                if (expiredRequest.IsSuccess)
+                    await subscriptionService.NotifyAndRemoveExpiredSubscriptionsAsync(expiredRequest.Result.ToList());
 
-            var willExpireRequest = await _subscriptionService.GetSubscriptionsThatExpireInAsync(TimeSpan.FromDays(Convert.ToInt32(daysNotifySubscription)));
-            if (willExpireRequest.IsSuccess)
-                await _subscriptionService.NotifySubscriptionsThatExpireAsync(willExpireRequest.Result.ToList());
+                var willExpireRequest = await subscriptionService.GetSubscriptionsThatExpireInAsync(TimeSpan.FromDays(Convert.ToInt32(daysNotifySubscription)));
+                if (willExpireRequest.IsSuccess)
+                    await subscriptionService.NotifySubscriptionsThatExpireAsync(willExpireRequest.Result.ToList());
+            }
         }
     }
 }

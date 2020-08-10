@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GR.Core;
+using GR.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace GR.Modules.Abstractions.Helpers
@@ -32,8 +34,13 @@ namespace GR.Modules.Abstractions.Helpers
 
             var appSettingsFolder = Path.Combine(AppContext.BaseDirectory, "AppSettings");
             if (!Directory.Exists(appSettingsFolder)) return;
-            var settingFiles = Directory.GetFiles(appSettingsFolder);
-            foreach (var settingFile in settingFiles)
+            var settingFiles = Directory.GetFiles(appSettingsFolder).ToList();
+            var devFiles = settingFiles.Where(x => x.EndsWith("Development.json")).ToList();
+            var prodFiles = settingFiles.Where(x => !x.EndsWith("Development.json")).ToList();
+            var commonFiles = prodFiles.Where(x => !devFiles.Any(y => y.StartsWith(x.Split(".json")[0]))).ToList();
+            var files = !GearApplication.IsDevelopment() ? prodFiles : devFiles.Concat(commonFiles).ToList();
+
+            foreach (var settingFile in files)
             {
                 builder.AddJsonFile(settingFile, true, true);
             }

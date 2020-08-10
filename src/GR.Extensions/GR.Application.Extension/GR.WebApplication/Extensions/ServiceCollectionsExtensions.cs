@@ -1,6 +1,5 @@
 ﻿using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Extensions;
-using GR.Cache.Exceptions;
 using GR.Cache.Extensions;
 using GR.Cache.Helpers;
 using GR.Cache.Services;
@@ -10,11 +9,9 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +20,20 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using GR.Core.Abstractions;
 using GR.Core.Attributes.Validation;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.Core.Razor.Extensions;
+using GR.Core.Razor.Helpers.Filters;
+using GR.Core.Razor.Models;
 using GR.Core.Services;
+using GR.WebApplication.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace GR.WebApplication.Extensions
@@ -42,11 +48,14 @@ namespace GR.WebApplication.Extensions
         /// <param name="configAction"></param>
         /// <param name="conf"></param>
         /// <returns></returns>
-        public static IServiceProvider RegisterGearWebApp(this IServiceCollection services, IConfiguration conf, IHostingEnvironment hostingEnvironment, Action<GearServiceCollectionConfig> configAction)
+        public static void RegisterGearWebApp(this IServiceCollection services, IConfiguration conf, IWebHostEnvironment hostingEnvironment, Action<GearServiceCollectionConfig> configAction)
         {
+            ConsoleWriter.WriteTextAsTitle("Gear Framework", ConsoleColor.DarkYellow);
+            Console.WriteLine("\n\n");
             IoC.Container.Register(Component.For<IConfiguration>().Instance(conf));
-            IoC.Container.Register(Component.For<IHostingEnvironment>().Instance(hostingEnvironment));
-            IoC.RegisterSingletonService<IAppSender, AppSender>();
+            IoC.Container.Register(Component.For<IWebHostEnvironment>().Instance(hostingEnvironment));
+            services.AddGearSingleton<IAppSender, AppSender>();
+            services.AddGearSingleton<IGearResourceProvider, GearResourceProvider>();
 
             var configuration = new GearServiceCollectionConfig
             {
@@ -63,7 +72,7 @@ namespace GR.WebApplication.Extensions
                 services.AddHealthChecks();
                 services.AddDatabaseHealth();
                 //services.AddSeqHealth();
-                services.AddHealthChecksUI("health-gear-database", setup =>
+                services.AddHealthChecksUI(setup =>
                 {
                     setup.SetEvaluationTimeInSeconds((int)TimeSpan.FromMinutes(2).TotalSeconds);
                     setup.AddHealthCheckEndpoint(GearApplication.SystemConfig.MachineIdentifier, $"{GearApplication.SystemConfig.EntryUri}hc");
@@ -80,22 +89,36 @@ namespace GR.WebApplication.Extensions
                 configuration.ServerConfiguration.UploadMaximSize);
 
             services.AddResponseCaching();
-            services.AddResponseCompression();
 
             //Global settings
-            var mvcBuilder = services.AddMvc(options =>
+            var mvcBuilder = services.AddControllers(options =>
+            {
+                //Binders
+                options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
+                options.Filters.Add<ApiValidationActionFilterAttribute>();
+            })
+              .AddNewtonsoftJson(
+                options =>
                 {
-                    //Global
-                    options.EnableEndpointRouting = false;
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.DateFormatString = GearSettings.Date.DateFormatWithTime;
+                }
+            ).AddXmlSerializerFormatters();
 
-                    //Binders
-                    options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x =>
-                {
-                    x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
-                });
+            services.AddRazorPages()
+                .AddNewtonsoftJson();
+
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson();
+
+            // Add fluent validation
+            mvcBuilder.AddFluentValidation(fv =>
+            {
+                var assemblies = GearApplication.GetAssemblies();
+                fv.RegisterValidatorsFromAssemblies(assemblies);
+            });
 
             if (configuration.UseHotReload) mvcBuilder.AddGearViewsHotReload();
 
@@ -119,21 +142,21 @@ namespace GR.WebApplication.Extensions
                 services.AddOriginCorsModule();
 
             //---------------------------------Custom cache Module-------------------------------------
-            if (configuration.CacheConfiguration.UseDistributedCache &&
-                configuration.CacheConfiguration.UseInMemoryCache)
-                throw new InvalidCacheConfigurationException("Both types of cached storage cannot be used");
+
+            services.AddCacheModule<InMemoryCacheService>(); // default in memory
 
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
+                services.AddGenericCacheModule<DistributedCacheService, IDistributedCache>()
+                    .AddRedisCacheConnection<RedisConnection>();
+
                 services.AddDistributedMemoryCache()
                     .AddRedisCacheConfiguration(configuration.HostingEnvironment, configuration.Configuration);
-
-                services.AddCacheModule<DistributedCacheService>()
-                    .AddRedisCacheConnection<RedisConnection>();
             }
-            else if (configuration.CacheConfiguration.UseInMemoryCache)
+
+            if (configuration.CacheConfiguration.UseInMemoryCache)
             {
-                services.AddCacheModule<InMemoryCacheService>();
+                services.AddGenericCacheModule<InMemoryCacheService, IMemoryCache>();
             }
 
             //---------------------------------Api version Module-------------------------------------
@@ -146,8 +169,13 @@ namespace GR.WebApplication.Extensions
             });
 
             //--------------------------------------Swagger Module-------------------------------------
-            if (configuration.SwaggerServicesConfiguration.UseSwagger && configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
+            if (configuration.SwaggerServicesConfiguration.UseSwagger)
+            {
                 services.AddSwaggerModule(configuration.Configuration);
+                var swaggerAuthConfig = new SwaggerAuthOperationFilterConfig();
+                configuration.SwaggerServicesConfiguration.AuthenticationOperationFilterConfiguration?.Invoke(swaggerAuthConfig);
+                services.AddGearSingleton(swaggerAuthConfig);
+            }
 
             //Register memory cache
             IoC.Container.Register(Component
@@ -157,7 +185,7 @@ namespace GR.WebApplication.Extensions
             //Type Convertors
             TypeDescriptor.AddAttributes(typeof(DateTime), new TypeConverterAttribute(typeof(EuDateTimeConvertor)));
 
-            return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
+            WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>

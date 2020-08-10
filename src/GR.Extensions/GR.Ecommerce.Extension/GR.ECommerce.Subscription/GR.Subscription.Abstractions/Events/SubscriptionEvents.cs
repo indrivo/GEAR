@@ -3,17 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Events;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions.Events;
 using GR.MultiTenant.Abstractions.Events;
-using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Events;
-using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions.Events.EventArgs;
 using GR.Subscriptions.Abstractions.Helpers;
 using GR.Subscriptions.Abstractions.Models;
@@ -103,7 +99,7 @@ namespace GR.Subscriptions.Abstractions.Events
             //Receive payment and change subscription
             OrderEvents.Orders.OnPaymentReceived += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async cancelToken =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                     {
                         await GearPolicy.ExecuteAndRetry(async () => await UpdateUserSubscriptionAsync(args.OrderId, args.UserId));
                     });
@@ -118,44 +114,8 @@ namespace GR.Subscriptions.Abstractions.Events
         /// <returns></returns>
         private static async Task<ResultModel> UpdateUserSubscriptionAsync(Guid orderId, Guid userId)
         {
-            var orderService = IoC.Resolve<IOrderProductService<Order>>();
             var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
-            var productService = IoC.Resolve<IProductService<Product>>();
-
-            var orderRequest = await orderService.GetOrderByIdAsync(orderId);
-            if (orderRequest.IsSuccess.Negate()) return orderRequest.ToBase();
-            var order = orderRequest.Result;
-            var checkIfProductIsSubscription = order.ProductOrders
-                .FirstOrDefault(x => x.Product?.ProductTypeId == SubscriptionResources.SubscriptionPlanProductType)?.ProductId;
-            if (checkIfProductIsSubscription == null) return new NotFoundResultModel();
-            var planRequest = await productService.GetProductByIdAsync(checkIfProductIsSubscription);
-            if (planRequest.IsSuccess.Negate()) return planRequest.ToBase();
-            var plan = planRequest.Result;
-            var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
-            var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId;
-            var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
-
-            var userSubscriptionRequest = await subscriptionService.GetLastSubscriptionForUserAsync(userId);
-
-            var newSubscription = new SubscriptionAddViewModel
-            {
-                Name = plan.Name,
-                OrderId = orderId,
-                StartDate = DateTime.Now,
-                Availability = subscriptionService.GetSubscriptionDuration(variation),
-                UserId = order.UserId,
-                SubscriptionPermissions = permissions,
-            };
-
-            if (userSubscriptionRequest.IsSuccess)
-            {
-                var userSubscription = userSubscriptionRequest.Result;
-                newSubscription.Id = userSubscription.Id;
-                newSubscription.Availability += userSubscription.Availability;
-                newSubscription.IsFree = false;
-            }
-
-            return (await subscriptionService.AddOrUpdateSubscriptionAsync(newSubscription)).ToBase();
+            return await subscriptionService.ExtendUserSubscriptionAsync(orderId, userId);
         }
 
         /// <summary>
@@ -165,23 +125,8 @@ namespace GR.Subscriptions.Abstractions.Events
         {
             IdentityEvents.Users.OnUserCreated += async (sender, args) =>
             {
-                var productService = IoC.Resolve<IProductService<Product>>();
                 var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
-
-                var planRequest = await productService.GetProductByIdAsync(SubscriptionResources.DefaultSubscriptionPlan);
-
-                if (!planRequest.IsSuccess) return;
-                var plan = planRequest.Result;
-                var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
-                await subscriptionService.AddOrUpdateSubscriptionAsync(new SubscriptionAddViewModel
-                {
-                    Name = plan.DisplayName,
-                    StartDate = DateTime.Now,
-                    Availability = 0,
-                    UserId = args.UserId,
-                    IsFree = true,
-                    SubscriptionPermissions = permissions
-                });
+                await subscriptionService.AddDefaultFreeSubscriptionAsync(args.UserId);
             };
         }
 
@@ -198,21 +143,20 @@ namespace GR.Subscriptions.Abstractions.Events
 
                 var planRequest = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
 
-                if (planRequest.IsSuccess)
-                {
-                    var plan = planRequest.Result;
+                if (!planRequest.IsSuccess) return;
 
-                    var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
-                    await subscriptionService.AddOrUpdateSubscriptionAsync(new SubscriptionAddViewModel
-                    {
-                        Name = "Free trial",
-                        StartDate = DateTime.Now,
-                        Availability = int.Parse(freeTrialPeriodStr),
-                        UserId = args.UserId,
-                        IsFree = true,
-                        SubscriptionPermissions = permissions
-                    });
-                }
+                var plan = planRequest.Result;
+
+                var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
+                await subscriptionService.AddOrUpdateSubscriptionAsync(new SubscriptionAddViewModel
+                {
+                    Name = "Free trial",
+                    StartDate = DateTime.Now,
+                    Availability = int.Parse(freeTrialPeriodStr),
+                    UserId = args.UserId,
+                    IsFree = true,
+                    SubscriptionPermissions = permissions
+                });
             };
         }
     }

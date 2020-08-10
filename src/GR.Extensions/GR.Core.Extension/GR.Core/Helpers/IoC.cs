@@ -14,7 +14,7 @@ namespace GR.Core.Helpers
         /// <summary>
         /// IoC container
         /// </summary>
-        public static IWindsorContainer Container => Singleton<IWindsorContainer, WindsorContainer>.Instance;
+        public static IWindsorContainer Container => Singleton<WindsorContainer, WindsorContainer>.Instance;
 
         /// <summary>
         /// Register new service

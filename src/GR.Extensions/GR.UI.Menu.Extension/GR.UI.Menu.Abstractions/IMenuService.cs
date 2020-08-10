@@ -92,14 +92,14 @@ namespace GR.UI.Menu.Abstractions
         /// <param name="menuId"></param>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        DTResult<MenuItem> GetPaginatedMenuItems(DTParameters param, Guid menuId, Guid? parentId = null);
+        Task<DTResult<MenuItem>> GetPaginatedMenuItemsAsync(DTParameters param, Guid menuId, Guid? parentId = null);
 
         /// <summary>
         /// Get paginated menu groups
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        DTResult<MenuGroup> GetPaginatedMenuGroups(DTParameters param);
+        Task<DTResult<MenuGroup>> GetPaginatedMenuGroupsAsync(DTParameters param);
 
         /// <summary>
         /// Delete menu item

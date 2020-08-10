@@ -47,16 +47,6 @@ namespace GR.Core.Razor.BaseControllers
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            DateFormatString = GearSettings.Date.DateFormat
-        };
-
-        /// <summary>
-        /// Serialization settings
-        /// </summary>
-        protected virtual JsonSerializerSettings DateFormatWithTimeSerializerSettings => new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
             DateFormatString = GearSettings.Date.DateFormatWithTime
         };
 
@@ -67,11 +57,11 @@ namespace GR.Core.Razor.BaseControllers
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="task"></param>
-        /// <param name="serializerSettings"></param>
         /// <returns></returns>
-        public virtual async Task<JsonResult> JsonAsync<TResult>(Task<TResult> task, JsonSerializerSettings serializerSettings = null)
+        [NonAction]
+        public virtual async Task<JsonResult> JsonAsync<TResult>(Task<TResult> task)
         {
-            return Json(await task, serializerSettings ?? SerializerSettings);
+            return Json(await task);
         }
 
         /// <summary>
@@ -79,9 +69,9 @@ namespace GR.Core.Razor.BaseControllers
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="task"></param>
-        /// <param name="serializerSettings"></param>
         /// <returns></returns>
-        public virtual async Task<JsonResult> JsonWithTimeAsync<TResult>(Task<ResultModel<TResult>> task, JsonSerializerSettings serializerSettings = null)
+        [NonAction]
+        public virtual async Task<JsonResult> JsonWithTimeAsync<TResult>(Task<ResultModel<TResult>> task)
         {
             var watch = new Stopwatch();
             var start = DateTime.Now;
@@ -92,13 +82,14 @@ namespace GR.Core.Razor.BaseControllers
             vm.Started = start;
             vm.Completed = DateTime.Now;
             vm.ElapsedMilliseconds = watch.ElapsedMilliseconds;
-            return Json(vm, serializerSettings ?? DateFormatWithTimeSerializerSettings);
+            return Json(vm);
         }
 
         /// <summary>
         /// Return Json with invalid validations as ResultModel errors
         /// </summary>
         /// <returns></returns>
+        [NonAction]
         protected virtual JsonResult JsonModelStateErrors() => Json(new ResultModel().AttachModelState(ModelState));
     }
 }

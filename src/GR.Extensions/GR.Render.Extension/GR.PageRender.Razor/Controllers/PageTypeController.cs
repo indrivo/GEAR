@@ -1,15 +1,18 @@
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 
 namespace GR.PageRender.Razor.Controllers
 {
+    [Admin]
     public class PageTypeController : Controller
     {
         private readonly IDynamicPagesContext _pagesContext;
@@ -120,20 +123,10 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPages(DTParameters param)
+        public async Task<JsonResult> LoadPages(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<PageType>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
-
-            var finalResult = new DTResult<PageType>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
-            };
-            return Json(finalResult);
+            var filtered = await _pagesContext.PageTypes.GetPagedAsDtResultAsync(param);
+            return Json(filtered);
         }
 
         /// <summary>

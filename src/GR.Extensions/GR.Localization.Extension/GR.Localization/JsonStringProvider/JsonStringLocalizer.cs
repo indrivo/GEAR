@@ -4,6 +4,7 @@ using System.IO;
 using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Helpers;
 using GR.Localization.Abstractions.Models.Config;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,14 +46,29 @@ namespace GR.Localization.JsonStringProvider
             var sessionKey = locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
             var defaultLanguage = locConfig.Value.DefaultLanguage ?? DefaultLanguage;
 
-            var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
-
-            if (string.IsNullOrEmpty(val))
+            if (httpAccessor.HttpContext == null)
             {
-                httpAccessor.HttpContext.Session.SetString(sessionKey, defaultLanguage);
+                _language = DefaultLanguage;
+            }
+            else
+            {
+                var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
+
+                if (string.IsNullOrEmpty(val))
+                {
+                    httpAccessor.HttpContext.Session.SetString(sessionKey, defaultLanguage);
+                }
+
+                if (httpAccessor.HttpContext.Request.Headers.ContainsKey(LocalizationResources.XLocalizationIdentifier))
+                {
+                    _language = httpAccessor.HttpContext.Request.Headers[LocalizationResources.XLocalizationIdentifier];
+                }
+                else
+                {
+                    _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
+                }
             }
 
-            _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
             _path = locConfig.Value.Path ?? PathDefault;
         }
         #endregion
@@ -148,9 +164,9 @@ namespace GR.Localization.JsonStringProvider
                 var properties = obj.Properties();
                 foreach (var property in properties)
                 {
-                    var value = property.Value?.Value<string>();
+                    var value = property.Value.Value<string>();
                     var name = property.Name;
-                    yield return new LocalizedString(name, value ?? $"[{name}]", property.Value == null);
+                    yield return new LocalizedString(name, value ?? $"[{name}]", value == null);
                 }
             }
         }

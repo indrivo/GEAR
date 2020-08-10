@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GR.Core.Helpers.Async
@@ -13,16 +12,17 @@ namespace GR.Core.Helpers.Async
             _inner = inner;
         }
 
-        public void Dispose()
+        public ValueTask<bool> MoveNextAsync()
         {
-            _inner.Dispose();
+            return new ValueTask<bool>(_inner.MoveNext());
         }
 
         public T Current => _inner.Current;
 
-        public Task<bool> MoveNext(CancellationToken cancellationToken)
+        public ValueTask DisposeAsync()
         {
-            return Task.FromResult(_inner.MoveNext());
+            _inner.Dispose();
+            return new ValueTask();
         }
     }
 }

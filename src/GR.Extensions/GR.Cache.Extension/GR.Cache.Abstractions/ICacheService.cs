@@ -94,4 +94,9 @@ namespace GR.Cache.Abstractions
         Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func)
             where T : class;
     }
+
+    public interface ICacheService<T> : ICacheService
+    {
+
+    }
 }

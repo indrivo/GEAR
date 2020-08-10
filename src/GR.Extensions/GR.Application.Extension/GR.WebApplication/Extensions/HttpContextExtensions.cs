@@ -16,9 +16,7 @@ namespace GR.WebApplication.Extensions
         {
             Arg.NotNullOrEmpty(path, nameof(MapTo));
             if (!path.StartsWith("/")) throw new Exception("Path need to start with / symbol and it is an existent route");
-            var originalPath = context.Request.Path.Value;
-            context.Items["originalPath"] = originalPath;
-            context.Request.Path = path;
+            context.Response.Redirect(path);
             return context;
         }
     }

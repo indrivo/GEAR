@@ -43,7 +43,7 @@ namespace GR.UI.Menu.Abstractions.Extensions
 
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TMenuContext>();
+                GearApplication.GetHost().MigrateDbContext<TMenuContext>();
             };
             return services;
         }

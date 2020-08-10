@@ -15,7 +15,7 @@ namespace GR.Core.Extensions
         public static Type GetTypeFromAssembliesByClassName(this object _, string className)
         {
             Type type = null;
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in GearApplication.GetAssemblies())
             {
                 foreach (var aType in assembly.GetTypes())
                 {
@@ -35,7 +35,7 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<Type> GetAutoMapperProfilesFromAllAssemblies(this object _)
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in GearApplication.GetAssemblies())
             {
                 foreach (var aType in assembly.GetTypes())
                 {

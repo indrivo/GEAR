@@ -16,6 +16,7 @@ using GR.Notifications.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedTypeParameter
@@ -185,7 +186,7 @@ namespace GR.Notifications.EFCore
             if (onlyUnread) query = query.Where(x => !x.IsDeleted);
 
             var notifications = await query
-                .OrderBy(x => x.Created)
+                    .OrderByDescending(x => x.Created)
                 .ToListAsync();
             return new SuccessResultModel<IEnumerable<SystemNotifications>>(_mapper.Map<IEnumerable<SystemNotifications>>(notifications));
         }
@@ -206,7 +207,9 @@ namespace GR.Notifications.EFCore
 
             if (onlyUnread) query = query.Where(x => !x.IsDeleted);
 
-            var paginatedResult = await query.GetPagedAsync((int)page, (int)perPage);
+            var paginatedResult = await query
+                    .OrderByDescending(x => x.Created)
+                .GetPagedAsync((int)page, (int)perPage);
 
             var result = new PaginatedNotificationsViewModel
             {
@@ -306,9 +309,9 @@ namespace GR.Notifications.EFCore
         /// <returns></returns>
         public virtual Task SendNotificationInBackgroundAsync(IEnumerable<Guid> userId, Notification notification)
         {
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
             {
-                var notifier = IoC.Resolve<INotify<GearRole>>();
+                var notifier = serviceProvider.GetService<INotify<GearRole>>();
                 await notifier.SendNotificationAsync(userId, notification);
             });
             return Task.CompletedTask;

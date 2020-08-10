@@ -79,7 +79,7 @@ namespace GR.Core.Services
         /// <summary>
         /// Dispose timer
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
             Timer?.Dispose();
         }

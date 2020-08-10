@@ -42,9 +42,9 @@ namespace GR.Core.Razor.Helpers.Filters
             var serializeObject = JsonConvert.SerializeObject(result);
 
             context.HttpContext.Response.ContentType = ContentType.ApplicationJson;
-            await context.HttpContext.Response.WriteAsync(serializeObject);
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.OK;
             context.ExceptionHandled = true;
+            await context.HttpContext.Response.WriteAsync(serializeObject);
         }
     }
 }

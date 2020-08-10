@@ -20,8 +20,7 @@ namespace GR.Entities.Security.Abstractions.Extensions
             where TRepository : class, IEntityRoleAccessService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IEntityRoleAccessService, TRepository>();
-            IoC.RegisterTransientService<IEntityRoleAccessService, TRepository>();
+            services.AddGearScoped<IEntityRoleAccessService, TRepository>();
 
             EntityEvents.Entities.OnEntityDeleted += (sender, args) =>
             {
@@ -44,7 +43,7 @@ namespace GR.Entities.Security.Abstractions.Extensions
             where TContext : DbContext, IEntitySecurityDbContext
         {
             configuration.Services.AddDbContext<TContext>(options);
-            configuration.Services.AddScopedContextFactory<IEntitySecurityDbContext, TContext>();
+            configuration.Services.AddGearScoped<IEntitySecurityDbContext, TContext>();
             return configuration;
         }
     }

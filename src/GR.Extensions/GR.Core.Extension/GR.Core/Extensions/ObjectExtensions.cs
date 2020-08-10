@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using Mapster;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -51,25 +53,38 @@ namespace GR.Core.Extensions
         /// <param name="source"></param>
         /// <param name="serializerSettings"></param>
         /// <returns></returns>
-        public static TOutput Deserialize<TOutput>(this string source, JsonSerializerSettings serializerSettings = null) where TOutput : class
+        public static TOutput Deserialize<TOutput>(this string source, JsonSerializerSettings serializerSettings = null)
+            where TOutput : class
+            => DeserializeWithResult<TOutput>(source, serializerSettings).Result;
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        /// <typeparam name="TOutput"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="serializerSettings"></param>
+        /// <returns></returns>
+        public static ResultModel<TOutput> DeserializeWithResult<TOutput>(this string source, JsonSerializerSettings serializerSettings = null) where TOutput : class
         {
             if (source.IsNullOrEmpty()) return null;
-            if (typeof(TOutput) == typeof(string)) return source as TOutput;
+            if (typeof(TOutput) == typeof(string)) return new SuccessResultModel<TOutput>(source as TOutput);
             if (typeof(TOutput) == typeof(int))
             {
                 int.TryParse(source, out var numberValue);
-                return numberValue as TOutput;
+                return new SuccessResultModel<TOutput>(numberValue as TOutput);
             }
+
+            ResultModel<TOutput> response;
             try
             {
-                return JsonConvert.DeserializeObject<TOutput>(source, serializerSettings ?? SerializeSettings);
+                response = new SuccessResultModel<TOutput>(JsonConvert.DeserializeObject<TOutput>(source, serializerSettings ?? SerializeSettings));
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                response = new ResultModel<TOutput>().AddError(e.Message);
             }
 
-            return null;
+            return response;
         }
 
 
@@ -177,5 +192,15 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<PropertyInfo> GetTypeProprietiesByType(this Type sourceType, Type type)
             => sourceType.GetProperties().Where(x => x.PropertyType == type).ToList();
+
+        /// <summary>
+        /// Get default
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static object GetDefault(this Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
     }
 }

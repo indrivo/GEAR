@@ -12,7 +12,6 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Razor.BaseControllers;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Security.Abstractions.Attributes;
 using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Helpers;
@@ -52,8 +51,8 @@ namespace GR.Entities.Razor.Controllers
         {
             if (data == null) return RequestData.InvalidRequest;
             Guid.TryParse(data.Object, out var itemId);
-            var rq = await _dynamicService.GetByIdWithInclude(data.EntityName, itemId);
-            return Json(rq, SerializerSettings);
+            var rq = await _dynamicService.GetByIdWithIncludeAsync(data.EntityName, itemId);
+            return Json(rq);
         }
 
         /// <summary>
@@ -67,11 +66,10 @@ namespace GR.Entities.Razor.Controllers
         {
             if (data == null) return RequestData.InvalidRequest;
             var result = new ResultModel();
-            var operationalTable = _dynamicService.Table(data.EntityName);
             try
             {
-                var parsed = JsonConvert.DeserializeObject(data.Object, operationalTable.Type, SerializerSettings);
-                var rq = await operationalTable.Update(parsed);
+                var parsed = JsonConvert.DeserializeObject<Dictionary<string, object>>(data.Object);
+                var rq = await _dynamicService.UpdateAsync(data.EntityName, parsed);
                 return Json(rq);
             }
             catch (JsonSerializationException e)
@@ -99,8 +97,8 @@ namespace GR.Entities.Razor.Controllers
             var result = new ResultModel();
             try
             {
-                var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, SerializerSettings);
-                var rq = await _dynamicService.Table(data.EntityName).Add(parsed);
+                var parsed = JsonConvert.DeserializeObject<Dictionary<string, object>>(data.Object, SerializerSettings);
+                var rq = await _dynamicService.AddAsync(data.EntityName, parsed);
                 return Json(rq);
             }
             catch (JsonReaderException e)
@@ -128,11 +126,8 @@ namespace GR.Entities.Razor.Controllers
             var result = new ResultModel();
             try
             {
-                var tableManger = _dynamicService.Table(data.EntityName);
-                var list = typeof(List<>);
-                var listOfType = list.MakeGenericType(tableManger.Type);
-                var parsed = JsonConvert.DeserializeObject(data.Object, listOfType, SerializerSettings);
-                var rq = await _dynamicService.Table(data.EntityName).AddRange(parsed as IEnumerable<object>);
+                var parsed = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data.Object, SerializerSettings);
+                var rq = await _dynamicService.AddRangeAsync(data.EntityName, parsed);
                 return Json(rq);
             }
             catch (JsonReaderException e)
@@ -161,11 +156,11 @@ namespace GR.Entities.Razor.Controllers
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-            var rqGet = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+            var rqGet = await _dynamicService.GetAllAsync(data.EntityName, null, filters);
             if (rqGet.IsSuccess)
             {
                 var taskResults = rqGet.Result.Select(async item =>
-                    await _dynamicService.Table(data.EntityName).DeletePermanent<object>((Guid)item.Id)).Select(x => x.Result);
+                    await _dynamicService.DeletePermanentAsync(data.EntityName, item.GetValue<Guid>("Id"))).Select(x => x.Result);
                 result.IsSuccess = true;
                 result.Result = taskResults;
                 return Json(result);
@@ -189,11 +184,11 @@ namespace GR.Entities.Razor.Controllers
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-            var rqGet = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+            var rqGet = await _dynamicService.GetAllAsync(data.EntityName, null, filters);
             if (rqGet.IsSuccess)
             {
                 var taskResults = rqGet.Result.Select(async item =>
-                    await _dynamicService.Table(data.EntityName).Delete<object>((Guid)item.Id)).Select(x => x.Result);
+                    await _dynamicService.DeleteAsync(data.EntityName, item.GetValue<Guid>("Id"))).Select(x => x.Result);
                 result.IsSuccess = true;
                 result.Result = taskResults;
                 return Json(result);
@@ -217,7 +212,7 @@ namespace GR.Entities.Razor.Controllers
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-            var rq = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+            var rq = await _dynamicService.GetAllAsync(data.EntityName, null, filters);
             return Json(rq);
         }
 
@@ -235,7 +230,7 @@ namespace GR.Entities.Razor.Controllers
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
             var f = filters.ToDictionary(x => x.Parameter, y => y.Value);
-            var rq = await _dynamicService.Table(data.EntityName).Count(f);
+            var rq = await _dynamicService.CountAsync(data.EntityName, f);
             return Json(rq);
         }
 
@@ -252,7 +247,7 @@ namespace GR.Entities.Razor.Controllers
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             var f = filters.ToDictionary(x => x.Parameter, y => y.Value);
-            var rq = await _dynamicService.Table(data.EntityName).Count(f);
+            var rq = await _dynamicService.CountAsync(data.EntityName, f);
             return Json(rq);
         }
 
@@ -268,7 +263,7 @@ namespace GR.Entities.Razor.Controllers
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-            var rq = await _dynamicService.Table(data.EntityName).GetAllWithInclude<dynamic>(null, filters);
+            var rq = await _dynamicService.GetAllWithIncludeAsDictionaryAsync(data.EntityName, null, filters);
             return Json(rq);
         }
 

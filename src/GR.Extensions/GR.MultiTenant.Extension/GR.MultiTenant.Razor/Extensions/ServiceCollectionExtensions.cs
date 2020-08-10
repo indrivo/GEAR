@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using GR.MultiTenant.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
@@ -14,14 +13,14 @@ namespace GR.MultiTenant.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMultiTenantRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddMultiTenantRazorUiModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(MultiTenantRazorFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
            {
-               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                {
-                   var service = IoC.Resolve<IMenuService>();
+                   var service = serviceProvider.GetService<IMenuService>();
                    await service.AppendMenuItemsAsync(new MultiTenantMenuInitializer());
                });
            };

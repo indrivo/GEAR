@@ -111,7 +111,7 @@ namespace GR.Dashboard.Razor.Controllers
         /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetCustomWidgets(DTParameters parameters) => _widgetService.GetWidgetsInJqueryTableFormat(parameters);
+        public async Task<JsonResult> GetCustomWidgets(DTParameters parameters) => Json(await _widgetService.GetWidgetsInJqueryTableFormat(parameters));
 
         /// <summary>
         /// Get reports

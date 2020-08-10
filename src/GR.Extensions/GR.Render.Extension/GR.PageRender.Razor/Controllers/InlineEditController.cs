@@ -5,7 +5,6 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Abstractions.Constants;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
@@ -143,7 +142,7 @@ namespace GR.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-            var row = await _service.GetById(entity.Name, rowId.Value);
+            var row = await _service.GetByIdAsync(entity.Name, rowId.Value);
             if (!row.IsSuccess)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, "Entry Not found"));
@@ -214,7 +213,7 @@ namespace GR.PageRender.Razor.Controllers
                 row.Result[nameof(BaseModel.Changed)] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             }
 
-            var req = await _service.Update(entity.Name, row.Result);
+            var req = await _service.UpdateAsync(entity.Name, row.Result);
             if (!req.IsSuccess)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, "Fail to save data"));
@@ -297,7 +296,7 @@ namespace GR.PageRender.Razor.Controllers
                 });
             }
 
-            var res = await _service.GetAll(entityRefName.Value, filters: filters);
+            var res = await _service.GetAllAsync(entityRefName.Value, filters: filters);
             if (res.IsSuccess)
             {
                 if (displayFormat != null)
@@ -355,7 +354,7 @@ namespace GR.PageRender.Razor.Controllers
             }
             var viewModel = await _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(result);
-            var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+            var response = await _service.DeleteAsync(viewModel.TableModel.Name, Guid.Parse(id));
             if (!response.IsSuccess) return Json(result);
             result.IsSuccess = true;
             return Json(result);
@@ -380,7 +379,7 @@ namespace GR.PageRender.Razor.Controllers
             }
             var viewModel = await _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(result);
-            var response = await _service.Table(viewModel.TableModel.Name).DeletePermanent<object>(Guid.Parse(id));
+            var response = await _service.DeletePermanentAsync(viewModel.TableModel.Name, Guid.Parse(id));
             return Json(response);
         }
     }

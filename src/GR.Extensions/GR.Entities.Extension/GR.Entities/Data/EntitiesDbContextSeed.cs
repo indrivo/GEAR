@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Entities.Abstractions.Models.Tables;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Entities.Data
 {
@@ -32,7 +33,7 @@ namespace GR.Entities.Data
                 {
                     if (!context.TableFieldGroups.Any())
                     {
-                        context.TableFieldGroups.AddRange(entity.TableFieldGroups);
+                        await context.TableFieldGroups.AddRangeAsync(entity.TableFieldGroups);
                         try
                         {
                             await context.SaveChangesAsync();
@@ -68,16 +69,16 @@ namespace GR.Entities.Data
                     {
                         if (context.EntityTypes.Any(x => x.Name == item.Name)) continue;
                         item.TenantId = tenantId;
-                        context.EntityTypes.Add(item);
+                        await context.EntityTypes.AddAsync(item);
                     }
                 }
 
                 var dbResult = await context.PushAsync();
                 if (dbResult.IsSuccess)
                 {
-                    GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                    GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                     {
-                        var entityRepository = x.InjectService<IEntityService>();
+                        var entityRepository = serviceProvider.GetService<IEntityService>();
 
                         //Create dynamic tables for configured tenant
                         await entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(GearSettings.TenantId, GearSettings.DEFAULT_ENTITY_SCHEMA);

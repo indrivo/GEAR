@@ -21,5 +21,25 @@ namespace GR.Paypal.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResponsePaypal> ExecutePaymentAsync(PaymentExecuteVm model);
+
+        /// <summary>
+        /// Get access token
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetAccessTokenAsync();
+
+        /// <summary>
+        /// Create experience profile
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
+        Task<string> CreateExperienceProfileAsync(string accessToken);
+
+        /// <summary>
+        /// Calculate payment fee
+        /// </summary>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        decimal CalculatePaymentFee(decimal total);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using GR.Backup.Razor.Helpers;
 using GR.Core;
-using GR.Core.Extensions;
 using GR.UI.Menu.Abstractions;
 using GR.UI.Menu.Abstractions.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,9 +17,10 @@ namespace GR.Backup.Razor.Extensions
         {
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                 {
-                    await x.InjectService<IMenuService>().AppendMenuItemsAsync(new BackupMenuInitializer());
+                    var menuService = serviceProvider.GetService<IMenuService>();
+                    await menuService.AppendMenuItemsAsync(new BackupMenuInitializer());
                 });
             };
             return services;

@@ -1,5 +1,6 @@
 ﻿using System;
 using GR.Core.Extensions;
+using GR.Logger.Abstractions.Helpers.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +18,11 @@ namespace GR.Logger.Abstractions.Extensions
             where TLoggerFactory : class, IGearLoggerFactory
         {
             services.AddGearSingleton<IGearLoggerFactory, TLoggerFactory>();
+
+            services.AddMvcCore(o =>
+            {
+                o.Filters.Add<EnrichUserInfoActionFilter>();
+            });
 
             return services;
         }

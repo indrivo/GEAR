@@ -4,7 +4,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +18,7 @@ namespace GR.WebHooks.Abstractions.Extensions
         /// <typeparam name="TOutgoingService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddWebHookModule<TIncomingService, TOutgoingService>(this IServiceCollection services) 
+        public static IServiceCollection AddWebHookModule<TIncomingService, TOutgoingService>(this IServiceCollection services)
             where TIncomingService : class, IIncomingHookService
             where TOutgoingService : class, IOutgoingHookService
         {
@@ -28,9 +27,9 @@ namespace GR.WebHooks.Abstractions.Extensions
             SystemEvents.Application.OnEvent += (sender, args) =>
             {
                 if (!GearApplication.Configured) return;
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async c =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                 {
-                    var service = IoC.Resolve<IOutgoingHookService>();
+                    var service = s.GetService<IOutgoingHookService>();
                     await service.SendEventAsync(args);
                 });
             };
@@ -52,7 +51,7 @@ namespace GR.WebHooks.Abstractions.Extensions
             services.RegisterAuditFor<IWebHookContext>("WebHook module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TFormContext>();
+                GearApplication.GetHost().MigrateDbContext<TFormContext>();
             };
             return services;
         }

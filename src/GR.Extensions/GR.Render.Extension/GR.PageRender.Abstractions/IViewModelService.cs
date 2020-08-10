@@ -64,7 +64,7 @@ namespace GR.PageRender.Abstractions
         /// <param name="param"></param>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        DTResult<object> LoadViewModelsWithPagination(DTParameters param, Guid entityId);
+        Task<DTResult<object>> LoadViewModelsWithPaginationAsync(DTParameters param, Guid entityId);
 
         /// <summary>
         /// Update items

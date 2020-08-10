@@ -97,14 +97,15 @@ namespace GR.Localization.Api.Controllers
         /// <param name="countryId"></param>
         /// <param name="search"></param>
         /// <param name="selectedCityId"></param>
+        /// <param name="page"></param>
         /// <param name="maxItems"></param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<IEnumerable<StateOrProvince>>))]
-        public async Task<JsonResult> GetCitiesByCountry([Required] string countryId, string search, Guid? selectedCityId, int maxItems = 20)
+        public async Task<JsonResult> GetCitiesByCountry([Required] string countryId, string search, Guid? selectedCityId, int page = 1, int maxItems = 20)
         {
-            var request = await _countryService.GetCitiesByCountryAsync(countryId, search, selectedCityId, maxItems);
+            var request = await _countryService.GetCitiesByCountryAsync(countryId, search, selectedCityId, page, maxItems);
             return Json(request);
         }
 

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Core.Razor.BaseControllers;
 using GR.ECommerce.Abstractions;
@@ -27,20 +25,12 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         protected readonly ICommerceContext Context;
 
         /// <summary>
-        /// Inject data filter
-        /// </summary>
-        protected readonly IDataFilter DataFilter;
-        
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="dataFilter"></param>
-        protected CommerceBaseController(ICommerceContext context, IDataFilter dataFilter)
+        protected CommerceBaseController(ICommerceContext context)
         {
             Context = context;
-            DataFilter = dataFilter;
         }
 
         /// <summary>
@@ -68,7 +58,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public virtual async Task<IActionResult> Create([Required]TViewModel model)
+        public virtual async Task<IActionResult> Create([Required] TViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -93,7 +83,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Edit([Required]Guid? id)
+        public virtual async Task<IActionResult> Edit([Required] Guid? id)
         {
             if (id == null) return NotFound();
             var model = await Context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
@@ -136,19 +126,8 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         [HttpPost]
         public virtual JsonResult OrderedList(DTParameters param)
         {
-            var filtered = DataFilter.FilterAbstractEntity<TEntity, ICommerceContext>(Context, param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).ToList();
-
-            var result = new DTResult<TEntity>
-            {
-                Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-            return Json(result);
+            var filtered = Context.Set<TEntity>().GetPagedAsDtResultAsync(param).GetAwaiter().GetResult();
+            return Json(filtered);
         }
     }
 }

@@ -14,7 +14,6 @@
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.Abstractions\GR.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Security.Extension\GR.Entities.Security.Abstractions\GR.Entities.Security.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Clients.Abstractions\GR.Identity.Clients.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
   </ItemGroup>

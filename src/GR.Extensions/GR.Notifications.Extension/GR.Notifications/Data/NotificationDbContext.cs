@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
 using GR.Core;
-using GR.Core.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Notifications.EFCore.Data
 {
@@ -67,9 +67,9 @@ namespace GR.Notifications.EFCore.Data
         /// <returns></returns>
         public override Task InvokeSeedAsync(IServiceProvider services)
         {
-            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
             {
-                var service = IoC.Resolve<INotificationSeederService>();
+                var service = serviceProvider.GetService<INotificationSeederService>();
                 await service.SeedNotificationTypesAsync();
             });
             return Task.CompletedTask;

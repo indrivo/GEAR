@@ -4,7 +4,6 @@ using GR.Core;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using Microsoft.Extensions.Localization;
 
 namespace GR.Localization.Abstractions
 {
@@ -95,7 +94,7 @@ namespace GR.Localization.Abstractions
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters);
+        Task<DTResult<LocalizedStringViewModel>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters);
 
         /// <summary>
         /// Get key configuration

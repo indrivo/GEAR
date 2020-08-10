@@ -106,11 +106,11 @@
 					<tbody>
 						@if (Model.ProductAttributes.Any())
 						{
-							@foreach (var attribute in Model.ProductAttributes)
+							@foreach (var attr in Model.ProductAttributes)
 							{
 								<tr>
-									<td>@attribute.ProductAttribute?.DisplayName</td>
-									<td>@attribute.Value</td>
+									<td>@attr.ProductAttribute?.DisplayName</td>
+									<td>@attr.Value</td>
 								</tr>
 							}
 						}

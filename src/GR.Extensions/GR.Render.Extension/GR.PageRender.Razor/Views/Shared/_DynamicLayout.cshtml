@@ -1,0 +1,50 @@
+﻿@using GR.PageRender.Abstractions.Helpers
+@using GR.Core.Razor.Extensions
+
+<!DOCTYPE html>
+@{
+	var isDynamicPage = ((bool?)ViewData["IsDynamicPage"]).GetValueOrDefault(false);
+}
+
+@if (User.Identity.IsAuthenticated || isDynamicPage)
+{
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageSeeder.Layouts.DefaultCosmoLayout;
+
+	<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>@ViewData["Title"]</title>
+		<partial name="_BootstrapThemeStyles" />
+		<cache vary-by-user="true" expires-after="@TimeSpan.FromMinutes(1)">
+			<layout-css-code layout-id="@layoutId"></layout-css-code>
+			<application-styles layout-id="@layoutId"></application-styles>
+		</cache>
+		@RenderSection("PreScripts", required: false)
+		<partial name="_BootstrapThemeScripts" />
+		@RenderSection("Styles", required: false)
+		@Html.PartialViewStyles()
+		@Html.IncludeCoreJavascriptPlugins()
+        @await Html.PartialAsync("LayoutConfig/_LayoutPreScriptsPartialView")
+    </head>
+	<body class="fix-header fix-sidebar card-no-border">
+		<App layout-id="@layoutId">
+			@RenderBody()
+            @await Html.PartialAsync("LayoutConfig/_LayoutPostScriptsPartialView")
+            <partial name="_LayoutScriptPartial" model="layoutId" />
+            @RenderSection("Scripts", false)
+			@Html.PartialViewScripts()
+
+			<cache vary-by-user="true" expires-after="@TimeSpan.FromMinutes(1)">
+				<application-scripts layout-id="@layoutId"></application-scripts>
+				<layout-js-code layout-id="@layoutId"></layout-js-code>
+			</cache>
+		</App>
+	</body>
+</html>
+}
+else
+{
+@RenderBody()
+@RenderSection("Scripts", false)
+}

@@ -7,7 +7,6 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,7 +42,7 @@ namespace GR.Notifications.Subscriptions.Abstractions.Extensions
             services.RegisterAuditFor<INotificationSubscriptionsDbContext>($"{nameof(Notification)} subscription module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }
@@ -58,7 +57,7 @@ namespace GR.Notifications.Subscriptions.Abstractions.Extensions
             SystemEvents.Application.OnEvent += (obj, args) =>
             {
                 if (!GearApplication.Configured) return;
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (serviceProvider, cancellationToken) =>
                 {
                     try
                     {

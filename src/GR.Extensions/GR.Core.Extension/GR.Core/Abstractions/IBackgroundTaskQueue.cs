@@ -10,21 +10,21 @@ namespace GR.Core.Abstractions
         /// Add new task
         /// </summary>
         /// <param name="workItem"></param>
-        void PushBackgroundWorkItemInQueue(Func<CancellationToken, Task> workItem);
+        void PushBackgroundWorkItemInQueue(Func<IServiceProvider, CancellationToken, Task> workItem);
 
         /// <summary>
         /// Remove work item
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Func<CancellationToken, Task>> RemoveBackgroundWorkItemFromQueueAsync(
+        Task<Func<IServiceProvider, CancellationToken, Task>> RemoveBackgroundWorkItemFromQueueAsync(
             CancellationToken cancellationToken);
 
         /// <summary>
         /// Push item to be executed after install
         /// </summary>
         /// <param name="workItem"></param>
-        void PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(Func<CancellationToken, Task> workItem);
+        void PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(Func<IServiceProvider, CancellationToken, Task> workItem);
 
         /// <summary>
         /// Add to execute pending background items

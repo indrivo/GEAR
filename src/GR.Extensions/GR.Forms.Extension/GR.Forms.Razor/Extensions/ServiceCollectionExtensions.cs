@@ -1,5 +1,4 @@
 ﻿using GR.Core;
-using GR.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Forms.Razor.Helpers;
 using GR.UI.Menu.Abstractions;
@@ -19,9 +18,9 @@ namespace GR.Forms.Razor.Extensions
             services.ConfigureOptions(typeof(FormFileConfiguration));
             MenuEvents.Menu.OnMenuSeed += (sender, args) =>
             {
-                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async x =>
+                GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(async (s, p) =>
                     {
-                        await x.InjectService<IMenuService>().AppendMenuItemsAsync(new FormsMenuInitializer());
+                        await s.GetService<IMenuService>().AppendMenuItemsAsync(new FormsMenuInitializer());
                     });
             };
             return services;

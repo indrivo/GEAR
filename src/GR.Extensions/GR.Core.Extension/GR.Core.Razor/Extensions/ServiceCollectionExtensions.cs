@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace GR.Core.Razor.Extensions
 {
@@ -26,16 +26,15 @@ namespace GR.Core.Razor.Extensions
             services.AddSwaggerGen(options =>
             {
                 options.DocInclusionPredicate(SwaggerVersioning.DocInclusionPredicate);
-
-                options.SwaggerDoc("v1.0", new Info
+                options.SwaggerDoc($"v{GearApplication.AppVersion}", new OpenApiInfo
                 {
-                    Title = "GEAR APP HTTP API",
-                    Version = "v1.0",
-                    Description = "GEAR Service HTTP API",
-                    TermsOfService = "Terms Of Service",
-                    Contact = new Contact
+                    Title = $"{GearApplication.ApplicationName} APP HTTP API",
+                    Version = $"v{GearApplication.AppVersion}",
+                    Description = $"{GearApplication.ApplicationName} HTTP API",
+                    TermsOfService = new Uri("http://indrivo.com"),
+                    Contact = new OpenApiContact
                     {
-                        Url = "http://indrivo.com",
+                        Url = new Uri("http://indrivo.com"),
                         Email = "support@indrivo.com",
                         Name = "Indrivo SRL"
                     }
@@ -53,22 +52,23 @@ namespace GR.Core.Razor.Extensions
                 // Set custom schema name 
                 options.CustomSchemaIds(x => x.FullName);
 
-                // In accordance with the built in JsonSerializer, Swashbuckle will, by default, describe enums as integers.
-                // You can change the serializer behavior by configuring the StringToEnumConverter globally or for a given
-                // enum type. Swashbuckle will honor this change out-of-the-box. However, if you use a different
-                // approach to serialize enums as strings, you can also force Swashbuckle to describe them as strings.
-                //
-                options.DescribeAllEnumsAsStrings();
-                options.DescribeStringEnumsInCamelCase();
-                options.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                options.SchemaFilter<EnumSchemaFilter>();
+                options.DescribeAllParametersInCamelCase();
+
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Type = "oauth2",
-                    Flow = "implicit",
-                    AuthorizationUrl = $"{authUrl}/connect/authorize",
-                    TokenUrl = $"{authUrl}/connect/token",
-                    Scopes = new Dictionary<string, string>
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        {"core", "CORE API"}
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{authUrl}/connect/authorize"),
+                            TokenUrl = new Uri($"{authUrl}/connect/token"),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                {"core", "CORE API"}
+                            }
+                        }
                     }
                 });
                 options.OperationFilter<SwaggerAuthorizeCheckOperationFilter>();
@@ -122,7 +122,7 @@ namespace GR.Core.Razor.Extensions
         private static IEnumerable<string> GetXmlCommentsPaths()
         {
             var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblies = GearApplication.GetAssemblies();
             foreach (var assembly in assemblies)
             {
                 var fileName = assembly.GetName().Name + ".xml";

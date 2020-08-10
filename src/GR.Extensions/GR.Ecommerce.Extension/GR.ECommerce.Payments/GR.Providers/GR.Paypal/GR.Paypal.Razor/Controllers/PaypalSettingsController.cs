@@ -1,7 +1,7 @@
 ﻿using GR.Core.Abstractions;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions.Helpers.Attributes;
-using GR.Paypal.Models;
+using GR.Paypal.Abstractions.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Paypal.Razor.Controllers

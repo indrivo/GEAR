@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using GR.Core.Helpers.Filters.Enums;
 using GR.Core.Helpers.Pagination;
@@ -20,7 +22,24 @@ namespace GR.Core.Extensions
         public static IQueryable<TSource> FilterSourceByRegEx<TSource>(this IQueryable<TSource> source, string regexExp)
         {
             var props = typeof(TSource).GetTypeProprietiesByType(typeof(string)).ToList();
-            return !props.Any() ? source : source.Where(t => MatchRegEx(t, regexExp, props.Select(x => x.Name)));
+            if (!props.Any()) return source;
+            Expression<Func<TSource, bool>> predicate = null;
+            var parameter = Expression.Parameter(typeof(TSource), "x");
+            var anyMethod = typeof(string).GetMethod("Any", new[] { typeof(string) });
+            var match = typeof(Regex).GetMethod(nameof(Regex.Match));
+            if (anyMethod == null || match == null) return source;
+            foreach (var prop in props)
+            {
+                var property = Expression.Property(parameter, prop.Name);
+                var right = Expression.Call(Expression.Constant(regexExp), match);
+                var body = Expression.Call(property, anyMethod, right);
+                var predicateExpression = Expression.Lambda<Func<TSource, bool>>(body, parameter);
+                predicate = predicate == null
+                    ? predicateExpression
+                    : Expression.Lambda<Func<TSource, bool>>(Expression.Or(predicate.Body, predicateExpression.Body), parameter);
+            }
+
+            return predicate == null ? source : source.Where(predicate);
         }
 
         /// <summary>
@@ -32,8 +51,112 @@ namespace GR.Core.Extensions
         /// <returns></returns>
         public static IQueryable<TSource> FilterSourceByTextExpression<TSource>(this IQueryable<TSource> source, string toSearch)
         {
+            var predicate = CreateTextFilterExpression<TSource>(toSearch);
+
+            //if (toSearch.IsNumeric())
+            //{
+            //    var number = Convert.ToDouble(toSearch);
+            //    var numberFilterPredicate = CreateNumberFilterExpression<TSource>(number);
+
+            //    if (numberFilterPredicate != null)
+            //    {
+            //        predicate = predicate == null
+            //            ? numberFilterPredicate
+            //            : Expression.Lambda<Func<TSource, bool>>(Expression.Or(predicate.Body, numberFilterPredicate.Body), predicate.Parameters[0]);
+            //    }
+            //}
+
+            return predicate == null ? source : source.Where(predicate);
+        }
+
+        /// <summary>
+        /// Create expression for filter text
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private static Expression<Func<TSource, bool>> CreateTextFilterExpression<TSource>(string text)
+        {
             var props = typeof(TSource).GetTypeProprietiesByType(typeof(string)).ToList();
-            return !props.Any() ? source : source.Where(t => FindExpression(t, toSearch.Trim().ToLowerInvariant(), props.Select(x => x.Name)));
+            if (!props.Any()) return null;
+            Expression<Func<TSource, bool>> predicate = null;
+            var parameter = Expression.Parameter(typeof(TSource), "x");
+            var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
+            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            if (containsMethod == null || toLowerMethod == null) return null;
+            foreach (var prop in props)
+            {
+                var property = Expression.Property(parameter, prop.Name);
+                var left = Expression.Call(property, toLowerMethod);
+                var right = Expression.Call(Expression.Constant(text), toLowerMethod);
+                var body = Expression.Call(left, containsMethod, right);
+                var predicateExpression = Expression.Lambda<Func<TSource, bool>>(body, parameter);
+                predicate = predicate == null
+                    ? predicateExpression
+                    : Expression.Lambda<Func<TSource, bool>>(Expression.Or(predicate.Body, predicateExpression.Body), parameter);
+            }
+
+            return predicate;
+        }
+
+        /// <summary>
+        /// Filter by number proprieties
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="toSearch"></param>
+        /// <returns></returns>
+        public static IQueryable<TSource> FilterSourceByNumberExpression<TSource>(this IQueryable<TSource> source, double toSearch)
+        {
+            var predicate = CreateNumberFilterExpression<TSource>(toSearch);
+            return predicate == null ? source : source.Where(predicate);
+        }
+
+        /// <summary>
+        /// Create expression for filter numbers
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        private static Expression<Func<TSource, bool>> CreateNumberFilterExpression<TSource>(double number)
+        {
+            var props = typeof(TSource).GetNumberProprieties().Where(x => x.GetSetMethod() != null).ToList();
+            if (!props.Any()) return null;
+            Expression<Func<TSource, bool>> predicate = null;
+            var parameter = Expression.Parameter(typeof(TSource), "x");
+            foreach (var prop in props)
+            {
+                var property = Expression.Property(parameter, prop.Name);
+                var num = Convert.ChangeType(number, prop.PropertyType);
+                var body = Expression.Equal(property, Expression.Constant(num));
+                var predicateExpression = Expression.Lambda<Func<TSource, bool>>(body, parameter);
+                predicate = predicate == null
+                    ? predicateExpression
+                    : Expression.Lambda<Func<TSource, bool>>(Expression.Or(predicate.Body, predicateExpression.Body), parameter);
+            }
+
+            return predicate;
+        }
+
+        /// <summary>
+        /// Get number proprieties
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> GetNumberProprieties(this Type type)
+        {
+            var types = new List<Type>
+            {
+                typeof(double), typeof(int), typeof(decimal), typeof(long), typeof(float)
+            };
+            var response = new List<PropertyInfo>();
+            foreach (var t in types)
+            {
+                var props = type.GetTypeProprietiesByType(t).ToList();
+                response.AddRange(props);
+            }
+
+            return response;
         }
 
         /// <summary>
@@ -274,26 +397,6 @@ namespace GR.Core.Extensions
                || operation == CompareType.Greater && compareResult > 0
                || (operation == CompareType.GreaterOrEqual ||
                    operation == CompareType.LessOrEqual) && compareResult == 0;
-
-        /// <summary>
-        /// Match any object prop value the regular exp 
-        /// </summary>
-        private static readonly Func<object, string, IEnumerable<string>, bool> MatchRegEx =
-            delegate (object o, string regExp, IEnumerable<string> props)
-            {
-                var values = props.Select(x => o.GetPropertyValue(x)?.ToString()).ToList();
-                return values.Any(c => Regex.Match(c, regExp).Success);
-            };
-
-        /// <summary>
-        /// Find string expression in object values
-        /// </summary>
-        private static readonly Func<object, string, IEnumerable<string>, bool> FindExpression =
-            delegate (object o, string exp, IEnumerable<string> props)
-            {
-                var values = props.Select(o.GetStringPropertyValue).ToList();
-                return values.Any(c => c.ToLowerInvariant().Contains(exp));
-            };
 
         #endregion
     }

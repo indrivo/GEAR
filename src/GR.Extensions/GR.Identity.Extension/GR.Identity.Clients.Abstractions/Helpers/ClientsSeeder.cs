@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +6,10 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.ViewModels.SeedViewModels;
-using GR.Identity.Clients.Abstractions.Extensions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Helpers;
 using GR.Identity.Permissions.Abstractions.Permissions;
+using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,26 +39,19 @@ namespace GR.Identity.Clients.Abstractions.Helpers
                 .ToDictionary(sectionClient => sectionClient,
                     sectionClient => GetClientUrl(configuration, sectionClient));
 
+
             //Seed clients
             if (!context.Clients.Any())
             {
-                var clients = configurator.GetClients(clientUrls).GetSeedClients();
+                var clients = configurator.GetClients(clientUrls).Select(x => x.ToEntity());
                 await context.Clients.AddRangeAsync(clients);
-
-                try
-                {
-                    await context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
+                await context.PushAsync();
             }
 
             //Seed Identity resources
             if (!context.IdentityResources.Any())
             {
-                var resources = configurator.GetResources().GetSeedResources();
+                var resources = configurator.GetResources().Select(x => x.ToEntity()).ToList();
                 await context.IdentityResources.AddRangeAsync(resources);
 
                 await context.PushAsync();
@@ -68,8 +60,8 @@ namespace GR.Identity.Clients.Abstractions.Helpers
             //Seed api resources
             if (!context.ApiResources.Any())
             {
-                var apiResources = configurator.GetApiResources().GetSeedApiResources(context);
-                context.ApiResources.AddRange(apiResources);
+                var apiResources = configurator.GetApiResources().Select(y => y.ToEntity()).ToList();
+                await context.ApiResources.AddRangeAsync(apiResources);
                 await context.PushAsync();
             }
 

@@ -1,9 +1,7 @@
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Razor.ViewModels.PageViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -65,7 +63,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([Required]CreateBlockViewModel model)
+        public async Task<IActionResult> Create([Required] CreateBlockViewModel model)
         {
             _pagesContext.Blocks.Add(model);
             var dbResult = await _pagesContext.PushAsync();
@@ -121,21 +119,11 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPages(DTParameters param)
+        public async Task<JsonResult> LoadPages(DTParameters param)
         {
-            var filtered = _pagesContext.FilterAbstractContext<Block>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
+            var filtered = await _pagesContext.Blocks.GetPagedAsDtResultAsync(param);
 
-            var finalResult = new DTResult<Block>
-            {
-                Draw = param.Draw,
-                Data = filtered.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count()
-            };
-
-            return Json(finalResult);
+            return Json(filtered);
         }
 
         /// <summary>

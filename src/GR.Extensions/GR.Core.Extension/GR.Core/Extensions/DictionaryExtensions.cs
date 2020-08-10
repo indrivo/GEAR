@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GR.Core.Extensions
 {
@@ -48,6 +49,20 @@ namespace GR.Core.Extensions
                 }
             }
             return dict;
+        }
+
+        /// <summary>
+        /// Get dictionary value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static T GetValue<T>(this IDictionary<string, object> source, string property)
+        {
+            if (source == null) return default;
+            var item = source.FirstOrDefault(x => x.Key.Equals(property));
+            return item.IsNull() ? default : item.Is<T>();
         }
     }
 }

@@ -19,8 +19,8 @@ using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.Helpers;
+using GR.Paypal.Abstractions.Models;
 using GR.Paypal.Abstractions.ViewModels;
-using GR.Paypal.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
@@ -156,7 +156,7 @@ namespace GR.Paypal
                     Price = item.Product.PriceWithoutDiscount.ToString("N2"),
                     Description = item.Product.Description?.StripHtml(),
                     Quantity = item.Amount.ToString(),
-                    Sku = "1",
+                    Sku = item.Product.Sku,
                     Tax = "0"
                 });
             }
@@ -320,7 +320,7 @@ namespace GR.Paypal
         /// Get access token
         /// </summary>
         /// <returns></returns>
-        private async Task<string> GetAccessTokenAsync()
+        public virtual async Task<string> GetAccessTokenAsync()
         {
             var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
@@ -344,7 +344,7 @@ namespace GR.Paypal
         /// </summary>
         /// <param name="accessToken"></param>
         /// <returns></returns>
-        private async Task<string> CreateExperienceProfileAsync(string accessToken)
+        public virtual async Task<string> CreateExperienceProfileAsync(string accessToken)
         {
             using (var httpClient = new HttpClient())
             {
@@ -373,7 +373,7 @@ namespace GR.Paypal
         /// </summary>
         /// <param name="total"></param>
         /// <returns></returns>
-        private decimal CalculatePaymentFee(decimal total)
+        public virtual decimal CalculatePaymentFee(decimal total)
         {
             var percent = _payPalOptions.Value.PaymentFee;
             return total / 100 * percent;

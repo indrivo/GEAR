@@ -14,7 +14,6 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -32,7 +31,7 @@ namespace GR.Calendar.Abstractions.Extensions
             where TCalendarService : class, ICalendarManager
         {
             Arg.NotNull(services, nameof(AddCalendarModule));
-            services.AddGearTransient<ICalendarManager, TCalendarService>();
+            services.AddGearScoped<ICalendarManager, TCalendarService>();
             services.AddHostedService<EventReminderBackgroundService>();
             return new CalendarServiceCollection(services);
         }
@@ -49,12 +48,12 @@ namespace GR.Calendar.Abstractions.Extensions
             where TDbContext : DbContext, ICalendarDbContext
         {
             Arg.NotNull(configuration.Services, nameof(AddCalendarModuleStorage));
-            configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
-            configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
+            configuration.Services.AddDbContext<TDbContext>(options);
+            configuration.Services.AddGearScoped<ICalendarDbContext, TDbContext>();
             configuration.Services.RegisterAuditFor<ICalendarDbContext>($"{nameof(Calendar)} module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
                 {
-                    GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+                    GearApplication.GetHost().MigrateDbContext<TDbContext>();
                 };
             return configuration;
         }

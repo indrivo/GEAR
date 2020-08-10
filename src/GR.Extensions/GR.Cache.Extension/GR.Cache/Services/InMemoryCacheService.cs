@@ -11,7 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Cache.Services
 {
-    public class InMemoryCacheService : ICacheService
+    public class InMemoryCacheService : ICacheService<IMemoryCache>
     {
         #region Injectable
 

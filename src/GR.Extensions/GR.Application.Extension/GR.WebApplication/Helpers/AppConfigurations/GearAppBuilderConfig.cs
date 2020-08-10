@@ -21,7 +21,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// <summary>
         /// Hosting environment
         /// </summary>
-        public IHostingEnvironment HostingEnvironment { get; set; }
+        public IWebHostEnvironment HostingEnvironment { get; set; }
 
         /// <summary>
         /// App configuration

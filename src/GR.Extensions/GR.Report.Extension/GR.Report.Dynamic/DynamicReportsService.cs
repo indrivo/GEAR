@@ -5,7 +5,6 @@ using Npgsql;
 using NpgsqlTypes;
 using GR.Core;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.MultiTenant.Abstractions;
@@ -165,20 +164,16 @@ namespace GR.Report.Dynamic
 
         #region Reports
 
-        public DTResult<DynamicReportViewModel> GetFilteredReports(DTParameters param)
+        public async Task<DTResult<DynamicReportViewModel>> GetFilteredReportsAsync(DTParameters param)
         {
-            var filtered = _context.Filter<DynamicReport>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).Select(x =>
-            {
-                x.DynamicReportFolder = _context.DynamicReportsFolders.FirstOrDefault(y => y.Id == x.DynamicReportFolderId);
-                return x;
-            }).ToList();
+            var filtered = await _context.DynamicReports
+                .Include(x => x.DynamicReportFolder)
+                .GetPagedAsDtResultAsync(param);
 
             var finalResult = new DTResult<DynamicReportViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered.Select(x => new DynamicReportViewModel
+                Data = filtered.Data.Select(x => new DynamicReportViewModel
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -190,8 +185,8 @@ namespace GR.Report.Dynamic
                     Changed = x.Changed,
                     IsDeleted = x.IsDeleted
                 }).ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
+                RecordsFiltered = filtered.RecordsFiltered,
+                RecordsTotal = filtered.RecordsTotal
             };
             return finalResult;
         }
@@ -345,6 +340,7 @@ namespace GR.Report.Dynamic
                 connection.Open();
                 using (var command = new NpgsqlCommand($"SELECT Distinct TABLE_SCHEMA as \"id\", TABLE_NAME as \"text\" FROM information_schema.TABLES WHERE TABLE_SCHEMA = ANY(@schemas)", connection))
                 {
+                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
                     command.Parameters.AddWithValue("schemas", NpgsqlDbType.Array | NpgsqlDbType.Text, schemas);
 
                     using (var reader = command.ExecuteReader())

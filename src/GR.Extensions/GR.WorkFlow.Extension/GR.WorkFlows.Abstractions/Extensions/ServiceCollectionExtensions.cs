@@ -7,7 +7,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.WorkFlows.Abstractions.Helpers.ActionHandlers;
 using GR.WorkFlows.Abstractions.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,7 +29,7 @@ namespace GR.WorkFlows.Abstractions.Extensions
         {
             services.AddGearTransient<IWorkFlowCreatorService<TEntity>, TWorkFlowCreator>();
 
-            services.AddGearTransient<IWorkFlowExecutorService, TWorkFlowExecutor>();
+            services.AddGearScoped<IWorkFlowExecutorService, TWorkFlowExecutor>();
             services.RegisterWorkflowAction<SendNotificationAction>();
             return services;
         }
@@ -45,12 +44,12 @@ namespace GR.WorkFlows.Abstractions.Extensions
         public static IServiceCollection AddWorkflowModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, IWorkFlowContext
         {
-            services.AddScopedContextFactory<IWorkFlowContext, TContext>();
+            services.AddGearScoped<IWorkFlowContext, TContext>();
             services.AddDbContext<TContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<IWorkFlowContext>($"{nameof(WorkFlow)} module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
             return services;
         }

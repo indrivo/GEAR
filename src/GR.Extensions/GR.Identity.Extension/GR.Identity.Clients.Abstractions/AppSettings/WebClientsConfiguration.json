@@ -1,0 +1,13 @@
+{
+  "WebClients": {
+    "CORE": {
+      "uri": "http://localhost:9099"
+    },
+    "Spa": {
+      "uri": "http://localhost:9099"
+    },
+    "Xamarin": {
+      "uri": "http://localhost:9099/xamarincallback"
+    }
+  }
+}

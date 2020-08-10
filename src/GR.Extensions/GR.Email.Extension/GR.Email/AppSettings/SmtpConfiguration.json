@@ -1,0 +1,13 @@
+{
+  "EmailSettings": {
+    "Enabled": true,
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Timeout": 5000,
+    "EnableSsl": true,
+    "NetworkCredential": {
+      "Email": "indrivo.gear@gmail.com",
+      "Password": "Gear2020"
+    }
+  }
+}

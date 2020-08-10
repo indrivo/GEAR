@@ -27,12 +27,8 @@ namespace GR.Entities.Abstractions.Extensions
             where TEntityRepository : class, IEntityService
         {
             Arg.NotNull(services, nameof(services));
-            services.AddGearTransient<IEntityContext, TEntityContext>();
-
-            IoC.RegisterServiceCollection(new Dictionary<Type, Type>
-            {
-                { typeof(IEntityService), typeof(TEntityRepository) }
-            });
+            services.AddGearScoped<IEntityContext, TEntityContext>();
+            services.AddGearScoped<IEntityService, TEntityRepository>();
 
             return services;
         }
@@ -49,8 +45,11 @@ namespace GR.Entities.Abstractions.Extensions
 
             SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
             {
-                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
-                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+                using (var scope = args.Services.CreateScope())
+                {
+                    var scopeContextFactory = (DbContext)scope.ServiceProvider.GetRequiredService<IEntityContext>();
+                    DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+                }
             };
 
             SystemEvents.Application.OnApplicationStopped += delegate
@@ -96,7 +95,7 @@ namespace GR.Entities.Abstractions.Extensions
             where TEntityContext : DbContext, IEntityContext
         {
             services.RegisterAuditFor<IEntityContext>("Entity module");
-            services.AddDbContext<TEntityContext>(options, ServiceLifetime.Transient);
+            services.AddDbContext<TEntityContext>(options);
             return services;
         }
     }

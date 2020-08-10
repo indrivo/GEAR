@@ -5,7 +5,6 @@ using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
-using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Report.Abstractions.Extensions
 {
@@ -20,7 +19,7 @@ namespace GR.Report.Abstractions.Extensions
         public static IServiceCollection AddDynamicReportModule<TDynamicReportService>(this IServiceCollection services)
             where TDynamicReportService : class, IDynamicReportsService
         {
-            services.AddGearTransient<IDynamicReportsService, TDynamicReportService>();
+            services.AddGearScoped<IDynamicReportsService, TDynamicReportService>();
             return services;
         }
 
@@ -35,11 +34,11 @@ namespace GR.Report.Abstractions.Extensions
             where TReportContext : DbContext, IReportContext
         {
             services.AddDbContext<TReportContext>(options);
-            services.AddScopedContextFactory<IReportContext, TReportContext>();
+            services.AddGearScoped<IReportContext, TReportContext>();
             services.RegisterAuditFor<IReportContext>($"{nameof(Report)} module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TReportContext>();
+                GearApplication.GetHost().MigrateDbContext<TReportContext>();
             };
             return services;
         }

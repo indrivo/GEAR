@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using GR.Cache.Abstractions;
 using GR.Core;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -36,7 +37,8 @@ namespace GR.Localization.JsonStringProvider
         private readonly IHostingEnvironment _env;
         private readonly ICacheService _cache;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
-        
+        private readonly IGearResourceProvider _resourceProvider;
+
         /// <summary>
         /// Inject mapper
         /// </summary>
@@ -48,7 +50,7 @@ namespace GR.Localization.JsonStringProvider
 
         #endregion
 
-        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env, ICacheService cache, IExternalTranslationProvider externalTranslationProvider, IMapper mapper, IHttpContextAccessor contextAccessor)
+        public JsonFileLocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env, ICacheService cache, IExternalTranslationProvider externalTranslationProvider, IMapper mapper, IHttpContextAccessor contextAccessor, IGearResourceProvider resourceProvider)
         {
             _env = env;
             _locConfig = locConfig;
@@ -56,6 +58,7 @@ namespace GR.Localization.JsonStringProvider
             _externalTranslationProvider = externalTranslationProvider;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
+            _resourceProvider = resourceProvider;
         }
 
         /// <summary>
@@ -112,7 +115,7 @@ namespace GR.Localization.JsonStringProvider
                     obj.WriteTo(writer);
                 }
 
-                var languagesFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
+                var languagesFile = _env.ContentRootFileProvider.GetFileInfo(_resourceProvider.AppSettingsFilepath());
 
                 using (Stream str = new FileStream(languagesFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
@@ -170,7 +173,7 @@ namespace GR.Localization.JsonStringProvider
 
             if (existsInConfig || fileExists)
             {
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
+                var langsFile = _env.ContentRootFileProvider.GetFileInfo(_resourceProvider.AppSettingsFilepath());
                 using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
                 using (var sReader = new StreamReader(str))
@@ -348,13 +351,13 @@ namespace GR.Localization.JsonStringProvider
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public virtual async Task<DTResult<LocalizedString>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
+        public virtual Task<DTResult<LocalizedStringViewModel>> GetLocalizationKeysWithPaginationAsync(DTParameters parameters)
         {
             var stringLocalizer = IoC.Resolve<IStringLocalizer>();
-            var paginated = await stringLocalizer.GetAllStrings()
-                .AsAsyncQueryable()
-                .GetPagedAsDtResultAsync(parameters);
-            return paginated;
+            var mapped = _mapper.Map<IEnumerable<LocalizedStringViewModel>>(stringLocalizer.GetAllStrings().ToList());
+            var paginated = mapped.AsQueryable()
+                .GetPagedAsDtResult(parameters);
+            return Task.FromResult(paginated);
         }
 
         /// <summary>
@@ -417,7 +420,7 @@ namespace GR.Localization.JsonStringProvider
         /// Edit key
         /// </summary>
         /// <param name="model"></param>
-        public async Task<ResultModel> EditKeyAsync([Required]EditLocalizationViewModel model)
+        public async Task<ResultModel> EditKeyAsync([Required] EditLocalizationViewModel model)
         {
             var modelState = ModelValidator.IsValid(model);
             if (!modelState.IsSuccess) return modelState;

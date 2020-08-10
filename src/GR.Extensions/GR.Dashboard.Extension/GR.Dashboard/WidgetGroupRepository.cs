@@ -8,7 +8,6 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Models;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
 
 namespace GR.Dashboard
 {
@@ -88,21 +87,10 @@ namespace GR.Dashboard
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public JsonResult GetWidgetGroupsInJqueryTableFormat(DTParameters param)
+        public async Task<DTResult<WidgetGroup>> GetWidgetGroupsInJqueryTableFormat(DTParameters param)
         {
-            var filtered = _context.FilterAbstractContext<WidgetGroup>(param.Search.Value,
-                param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount).ToList();
-
-            var result = new DTResult<WidgetGroup>
-            {
-                Draw = param.Draw,
-                Data = filtered,
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-            return new JsonResult(result);
+            var filtered = await _context.WidgetGroups.GetPagedAsDtResultAsync(param);
+            return filtered;
         }
     }
 }

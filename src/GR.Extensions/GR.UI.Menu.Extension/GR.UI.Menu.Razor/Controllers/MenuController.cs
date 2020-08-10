@@ -244,8 +244,8 @@ namespace GR.UI.Menu.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
-            => Json(_menuService.GetPaginatedMenuItems(param, menuId, parentId));
+        public async Task<JsonResult> LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
+            => Json(await _menuService.GetPaginatedMenuItemsAsync(param, menuId, parentId));
 
         /// <summary>
         /// Load page types with ajax
@@ -254,8 +254,8 @@ namespace GR.UI.Menu.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadMenuGroups(DTParameters param)
-            => Json(_menuService.GetPaginatedMenuGroups(param));
+        public async Task<JsonResult> LoadMenuGroups(DTParameters param)
+            => Json(await _menuService.GetPaginatedMenuGroupsAsync(param));
 
         /// <summary>
         /// Delete page type by id
@@ -346,7 +346,7 @@ namespace GR.UI.Menu.Razor.Controllers
         /// <param name="menuBlockId"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult OrderMenuItemsAsTree([Required]Guid menuBlockId)
+        public IActionResult OrderMenuItemsAsTree([Required] Guid menuBlockId)
         {
             ViewBag.menuBlockId = menuBlockId;
             return View();
@@ -359,7 +359,7 @@ namespace GR.UI.Menu.Razor.Controllers
         /// <returns></returns>
         [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [HttpPost]
-        public async Task<JsonResult> GetMenuTreeByMenuBlockId([Required]Guid menuBlockId)
+        public async Task<JsonResult> GetMenuTreeByMenuBlockId([Required] Guid menuBlockId)
         {
             var tree = await _menuService.GetMenus(menuBlockId, new List<string> { GlobalResources.Roles.ADMINISTRATOR });
             return Json(tree);

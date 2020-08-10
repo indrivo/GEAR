@@ -18,7 +18,7 @@ namespace GR.Report.Abstractions
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        DTResult<DynamicReportViewModel> GetFilteredReports(DTParameters param);
+        Task<DTResult<DynamicReportViewModel>> GetFilteredReportsAsync(DTParameters param);
 
         /// <summary>
         /// Create Folder

@@ -5,7 +5,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions.Events;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,11 +25,10 @@ namespace GR.AccountActivity.Abstractions.Extensions
             where TActivityFilter : ActivityTrackerFilter
         {
             services.AddGearScoped<IUserActivityService, TService>();
-            services.AddDetection();
 
-            services.AddMvc(opt =>
+            services.AddMvcCore(o =>
             {
-                opt.Filters.Add<TActivityFilter>();
+                o.Filters.Add<TActivityFilter>();
             });
 
             IdentityEvents.Authorization.OnUserLogIn += (sender, args) =>
@@ -64,7 +62,7 @@ namespace GR.AccountActivity.Abstractions.Extensions
 
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+                GearApplication.GetHost().MigrateDbContext<TContext>();
             };
 
             return services;

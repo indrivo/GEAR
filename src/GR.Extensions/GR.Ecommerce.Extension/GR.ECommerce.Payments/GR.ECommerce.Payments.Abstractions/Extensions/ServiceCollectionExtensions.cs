@@ -21,7 +21,7 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
         public static IServiceCollection RegisterPayments<TService>(this IServiceCollection services)
             where TService : class, IPaymentService
         {
-            IoC.RegisterTransientService<IPaymentService, TService>();
+            services.AddGearScoped<IPaymentService, TService>();
             return services;
         }
 
@@ -34,7 +34,7 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
         public static IServiceCollection RegisterPaymentStorage<TContext>(this IServiceCollection services)
             where TContext : DbContext, IPaymentContext
         {
-            IoC.RegisterTransientService<IPaymentContext>(nameof(IPaymentContext), typeof(TContext));
+            services.AddScoped<IPaymentContext, TContext>();
             return services;
         }
 
@@ -54,7 +54,7 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
             Arg.NotNull(config, nameof(RegisterPaymentProvider));
 
             IoC.RegisterService<IPaymentMethodService>($"payment_method_{config.Id}", typeof(TProvider));
-            services.AddGearTransient<TProviderAbstraction, TProvider>();
+            services.AddGearScoped<TProviderAbstraction, TProvider>();
             PaymentProviders.Register(config.Id, new PaymentProvider
             {
                 Id = config.Id,

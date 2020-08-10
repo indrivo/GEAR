@@ -19,14 +19,14 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Extensions
         /// <returns></returns>
         public static CalendarServiceCollection AddCalendarGraphQlApi(this CalendarServiceCollection serviceCollection)
         {
-            serviceCollection.Services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            serviceCollection.Services.AddSingleton<CalendarQuery>();
+            serviceCollection.Services.AddScoped<IDocumentExecuter, DocumentExecuter>();
+            serviceCollection.Services.AddScoped<CalendarQuery>();
 
             //Register types
-            serviceCollection.Services.AddTransient<EventType>();
-            serviceCollection.Services.AddTransient<UserType>();
-            serviceCollection.Services.AddTransient<EventMemberType>();
-            serviceCollection.Services.AddSingleton<ICalendarSchema, CalendarSchema>();
+            serviceCollection.Services.AddScoped<EventType>();
+            serviceCollection.Services.AddScoped<UserType>();
+            serviceCollection.Services.AddScoped<EventMemberType>();
+            serviceCollection.Services.AddScoped<ICalendarSchema, CalendarSchema>();
             //var sp = serviceCollection.Services.BuildServiceProvider();
             //serviceCollection.Services.AddSingleton<ICalendarSchema>(new CalendarSchema(new FuncDependencyResolver(type => sp.GetService(type))));
             return serviceCollection;

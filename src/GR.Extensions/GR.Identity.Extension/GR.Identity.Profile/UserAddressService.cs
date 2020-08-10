@@ -51,9 +51,9 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync()
         {
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest =  _userManager.FindUserIdInClaims();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<Address>>();
-            return await GetUserAddressesAsync(currentUserRequest.Result.Id);
+            return await GetUserAddressesAsync(currentUserRequest.Result);
         }
 
         /// <summary>
@@ -62,23 +62,9 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync()
         {
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest = _userManager.FindUserIdInClaims();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<GetUserAddressViewModel>();
-            var query = _context.UserAddresses.Where(x => x.UserId == currentUserRequest.Result.Id)
-                .Include(x => x.User)
-                .Include(x => x.Country)
-                .Include(x => x.StateOrProvince);
-
-            var defaultAddress = await query.FirstOrDefaultAsync(x => x.IsDefault)
-                                 ?? await query.FirstOrDefaultAsync();
-
-            if (defaultAddress == null)
-            {
-                return new NotFoundResultModel<GetUserAddressViewModel>();
-            }
-
-            var mapped = _mapper.Map<GetUserAddressViewModel>(defaultAddress);
-            return new SuccessResultModel<GetUserAddressViewModel>(mapped);
+            return await GetDefaultAddressAsync(currentUserRequest.Result);
         }
 
         /// <summary>
