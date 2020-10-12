@@ -12,7 +12,7 @@ namespace GR.Documents.Abstractions.Extensions
         /// <param name="modelState"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static ModelStateDictionary AddCommerceError(this ModelStateDictionary modelState, ErrorKey error)
+        public static ModelStateDictionary AddError(this ModelStateDictionary modelState, ErrorKey error)
         {
             Arg.NotNull(modelState, nameof(ModelStateDictionary));
             Arg.NotNull<ErrorKey>(error, nameof(ErrorKey));

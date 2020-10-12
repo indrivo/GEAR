@@ -22,19 +22,19 @@ namespace GR.Identity.Profile
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<GearUser> _userManager;
+        protected readonly IUserManager<GearUser> UserManager;
 
         /// <summary>
         /// Inject http context accessor
         /// </summary>
-        private readonly IHttpContextAccessor _accessor;
+        protected readonly IHttpContextAccessor Accessor;
 
         #endregion
 
         public ProfileService(IUserManager<GearUser> userManager, IHttpContextAccessor accessor)
         {
-            _userManager = userManager;
-            _accessor = accessor;
+            UserManager = userManager;
+            Accessor = accessor;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace GR.Identity.Profile
             if (!modelState.IsSuccess) return modelState;
 
             var resultModel = new ResultModel();
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest = await UserManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
@@ -57,7 +57,7 @@ namespace GR.Identity.Profile
 
             var currentUser = currentUserRequest.Result;
 
-            var isUsed = await _userManager.UserManager
+            var isUsed = await UserManager.UserManager
                 .Users
                 .AsNoTracking()
                 .AnyAsync(x => !x.Id.Equals(currentUser.Id)
@@ -82,12 +82,12 @@ namespace GR.Identity.Profile
             {
                 EmailEvents.Events.TriggerSendConfirmEmail(new SendConfirmEmailEventArgs
                 {
-                    HttpContext = _accessor.HttpContext,
+                    HttpContext = Accessor.HttpContext,
                     Email = model.Email
                 });
             }
 
-            var result = await _userManager.UserManager.UpdateAsync(currentUser);
+            var result = await UserManager.UserManager.UpdateAsync(currentUser);
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
@@ -110,7 +110,7 @@ namespace GR.Identity.Profile
             if (!modelState.IsSuccess) return modelState;
 
             var resultModel = new ResultModel();
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest = await UserManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess)
             {
                 resultModel.AddError("User not found!");
@@ -119,7 +119,7 @@ namespace GR.Identity.Profile
 
             var currentUser = currentUserRequest.Result;
 
-            var isUsed = await _userManager.UserManager
+            var isUsed = await UserManager.UserManager
                 .Users
                 .AsNoTracking()
                 .AnyAsync(x => !x.Id.Equals(currentUser.Id)
@@ -140,12 +140,12 @@ namespace GR.Identity.Profile
             {
                 EmailEvents.Events.TriggerSendConfirmEmail(new SendConfirmEmailEventArgs
                 {
-                    HttpContext = _accessor.HttpContext,
+                    HttpContext = Accessor.HttpContext,
                     Email = model.Email
                 });
             }
 
-            var result = await _userManager.UserManager.UpdateAsync(currentUser);
+            var result = await UserManager.UserManager.UpdateAsync(currentUser);
             if (result.Succeeded)
             {
                 resultModel.IsSuccess = true;
@@ -163,7 +163,7 @@ namespace GR.Identity.Profile
         public virtual async Task<ResultModel> ResendConfirmEmailAsync()
         {
             var resultModel = new ResultModel();
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest = await UserManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
@@ -176,7 +176,7 @@ namespace GR.Identity.Profile
             {
                 EmailEvents.Events.TriggerSendConfirmEmail(new SendConfirmEmailEventArgs
                 {
-                    HttpContext = _accessor.HttpContext,
+                    HttpContext = Accessor.HttpContext,
                     Email = currentUser.Email
                 });
                 resultModel.IsSuccess = true;
@@ -185,6 +185,25 @@ namespace GR.Identity.Profile
             {
                 resultModel.AddError("Email has already been confirmed, try refreshing the page");
             }
+
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Check if email is confirmed
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> IsEmailConfirmedAsync()
+        {
+            var resultModel = new ResultModel();
+            var currentUserRequest = await UserManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess)
+            {
+                resultModel.AddError("User not found!");
+                return resultModel;
+            }
+
+            resultModel.IsSuccess = currentUserRequest.Result.EmailConfirmed;
 
             return resultModel;
         }

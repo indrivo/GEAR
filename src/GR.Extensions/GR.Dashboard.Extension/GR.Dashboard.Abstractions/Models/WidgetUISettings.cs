@@ -1,6 +1,6 @@
 ﻿namespace GR.Dashboard.Abstractions.Models
 {
-    public class WidgetUISettings
+    public abstract class WidgetUiSettings
     {
         /// <summary>
         /// Width

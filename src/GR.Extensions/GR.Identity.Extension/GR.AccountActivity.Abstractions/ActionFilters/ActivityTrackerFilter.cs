@@ -56,7 +56,11 @@ namespace GR.AccountActivity.Abstractions.ActionFilters
             }
 
             //Disable check track new device on new registration period
-            var userReq = (await UserManager.GetCurrentUserAsync()).Result;
+            var userReq = (await UserManager.GetCurrentUserWithCustomFieldsAsync(x => new GearUser
+            {
+                Id = x.Id,
+                Created = x.Created
+            })).Result;
             if (DateTime.Now - userReq.Created < AccountActivityResources.TimeToDisableTrackingDevice)
             {
                 await next();

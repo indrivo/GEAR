@@ -8,8 +8,15 @@ using GR.Email.Abstractions.Models.EmailViewModels;
 
 namespace GR.Email.Abstractions
 {
-    public interface IEmailSender : Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, ISender
+    public interface IEmailSender : ISender
     {
+        //
+        // Summary:
+        //     This API supports the ASP.NET Core Identity default UI infrastructure and is
+        //     not intended to be used directly from your code. This API may change or be removed
+        //     in future releases.
+        Task SendEmailAsync(string email, string subject, string htmlMessage);
+
         /// <summary>
         /// Send message to multiple users
         /// </summary>

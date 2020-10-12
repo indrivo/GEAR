@@ -7,5 +7,6 @@
     {
         public virtual bool UseHtmlTemplate { get; set; }
         public virtual string HtmlTemplateName { get; set; }
+        public virtual int CodeLength { get; set; } = 6;
     }
 }

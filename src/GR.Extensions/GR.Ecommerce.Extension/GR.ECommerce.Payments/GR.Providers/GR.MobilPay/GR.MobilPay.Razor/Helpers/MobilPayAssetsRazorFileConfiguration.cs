@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.MobilPay.Razor.Helpers
 {
     public class MobilPayAssetsRazorFileConfiguration : StaticFileConfiguration
     {
-        public MobilPayAssetsRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public MobilPayAssetsRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

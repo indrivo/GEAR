@@ -169,6 +169,9 @@ using GR.Identity.Profile;
 using GR.Identity.Profile.Abstractions.Extensions;
 using GR.Identity.Profile.Data;
 using GR.Identity.Razor.Extensions;
+using GR.IdentityDocuments;
+using GR.IdentityDocuments.Abstractions.Extensions;
+using GR.IdentityDocuments.Data;
 using GR.Localization.Abstractions.Models.Config;
 using GR.Localization.Api.Helpers;
 using GR.Localization.Data;
@@ -251,6 +254,8 @@ namespace GR.Cms
 		{
 			//------------------------------Global Config----------------------------------------
 			config.CacheConfiguration.UseInMemoryCache = true;
+			config.CacheConfiguration.UseDistributedCache = true;
+
 			config.UseHotReload = true;
 			config.UseHealthCheck = false;
 			config.SwaggerServicesConfiguration = new SwaggerServicesConfiguration
@@ -376,7 +381,7 @@ namespace GR.Cms
 			config.GearServices.AddNotificationModule<NotifyWithDynamicEntities<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
 				.AddNotificationSeeder<DynamicNotificationSeederService>()
 				.RegisterNotificationsHubModule<CommunicationHub>()
-				.AddNotificationRazorUIModule();
+				.AddNotificationRazorUiModule();
 
 			////-------------------------------EF core Notification Module-------------------------------------
 			//config.GearServices.AddNotificationModule<Notify<GearIdentityDbContext, GearRole, GearUser>, GearRole>()
@@ -518,7 +523,7 @@ namespace GR.Cms
 
 			//----------------------------------------Email Module-------------------------------------
 			config.GearServices.AddEmailModule<EmailSender>()
-				.AddEmailRazorUIModule()
+				.AddEmailRazorUiModule()
 				.BindEmailSettings(Configuration);
 
 			//----------------------------------------Ldap Module-------------------------------------
@@ -593,6 +598,7 @@ namespace GR.Cms
 						"email", "notification.local"
 					};
 				})
+				.RegisterSubscriptionExpirationService<SubscriptionExpirationService>()
 				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
 				.RegisterSubscriptionEvents()
 				.RegisterSubscriptionRules()
@@ -659,6 +665,15 @@ namespace GR.Cms
 				.AddUserPreferencesModule<UserPreferencesService>()
 				.RegisterPreferencesProvider<DefaultUserPreferenceProvider>()
 				.AddUserPreferencesModuleStorage<UserPreferencesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
+			//---------------------------------Identity Documents Module --------------------------------
+			config.GearServices
+				.AddIdentityDocumentsModule<IdentityDocumentService, IdentityVerificationService>()
+				.AddIdentityDocumentsModuleStorage<IdentityDocumentsDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();

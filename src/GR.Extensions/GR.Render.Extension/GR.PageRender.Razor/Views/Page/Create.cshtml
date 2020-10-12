@@ -87,7 +87,7 @@
 
 @section Scripts {
     <script>
-        const trans = load("/Localization/GetTranslationsForCurrentLanguage");
+        const trans = load("/api/LocalizationApi/GetTranslationsForCurrentLanguage");
         const options = $("#TitleTranslateKey");
         $.each(trans, function (index, data) {
             options.append(new Option(data, index));

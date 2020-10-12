@@ -69,13 +69,13 @@ namespace GR.Dashboard
                     .ThenInclude(x => x.CustomWidgets)
                         .ThenInclude(x => x.CustomWidget)
 
-                .Include(x => x.Rows)
-                    .ThenInclude(x => x.ReportWidgets)
-                        .ThenInclude(x => x.ReportWidget)
+                //.Include(x => x.Rows)
+                //    .ThenInclude(x => x.ReportWidgets)
+                //        .ThenInclude(x => x.ReportWidget)
 
-                .Include(x => x.Rows)
-                    .ThenInclude(x => x.ChartWidgets)
-                        .ThenInclude(x => x.ChartWidget)
+                //.Include(x => x.Rows)
+                //    .ThenInclude(x => x.ChartWidgets)
+                //        .ThenInclude(x => x.ChartWidget)
                 .FirstOrDefaultAsync(x => x.IsActive);
 
             if (dashboard.IsNull())
@@ -574,9 +574,9 @@ namespace GR.Dashboard
     /// <param name="widgetId"></param>
     /// <param name="rowId"></param>
     /// <returns></returns>
-    public async Task<ResultModel<WidgetUISettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId)
+    public async Task<ResultModel<WidgetUiSettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId)
     {
-        var response = new ResultModel<WidgetUISettings>();
+        var response = new ResultModel<WidgetUiSettings>();
         if (!widgetId.HasValue || !rowId.HasValue)
         {
             response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
@@ -606,7 +606,7 @@ namespace GR.Dashboard
     /// <param name="rowId"></param>
     /// <param name="uiSettings"></param>
     /// <returns></returns>
-    public async Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings)
+    public async Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUiSettings uiSettings)
     {
         var response = new ResultModel();
         if (!widgetId.HasValue || !rowId.HasValue)

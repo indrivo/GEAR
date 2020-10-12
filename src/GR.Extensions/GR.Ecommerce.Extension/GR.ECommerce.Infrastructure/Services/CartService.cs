@@ -114,14 +114,14 @@ namespace GR.ECommerce.Infrastructure.Services
         {
             var response = new ResultModel<AddToCartViewModel>();
 
-            var user = _userManager.GetCurrentUserAsync();
+            var user = _userManager.FindUserIdInClaims();
             var cart = await _context.Carts
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
                 .ThenInclude(i => i.ProductPrices)
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.ProductVariation)
-                .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id);
+                .FirstOrDefaultAsync(x => x.UserId == user.Result);
 
             if (cart == null)
             {
@@ -148,45 +148,42 @@ namespace GR.ECommerce.Infrastructure.Services
         {
             var resultModel = new ResultModel<CartItem>();
             var product = _context.Products.FirstOrDefault(x => x.Id == model.ProductId);
-            var user = _userManager.GetCurrentUserAsync();
+            var user = _userManager.FindUserIdInClaims();
 
-            if (product != null)
+            if (product == null) return resultModel;
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(x => x.UserId == user.Result);
+
+            if (cart == null)
             {
-                var cart = _context.Carts.FirstOrDefault(x => x.UserId == user.Result.Result.Id);
-
-                if (cart == null)
-                {
-                    cart = new Cart { UserId = user.Result.Result.Id };
-                    await _context.Carts.AddAsync(cart);
-                }
-
-                var cartItem = _context.CartItems.FirstOrDefault(x => x.ProductId == model.ProductId && x.CartId == cart.Id && x.ProductVariationId == model.VariationId);
-
-                if (cartItem == null)
-                {
-                    cartItem = new CartItem
-                    {
-                        ProductId = model.ProductId,
-                        Amount = model.Quantity,
-                        CartId = cart.Id,
-                        ProductVariationId = model.VariationId,
-                    };
-
-                    await _context.CartItems.AddAsync(cartItem);
-                }
-                else
-                {
-                    cartItem.Amount += model.Quantity;
-                    cartItem.ProductVariationId = model.VariationId;
-                    _context.CartItems.Update(cartItem);
-                }
-
-                var dbResult = await _context.PushAsync();
-                return dbResult.Map((await GetCartItemByIdAsync(cartItem.Id)).Result);
+                cart = new Cart { UserId = user.Result };
+                await _context.Carts.AddAsync(cart);
             }
-            return resultModel;
-        }
 
+            var cartItem = await _context.CartItems.FirstOrDefaultAsync(x => x.ProductId == model.ProductId && x.CartId == cart.Id && x.ProductVariationId == model.VariationId);
+
+            if (cartItem == null)
+            {
+                cartItem = new CartItem
+                {
+                    ProductId = model.ProductId,
+                    Amount = model.Quantity,
+                    CartId = cart.Id,
+                    ProductVariationId = model.VariationId,
+                };
+
+                await _context.CartItems.AddAsync(cartItem);
+            }
+            else
+            {
+                cartItem.Amount += model.Quantity;
+                cartItem.ProductVariationId = model.VariationId;
+                _context.CartItems.Update(cartItem);
+            }
+
+            var dbResult = await _context.PushAsync();
+            return dbResult.Map((await GetCartItemByIdAsync(cartItem.Id)).Result);
+        }
 
         /// <summary>
         /// Delete cart by id

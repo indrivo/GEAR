@@ -78,8 +78,7 @@ namespace GR.Core
         /// <summary>
         /// Service provider
         /// </summary>
-        public static IServiceProvider ServiceProvider =>
-            Singleton<IServiceProvider, IServiceProvider>.GetOrSetInstance(() => Task.FromResult(IoC.Resolve<IServiceProvider>()));
+        public static IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Services container

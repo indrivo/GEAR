@@ -82,7 +82,7 @@
 @section Scripts {
     <script src="~/assets/helpers/icons.js"></script>
     <script>
-        const trans = load("/Localization/GetTranslationsForCurrentLanguage");
+        const trans = load("/api/LocalizationApi/GetTranslationsForCurrentLanguage");
         const options = $("#Translate");
         $.each(trans,
             function(index, data) {

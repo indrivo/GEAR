@@ -7,8 +7,11 @@ using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Scopes;
+using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Helpers.PasswordPolicies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -87,9 +90,10 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add authentication
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="config"></param>
         /// <param name="useHttps"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services, bool useHttps = false)
+        public static IServiceCollection AddAuthentication<TAuthorizeService>(this IServiceCollection services, Action<GearAuthenticationOptions> config = null,  bool useHttps = false)
             where TAuthorizeService : class, IAuthorizeService
         {
             services.AddGearTransient<IAuthorizeService, TAuthorizeService>();
@@ -99,6 +103,18 @@ namespace GR.Identity.Abstractions.Extensions
                 .BuildServiceProvider()
                 .GetRequiredService<IHostingEnvironment>();
             var isDevelopment = hostingEnvironment.IsDevelopment() || !useHttps;
+
+            Action<CookieAuthenticationOptions> cookieAuthOptions = options =>
+            {
+                options.Cookie.Name = $".AspNet{GearApplication.SystemConfig.MachineIdentifier}";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = isDevelopment
+                    ? CookieSecurePolicy.None
+                    : CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.IsEssential = true;
+                options.EventsType = typeof(CustomCookieAuthenticationEvents);
+            };
 
             services.AddAuthentication(options =>
                 {
@@ -142,23 +158,19 @@ namespace GR.Identity.Abstractions.Extensions
                 })
                 .AddCookie(options =>
                 {
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.SecurePolicy = isDevelopment
-                        ? CookieSecurePolicy.None
-                        : CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    cookieAuthOptions.Invoke(options);
                 });
+
+            services.AddScoped<CustomCookieAuthenticationEvents>();
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = $".AspNet{GearApplication.SystemConfig.MachineIdentifier}";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                options.Cookie.SecurePolicy = isDevelopment
-                    ? CookieSecurePolicy.None
-                    : CookieSecurePolicy.Always;
+                cookieAuthOptions.Invoke(options);
             });
 
+            var baseConf = new GearAuthenticationOptions();
+            config?.Invoke(baseConf);
+            services.AddGearSingleton(baseConf);
             return services;
         }
 

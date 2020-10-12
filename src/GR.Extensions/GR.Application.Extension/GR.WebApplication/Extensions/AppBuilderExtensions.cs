@@ -33,6 +33,7 @@ namespace GR.WebApplication.Extensions
         /// <returns></returns>
         public static IGearAppBuilder UseGearWebApp(this IApplicationBuilder app, Action<GearAppBuilderConfig> config)
         {
+            GearApplication.ServiceProvider = app.ApplicationServices;
             var configuration = new GearAppBuilderConfig();
             config(configuration);
             GearApplication.SetAppName(configuration.AppName);
@@ -177,8 +178,10 @@ namespace GR.WebApplication.Extensions
                                 headers.CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue
                                 {
                                     Public = true,
-                                    MaxAge = TimeSpan.FromDays(1)
+                                    MaxAge = TimeSpan.FromDays(5)
                                 };
+                                context.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+                                    new[] { "Accept-Encoding" };
                             }
                         });
                     }

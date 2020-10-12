@@ -128,7 +128,7 @@ namespace GR.Calendar.Abstractions.Extensions
         public static CalendarServiceCollection RegisterTokenProvider<TProvider>(this CalendarServiceCollection serviceCollection)
             where TProvider : class, ICalendarExternalTokenProvider
         {
-            IoC.RegisterTransientService<ICalendarExternalTokenProvider, TProvider>();
+            serviceCollection.Services.AddGearScoped<ICalendarExternalTokenProvider, TProvider>();
             return serviceCollection;
         }
 
@@ -141,7 +141,7 @@ namespace GR.Calendar.Abstractions.Extensions
         public static CalendarServiceCollection RegisterCalendarUserPreferencesProvider<TService>(this CalendarServiceCollection serviceCollection)
             where TService : class, ICalendarUserSettingsService
         {
-            IoC.RegisterTransientService<ICalendarUserSettingsService, TService>();
+            serviceCollection.Services.AddGearScoped<ICalendarUserSettingsService, TService>();
             return serviceCollection;
         }
     }

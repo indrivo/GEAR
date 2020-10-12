@@ -24,9 +24,9 @@ namespace GR.Subscriptions.Abstractions.Events
             #region Events
 
             /// <summary>
-            /// On subscription upgrade
+            /// On subscription change
             /// </summary>
-            public static event EventHandler<UpgradeSubscriptionEventArgs> OnSubscriptionUpgrade;
+            public static event EventHandler<ChangeSubscriptionEventArgs> OnSubscriptionChange;
 
             /// <summary>
             /// On subscription seed
@@ -38,11 +38,11 @@ namespace GR.Subscriptions.Abstractions.Events
             #region Triggers
 
             /// <summary>
-            /// Trigger update subscription
+            /// Trigger change subscription
             /// </summary>
             /// <param name="e"></param>
-            public static void TriggerSubscriptionUpgrade(UpgradeSubscriptionEventArgs e)
-                => SystemEvents.InvokeEvent(null, OnSubscriptionUpgrade, e, nameof(OnSubscriptionUpgrade));
+            public static void TriggerSubscriptionChange(ChangeSubscriptionEventArgs e)
+                => SystemEvents.InvokeEvent(null, OnSubscriptionChange, e, nameof(OnSubscriptionChange));
 
             /// <summary>
             /// Trigger seed

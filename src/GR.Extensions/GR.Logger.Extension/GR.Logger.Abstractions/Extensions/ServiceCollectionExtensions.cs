@@ -9,6 +9,19 @@ namespace GR.Logger.Abstractions.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Register logger service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterLoggerService<TService>(this IServiceCollection services)
+            where TService : class, ILoggerService
+        {
+            services.AddGearSingleton<ILoggerService, TService>();
+            return services;
+        }
+
+        /// <summary>
         /// Register logger module
         /// </summary>
         /// <typeparam name="TLoggerFactory"></typeparam>

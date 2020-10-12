@@ -199,7 +199,7 @@ namespace GR.Dashboard.Razor.Controllers
         /// <param name="widgetId"></param>
         /// <param name="rowId"></param>
         /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<WidgetUISettings>))]
+        [HttpGet, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<WidgetUiSettings>))]
         public async Task<JsonResult> GetUISettingsForWidget(Guid? widgetId, Guid? rowId)
         {
             return Json(await _dashboardService.GetUISettingsForWidgetAsync(widgetId, rowId));
@@ -213,7 +213,7 @@ namespace GR.Dashboard.Razor.Controllers
         /// <param name="uiSettings"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> UpdateUISettings(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings)
+        public async Task<JsonResult> UpdateUISettings(Guid? widgetId, Guid? rowId, WidgetUiSettings uiSettings)
         {
             return Json(await _dashboardService.UpdateUISettingsAsync(widgetId, rowId, uiSettings));
         }

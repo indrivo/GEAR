@@ -57,17 +57,17 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
+<script>
         $(document).ready(function() {
             $(".translateStartEvent").on("click",
                 function() {
                     const text = $(this).parent().parent().find("textarea").val();
                     const direction = $(this).data("direction-start");
-                    
+
                     if (text) {
                         $(`.spinner_${direction}`).css("display", "block");
                         $.ajax({
-                            url: "@Url.Action("Translate")",
+                            url: "@Url.Action("Translate", "LocalizationApi")",
                             data: {
                                 text: text,
                                 from: direction
@@ -104,5 +104,5 @@
                     }
                 });
         });
-    </script>
+</script>
 }

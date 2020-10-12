@@ -15,7 +15,7 @@ namespace GR.Dashboard.Abstractions.Models
         /// <summary>
         /// Dashboard rows
         /// </summary>
-        public virtual ICollection<Row> Rows { get; set; }
+        public virtual ICollection<Row> Rows { get; set; } = new List<Row>();
 
         /// <summary>
         /// Is active

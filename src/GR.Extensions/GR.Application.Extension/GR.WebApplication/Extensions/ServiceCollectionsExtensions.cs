@@ -28,6 +28,7 @@ using GR.Core.Razor.Extensions;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Core.Razor.Models;
 using GR.Core.Services;
+using GR.WebApplication.Helpers;
 using GR.WebApplication.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
@@ -78,6 +79,12 @@ namespace GR.WebApplication.Extensions
                     setup.AddHealthCheckEndpoint(GearApplication.SystemConfig.MachineIdentifier, $"{GearApplication.SystemConfig.EntryUri}hc");
                 });
             }
+
+            services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                // enables immediate logout, after updating the user's stat.
+                options.ValidationInterval = TimeSpan.Zero;
+            });
 
             //Register mappings from modules
             services.AddAutoMapper(configuration.GetAutoMapperProfilesFromAllAssemblies().ToArray());
@@ -131,12 +138,6 @@ namespace GR.WebApplication.Extensions
 
             services.AddHttpClient();
 
-            services.Configure<SecurityStampValidatorOptions>(options =>
-            {
-                // enables immediate logout, after updating the user's stat.
-                options.ValidationInterval = TimeSpan.Zero;
-            });
-
             //--------------------------------------Cors origin Module-------------------------------------
             if (configuration.UseDefaultCorsConfiguration)
                 services.AddOriginCorsModule();
@@ -176,6 +177,15 @@ namespace GR.WebApplication.Extensions
                 configuration.SwaggerServicesConfiguration.AuthenticationOperationFilterConfiguration?.Invoke(swaggerAuthConfig);
                 services.AddGearSingleton(swaggerAuthConfig);
             }
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                options.OnAppendCookie = cookieContext =>
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                options.OnDeleteCookie = cookieContext =>
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            });
 
             //Register memory cache
             IoC.Container.Register(Component
@@ -217,7 +227,7 @@ namespace GR.WebApplication.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSeqHealth(this IServiceCollection services)
+        private static IServiceCollection AddSeqHealth(this IServiceCollection services)
         {
             var builder = services.AddHealthChecks();
             var configurator = IoC.Resolve<IConfiguration>();
@@ -227,6 +237,14 @@ namespace GR.WebApplication.Extensions
                 setup.Endpoint = configurator.GetValue<string>("Logging:Seq:ServerUrl");
             }, "SEQ-logger");
             return services;
+        }
+
+        private static void CheckSameSite(HttpContext httpContext, CookieOptions options)
+        {
+            if (options.SameSite == SameSiteMode.None && !NewBehaviorCookieHelper.DisallowsSameSiteNone(httpContext.Request))
+            {
+                options.SameSite = SameSiteMode.Unspecified;
+            }
         }
     }
 }

@@ -354,7 +354,6 @@ Notificator.prototype.ajaxRequest = (requestUrl, requestType, requestData) => {
 //------------------------------------------------------------------------------------//
 //								External Connections
 //------------------------------------------------------------------------------------//
-
 $(document).ready(function () {
     const notificator = new Notificator();
 
@@ -381,15 +380,22 @@ $(document).ready(function () {
                     notificator.onReceiveNotification(notification);
                 });
 
+            function start() {
+                connection.start().then(() => {
+                    $(window).bind("beforeunload",
+                        function () {
+                            connection.stop();
+                        });
+                }).catch(err => {
+                    console.error(err);
+                    setTimeout(() => start(), 5000);
+                });
+            }
+
             //Start connection
-            connection.start().then(() => {
-                $(window).bind("beforeunload",
-                    function () {
-                        connection.stop();
-                    });
-            });
+            start();
         }).catch(function (err) {
-            //On error
+            console.error(err);
         });
 
         //init module

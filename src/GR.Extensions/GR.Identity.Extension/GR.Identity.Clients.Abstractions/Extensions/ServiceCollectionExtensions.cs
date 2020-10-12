@@ -43,6 +43,7 @@ namespace GR.Identity.Clients.Abstractions.Extensions
                     options.Events.RaiseSuccessEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseErrorEvents = true;
+                    options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
                 })
                 .AddCertificate()
                 .AddAspNetIdentity<TUser>()

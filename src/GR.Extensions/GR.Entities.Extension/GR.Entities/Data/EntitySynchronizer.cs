@@ -51,7 +51,7 @@ namespace GR.Entities.Data
                     IsPartOfDbContext = tableModel.IsStaticFromEntityFramework,
                     TenantId = tenantId
                 };
-                _context.Table.Add(table);
+                await _context.Table.AddAsync(table);
                 var dbResult = await _context.SaveAsync();
                 if (!dbResult.IsSuccess) continue;
                 var response = _tablesService.CreateSqlTable(table, _connectionString);
@@ -85,7 +85,7 @@ namespace GR.Entities.Data
                 TenantId = tenantId
             };
 
-            _context.Table.Add(table);
+            await _context.Table.AddAsync(table);
             var dbResult = await _context.SaveAsync();
             if (dbResult.IsSuccess)
             {
@@ -166,7 +166,7 @@ namespace GR.Entities.Data
                             }
 
                             model.TableFieldConfigValues = configValues;
-                            _context.TableFields.Add(model);
+                            await _context.TableFields.AddAsync(model);
                             var dbResult = await _context.SaveAsync();
                             if (!dbResult.IsSuccess)
                             {
@@ -224,7 +224,7 @@ namespace GR.Entities.Data
                         });
                     }
                 model.TableFieldConfigValues = configValues;
-                _context.TableFields.Add(model);
+                await _context.TableFields.AddAsync(model);
                 await _context.SaveAsync();
             }
         }

@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.PhoneVerification.Abstractions;
 using GR.Identity.PhoneVerification.Abstractions.Helpers;
 using GR.Identity.PhoneVerification.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GR.Identity.PhoneVerification.Api.Controllers
@@ -101,8 +102,8 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
             if (verificationRequest == null)
             {
                 var response = new ResultModel();
-                response.Errors.Add(new ErrorModel(string.Empty, "A request to send the token to the phone was not made"));
-                response.Errors.Add(new ErrorModel(string.Empty, $"To start, call: {nameof(StartRegisterBySendingVerificationRequest)}"));
+                response.AddError("A request to send the token to the phone was not made");
+                response.AddError($"To start, call: {nameof(StartRegisterBySendingVerificationRequest)}");
                 return Json(response);
             }
 
@@ -121,7 +122,7 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
                 PhoneNumber = verificationRequest.PhoneNumber,
                 Password = verificationRequest.Pin,
                 UserName = verificationRequest.PhoneNumber,
-                Email = $"test_{Guid.NewGuid()}@gmail.com"
+                Email = $"mail_{Guid.NewGuid()}@mail.com"
             });
 
             if (!addNewUserRequest.IsSuccess) return Json(addNewUserRequest);
@@ -136,17 +137,22 @@ namespace GR.Identity.PhoneVerification.Api.Controllers
 
             var createRequest = await _userManager.CreateUserAsync(user, verificationRequest.Pin);
 
-            if (!createRequest.IsSuccess)
-                return !createRequest.IsSuccess ? Json(createRequest) : Json(validationResult);
+            if (!createRequest.IsSuccess) return Json(createRequest);
 
-            var setTokenResult = await _userManager
-                .UserManager
-                .SetAuthenticationTokenAsync(user, PhoneVerificationResources.LOGIN_PROVIDER_NAME, PhoneVerificationResources.AUTHY_TOKEN,
-                    addNewUserRequest.Result);
-            if (setTokenResult.Succeeded) return !createRequest.IsSuccess ? Json(createRequest) : Json(validationResult);
-            var tokenResponse = new ResultModel();
-            tokenResponse.AppendIdentityErrors(setTokenResult.Errors);
-            return Json(tokenResponse);
+            GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueue(
+                async (serviceProvider, cancellationToken) =>
+                {
+                    var userManager = serviceProvider.GetRequiredService<IUserManager<GearUser>>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<IUserManager<GearUser>>>();
+                    var setTokenResult = await userManager.SetTokenAsync(user.Id, PhoneVerificationResources.LOGIN_PROVIDER_NAME, PhoneVerificationResources.AUTHY_TOKEN,
+                        addNewUserRequest.Result);
+                    if (!setTokenResult.IsSuccess)
+                    {
+                        logger.LogWarning("Fail to set Authy token, errors: {Errors}", setTokenResult.Errors.SerializeAsJson());
+                    }
+                });
+
+            return Json(createRequest);
         }
 
         /// <summary>

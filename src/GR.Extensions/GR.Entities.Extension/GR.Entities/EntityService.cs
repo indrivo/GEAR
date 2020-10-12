@@ -439,7 +439,7 @@ namespace GR.Entities
                 return response;
             }
 
-            _context.EntityTypes.Add(new EntityType
+            await _context.EntityTypes.AddAsync(new EntityType
             {
                 MachineName = model.MachineName,
                 Author = nameof(System),
@@ -450,7 +450,6 @@ namespace GR.Entities
             });
             var dbResult = await _context.SaveAsync();
             if (!dbResult.IsSuccess) return dbResult;
-
 
             await CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
             response.IsSuccess = true;
@@ -473,11 +472,13 @@ namespace GR.Entities
         public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null)
         {
             var key = GenerateEntityCacheKey(name);
-
+            var tenantId = _userManager.CurrentUserTenantId;
             if (filter == null)
-                filter = x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
-                     || x.Name.Equals(name) && x.IsCommon
-                     || x.IsPartOfDbContext && x.Name.Equals(name);
+            {
+                filter = x => x.Name.Equals(name) && x.TenantId == tenantId
+                              || x.Name.Equals(name) && x.IsCommon
+                              || x.IsPartOfDbContext && x.Name.Equals(name);
+            }
 
             var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
 
@@ -485,12 +486,12 @@ namespace GR.Entities
 
             if (table != null) return new SuccessResultModel<TableModel>(table);
 
-            var dbTable = await _context.Table
+            var dbTable =  _context.Table
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
                 .ThenInclude(x => x.TableFieldType)
-                .FirstOrDefaultAsync(filter.GetValueOrDefault().ToExpression());
+                .FirstOrDefault(filter);
 
             if (dbTable == null) return new NotFoundResultModel<TableModel>();
 

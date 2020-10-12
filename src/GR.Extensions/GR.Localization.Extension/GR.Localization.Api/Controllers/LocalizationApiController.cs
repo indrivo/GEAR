@@ -22,7 +22,9 @@ using System.Net;
 using System.Threading.Tasks;
 using GR.Core.Helpers.Archiving;
 using GR.Core.Razor.Attributes;
+using GR.Localization.Abstractions.Extensions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace GR.Localization.Api.Controllers
@@ -48,12 +50,24 @@ namespace GR.Localization.Api.Controllers
         /// </summary>
         private readonly IStringLocalizer _localizer;
 
+        /// <summary>
+        /// Inject options
+        /// </summary>
+        private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
+
+        /// <summary>
+        /// Inject translation service
+        /// </summary>
+        private readonly IExternalTranslationProvider _externalTranslationProvider;
+
         #endregion
 
-        public LocalizationApiController(ILocalizationService service, IStringLocalizer localizer)
+        public LocalizationApiController(ILocalizationService service, IStringLocalizer localizer, IOptionsSnapshot<LocalizationConfigModel> locConfig, IExternalTranslationProvider externalTranslationProvider)
         {
             _service = service;
             _localizer = localizer;
+            _locConfig = locConfig;
+            _externalTranslationProvider = externalTranslationProvider;
         }
 
         /// <summary>
@@ -260,6 +274,102 @@ namespace GR.Localization.Api.Controllers
                     return new JsonResult(new object());
                 }
             }
+        }
+
+        /// <summary>
+        /// Get translations
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        [JsonProduces(typeof(Dictionary<string, string>))]
+        public JsonResult GetTranslationsForCurrentLanguage()
+        {
+            var lang = HttpContext.Session.GetString("lang");
+            var languages = _locConfig.Value.Languages.Select(x => x.Identifier);
+            if (!languages.Contains(lang))
+            {
+                return Json(null);
+            }
+
+            var translations = _localizer.GetAllForLanguage(lang).OrderBy(x => x.Value);
+            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
+            return Json(json);
+        }
+
+        /// <summary>
+        /// Get all languages
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public JsonResult GetAvailableLanguages()
+        {
+            var languages = _locConfig.Value.Languages;
+            var parsed = new List<dynamic>();
+            var result = new ResultModel();
+            foreach (var lang in languages)
+            {
+                parsed.Add(new
+                {
+                    Locale = lang.Identifier,
+                    Description = lang.Name
+                });
+            }
+
+            result.Result = parsed;
+
+            return Json(result);
+        }
+
+        /// <summary>
+        /// Get translations
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet]
+        public JsonResult GetTranslations(string lang)
+        {
+            var languages = _locConfig.Value.Languages.Select(x => x.Identifier);
+            if (!languages.Contains(lang))
+            {
+                return Json(null);
+            }
+
+            var translations = _localizer.GetAllForLanguage(lang);
+            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
+            return Json(json);
+        }
+
+        /// <summary>
+        /// Translate all keys from english
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<JsonResult> Translate([Required] string text, [Required] string from)
+        {
+            var result = new ResultModel
+            {
+                Errors = new List<IErrorModel>()
+            };
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(from))
+            {
+                result.Errors.Add(new ErrorModel("EmptyKey", "Key is empty!"));
+                return Json(result);
+            }
+            var languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name);
+            var dict = new Dictionary<string, string>();
+            foreach (var (key, _) in languages.AsParallel())
+            {
+                if (key == from) continue;
+                var translated = await _externalTranslationProvider.TranslateTextAsync(text, from, key);
+                dict.Add(key, translated);
+            }
+
+            result.Result = dict;
+            result.IsSuccess = true;
+            return Json(result);
         }
     }
 }

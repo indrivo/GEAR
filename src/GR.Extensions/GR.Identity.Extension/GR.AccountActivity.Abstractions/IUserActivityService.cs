@@ -103,6 +103,14 @@ namespace GR.AccountActivity.Abstractions
         Task<DTResult<ConfirmedDevicesViewModel>> GetPagedConfirmedDevicesAsync(DTParameters parameters);
 
         /// <summary>
+        /// Get user devices
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<DTResult<UserDeviceViewModel>> GetPagedUserDevicesAsync(DTParameters parameters, Guid userId);
+
+        /// <summary>
         /// Get paged user activity
         /// </summary>
         /// <param name="parameters"></param>
@@ -163,5 +171,12 @@ namespace GR.AccountActivity.Abstractions
         /// <param name="context"></param>
         /// <returns></returns>
         Task<ResultModel<UserDevice>> FindDeviceAsync(Guid userId, HttpContext context);
+
+        /// <summary>
+        /// Extract platform and browser
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        ResultModel<ExtractedInfoFromHttpContext> ExtractPlatformAndBrowserVersionsFromHttpContext(HttpContext context);
     }
 }

@@ -19,36 +19,4 @@
     <ProjectReference Include="..\GR.UI.Menu.Abstractions\GR.UI.Menu.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\Menu\Create.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\CreateItem.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\Edit.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\EditItem.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\GetMenu.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\Index.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\OrderMenuChildItems.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Menu\OrderMenuItemsAsTree.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewStart.cshtml">
-      <Pack>false</Pack>
-    </Content>
-  </ItemGroup>
 </Project>

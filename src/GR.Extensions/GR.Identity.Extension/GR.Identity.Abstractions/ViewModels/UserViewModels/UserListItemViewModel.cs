@@ -12,6 +12,13 @@ namespace GR.Identity.Abstractions.ViewModels.UserViewModels
 
         public Guid Id { get; set; }
         public string UserName { get; set; }
+        public string FullName { get; set; }
+
+        /// <summary>
+        /// Photo url
+        /// </summary>
+        public virtual string PhotoUrl => $"/Users/GetImage?id={Id}";
+
         public string CreatedBy { get; set; }
         public string CreatedDate { get; set; }
         public string ModifiedBy { get; set; }

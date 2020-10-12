@@ -51,7 +51,7 @@ class IndexDbLocalizer {
     }
 
     storeData() {
-        window.loadAsync("/Localization/GetTranslationsForCurrentLanguage").then(response => {
+        window.loadAsync("/api/LocalizationApi/GetTranslationsForCurrentLanguage").then(response => {
             var transaction = this.driver.transaction(["translations"], "readwrite");
             var objectStore = transaction.objectStore("translations");
             for (let i = 0; i < response.length; i++) {

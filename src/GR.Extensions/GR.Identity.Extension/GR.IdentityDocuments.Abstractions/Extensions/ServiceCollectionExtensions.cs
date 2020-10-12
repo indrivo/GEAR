@@ -13,13 +13,16 @@ namespace GR.IdentityDocuments.Abstractions.Extensions
         /// <summary>
         /// Register user preferences module
         /// </summary>
-        /// <typeparam name="TService"></typeparam>
+        /// <typeparam name="TDocumentsService"></typeparam>
+        /// <typeparam name="TVerificationService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityDocumentsModule<TService>(this IServiceCollection services)
-            where TService : class, IIdentityDocumentService
+        public static IServiceCollection AddIdentityDocumentsModule<TDocumentsService, TVerificationService>(this IServiceCollection services)
+            where TDocumentsService : class, IIdentityDocumentService
+            where TVerificationService : class, IIdentityVerificationService
         {
-            services.AddGearScoped<IIdentityDocumentService, TService>();
+            services.AddGearScoped<IIdentityDocumentService, TDocumentsService>();
+            services.AddGearScoped<IIdentityVerificationService, TVerificationService>();
 
             services.AddScoped<IDocumentType, GovernmentIdFrontDocumentType>();
             services.AddScoped<IDocumentType, GovernmentIdBackDocumentType>();

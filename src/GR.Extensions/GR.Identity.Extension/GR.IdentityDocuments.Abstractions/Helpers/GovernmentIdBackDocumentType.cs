@@ -21,12 +21,12 @@ namespace GR.IdentityDocuments.Abstractions.Helpers
         public void SetUp()
         {
             Id = "governmentIdBack";
-            Name = "Personal ID Back";
-            Description = "Upload your identification document back in clear view, or upload passport.";
+            Name = _localizer["personal_id_back"];
+            Description = _localizer["upload_identity_document_back_info"];
             Requirements = new List<string>
             {
-                "Max size 10MB",
-                "Allowed file extensions: JPG, JPEG, BMP, PNG"
+                _localizer.GetString("max_size_with_format", 10),
+                _localizer["document_allowed_file_extensions"]
             };
         }
     }

@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Card.Razor.Helpers
 {
     public class CardAssetsRazorFileConfiguration : StaticFileConfiguration
     {
-        public CardAssetsRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public CardAssetsRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

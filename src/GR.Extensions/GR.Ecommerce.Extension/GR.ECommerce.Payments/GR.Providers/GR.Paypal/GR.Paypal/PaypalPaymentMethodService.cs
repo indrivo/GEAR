@@ -239,7 +239,7 @@ namespace GR.Paypal
             {
                 OrderId = model.OrderId
             };
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess)
             {
                 result.AddError("User not Found");
@@ -291,7 +291,7 @@ namespace GR.Paypal
                     GatewayTransactionId = model.PaymentId,
                     PaymentStatus = PaymentStatus.Failed,
                     Total = order.Total,
-                    UserId = userRequest.Result.Id,
+                    UserId = userRequest.Result,
                     FailureMessage = responseBody
                 };
 

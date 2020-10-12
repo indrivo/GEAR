@@ -52,7 +52,7 @@
 			};
 
 			s.localization = {
-				languages: window.load("/Localization/GetLanguagesAsJson"),
+				languages: window.load("/api/LocalizationApi/GetAllLanguages").result,
 				current: {
 					identifier: "@language?.Identifier",
 					name: "@language?.Name"
@@ -73,7 +73,7 @@ else
 		};
 
 		s.localization = {
-				languages: window.load("/Localization/GetLanguagesAsJson"),
+            languages: window.load("/api/LocalizationApi/GetAllLanguages").result,
 				current: {
 					identifier: "@language?.Identifier",
 					name: "@language?.Name"

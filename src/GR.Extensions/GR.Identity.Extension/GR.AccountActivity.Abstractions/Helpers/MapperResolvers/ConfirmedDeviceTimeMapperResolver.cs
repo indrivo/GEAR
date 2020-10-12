@@ -5,9 +5,10 @@ using GR.Core.Extensions;
 
 namespace GR.AccountActivity.Abstractions.Helpers.MapperResolvers
 {
-    public class ConfirmedDeviceTimeMapperResolver : IValueResolver<UserDevice, ConfirmedDevicesViewModel, string>
+    public class ConfirmedDeviceTimeMapperResolver<T> : IValueResolver<UserDevice, T, string> 
+        where T : UserDeviceViewModel
     {
-        public string Resolve(UserDevice source, ConfirmedDevicesViewModel destination, string destMember,
+        public string Resolve(UserDevice source, T destination, string destMember,
             ResolutionContext context) => source.ConfirmDate.DisplayTextDate();
     }
 }

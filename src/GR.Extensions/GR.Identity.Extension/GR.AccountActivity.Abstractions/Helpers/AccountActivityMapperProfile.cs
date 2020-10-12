@@ -13,8 +13,16 @@ namespace GR.AccountActivity.Abstractions.Helpers
         {
             CreateMap<UserDevice, ConfirmedDevicesViewModel>()
                 .IncludeAllDerived()
-                .ForMember(x => x.IsCurrent, o => o.MapFrom<IsCurrentDeviceMapperResolver>())
-                .ForMember(x => x.ConfirmDateText, o => o.MapFrom<ConfirmedDeviceTimeMapperResolver>())
+                .ForMember(x => x.IsCurrent,
+                    o => o.MapFrom<IsCurrentDeviceMapperResolver>())
+                .ForMember(x => x.ConfirmDateText,
+                    o => o.MapFrom<ConfirmedDeviceTimeMapperResolver<ConfirmedDevicesViewModel>>())
+                .ReverseMap();
+
+            CreateMap<UserDevice, UserDeviceViewModel>()
+                .IncludeAllDerived()
+                .ForMember(x => x.ConfirmDateText,
+                    o => o.MapFrom<ConfirmedDeviceTimeMapperResolver<UserDeviceViewModel>>())
                 .ReverseMap();
 
 

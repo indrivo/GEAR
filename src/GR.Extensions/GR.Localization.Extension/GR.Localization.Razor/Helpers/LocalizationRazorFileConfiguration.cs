@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Localization.Razor.Helpers
 {
     public class LocalizationRazorFileConfiguration : StaticFileConfiguration
     {
-        public LocalizationRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public LocalizationRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

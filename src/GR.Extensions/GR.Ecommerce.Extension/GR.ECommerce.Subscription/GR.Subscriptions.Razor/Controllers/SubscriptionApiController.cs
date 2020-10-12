@@ -9,14 +9,13 @@ using GR.Core.Helpers.Global;
 using GR.Core.Razor.Attributes;
 using GR.Core.Razor.BaseControllers;
 using GR.Core.Razor.Helpers.Filters;
-using GR.ECommerce.Abstractions;
-using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions.Abstractions.ViewModels;
+using GR.Subscriptions.Razor.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,19 +39,13 @@ namespace GR.Subscriptions.Razor.Controllers
         /// </summary>
         private readonly IOrderProductService<Order> _orderProductService;
 
-        /// <summary>
-        /// Inject order product service
-        /// </summary>
-        private readonly IProductService<Product> _productService;
-
         #endregion
 
         public SubscriptionApiController(ISubscriptionService<Subscription> subscriptionService,
-            IOrderProductService<Order> orderProductService, IProductService<Product> productService)
+            IOrderProductService<Order> orderProductService)
         {
             _subscriptionService = subscriptionService;
             _orderProductService = orderProductService;
-            _productService = productService;
         }
 
         /// <summary>
@@ -113,7 +106,6 @@ namespace GR.Subscriptions.Razor.Controllers
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel<Guid>))]
         public async Task<IActionResult> CreateOrderForPlanSubscription([Required] Guid? productId, [Required] Guid? variationId)
         {
-            var productRequest = await _productService.GetProductByIdAsync(productId);
             var lastSubscriptionForUser = await _subscriptionService.GetLastSubscriptionForUserAsync();
 
             if (lastSubscriptionForUser.Result != null && !lastSubscriptionForUser.Result.IsFree)
@@ -125,11 +117,14 @@ namespace GR.Subscriptions.Razor.Controllers
             return Json(createOrderRequest);
         }
 
+        #region Admin
+
         /// <summary>
         /// Get total resources
         /// </summary>
         /// <returns></returns>
-        [Admin, HttpGet]
+        [Admin]
+        [HttpGet]
         [JsonProduces(typeof(ResultModel<SubscriptionsTotalViewModel>))]
         public async Task<JsonResult> GetTotalIncomeResources()
             => await JsonAsync(_subscriptionService.GetTotalIncomeResourcesAsync());
@@ -143,5 +138,29 @@ namespace GR.Subscriptions.Razor.Controllers
         [JsonProduces(typeof(DTResult<SubscriptionUserInfoViewModel>))]
         public async Task<JsonResult> GetUsersSubscriptionInfoWithPagination(DTParameters parameters)
             => await JsonAsync(_subscriptionService.GetUsersSubscriptionInfoWithPaginationAsync(parameters));
+
+        /// <summary>
+        /// Add a subscription for user (only admin can do this)
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [Admin]
+        [HttpPost]
+        [JsonProduces(typeof(ResultModel))]
+        public async Task<JsonResult> AddSubscriptionToSpecificUser(AddSubscriptionDto dto)
+            => await JsonAsync(_subscriptionService.AddSubscriptionAsync(dto.UserId, dto.ProductId, dto.Period, dto.Unit));
+
+        /// <summary>
+        /// Get subscriptions for specific user (only for admin)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Admin]
+        [HttpGet]
+        [JsonProduces(typeof(ResultModel<IEnumerable<SubscriptionGetViewModel>>))]
+        public async Task<JsonResult> GetSubscriptionsForSpecificUserId([Required] Guid userId)
+            => await JsonAsync(_subscriptionService.GetSubscriptionsForSpecificUserIdAsync(userId));
+
+        #endregion
     }
 }

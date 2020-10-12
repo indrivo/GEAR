@@ -25,5 +25,11 @@ namespace GR.Identity.Profile.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel> ResendConfirmEmailAsync();
+
+        /// <summary>
+        /// Check if email is confirmed
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel> IsEmailConfirmedAsync();
     }
 }

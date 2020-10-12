@@ -59,7 +59,7 @@
                     if (text) {
                         $(`.spinner_${direction}`).css("display", "block");
                         $.ajax({
-                            url: "@Url.Action("Translate")",
+                            url: "@Url.Action("Translate", "LocalizationApi")",
                             data: {
                                 text: text,
                                 from: direction

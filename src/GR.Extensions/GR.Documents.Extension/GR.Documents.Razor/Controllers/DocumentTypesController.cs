@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Extensions;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Helpers;
@@ -52,7 +53,7 @@ namespace GR.Documents.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetAllDocumetTypesAsync()
+        public async Task<JsonResult> GetAllDocumentTypes()
         {
             return Json(await _documentTypeService.GetAllDocumentTypeAsync());
         }
@@ -72,14 +73,14 @@ namespace GR.Documents.Razor.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+                ModelState.AddError(ErrorKeys.InvalidModel);
                 return View(model);
             }
 
             var result = await _documentTypeService.SaveDocumentTypeAsync(model);
-
-
-            return View(result.Result);
+            if (result.IsSuccess) return RedirectToAction(nameof(Index));
+            ModelState.AppendResultModelErrors(result.Errors);
+            return View(model);
         }
 
         /// <summary>
@@ -93,14 +94,19 @@ namespace GR.Documents.Razor.Controllers
             return View((await _documentTypeService.GetDocumentTypeByIdAsync(id)).Result);
         }
 
+        /// <summary>
+        /// Update document type
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
         public async Task<IActionResult> Edit(DocumentTypeViewModel model)
         {
             var result = await _documentTypeService.EditDocumentTypeAsync(model);
-
-
-            return RedirectToAction("Edit", new { id = result.Result.Id });
-
-            //return View(result.Result);
+            if (result.IsSuccess)
+                return RedirectToAction("Edit", new { id = result.Result.Id });
+            ModelState.AppendResultModelErrors(result.Errors);
+            return View(model);
         }
 
 

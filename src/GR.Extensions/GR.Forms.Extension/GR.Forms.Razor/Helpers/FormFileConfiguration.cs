@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Forms.Razor.Helpers
 {
     public class FormFileConfiguration : StaticFileConfiguration
     {
-        public FormFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public FormFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

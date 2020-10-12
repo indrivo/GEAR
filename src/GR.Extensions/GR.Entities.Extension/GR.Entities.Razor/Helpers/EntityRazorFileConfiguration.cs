@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Entities.Razor.Helpers
 {
     public class EntityRazorFileConfiguration : StaticFileConfiguration
     {
-        public EntityRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public EntityRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

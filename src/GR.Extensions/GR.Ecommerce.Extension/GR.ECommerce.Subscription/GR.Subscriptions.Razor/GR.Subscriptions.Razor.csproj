@@ -14,13 +14,4 @@
     <ProjectReference Include="..\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewStart.cshtml">
-      <Pack>false</Pack>
-    </Content>
-  </ItemGroup>
-
 </Project>

@@ -5,12 +5,16 @@ using System.Threading.Tasks;
 using GR.Cache.Abstractions;
 using GR.Cache.Abstractions.Models;
 using GR.Cache.Helpers;
+using GR.Cache.Models;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace GR.Cache.Services
 {
+    [Author(Authors.LUPEI_NICOLAE)]
     public class InMemoryCacheService : ICacheService<IMemoryCache>
     {
         #region Injectable
@@ -24,6 +28,11 @@ namespace GR.Cache.Services
         /// Container
         /// </summary>
         private readonly CacheServiceTemplate _extendedContainer;
+
+        /// <summary>
+        /// Set how long key can be stored in memory without access, after this, it will be removed 
+        /// </summary>
+        private static readonly TimeSpan SlidingExpiration = TimeSpan.FromHours(6);
 
         #endregion
 
@@ -83,7 +92,10 @@ namespace GR.Cache.Services
         /// <param name="obj"></param>
         /// <returns></returns>
         public Task<bool> SetAsync<TObject>(string key, TObject obj) where TObject : class
-            => Task.FromResult(_inMemoryCacheService.Set(key, obj) != null);
+        {
+            var options = new MemoryCacheEntryOptions().SetSlidingExpiration(SlidingExpiration);
+            return Task.FromResult(_inMemoryCacheService.Set(key, obj, options) != null);
+        }
 
         /// <summary>
         /// Get provider name
@@ -119,7 +131,28 @@ namespace GR.Cache.Services
         /// <param name="life"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        public virtual async Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func) where T : class
-            => await _extendedContainer.GetOrSetWithExpireTimeAsync(key, life, func);
+        public virtual async Task<T> GetOrSetWithExpireTimeAsync<T>(string key, TimeSpan life, Func<Task<T>> func)
+            where T : class
+        {
+            var getData = await GetAsync<EntryLife<T>>(key);
+            if (getData != null)
+            {
+                var valid = DateTime.Now - getData.DateTime < life;
+                if (valid)
+                    return getData.Data;
+            }
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(life);
+
+            var request = await func();
+
+            _inMemoryCacheService.Set(key, new EntryLife<T>
+            {
+                DateTime = DateTime.Now,
+                Data = request
+            }, cacheEntryOptions);
+
+            return request;
+        }
     }
 }

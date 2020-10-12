@@ -22,6 +22,7 @@ namespace GR.Identity.Helpers
                 .ForMember(m => m.Organization, o => o.MapFrom<UserOrganizationMapperResolver>())
                 .ForMember(m => m.Roles, o => o.MapFrom<UserRolesMapperResolver>())
                 .ForMember(m => m.Sessions, o => o.MapFrom<UserSessionsMapperResolver>())
+                .ForMember(m => m.FullName, o => o.MapFrom(x => x.GetFullName()))
                 .IncludeAllDerived()
                 .ReverseMap();
         }

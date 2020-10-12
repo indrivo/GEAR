@@ -12,6 +12,11 @@
         .table th, .table td {
             white-space: initial !important;
         }
+         .profile-info img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
     </style>
 }
 
@@ -41,6 +46,7 @@
         <table class="table table-striped table-bordered" style="width: 100%" id="usersTable">
             <thead>
                 <tr>
+	                <th>Full name</th>
                     <th>@Localizer["name"]</th>
                     <th>@Localizer["organization"]</th>
                     <th>@Localizer["roles"]</th>
@@ -60,43 +66,14 @@
     </div>
 </div>
 
-<!-- sample modal content -->
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">@Localizer["import_ad_user"]</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label">Select Ad User</label>
-                            <select id="adUsers" class="form-control"></select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="postAdUser" class="btn btn-success waves-effect">Add</button>
-                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
 @section Scripts{
-    <script type="text/javascript" language="javascript">
+	<script type="text/javascript" language="javascript">
 		function getTokenAntiForgery() {
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
 		}
     </script>
-    <script language="javascript" type="text/javascript">
+	<script language="javascript" type="text/javascript">
 		$(document).ready(function($) {
 			const tableId = '#usersTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
@@ -119,6 +96,17 @@
 					"type": "POST"
 				},
 				"columns": [
+					{ 
+						"data": "fullName",
+					 render: function(data, type, row, meta) {
+                                                 return `<div class="d-flex align-items-center profile-info">
+                                             <img src="${row.photoUrl}" alt="User photo"/>
+                                             <div class="d-block ml-3">
+                                                 <span class="d-block fw-600" id="customer-fullname">${row.fullName}</span>
+                                             </div>
+                                         </div>`;
+					 }
+					},
 					{ "data": "userName" },
 					{ "data": "organization" },
 					{ "data": "roles" },
@@ -166,52 +154,5 @@
             invokeDeleteRowModal(object);
         }
 
-        $("#adTrigger").on("click",
-			function() {
-				$.ajax({
-					url: "@Url.Action("GetAdUsers")",
-					method: "get",
-					success: function(data) {
-						if (data != null) {
-							$("#adUsers").html(null);
-							$.each(data,
-								function() {
-									$("#adUsers").append(new Option(this.name, this.samAccountName));
-								});
-						}
-					},
-					fail: function(data) {
-
-					}
-				});
-			});
-
-		$("#postAdUser").on("click",
-			function() {
-				const user = $("#adUsers").find(":selected").val();
-				if (user != null) {
-					$.ajax({
-						url: "@Url.Action("AddAdUser")",
-						method: "post",
-						data: {
-							userName: user
-						},
-						success: function(data) {
-							if (data != null) {
-								if (!data.is_success) {
-									swal("Error", data.error_keys[0].message, "error");
-								} else {
-									location.href = `/Users/Edit?id=${data.result}`;
-								}
-							} else {
-								swal("Error", "Server error", "error");
-							}
-						},
-						fail: function(error) {
-							swal("Error", "Server error", "error");
-						}
-					});
-				}
-			});
     </script>
 }

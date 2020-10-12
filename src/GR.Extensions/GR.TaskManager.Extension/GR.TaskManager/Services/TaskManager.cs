@@ -100,7 +100,7 @@ namespace GR.TaskManager.Services
                 .Include(x => x.AssignedUsers)
                 .Include(x => x.TaskItems)
                 .Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == request.Deleted))
-                .OrderByWithDirection(x => x.GetPropertyValue(request.Attribute), request.Descending)
+                .OrderByWithDirection(request.Attribute, request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
             var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id;
             return GetTasksAsync(dbTasksResult, currentUser);
@@ -115,7 +115,7 @@ namespace GR.TaskManager.Services
                 .Where(x => (x.UserId == userId || x.AssignedUsers.Any(c => c.UserId.Equals(userId)))
                             & (x.IsDeleted == request.Deleted)
                             & (x.Author != userName))
-                .OrderByWithDirection(x => x.GetPropertyValue(request.Attribute), request.Descending)
+                .OrderByWithDirection(request.Attribute, request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
 
             return GetTasksAsync(dbTasksResult, userId);

@@ -1,5 +1,4 @@
-﻿using GR.Core.Helpers;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using GR.Core;
@@ -19,8 +18,7 @@ namespace GR.Documents.Abstractions.Extensions
         public static IServiceCollection RegisterDocumentTypeServices<TDocumentTypeService>(this IServiceCollection services)
             where TDocumentTypeService : class, IDocumentTypeService
         {
-            IoC.RegisterTransientService<IDocumentTypeService, TDocumentTypeService>();
-
+            services.AddGearScoped<IDocumentTypeService, TDocumentTypeService>();
             return services;
         }
 
@@ -33,7 +31,7 @@ namespace GR.Documents.Abstractions.Extensions
         public static IServiceCollection RegisterDocumentCategoryServices<TDocumentCategoryService>(this IServiceCollection services)
             where TDocumentCategoryService : class, IDocumentCategoryService
         {
-            IoC.RegisterTransientService<IDocumentCategoryService, TDocumentCategoryService>();
+            services.AddGearScoped<IDocumentCategoryService, TDocumentCategoryService>();
 
             return services;
         }
@@ -46,7 +44,7 @@ namespace GR.Documents.Abstractions.Extensions
         public static IServiceCollection RegisterDocumentServices<TDocumentService>(this IServiceCollection services)
             where TDocumentService : class, IDocumentService
         {
-            IoC.RegisterTransientService<IDocumentService, TDocumentService>();
+            services.AddGearScoped<IDocumentService, TDocumentService>();
 
             return services;
         }
@@ -64,7 +62,7 @@ namespace GR.Documents.Abstractions.Extensions
             where TDocumentContext : DbContext, IDocumentContext
         {
             services.AddDbContext<TDocumentContext>(storageOptions);
-            IoC.RegisterTransientService<IDocumentContext, TDocumentContext>();
+            services.AddGearScoped<IDocumentContext, TDocumentContext>();
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
             {
                 GearApplication.GetHost().MigrateDbContext<TDocumentContext>();

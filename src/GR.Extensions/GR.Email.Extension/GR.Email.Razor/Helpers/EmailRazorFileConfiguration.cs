@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Email.Razor.Helpers
 {
     public class EmailRazorFileConfiguration : StaticFileConfiguration
     {
-        public EmailRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public EmailRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

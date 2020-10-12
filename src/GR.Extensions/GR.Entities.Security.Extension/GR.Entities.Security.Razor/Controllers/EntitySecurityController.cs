@@ -56,7 +56,7 @@ namespace GR.Entities.Security.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> SaveEntityMappedPermissions([Required]EntityRolesPermissionsViewModel model)
+        public async Task<IActionResult> SaveEntityMappedPermissions([Required] EntityRolesPermissionsViewModel model)
         {
             var result = new ResultModel();
             if (!ModelState.IsValid) return Json(result);
@@ -78,9 +78,13 @@ namespace GR.Entities.Security.Razor.Controllers
         [GearAuthorize(GlobalResources.Roles.USER)]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<string>>))]
-        public async Task<JsonResult> GetEntityPermissionsForCurrentUser([Required]Guid entityId)
+        public async Task<JsonResult> GetEntityPermissionsForCurrentUser([Required] Guid entityId)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = await _userManager.GetCurrentUserWithCustomFieldsAsync(x => new GearUser
+            {
+                Id = x.Id
+            });
+
             if (!userRequest.IsSuccess) return Json(new AccessDeniedResult<object>());
             var user = userRequest.Result;
             var permissions = (await _accessService.GetPermissionsAsync(user, entityId)).Select(x => x.ToString());

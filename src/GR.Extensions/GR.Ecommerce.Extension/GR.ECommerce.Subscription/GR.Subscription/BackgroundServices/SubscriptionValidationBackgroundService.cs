@@ -7,7 +7,6 @@ using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
-using GR.Subscriptions.Abstractions.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -39,7 +38,7 @@ namespace GR.Subscriptions.BackgroundServices
             if (!GearApplication.Configured) return;
             using (var scope = _serviceProvider.CreateScope())
             {
-                var subscriptionService = scope.ServiceProvider.GetRequiredService<ISubscriptionService<Subscription>>();
+                var subscriptionService = scope.ServiceProvider.GetRequiredService<ISubscriptionExpirationService>();
                 var productService = scope.ServiceProvider.GetRequiredService<IProductService<Product>>();
                 var daysNotifySubscription = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";
                 var expiredRequest = await subscriptionService.GetExpiredSubscriptionsAsync();

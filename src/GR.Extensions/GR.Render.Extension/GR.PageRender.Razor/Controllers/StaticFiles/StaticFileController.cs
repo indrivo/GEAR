@@ -1,14 +1,14 @@
 using GR.Core.Attributes;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.PageRender.Razor.Controllers.StaticFiles
 {
     public class StaticFileController : Controller
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IHostEnvironment _env;
         private readonly ILogger<StaticFileController> _logger;
         private const string BasePath = "Static/Templates/";
 
@@ -17,7 +17,7 @@ namespace GR.PageRender.Razor.Controllers.StaticFiles
         /// </summary>
         /// <param name="env"></param>
         /// <param name="logger"></param>
-        public StaticFileController(IHostingEnvironment env, ILogger<StaticFileController> logger)
+        public StaticFileController(IHostEnvironment env, ILogger<StaticFileController> logger)
         {
             _env = env;
             _logger = logger;

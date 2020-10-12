@@ -35,8 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Sentry.AspNetCore" Version="2.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Sentry.AspNetCore" Version="2.1.6" />
+    <PackageReference Include="Seq.Api" Version="2020.1.0" />
     <PackageReference Include="Serilog.Enrichers.AssemblyName" Version="1.0.9" />
     <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />

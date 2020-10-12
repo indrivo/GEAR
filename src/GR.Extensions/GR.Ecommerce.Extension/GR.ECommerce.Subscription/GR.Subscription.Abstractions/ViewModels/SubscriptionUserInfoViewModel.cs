@@ -9,7 +9,7 @@ namespace GR.Subscriptions.Abstractions.ViewModels
         /// <summary>
         /// Period for paid subscription
         /// </summary>
-        public virtual string Period { get; set; }
+        public virtual string Period { get; set; } = string.Empty;
 
         /// <summary>
         /// The amount paid for subscription

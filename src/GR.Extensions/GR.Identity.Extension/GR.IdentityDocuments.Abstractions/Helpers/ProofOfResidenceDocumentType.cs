@@ -21,13 +21,12 @@ namespace GR.IdentityDocuments.Abstractions.Helpers
         public void SetUp()
         {
             Id = "utilityBill";
-            Name = "Proof of Residence";
-            Description =
-                "To verify your address, please upload a scan or a clear photo of utility bill, bank statement not older than 3 months.";
+            Name = _localizer["proof_of_residence"];
+            Description = _localizer["proof_of_residence_info"];
             Requirements = new List<string>
             {
-                "Max size 10MB",
-                "Allowed file extensions: JPG, JPEG, BMP, PNG"
+                _localizer.GetString("max_size_with_format", 10),
+                _localizer["document_allowed_file_extensions"]
             };
         }
     }

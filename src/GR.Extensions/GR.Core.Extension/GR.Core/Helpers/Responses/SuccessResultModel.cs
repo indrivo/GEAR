@@ -14,4 +14,9 @@
 
         public override bool IsSuccess { get; set; } = true;
     }
+
+    public class SuccessResultModel : ResultModel
+    {
+
+    }
 }

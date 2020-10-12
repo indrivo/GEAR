@@ -138,7 +138,7 @@ namespace GR.GooglePay
             var state = ModelValidator.IsValid<GPayPaymentExecuteViewModel, Guid>(model);
             if (!state.IsSuccess) return state;
             var result = new ResultModel<Guid>();
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess)
             {
                 result.AddError("User not Found");
@@ -184,7 +184,7 @@ namespace GR.GooglePay
                 FailureMessage = model.SerializeAsJson(),
                 PaymentStatus = PaymentStatus.Succeeded,
                 Total = order.Total,
-                UserId = userRequest.Result.Id
+                UserId = userRequest.Result
             };
 
             var orderStateChanged = await _orderProductService.ChangeOrderStateAsync(model.OrderId, OrderState.PaymentReceived);

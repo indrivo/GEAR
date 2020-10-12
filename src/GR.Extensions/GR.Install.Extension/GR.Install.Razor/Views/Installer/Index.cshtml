@@ -91,7 +91,7 @@
 		$(document).ready(function () {
 			localStorage.removeItem("translations");
 			$('#languageChange').click(function () {
-				const lang = load("/Localization/GetLanguagesAsJson");
+				const lang = load("/api/LocalizationApi/GetAllLanguages").result;
 				const model = {};
 
 				$.each(lang, function (index, item) {

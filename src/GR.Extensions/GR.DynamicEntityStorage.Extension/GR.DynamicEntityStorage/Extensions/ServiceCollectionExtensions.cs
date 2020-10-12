@@ -30,16 +30,16 @@ namespace GR.DynamicEntityStorage.Extensions
             SystemEvents.Database.OnMigrateComplete += (sender, args) =>
            {
                if (!(args.DbContext is IDbContext)) return;
-               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(async (s, c) =>
+               GearApplication.BackgroundTaskQueue.PushBackgroundWorkItemInQueueToBeExecutedAfterAppInstalled(async (serviceProvider, cancellationToken) =>
                {
-                   var tableService = s.GetService<ITablesService>();
-                   var context = s.GetService<EntitiesDbContext>();
-                   var synchronizer = s.GetService<EntitySynchronizer>();
+                   var tableService = serviceProvider.GetService<ITablesService>();
+                   var context = serviceProvider.GetService<IEntityContext>();
+                   var synchronizer = serviceProvider.GetService<EntitySynchronizer>();
                    var entities = tableService.GetEntitiesFromDbContexts(args.DbContext.GetType());
 
                    foreach (var ent in entities)
                    {
-                       if (!await context.Table.AnyAsync(m => m.Name == ent.Name && m.TenantId == GearSettings.TenantId, c))
+                       if (!await context.Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == GearSettings.TenantId, cancellationToken))
                        {
                            await synchronizer.SynchronizeEntities(ent, GearSettings.TenantId, ent.Schema);
                        }

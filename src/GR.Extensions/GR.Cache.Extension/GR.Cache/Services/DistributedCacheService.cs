@@ -69,7 +69,17 @@ namespace GR.Cache.Services
         {
             try
             {
-                await _cache.SetAsync(key, JsonConvert.SerializeObject(obj, _jsonSerializerSettings).ToBytes());
+                string data;
+                if (obj is string str)
+                {
+                    data = str;
+                }
+                else
+                {
+                    data = JsonConvert.SerializeObject(obj, _jsonSerializerSettings);
+                }
+
+                await _cache.SetAsync(key, data.ToBytes());
                 return true;
             }
             catch (Exception ex)

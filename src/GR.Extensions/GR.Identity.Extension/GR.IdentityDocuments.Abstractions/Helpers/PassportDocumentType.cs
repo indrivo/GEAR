@@ -21,12 +21,12 @@ namespace GR.IdentityDocuments.Abstractions.Helpers
         public void SetUp()
         {
             Id = "passport";
-            Name = "Passport";
-            Description = "Upload your identification document front and back in clear view, or upload passport.";
+            Name = _localizer["passport"];
+            Description = _localizer["upload_documents_info"];
             Requirements = new List<string>
             {
-                "Max size 10MB",
-                "Allowed file extensions: JPG, JPEG, BMP, PNG"
+                _localizer.GetString("max_size_with_format", 10),
+                _localizer["document_allowed_file_extensions"]
             };
         }
     }

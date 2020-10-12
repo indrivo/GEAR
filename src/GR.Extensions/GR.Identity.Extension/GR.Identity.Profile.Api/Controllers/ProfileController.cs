@@ -130,5 +130,14 @@ namespace GR.Identity.Profile.Api.Controllers
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
         public virtual async Task<JsonResult> ResendConfirmEmail()
             => await JsonAsync(_profileService.ResendConfirmEmailAsync());
+
+        /// <summary>
+        /// IsSuccess => the state of email confirmation for current user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
+        public virtual async Task<JsonResult> IsEmailConfirmed()
+            => await JsonAsync(_profileService.IsEmailConfirmedAsync());
     }
 }

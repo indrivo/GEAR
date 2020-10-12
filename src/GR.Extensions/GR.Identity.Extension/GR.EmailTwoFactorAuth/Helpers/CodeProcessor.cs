@@ -18,7 +18,7 @@ namespace GR.EmailTwoFactorAuth.Helpers
         /// <summary>
         /// Max counter
         /// </summary>
-        public static int MaxCounter = 60;
+        public static int MaxCounter = 120;
 
         /// <summary>
         /// Storage

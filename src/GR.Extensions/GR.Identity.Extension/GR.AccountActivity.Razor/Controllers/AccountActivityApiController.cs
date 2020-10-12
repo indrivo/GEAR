@@ -86,19 +86,6 @@ namespace GR.AccountActivity.Razor.Controllers
         public virtual async Task<JsonResult> GetUserActivityWithPagination(DTParameters parameters)
             => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters));
 
-
-        /// <summary>
-        /// Get user activity with pagination
-        /// </summary>
-        /// <param name="parameters"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [Admin]
-        [HttpPost]
-        [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
-        public virtual async Task<JsonResult> GetActivitiesForUserWithPagination(DTParameters parameters, Guid userId)
-            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters, userId));
-
         /// <summary>
         /// Get web sessions
         /// </summary>
@@ -134,10 +121,38 @@ namespace GR.AccountActivity.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces(ContentType.ApplicationJson, Type = typeof(ResultModel))]
-        public virtual async Task<JsonResult> SignOutAllWebUserDevicesAsync()
+        public virtual async Task<JsonResult> SignOutAllWebUserDevices()
         {
             var userId = _userManager.FindUserIdInClaims().Result;
             return await JsonAsync(_activityService.SignOutUserOnAllDevicesAsync(userId));
         }
+
+        #region Admin api
+
+        /// <summary>
+        /// Get user activity with pagination
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Admin]
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserActivityViewModel>))]
+        public virtual async Task<JsonResult> GetActivitiesForUserWithPagination(DTParameters parameters, Guid userId)
+            => await JsonAsync(_activityService.GetPagedUserActivityAsync(parameters, userId));
+
+        /// <summary>
+        /// Get user devices
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Admin]
+        [HttpPost]
+        [Produces(ContentType.ApplicationJson, Type = typeof(DTResult<UserDeviceViewModel>))]
+        public virtual async Task<JsonResult> GetUserDevicesWithPagination(DTParameters parameters, Guid userId)
+            => await JsonAsync(_activityService.GetPagedUserDevicesAsync(parameters, userId));
+
+        #endregion
     }
 }

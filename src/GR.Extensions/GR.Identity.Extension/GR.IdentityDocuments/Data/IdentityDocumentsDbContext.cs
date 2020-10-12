@@ -24,7 +24,7 @@ namespace GR.IdentityDocuments.Data
         /// <summary>
         /// Check if is migration mode
         /// </summary>
-        public static bool IsMigrationMode { get; set; } = true;
+        public static bool IsMigrationMode { get; set; } = false;
 
         public IdentityDocumentsDbContext(DbContextOptions<IdentityDocumentsDbContext> options) : base(options)
         {
@@ -34,6 +34,11 @@ namespace GR.IdentityDocuments.Data
         /// Identity documents
         /// </summary>
         public virtual DbSet<IdentityDocument> IdentityDocuments { get; set; }
+
+        /// <summary>
+        /// User kyc
+        /// </summary>
+        public virtual DbSet<UserKyc> UserKyc { get; set; }
 
 
         #region Identity

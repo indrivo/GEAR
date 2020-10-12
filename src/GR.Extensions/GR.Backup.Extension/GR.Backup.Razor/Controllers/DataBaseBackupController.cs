@@ -52,6 +52,18 @@ namespace GR.Backup.Razor.Controllers
         }
 
         /// <summary>
+        /// Make backup
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route(DefaultApiRouteTemplate)]
+        public IActionResult BackupNow()
+        {
+            _backupService.Backup();
+            return Ok();
+        }
+
+        /// <summary>
         /// Clear all
         /// </summary>
         /// <returns></returns>

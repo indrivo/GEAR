@@ -110,14 +110,15 @@ namespace GR.Orders
         public virtual async Task<ResultModel<IEnumerable<Order>>> GetMyOrdersAsync()
         {
             var response = new ResultModel<IEnumerable<Order>>();
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<Order>>();
+
             var orders = await _orderDbContext.Orders
                 .Include(x => x.Currency)
                 .Include(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
                 .ThenInclude(x => x.ProductPrices)
-                .Where(x => x.UserId.Equals(userRequest.Result.Id))
+                .Where(x => x.UserId.Equals(userRequest.Result))
                 .ToListAsync();
             response.IsSuccess = true;
             response.Result = orders;
@@ -134,10 +135,12 @@ namespace GR.Orders
             var statuses = Enum.GetNames(typeof(OrderState)).ToList();
             foreach (var state in statuses)
             {
-                var count = await _orderDbContext.Orders.CountAsync(x => x.OrderState.ToString().Equals(state));
+                var tState = (OrderState)Enum.Parse(typeof(OrderState), state);
+                var count = await _orderDbContext.Orders.CountAsync(x => x.OrderState.Equals(tState));
                 response.Add(state, count);
             }
-            return new ResultModel<Dictionary<string, int>> { IsSuccess = true, Result = response };
+
+            return new SuccessResultModel<Dictionary<string, int>>(response);
         }
 
         /// <summary>
@@ -147,7 +150,7 @@ namespace GR.Orders
         public virtual async Task<ResultModel<IEnumerable<Order>>> GetAllOrdersAsync()
         {
             var response = new ResultModel<IEnumerable<Order>>();
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<Order>>();
             var orders = await _orderDbContext.Orders
                 .Include(x => x.ProductOrders)
@@ -198,7 +201,7 @@ namespace GR.Orders
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
             var productRequest = await _productService.GetProductByIdAsync(productId);
             if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
@@ -206,7 +209,7 @@ namespace GR.Orders
             var order = OrderMapper.Map(product);
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             order.CurrencyId = currency.Code;
-            order.UserId = userRequest.Result.Id;
+            order.UserId = userRequest.Result;
             await _orderDbContext.Orders.AddAsync(order);
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
@@ -233,8 +236,8 @@ namespace GR.Orders
         {
             var result = new ResultModel<Guid>();
             if (productId == null || variationId == null) return new InvalidParametersResultModel<Guid>();
-            var userRequest = await _userManager.GetCurrentUserAsync();
-            if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
+            var userRequest =  _userManager.FindUserIdInClaims();
+            if (!userRequest.IsSuccess) return userRequest;
             var productRequest = await _productService.GetProductByIdAsync(productId);
             if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
             var product = productRequest.Result;
@@ -246,7 +249,7 @@ namespace GR.Orders
                 return result;
             }
 
-            order.UserId = userRequest.Result.Id;
+            order.UserId = userRequest.Result;
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
             order.CurrencyId = currency.Code;
             await _orderDbContext.Orders.AddAsync(order);
@@ -272,8 +275,8 @@ namespace GR.Orders
         /// <returns></returns>
         public virtual async Task<DTResult<GetOrdersViewModel>> GetMyOrdersWithPaginationWayAsync(DTParameters param)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
-            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : await GetPaginatedOrdersByUserIdAsync(param, userRequest.Result.Id);
+            var userRequest =  _userManager.FindUserIdInClaims();
+            return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : await GetPaginatedOrdersByUserIdAsync(param, userRequest.Result);
         }
 
         /// <summary>

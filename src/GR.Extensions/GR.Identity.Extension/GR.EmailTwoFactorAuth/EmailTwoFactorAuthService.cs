@@ -6,6 +6,7 @@ using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.ErrorCodes;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
@@ -72,10 +73,11 @@ namespace GR.EmailTwoFactorAuth
                     HttpContext = _accessor.HttpContext,
                     Email = user.Email
                 });
-                result.AddError("Email not confirmed, a message to confirm has been sent");
+                result.AddError(ResultModelCodes.EmailNotConfirmed, "Email not confirmed, a message to confirm has been sent");
                 return result;
             }
-            var code = CodeGenerator.GenerateCode(6);
+
+            var code = CodeGenerator.GenerateCode(_configuration.CodeLength);
             var subject = $"{GearApplication.ApplicationName} Verification Code";
             var message = new StringBuilder();
             const string lineDelimiter = "<br/>";

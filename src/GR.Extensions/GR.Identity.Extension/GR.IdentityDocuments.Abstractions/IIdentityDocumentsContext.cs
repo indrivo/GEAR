@@ -10,5 +10,10 @@ namespace GR.IdentityDocuments.Abstractions
         /// Identity documents
         /// </summary>
         DbSet<IdentityDocument> IdentityDocuments { get; set; }
+
+        /// <summary>
+        /// User Kyc
+        /// </summary>
+        DbSet<UserKyc> UserKyc { get; set; }
     }
 }

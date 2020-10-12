@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.PageRender.Razor.Helpers
 {
     public class PageRenderFileConfiguration : StaticFileConfiguration
     {
-        public PageRenderFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public PageRenderFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

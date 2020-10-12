@@ -18,25 +18,4 @@
     <ProjectReference Include="..\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\Orders\AllOrders.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Orders\Details.cshtml">
-      <Pack>false</Pack>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Orders\MyOrders.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\Shared\_MyOrdersPartialView.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewStart.cshtml">
-      <Pack>false</Pack>
-    </Content>
-  </ItemGroup>
 </Project>

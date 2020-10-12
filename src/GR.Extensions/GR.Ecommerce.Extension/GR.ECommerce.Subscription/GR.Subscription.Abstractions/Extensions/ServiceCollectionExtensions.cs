@@ -31,6 +31,19 @@ namespace GR.Subscriptions.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Register service
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterSubscriptionExpirationService<TService>(this IServiceCollection services)
+            where TService : class, ISubscriptionExpirationService
+        {
+            services.AddGearScoped<ISubscriptionExpirationService, TService>();
+            return services;
+        }
+
+        /// <summary>
         /// Register subscription storage
         /// </summary>
         /// <typeparam name="TContext"></typeparam>

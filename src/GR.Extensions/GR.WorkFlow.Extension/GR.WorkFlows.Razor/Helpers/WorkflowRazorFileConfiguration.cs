@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.WorkFlows.Razor.Helpers
 {
     public class WorkflowRazorFileConfiguration : StaticFileConfiguration
     {
-        public WorkflowRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public WorkflowRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

@@ -21,12 +21,12 @@ namespace GR.IdentityDocuments.Abstractions.Helpers
         public void SetUp()
         {
             Id = "selfieWithId";
-            Name = "Selfie Verification";
-            Description = "Upload a selfie of your face while holding up the ID document.";
+            Name = _localizer["selfie_verification"];
+            Description = _localizer["upload_selfie_info"];
             Requirements = new List<string>
             {
-                "Max size 10MB",
-                "Allowed file extensions: JPG, JPEG, BMP, PNG"
+                _localizer.GetString("max_size_with_format", 10),
+                _localizer["document_allowed_file_extensions"]
             };
         }
     }

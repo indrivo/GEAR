@@ -1,14 +1,7 @@
-﻿using GR.AccountActivity.Abstractions.Models;
-
-namespace GR.AccountActivity.Abstractions.ViewModels
+﻿namespace GR.AccountActivity.Abstractions.ViewModels
 {
-    public class ConfirmedDevicesViewModel : UserDevice
+    public class ConfirmedDevicesViewModel : UserDeviceViewModel
     {
-        /// <summary>
-        /// Confirm date text
-        /// </summary>
-        public virtual string ConfirmDateText { get; set; }
-
         /// <summary>
         /// Is current device
         /// </summary>

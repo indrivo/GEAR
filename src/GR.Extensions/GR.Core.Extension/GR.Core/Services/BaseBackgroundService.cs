@@ -46,7 +46,7 @@ namespace GR.Core.Services
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task StartAsync(CancellationToken cancellationToken)
+        public virtual Task StartAsync(CancellationToken cancellationToken)
         {
             Logger.LogInformation($"{ServiceName} Background Service is starting.");
             Timer = new Timer(async o => await Execute(o), null, TimeSpan.Zero,
@@ -66,7 +66,7 @@ namespace GR.Core.Services
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task StopAsync(CancellationToken cancellationToken)
+        public virtual Task StopAsync(CancellationToken cancellationToken)
         {
             Logger.LogInformation($"{ServiceName} Background Service is stopping.");
 

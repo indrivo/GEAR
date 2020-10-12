@@ -1,11 +1,11 @@
 ﻿using GR.Core.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Documents.Razor.Helpers
 {
     public class DocumentRazorFileConfiguration : StaticFileConfiguration
     {
-        public DocumentRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public DocumentRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

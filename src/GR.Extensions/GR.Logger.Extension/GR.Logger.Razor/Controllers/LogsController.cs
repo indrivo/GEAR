@@ -9,6 +9,14 @@ namespace GR.Logger.Razor.Controllers
     [GearAuthorize(GlobalResources.Roles.ADMINISTRATOR)]
     public class LogsController : Controller
     {
-
+        /// <summary>
+        /// View with logs
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

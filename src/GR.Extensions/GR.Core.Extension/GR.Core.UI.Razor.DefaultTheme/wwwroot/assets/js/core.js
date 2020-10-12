@@ -318,7 +318,7 @@ window.translations = function () {
     const cached = localStorage.getItem("hasLoadedTranslations");
     let trans = {};
     if (!cached) {
-        trans = load("/Localization/GetTranslationsForCurrentLanguage");
+        trans = load("/api/LocalizationApi/GetTranslationsForCurrentLanguage");
         let index = 0;
         let step = 1;
         let round = {};
@@ -333,7 +333,7 @@ window.translations = function () {
         }
         localStorage.setItem(`translations_${step}`, JSON.stringify(round));
         localStorage.setItem("transCollectionCount", step);
-        localStorage.setItem("hasLoadedTranslations", "yes")
+        localStorage.setItem("hasLoadedTranslations", "yes");
     } else {
         const count = localStorage.getItem("transCollectionCount");
         for (let i = 1; i <= count; i++) {
@@ -345,18 +345,37 @@ window.translations = function () {
     return trans;
 }
 
-
+/**
+ * Translate text in current language
+ * @param {any} key
+ */
 window.translate = function (key) {
     if (window.localTranslations) {
         if (!window.localTranslations.hasOwnProperty(key)) {
             const message = `Key: ${key} is not translated!`;
             console.warn(message);
             localStorage.removeItem("hasLoadedTranslations");
+            window.translations(); // invalidate
         }
-        return window.localTranslations[key];
+        return window.localTranslations[key] ? window.localTranslations[key] : `[${key}]`;
     }
+
     const trans = window.translations();
-    return trans[key];
+
+    return key in trans ? trans[key] : `[${key}]`;
+};
+
+/**
+ * Translate with format
+ * @param {any} key
+ */
+window.translateWithFormat = function (key) {
+    let text = window.translate(key) || "";
+    const args = Array.prototype.slice.call(arguments, 1);
+    for (k in arguments) {
+        text = text.replace("{" + k + "}", args[k]);
+    }
+    return text;
 };
 
 //Translate page content
@@ -717,6 +736,13 @@ String.prototype.toUpperFirstLetter = function () {
     return res;
 }
 
+String.prototype.format = function () {
+    let a = this;
+    for (k in arguments) {
+        a = a.replace("{" + k + "}", arguments[k]);
+    }
+    return a;
+}
 
 class Validator {
 	/**
@@ -743,9 +769,29 @@ class Validator {
 jQuery.fn.extend({
     hasAttr: function (attrName) {
         return this.get(0).hasAttribute(attrName);
+    },
+    serializeToJsonByName: function () {
+        const target = $(this);
+        const items = target.find(`*[name]`);
+        if (items.length === 0) {
+            return JSON.parse("{}");
+        }
+        var _string = '{';
+        for (let ix = 0; ix < items.length; ix++) {
+            const row = $(items[ix]);
+            let val = row[0].value;;
+            if (row.attr("type") === "checkbox") {
+                val = row.is(':checked');
+            }
+            _string += '"' + row[0].name + '":"' + val + '",';
+        }
+        var end = _string.length - 1;
+        _string = _string.substr(0, end);
+        _string += '}';
+        console.log(_string);
+        return JSON.parse(_string);
     }
 });
-
 
 //Array Extensions
 Array.prototype.update = function (predicate, item) {

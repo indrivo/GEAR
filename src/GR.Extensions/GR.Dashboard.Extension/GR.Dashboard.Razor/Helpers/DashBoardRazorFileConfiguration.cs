@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Dashboard.Razor.Helpers
 {
     public class DashBoardFileConfiguration : StaticFileConfiguration
     {
-        public DashBoardFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public DashBoardFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

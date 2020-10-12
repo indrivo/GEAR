@@ -6,7 +6,7 @@
         public string Value { get; set; }
     }
 
-    public struct CommerceErrorKeys
+    public struct ErrorKeys
     {
         /// <summary>
         /// Invalid model

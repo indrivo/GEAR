@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.Notifications.Razor.Helpers
 {
     public class NotificationRazorFileConfiguration : StaticFileConfiguration
     {
-        public NotificationRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public NotificationRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

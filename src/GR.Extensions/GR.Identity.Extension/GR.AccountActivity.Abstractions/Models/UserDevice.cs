@@ -1,5 +1,4 @@
 ﻿using System;
-using GR.AccountActivity.Abstractions.Helpers;
 using GR.Core;
 
 namespace GR.AccountActivity.Abstractions.Models
@@ -42,10 +41,9 @@ namespace GR.AccountActivity.Abstractions.Models
         public virtual string Platform { get; set; }
 
         /// <summary>
-        /// Get device cache key
+        /// Cache key
         /// </summary>
         /// <returns></returns>
-        public string GetDeviceCacheKey()
-         => AccountActivityResources.GetDeviceCacheKey(UserId, IpAddress, Platform, Location, Browser);
+        public string GetDeviceCacheKeyByDeviceId() => $"device_{UserId}_{Id}";
     }
 }

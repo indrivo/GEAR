@@ -424,7 +424,7 @@ namespace GR.Identity.Users.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [ResponseCache(Duration = 120 /*2 minutes*/, Location = ResponseCacheLocation.Any, NoStore = false)]
+        [ResponseCache(Duration = 120 /*2 minutes*/, Location = ResponseCacheLocation.Any, NoStore = false, VaryByQueryKeys = new[] { "id" })]
         public async Task<IActionResult> GetImage(Guid id)
         {
             var imageRequest = await _userManager.GetUserImageAsync(id);

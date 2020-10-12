@@ -3,11 +3,14 @@ using System.Linq;
 using System.Reflection;
 using GR.Core.Abstractions;
 using GR.Core.Attributes;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Global;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Core.Helpers.DbContexts
 {
+    [Author(Authors.LUPEI_NICOLAE)]
     public static class DbContextMigrationTool
     {
         /// <summary>
@@ -19,6 +22,7 @@ namespace GR.Core.Helpers.DbContexts
             ConsoleWriter.WriteTextAsTitle($"Database migration tool", ConsoleColor.DarkMagenta);
             var handlers = IoC.Container.Kernel.GetAssignableHandlers(typeof(DbContext));
             var index = 0;
+            var serviceProvider = IoC.Resolve<IServiceProvider>();
             foreach (var handler in handlers)
             {
                 var type = handler.ComponentModel.Implementation;
@@ -40,7 +44,7 @@ namespace GR.Core.Helpers.DbContexts
                     if (dbContext is IDbContext gearContext)
                     {
                         ConsoleWriter.ColoredWriteLine($"Context is migrated for first time, seed will be invoked", ConsoleColor.DarkYellow);
-                        gearContext.InvokeSeedAsync(IoC.Resolve<IServiceProvider>()).Wait();
+                        gearContext.InvokeSeedAsync(serviceProvider).Wait();
                     }
                 }
                 else

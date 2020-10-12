@@ -10,7 +10,7 @@ namespace GR.Email.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddEmailRazorUIModule(this IServiceCollection services)
+        public static IServiceCollection AddEmailRazorUiModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(EmailRazorFileConfiguration));
             return services;

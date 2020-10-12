@@ -91,7 +91,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
 
             var userRegData = new Dictionary<string, string>
             {
-                {"email", user.Email},
+                { "email", user.Email },
                 { "country_code", user.CountryCode },
                 { "cellphone", user.PhoneNumber }
             };
@@ -107,6 +107,7 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var obj = JObject.Parse(strResponse);
             if (!result.IsSuccessStatusCode)
             {
+                _logger.LogWarning("Register user failed with Twilio authy service, response: {response}, payload: {data}", strResponse, userRegRequestData.SerializeAsJson());
                 var apiError = obj.SelectToken("errors")?.SelectToken("message")?.Value<string>() ?? "Unknown error";
                 return new ApiNotRespondResultModel<string>(apiError);
             }
@@ -117,6 +118,8 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                 var userId = obj.SelectToken("user")?.SelectToken("id")?.Value<string>() ?? string.Empty;
                 return new SuccessResultModel<string>(userId);
             }
+
+            _logger.LogWarning("Twilio fail to register user on authy service, response: {Response}", strResponse);
 
             var error = obj.SelectToken("errors")?.SelectToken("message")?.Value<string>() ?? string.Empty;
 
@@ -194,12 +197,11 @@ namespace GR.Identity.PhoneVerification.Infrastructure
             var obj = JObject.Parse(message);
             if (!result.IsSuccessStatusCode)
             {
-                _logger.LogDebug("Fail to verify code, response: {Response}", message);
+                _logger.LogWarning("Fail to verify code, response: {Response}", message);
                 return new ResultModel<string>()
                     .AddError(obj.SelectToken("error_code")?.Value<string>(), obj.SelectToken("message")?.Value<string>());
             }
 
-            _logger.LogDebug(message);
             var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;
             if (isSuccess)
             {
@@ -210,6 +212,8 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                 });
                 return new SuccessResultModel<string>(message);
             }
+
+            _logger.LogWarning("Fail to verify phone with Twilio, payload: {data}", message);
             var errorsObject = message.Deserialize<Dictionary<string, object>>();
             return new ResultModel<string>()
                 .AddError(errorsObject["error_code"].ToString(), errorsObject["message"].ToString());
@@ -288,7 +292,6 @@ namespace GR.Identity.PhoneVerification.Infrastructure
                 return response;
             }
 
-            _logger.LogDebug(result.ToString());
             _logger.LogDebug(content);
 
             var isSuccess = obj.SelectToken("success")?.Value<bool>() ?? false;

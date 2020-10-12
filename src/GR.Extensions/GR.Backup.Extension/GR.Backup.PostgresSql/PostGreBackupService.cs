@@ -218,6 +218,10 @@ namespace GR.Backup.PostGresSql
                     proc.Close();
                 }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
             finally
             {
                 if (File.Exists(batFilePath))

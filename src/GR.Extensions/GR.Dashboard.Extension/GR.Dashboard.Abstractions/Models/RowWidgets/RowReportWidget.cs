@@ -3,7 +3,7 @@ using GR.Dashboard.Abstractions.Models.WidgetTypes;
 
 namespace GR.Dashboard.Abstractions.Models.RowWidgets
 {
-    public sealed class RowReportWidget : WidgetUISettings
+    public sealed class RowReportWidget : WidgetUiSettings
     {
         /// <summary>
         /// Row ref

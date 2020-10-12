@@ -37,6 +37,9 @@ namespace GR.Core.Extensions
                     break;
             }
 
+            if (GearApplication.IsDevelopment())
+                options.EnableSensitiveDataLogging();
+
             return options;
         }
     }

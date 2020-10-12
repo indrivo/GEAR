@@ -9,9 +9,9 @@ using GR.AccountActivity.Abstractions;
 using GR.AccountActivity.Abstractions.Events;
 using GR.AccountActivity.Abstractions.Events.EventArgs;
 using GR.AccountActivity.Abstractions.Helpers;
+using GR.AccountActivity.Abstractions.Helpers.Configuration;
 using GR.AccountActivity.Abstractions.Models;
 using GR.AccountActivity.Abstractions.ViewModels;
-using GR.AccountActivity.Impl.Models;
 using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Attributes.Documentation;
@@ -22,7 +22,6 @@ using GR.Core.Helpers.Responses;
 using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Extensions;
 using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -73,6 +72,11 @@ namespace GR.AccountActivity.Impl
         /// </summary>
         private readonly LinkGenerator _generator;
 
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        private readonly AccountActivityConfiguration _configuration;
+
         #endregion
 
         /// <summary>
@@ -85,7 +89,8 @@ namespace GR.AccountActivity.Impl
         /// <param name="logger"></param>
         /// <param name="cacheService"></param>
         /// <param name="generator"></param>
-        public UserActivityService(IActivityContext context, IUserManager<GearUser> userManager, IMapper mapper, IHttpContextAccessor accessor, ILogger<UserActivityService> logger, ICacheService cacheService, LinkGenerator generator)
+        /// <param name="configuration"></param>
+        public UserActivityService(IActivityContext context, IUserManager<GearUser> userManager, IMapper mapper, IHttpContextAccessor accessor, ILogger<UserActivityService> logger, ICacheService cacheService, LinkGenerator generator, AccountActivityConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
@@ -94,6 +99,7 @@ namespace GR.AccountActivity.Impl
             _logger = logger;
             _cacheService = cacheService;
             _generator = generator;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -109,7 +115,7 @@ namespace GR.AccountActivity.Impl
             var user = userRequest.Result;
 
             var ip = GetIpAddress(context);
-            var platformRequest = ExtractPlatformAndBrowserVersions(context);
+            var platformRequest = ExtractPlatformAndBrowserVersionsFromHttpContext(context);
             if (!platformRequest.IsSuccess) return platformRequest.Map<Guid>();
 
             var device = new UserDevice
@@ -180,13 +186,16 @@ namespace GR.AccountActivity.Impl
         /// <returns></returns>
         public virtual async Task<ResultModel<UserDevice>> FindDeviceAsync(Guid userId, HttpContext context)
         {
-            if (context.Request.Headers.ContainsKey(AccountActivityResources.DeviceIdHeader)
-                && context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().IsGuid())
+            var deviceId = GetDeviceIdFromRequest(context);
+            if (deviceId != null)
             {
-                var deviceId = context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().ToGuid();
-                var deviceFromId = await _context.Devices
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.Id.Equals(deviceId) && x.UserId.Equals(userId));
+                var shortKey = $"device_{userId}_{deviceId}";
+                var deviceFromId = await _cacheService.GetOrSetWithExpireTimeAsync(shortKey, TimeSpan.FromHours(2), async () =>
+                {
+                    return await _context.Devices
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.Id.Equals(deviceId) && x.UserId.Equals(userId));
+                });
                 if (deviceFromId != null)
                 {
                     return new SuccessResultModel<UserDevice>(deviceFromId);
@@ -195,20 +204,23 @@ namespace GR.AccountActivity.Impl
 
             var ip = GetIpAddress(context);
             var location = GetLocationOfDevice(context);
-            var platformRequest = ExtractPlatformAndBrowserVersions(context);
+            var platformRequest = ExtractPlatformAndBrowserVersionsFromHttpContext(context);
             if (!platformRequest.IsSuccess) return platformRequest.Map<UserDevice>();
 
-            var key = AccountActivityResources.GetDeviceCacheKey(userId, ip.ToString(), platformRequest.Result.Platform, location, platformRequest.Result.Browser);
-            var device = await _cacheService.GetOrSetResponseAsync(key, async () => await _context.Devices
+            var device = await _context.Devices
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.IpAddress.Equals(ip.ToString())
                                           && x.Platform.Equals(platformRequest.Result.Platform)
                                           && x.Location.Equals(location)
                                           && x.UserId.Equals(userId)
-                                          && x.Browser.Equals(platformRequest.Result.Browser)));
+                                          && x.Browser.Equals(platformRequest.Result.Browser));
 
             if (device == null) return new NotFoundResultModel<UserDevice>();
-
+            if (_configuration.DeviceCookieOptions.Enabled)
+            {
+                context.Response.Cookies?.Append(AccountActivityResources.DeviceIdCookie, device.Id.ToString(),
+                    _configuration.DeviceCookieOptions.CookieOptions);
+            }
             return new SuccessResultModel<UserDevice>(device);
         }
 
@@ -337,6 +349,7 @@ namespace GR.AccountActivity.Impl
                .AddError("Invalid token")
                .ToBase();
 
+            await _cacheService.RemoveAsync(device.GetDeviceCacheKeyByDeviceId());
 
             device.IsConfirmed = true;
             device.ConfirmDate = DateTime.Now;
@@ -351,8 +364,6 @@ namespace GR.AccountActivity.Impl
                     Device = device,
                     HttpContext = _accessor.HttpContext
                 });
-
-                await _cacheService.RemoveAsync(device.GetDeviceCacheKey());
             }
             return dbResult;
         }
@@ -363,10 +374,10 @@ namespace GR.AccountActivity.Impl
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<UserDevice>>> GetConfirmedDevicesAsync()
         {
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
-            if (user == null) return new NotAuthorizedResultModel<IEnumerable<UserDevice>>();
+            var user =  _userManager.FindUserIdInClaims();
+            if (!user.IsSuccess) return new NotAuthorizedResultModel<IEnumerable<UserDevice>>();
 
-            var devices = await _context.Devices.AsNoTracking().Where(x => x.UserId.Equals(user.Id) && x.IsConfirmed)
+            var devices = await _context.Devices.AsNoTracking().Where(x => x.UserId.Equals(user.Result) && x.IsConfirmed)
                 .ToListAsync();
             return new SuccessResultModel<IEnumerable<UserDevice>>(devices);
         }
@@ -380,11 +391,8 @@ namespace GR.AccountActivity.Impl
         {
             if (userId == null) return new InvalidParametersResultModel();
             var user = await _userManager.UserManager.FindByIdAsync(userId.ToString());
-            var result = await _userManager.UserManager.UpdateSecurityStampAsync(user);
-            if (result.Succeeded) return new SuccessResultModel<object>().ToBase();
-            var errResponse = new ResultModel();
-            errResponse.AppendIdentityErrors(result.Errors);
-            return errResponse;
+            var result = await _userManager.UpdateSecurityStampAsync(user);
+            return result.ToBase();
         }
 
         /// <summary>
@@ -412,6 +420,23 @@ namespace GR.AccountActivity.Impl
                 .GetPagedAsDtResultAsync(parameters);
 
             var mapped = _mapper.Map<IEnumerable<ConfirmedDevicesViewModel>>(paginationResponse.Data);
+            return paginationResponse.MapResult(mapped);
+        }
+
+        /// <summary>
+        /// Get user devices
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<DTResult<UserDeviceViewModel>> GetPagedUserDevicesAsync(DTParameters parameters, Guid userId)
+        {
+            var paginationResponse = await _context.Devices
+                .Where(x => x.IsConfirmed && x.UserId.Equals(userId))
+                .OrderByDescending(x => x.ConfirmDate)
+                .GetPagedAsDtResultAsync(parameters);
+
+            var mapped = _mapper.Map<IEnumerable<UserDeviceViewModel>>(paginationResponse.Data);
             return paginationResponse.MapResult(mapped);
         }
 
@@ -482,7 +507,10 @@ namespace GR.AccountActivity.Impl
             _context.Devices.RemoveRange(other);
             var dbResponse = await _context.PushAsync();
             if (!dbResponse.IsSuccess) return dbResponse;
-            foreach (var otherDevice in other) await _cacheService.RemoveAsync(otherDevice.GetDeviceCacheKey());
+            foreach (var otherDevice in other)
+            {
+                await _cacheService.RemoveAsync(otherDevice.GetDeviceCacheKeyByDeviceId());
+            }
             return dbResponse;
         }
 
@@ -509,7 +537,7 @@ namespace GR.AccountActivity.Impl
             var dbResponse = await _context.PushAsync();
             if (dbResponse.IsSuccess)
             {
-                await _cacheService.RemoveAsync(deviceGet.Result.GetDeviceCacheKey());
+                await _cacheService.RemoveAsync(deviceGet.Result.GetDeviceCacheKeyByDeviceId());
             }
             return dbResponse;
         }
@@ -578,14 +606,12 @@ namespace GR.AccountActivity.Impl
             return dbResponse;
         }
 
-        #region Helpers
-
         /// <summary>
         /// Extract platform and browser
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private ResultModel<ExtractedInfoFromHttpContext> ExtractPlatformAndBrowserVersions(HttpContext context)
+        public virtual ResultModel<ExtractedInfoFromHttpContext> ExtractPlatformAndBrowserVersionsFromHttpContext(HttpContext context)
         {
             var response = new ResultModel<ExtractedInfoFromHttpContext>();
             var uaParser = Parser.GetDefault();
@@ -638,6 +664,7 @@ namespace GR.AccountActivity.Impl
             return response;
         }
 
+        #region Helpers
 
         /// <summary>
         /// Get ip address
@@ -663,6 +690,28 @@ namespace GR.AccountActivity.Impl
             }
 
             return ipAddress;
+        }
+
+        /// <summary>
+        /// Get device id from request
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private Guid? GetDeviceIdFromRequest(HttpContext context)
+        {
+            Guid? deviceId = null;
+            if (_configuration.DeviceCookieOptions.Enabled && context.Request.Cookies.ContainsKey(AccountActivityResources.DeviceIdCookie))
+            {
+                deviceId = context.Request.Cookies[AccountActivityResources.DeviceIdCookie].ToGuid();
+            }
+
+            if (context.Request.Headers.ContainsKey(AccountActivityResources.DeviceIdHeader)
+                && context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().IsGuid())
+            {
+                deviceId = context.Request.Headers[AccountActivityResources.DeviceIdHeader].ToString().ToGuid();
+            }
+
+            return deviceId;
         }
 
         #endregion

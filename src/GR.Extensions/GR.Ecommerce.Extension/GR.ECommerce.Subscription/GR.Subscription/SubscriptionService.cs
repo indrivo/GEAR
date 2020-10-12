@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GR.Core;
-using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -21,6 +20,8 @@ using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
+using GR.Subscriptions.Abstractions.Events;
+using GR.Subscriptions.Abstractions.Events.EventArgs;
 using GR.Subscriptions.Abstractions.Helpers;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions.Abstractions.ViewModels;
@@ -64,11 +65,6 @@ namespace GR.Subscriptions
         private readonly IPaymentService _paymentService;
 
         /// <summary>
-        /// Inject notifier
-        /// </summary>
-        private readonly IAppSender _sender;
-
-        /// <summary>
         /// Inject product service
         /// </summary>
         private readonly IProductService<Product> _productService;
@@ -87,13 +83,12 @@ namespace GR.Subscriptions
 
         #endregion
 
-        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IAppSender sender, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger, IOrderDbContext orderDbContext, SubscriptionConfiguration subscriptionConfiguration)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, IProductService<Product> productService, ICommerceContext commerceContext, IMapper mapper, ILogger<SubscriptionService> logger, IOrderDbContext orderDbContext, SubscriptionConfiguration subscriptionConfiguration)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
             _orderService = orderService;
             _paymentService = paymentService;
-            _sender = sender;
             _productService = productService;
             _commerceContext = commerceContext;
             _mapper = mapper;
@@ -109,9 +104,9 @@ namespace GR.Subscriptions
         public virtual async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetSubscriptionsByUserAsync()
         {
             var response = new ResultModel<IEnumerable<SubscriptionGetViewModel>>();
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
+            var user = _userManager.FindUserIdInClaims();
 
-            if (user == null)
+            if (!user.IsSuccess)
             {
                 return new NotFoundResultModel<IEnumerable<SubscriptionGetViewModel>>();
             }
@@ -120,7 +115,7 @@ namespace GR.Subscriptions
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
-                .Where(x => x.UserId.Equals(user.Id))
+                .Where(x => x.UserId.Equals(user.Result))
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -262,6 +257,12 @@ namespace GR.Subscriptions
                 _logger.LogCritical($"Subscription {model.Name} with id: {model.Id} fail to update, error: {dbRequest.Errors.FirstOrDefault()?.Message}");
             }
 
+            SubscriptionEvents.Subscriptions.TriggerSubscriptionChange(new ChangeSubscriptionEventArgs
+            {
+                SubscriptionId = subscriptionId,
+                UserId = subscription.UserId
+            });
+
             return dbRequest.Map(subscriptionId);
         }
 
@@ -272,9 +273,8 @@ namespace GR.Subscriptions
         public async Task<ResultModel<bool>> HasValidSubscription()
         {
             var toReturn = new ResultModel<bool>();
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
-
-            if (user is null) return new NotFoundResultModel<bool>();
+            var user = _userManager.FindUserIdInClaims();
+            if (!user.IsSuccess) return new NotFoundResultModel<bool>();
 
             var listSubscription = (await GetSubscriptionsByUserAsync()).Result;
 
@@ -282,34 +282,6 @@ namespace GR.Subscriptions
             toReturn.Result = listSubscription.Any(x => x.IsValid);
 
             return toReturn;
-        }
-
-        /// <summary>
-        /// Get subscriptions that will expire after some period
-        /// </summary>
-        /// <param name="timeSpan"></param>
-        /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionsThatExpireInAsync(TimeSpan timeSpan)
-        {
-            var days = timeSpan.TotalDays;
-            var data = await _subscriptionDbContext.Subscription
-                .AsNoTracking()
-                .Where(x => !x.IsFree && (x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree))
-                .ToListAsync();
-            //TODO: TimeSpan issue on EF Core 3.1
-            return new SuccessResultModel<IEnumerable<Subscription>>(data.Where(x => (x.StartDate.AddDays(x.Availability) - DateTime.Now).Days < days).ToList());
-        }
-
-        /// <summary>
-        /// Get expired subscriptions
-        /// </summary>
-        /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Subscription>>> GetExpiredSubscriptionsAsync()
-        {
-            var data = await _subscriptionDbContext.Subscription
-                .AsNoTracking()
-                .Where(x => !(x.StartDate.AddDays(x.Availability) > DateTime.Now || x.IsFree)).ToListAsync();
-            return new SuccessResultModel<IEnumerable<Subscription>>(data);
         }
 
         /// <summary>
@@ -347,46 +319,6 @@ namespace GR.Subscriptions
         }
 
         /// <summary>
-        /// Notify expired subscriptions
-        /// </summary>
-        /// <param name="subscriptions"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel> NotifyAndRemoveExpiredSubscriptionsAsync([Required] IList<Subscription> subscriptions)
-        {
-            if (subscriptions == null) return new NullReferenceResultModel<object>().ToBase();
-            var removeRequest = await RemoveRangeAsync(subscriptions);
-            if (!removeRequest.IsSuccess) return removeRequest;
-            foreach (var subscription in subscriptions)
-            {
-                var userReq = await _userManager.FindUserByIdAsync(subscription.UserId);
-                if (!userReq.IsSuccess) continue;
-                var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
-                              $"to {subscription.ExpirationDate}, has expired";
-                await _sender.SendAsync(userReq.Result, $"Subscription {subscription.Name} expired", message, _subscriptionConfiguration.NotificationProviders.ToArray());
-            }
-
-            return removeRequest;
-        }
-
-        /// <summary>
-        /// Notify subscriptions that will expire
-        /// </summary>
-        /// <param name="subscriptions"></param>
-        /// <returns></returns>
-        public virtual async Task NotifySubscriptionsThatExpireAsync([Required] IList<Subscription> subscriptions)
-        {
-            if (subscriptions == null) throw new NullReferenceException();
-            foreach (var subscription in subscriptions)
-            {
-                var userReq = await _userManager.FindUserByIdAsync(subscription.UserId);
-                if (!userReq.IsSuccess) continue;
-                var message = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
-                              $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days";
-                await _sender.SendAsync(userReq.Result, "The subscription expires soon", message, _subscriptionConfiguration.NotificationProviders.ToArray());
-            }
-        }
-
-        /// <summary>
         /// Get las subscription for user
         /// </summary>
         /// <returns></returns>
@@ -395,7 +327,10 @@ namespace GR.Subscriptions
             var result = new ResultModel<Subscription>();
             var user = userId != null
                 ? (await _userManager.FindUserByIdAsync(userId)).Result
-                : (await _userManager.GetCurrentUserAsync()).Result;
+                : (await _userManager.GetCurrentUserWithCustomFieldsAsync(x => new GearUser
+                {
+                    Id = x.Id
+                })).Result;
 
             if (user == null) return UserNotFoundResult<Subscription>.Instance;
 
@@ -540,9 +475,6 @@ namespace GR.Subscriptions
                 .Include(x => x.Order)
                 .ThenInclude(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
-                .ThenInclude(x => x.ProductVariations)
-                .ThenInclude(x => x.ProductVariationDetails)
-                .ThenInclude(x => x.ProductOption)
                 .AsNoTracking()
                 .GetPagedAsDtResultAsync(parameters);
             var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
@@ -560,11 +492,18 @@ namespace GR.Subscriptions
                 subscriptionUser.Amount = subscription.Order?.Total ?? 0;
                 subscriptionUser.Status = subscription.IsValid ? "Active" : "Expired";
                 var orderDetails = subscription.Order?.ProductOrders.FirstOrDefault();
-                if (orderDetails?.ProductVariation?.ProductVariationDetails != null)
+                if (orderDetails != null)
                 {
-                    foreach (var variation in orderDetails.ProductVariation.ProductVariationDetails)
+                    var variation = await _commerceContext.ProductVariations
+                        .Include(x => x.ProductVariationDetails)
+                        .ThenInclude(x => x.ProductOption)
+                        .FirstOrDefaultAsync(x => x.Id == orderDetails.ProductVariationId);
+                    if (variation != null)
                     {
-                        subscriptionUser.Period += variation.Value + " ";
+                        foreach (var variationDetail in variation.ProductVariationDetails)
+                        {
+                            subscriptionUser.Period += variationDetail.Value + " ";
+                        }
                     }
                 }
                 data.Add(subscriptionUser);
@@ -661,7 +600,18 @@ namespace GR.Subscriptions
                 IsFree = false
             };
             await _subscriptionDbContext.Subscription.AddAsync(subscription);
-            return await _subscriptionDbContext.PushAsync();
+
+            var dbResult = await _subscriptionDbContext.PushAsync();
+
+            if (dbResult.IsSuccess)
+            {
+                SubscriptionEvents.Subscriptions.TriggerSubscriptionChange(new ChangeSubscriptionEventArgs
+                {
+                    SubscriptionId = subscription.Id,
+                    UserId = subscription.UserId
+                });
+            }
+            return dbResult;
         }
 
         /// <summary>
@@ -685,6 +635,20 @@ namespace GR.Subscriptions
                 IsFree = true,
                 SubscriptionPermissions = permissions
             })).ToBase();
+        }
+
+        /// <summary>
+        /// Get subscriptions for specific user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<SubscriptionGetViewModel>>> GetSubscriptionsForSpecificUserIdAsync(Guid userId)
+        {
+            var subscriptions =
+                await _subscriptionDbContext.Subscription.Where(x => x.UserId.Equals(userId)).ToListAsync();
+
+            var mappedSubscriptions = _mapper.Map<IEnumerable<SubscriptionGetViewModel>>(subscriptions);
+            return new SuccessResultModel<IEnumerable<SubscriptionGetViewModel>>(mappedSubscriptions);
         }
     }
 }

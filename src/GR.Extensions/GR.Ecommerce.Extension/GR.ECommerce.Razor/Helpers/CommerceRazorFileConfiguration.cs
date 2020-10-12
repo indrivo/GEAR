@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using GR.Core.StaticFiles;
+﻿using GR.Core.StaticFiles;
+using Microsoft.Extensions.Hosting;
 
 namespace GR.ECommerce.Razor.Helpers
 {
     public class CommerceRazorFileConfiguration : StaticFileConfiguration
     {
-        public CommerceRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
+        public CommerceRazorFileConfiguration(IHostEnvironment environment) : base(environment)
         {
         }
     }

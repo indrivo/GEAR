@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GR.Core.Extensions
@@ -63,6 +64,21 @@ namespace GR.Core.Extensions
             if (source == null) return default;
             var item = source.FirstOrDefault(x => x.Key.Equals(property));
             return item.IsNull() ? default : item.Is<T>();
+        }
+
+        /// <summary>
+        /// Get index of item
+        /// </summary>
+        /// <param name="dictionary"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int IndexOf(this IDictionary dictionary, object value)
+        {
+            for (var i = 0; i < dictionary.Count; ++i)
+            {
+                if (dictionary[i] == value) return i;
+            }
+            return -1;
         }
     }
 }

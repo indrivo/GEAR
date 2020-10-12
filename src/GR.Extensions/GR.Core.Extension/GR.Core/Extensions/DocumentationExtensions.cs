@@ -44,6 +44,7 @@ namespace GR.Core.Extensions
         /// <returns>The XML fragment describing the member</returns>
         public static XmlElement GetDocumentation(this MemberInfo memberInfo)
         {
+            if (memberInfo == null) return null;
             // First character [0] of member type is prefix character in the name in the XML
             return XmlFromName(memberInfo.DeclaringType, memberInfo.MemberType.ToString()[0], memberInfo.Name);
         }
@@ -164,9 +165,15 @@ namespace GR.Core.Extensions
             {
                 StreamReader streamReader;
 
+                var filePath = Path.ChangeExtension(assemblyFilename.Substring(prefix.Length), ".xml");
+                if (!File.Exists(filePath))
+                {
+                    return null;
+                }
+
                 try
                 {
-                    streamReader = new StreamReader(Path.ChangeExtension(assemblyFilename.Substring(prefix.Length), ".xml"));
+                    streamReader = new StreamReader(filePath);
                 }
                 catch (FileNotFoundException exception)
                 {

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,13 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
 using GR.Core.Razor.BaseControllers;
 using GR.Identity.Abstractions;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Events;
 using GR.Localization.Abstractions.Events.EventArgs;
-using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace GR.Localization.Razor.Controllers
@@ -28,7 +24,6 @@ namespace GR.Localization.Razor.Controllers
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IStringLocalizer _localize;
         private readonly ILocalizationService _localizationService;
-        private readonly IExternalTranslationProvider _externalTranslationProvider;
         private readonly IUserManager<GearUser> _userManager;
 
         #endregion
@@ -39,59 +34,14 @@ namespace GR.Localization.Razor.Controllers
         /// <param name="locConfig"></param>
         /// <param name="localize"></param>
         /// <param name="localizationService"></param>
-        /// <param name="externalTranslationProvider"></param>
         /// <param name="userManager"></param>
         public LocalizationController(IOptionsSnapshot<LocalizationConfigModel> locConfig,
-            IStringLocalizer localize, ILocalizationService localizationService, IExternalTranslationProvider externalTranslationProvider, IUserManager<GearUser> userManager)
+            IStringLocalizer localize, ILocalizationService localizationService, IUserManager<GearUser> userManager)
         {
             _locConfig = locConfig;
             _localize = localize;
             _localizationService = localizationService;
-            _externalTranslationProvider = externalTranslationProvider;
             _userManager = userManager;
-        }
-
-        /// <summary>
-        /// Get all languages
-        /// </summary>
-        /// <returns></returns>
-        [AllowAnonymous]
-        public JsonResult GetAvailablesLanguages()
-        {
-            var languages = _locConfig.Value.Languages;
-            var parsed = new List<dynamic>();
-            var result = new ResultModel();
-            foreach (var lang in languages)
-            {
-                parsed.Add(new
-                {
-                    Locale = lang.Identifier,
-                    Description = lang.Name
-                });
-            }
-
-            result.Result = parsed;
-
-            return Json(result);
-        }
-
-        /// <summary>
-        /// Get translations
-        /// </summary>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpGet]
-        public JsonResult GetTranslations(string lang)
-        {
-            var languages = _locConfig.Value.Languages.Select(x => x.Identifier);
-            if (!languages.Contains(lang))
-            {
-                return Json(null);
-            }
-
-            var translations = _localize.GetAllForLanguage(lang);
-            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
-            return Json(json);
         }
 
         /// <summary>
@@ -226,37 +176,6 @@ namespace GR.Localization.Razor.Controllers
         }
 
         /// <summary>
-        /// Translate all keys from english
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="from"></param>
-        /// <returns></returns>
-        public async Task<JsonResult> Translate([Required] string text, [Required] string from)
-        {
-            var result = new ResultModel
-            {
-                Errors = new List<IErrorModel>()
-            };
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(from))
-            {
-                result.Errors.Add(new ErrorModel("EmptyKey", "Key is empty!"));
-                return Json(result);
-            }
-            var languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name);
-            var dict = new Dictionary<string, string>();
-            foreach (var (key, _) in languages)
-            {
-                if (key == from) continue;
-                var translated = await _externalTranslationProvider.TranslateTextAsync(text, from, key);
-                dict.Add(key, translated);
-            }
-
-            result.Result = dict;
-            result.IsSuccess = true;
-            return Json(result);
-        }
-
-        /// <summary>
         /// Add language
         /// </summary>
         /// <param name="model"></param>
@@ -317,38 +236,6 @@ namespace GR.Localization.Razor.Controllers
             }
 
             return RedirectToAction("GetLanguages", "Localization", new { page = 1, perPage = 10 });
-        }
-
-        /// <summary>
-        /// Get all languages
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<JsonResult> GetLanguagesAsJson()
-        {
-            var languagesRequest = await _localizationService.GetAllLanguagesAsync();
-            return Json(languagesRequest.Result);
-        }
-
-        /// <summary>
-        /// Get translations
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public JsonResult GetTranslationsForCurrentLanguage()
-        {
-            var lang = HttpContext.Session.GetString("lang");
-            var languages = _locConfig.Value.Languages.Select(x => x.Identifier);
-            if (!languages.Contains(lang))
-            {
-                return Json(null);
-            }
-
-            var translations = _localize.GetAllForLanguage(lang).OrderBy(x => x.Value);
-            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
-            return Json(json);
         }
     }
 }

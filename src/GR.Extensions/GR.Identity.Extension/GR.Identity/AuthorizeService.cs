@@ -9,6 +9,7 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Authorization;
 using GR.Identity.Abstractions.Extensions;
@@ -48,14 +49,20 @@ namespace GR.Identity
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
 
+        /// <summary>
+        /// Inject options
+        /// </summary>
+        private readonly GearAuthenticationOptions _options;
+
         #endregion
 
-        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger, IHttpContextAccessor contextAccessor)
+        public AuthorizeService(SignInManager<GearUser> signInManager, IUserManager<GearUser> userManager, ILogger<AuthorizeService> logger, IHttpContextAccessor contextAccessor, GearAuthenticationOptions options)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _contextAccessor = contextAccessor;
+            _options = options;
         }
 
         /// <summary>
@@ -92,7 +99,7 @@ namespace GR.Identity
                 return response;
             }
 
-            if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
+            if (_options.AllowPasswordExpiration && user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
             {
                 response.Errors.Add(new ErrorModel(string.Empty,
                     "Password has been expired, you need to change the password"));
@@ -129,7 +136,7 @@ namespace GR.Identity
                     return response;
                 }
 
-                if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
+                if (_options.AllowPasswordExpiration && user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
                 {
                     response.Errors.Add(new ErrorModel(string.Empty,
                         "Password has been expired, you need to change the password"));

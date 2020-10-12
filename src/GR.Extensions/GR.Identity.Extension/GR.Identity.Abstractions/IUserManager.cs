@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GR.Core;
 using Microsoft.AspNetCore.Http;
@@ -47,10 +49,29 @@ namespace GR.Identity.Abstractions
         Task<ResultModel<GearUser>> GetCurrentUserAsync();
 
         /// <summary>
+        /// Get current user info with fields of base identity
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IdentityUser<Guid>>> GetCurrentBaseUserAsync();
+
+        /// <summary>
+        /// Get current user with custom fields
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        Task<ResultModel<GearUser>> GetCurrentUserWithCustomFieldsAsync(Expression<Func<GearUser, GearUser>> configuration);
+
+        /// <summary>
         /// Get roles from claims
         /// </summary>
         /// <returns></returns>
         IEnumerable<string> GetRolesFromClaims();
+
+        /// <summary>
+        /// Get claims for current user
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Claim> GetCurrentUserClaims();
 
         /// <summary>
         /// Get request ip address
@@ -196,6 +217,13 @@ namespace GR.Identity.Abstractions
         ResultModel<Guid> FindUserIdInClaims();
 
         /// <summary>
+        /// Find user 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        ResultModel<Guid> FindUserIdInClaims(ClaimsPrincipal user);
+
+        /// <summary>
         /// Find user by id
         /// </summary>
         /// <param name="userId"></param>
@@ -246,5 +274,45 @@ namespace GR.Identity.Abstractions
         /// <param name="next"></param>
         /// <returns></returns>
         Task<ResultModel> ChangeUserPasswordAsync(TUser user, string current, string next);
+
+        /// <summary>
+        /// Update security stamp and store in distributed cache
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<ResultModel<string>> UpdateSecurityStampAsync(GearUser user);
+
+        /// <summary>
+        /// Get security stamp from distributed cache and renew
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<string>> GetSecurityStampAsync(Guid userId);
+
+        /// <summary>
+        /// Return true if current logged user is admin
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsCurrentUserAdmin();
+
+        /// <summary>
+        /// Set token
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="tokenName"></param>
+        /// <param name="tokenValue"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetTokenAsync(Guid userId, string loginProvider, string tokenName, string tokenValue);
+
+        /// <summary>
+        /// Set token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="tokenName"></param>
+        /// <param name="tokenValue"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetTokenAsync(GearUser user, string loginProvider, string tokenName, string tokenValue);
     }
 }

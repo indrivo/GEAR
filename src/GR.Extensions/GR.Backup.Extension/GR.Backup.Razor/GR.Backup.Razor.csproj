@@ -19,15 +19,4 @@
     <ProjectReference Include="..\GR.Backup.PostgresSql\GR.Backup.PostgresSql.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Views\DataBaseBackup\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>false</Pack>
-    </Content>
-    <Content Update="Views\_ViewGRart.cshtml">
-      <Pack>false</Pack>
-    </Content>
-  </ItemGroup>
 </Project>

@@ -60,14 +60,14 @@ namespace GR.ECommerce.Razor.Controllers
         {
             ViewData["Mode"] = mode;
             if (orderId == null) return NotFound();
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return NotFound();
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
 
             var wasInvoicedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.Invoiced);
             if (wasInvoicedRequest.IsSuccess && wasInvoicedRequest.Result) return NotFound();
-            var addressesRequest = await _userAddressService.GetUserAddressesAsync(userRequest.Result.Id);
+            var addressesRequest = await _userAddressService.GetUserAddressesAsync(userRequest.Result);
             var model = new CheckoutShippingViewModel
             {
                 Order = orderRequest.Result,
@@ -84,7 +84,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <param name="mode"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Shipping([Required]CheckoutShippingViewModel model, ViewMode mode = ViewMode.Web)
+        public async Task<IActionResult> Shipping([Required] CheckoutShippingViewModel model, ViewMode mode = ViewMode.Web)
         {
             if (model == null) return NotFound();
 
@@ -100,12 +100,12 @@ namespace GR.ECommerce.Razor.Controllers
                 ModelState.AppendResultModelErrors(addressUpdateRequest.Errors);
             }
 
-            var userRequest = await _userManager.GetCurrentUserAsync();
+            var userRequest = _userManager.FindUserIdInClaims();
             if (!userRequest.IsSuccess) return NotFound();
             var orderRequest = await _orderProductService.GetOrderByIdAsync(model.Order?.Id);
             if (!orderRequest.IsSuccess) return NotFound();
             if (orderRequest.Result.OrderState != OrderState.New) return NotFound();
-            var addressesRequest = await _userAddressService.GetUserAddressesAsync(userRequest.Result.Id);
+            var addressesRequest = await _userAddressService.GetUserAddressesAsync(userRequest.Result);
             model.Order = orderRequest.Result;
             model.Addresses = addressesRequest.Result;
             ViewData["Mode"] = mode;

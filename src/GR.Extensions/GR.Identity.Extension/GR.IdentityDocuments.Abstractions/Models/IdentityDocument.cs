@@ -1,16 +1,26 @@
 ﻿using System;
 using GR.Core;
-using GR.Identity.Abstractions;
+using GR.IdentityDocuments.Abstractions.Enums;
 
 namespace GR.IdentityDocuments.Abstractions.Models
 {
     public class IdentityDocument : BaseModel
     {
         /// <summary>
-        /// User id
+        /// UserKyc id
         /// </summary>
-        public virtual GearUser User { get; set; }
-        public virtual Guid UserId { get; set; }
+        public virtual UserKyc Kyc { get; set; }
+        public virtual Guid UserKycId { get; set; }
+
+        /// <summary>
+        /// State
+        /// </summary>
+        public DocumentValidationState ValidationState { get; set; } = DocumentValidationState.Pending;
+
+        /// <summary>
+        /// Reject reason
+        /// </summary>
+        public virtual string Reason { get; set; }
 
         /// <summary>
         /// Blob

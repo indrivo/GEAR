@@ -130,7 +130,7 @@ namespace GR.Dashboard.Abstractions
         /// <param name="widgetId"></param>
         /// <param name="rowId"></param>
         /// <returns></returns>
-        Task<ResultModel<WidgetUISettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId);
+        Task<ResultModel<WidgetUiSettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId);
 
         /// <summary>
         /// Change ui settings for mapped widget
@@ -139,6 +139,6 @@ namespace GR.Dashboard.Abstractions
         /// <param name="rowId"></param>
         /// <param name="uiSettings"></param>
         /// <returns></returns>
-        Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings);
+        Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUiSettings uiSettings);
     }
 }

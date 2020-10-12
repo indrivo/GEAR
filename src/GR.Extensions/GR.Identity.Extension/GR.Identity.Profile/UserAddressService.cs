@@ -24,25 +24,25 @@ namespace GR.Identity.Profile
         /// <summary>
         /// Inject context
         /// </summary>
-        private readonly IProfileContext _context;
+        protected readonly IProfileContext Context;
 
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<GearUser> _userManager;
+        protected readonly IUserManager<GearUser> UserManager;
 
         /// <summary>
         /// Inject mapper
         /// </summary>
-        private readonly IMapper _mapper;
+        protected readonly IMapper Mapper;
 
         #endregion Injectable
 
         public UserAddressService(IProfileContext context, IUserManager<GearUser> userManager, IMapper mapper)
         {
-            _context = context;
-            _userManager = userManager;
-            _mapper = mapper;
+            Context = context;
+            UserManager = userManager;
+            Mapper = mapper;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync()
         {
-            var currentUserRequest =  _userManager.FindUserIdInClaims();
+            var currentUserRequest = UserManager.FindUserIdInClaims();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<Address>>();
             return await GetUserAddressesAsync(currentUserRequest.Result);
         }
@@ -62,7 +62,7 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync()
         {
-            var currentUserRequest = _userManager.FindUserIdInClaims();
+            var currentUserRequest = UserManager.FindUserIdInClaims();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<GetUserAddressViewModel>();
             return await GetDefaultAddressAsync(currentUserRequest.Result);
         }
@@ -74,7 +74,7 @@ namespace GR.Identity.Profile
         /// <returns></returns>
         public virtual async Task<ResultModel<GetUserAddressViewModel>> GetDefaultAddressAsync(Guid? userId)
         {
-            var query = _context.UserAddresses.Where(x => x.UserId == userId)
+            var query = Context.UserAddresses.Where(x => x.UserId == userId)
                 .Include(x => x.User)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince);
@@ -87,7 +87,7 @@ namespace GR.Identity.Profile
                 return new NotFoundResultModel<GetUserAddressViewModel>();
             }
 
-            var mapped = _mapper.Map<GetUserAddressViewModel>(defaultAddress);
+            var mapped = Mapper.Map<GetUserAddressViewModel>(defaultAddress);
             return new SuccessResultModel<GetUserAddressViewModel>(mapped);
         }
 
@@ -99,7 +99,7 @@ namespace GR.Identity.Profile
         public async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId)
         {
             if (userId == null) return new InvalidParametersResultModel<IEnumerable<Address>>();
-            var data = await _context.UserAddresses.Where(x => x.UserId == userId)
+            var data = await Context.UserAddresses.Where(x => x.UserId == userId)
                 .Include(x => x.User)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
@@ -120,7 +120,7 @@ namespace GR.Identity.Profile
         public async Task<ResultModel<Address>> GetAddressByIdAsync(Guid? addressId)
         {
             if (addressId == null) return new InvalidParametersResultModel<Address>();
-            var address = await _context.UserAddresses
+            var address = await Context.UserAddresses
                 .Include(x => x.User)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
@@ -139,15 +139,15 @@ namespace GR.Identity.Profile
         public virtual async Task<ResultModel> UpdateUserAddressAsync(EditUserProfileAddressViewModel model)
         {
             var resultModel = new ResultModel();
-            var user = (await _userManager.GetCurrentUserAsync()).Result;
+            var user = (await UserManager.GetCurrentUserAsync()).Result;
             if (user == null) return new NotAuthorizedResultModel().ToBase();
-            var currentAddress = await _context.UserAddresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            var currentAddress = await Context.UserAddresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
 
             if (currentAddress == null && model.Id != Guid.Empty)
             {
-                if (!await _context.UserAddresses.AnyAsync(x => x.UserId == user.Id))
+                if (!await Context.UserAddresses.AnyAsync(x => x.UserId == user.Id))
                 {
-                    var newAddress = _mapper.Map<AddNewAddressViewModel>(model);
+                    var newAddress = Mapper.Map<AddNewAddressViewModel>(model);
                     newAddress.IsDefault = true;
                     var addReq = await AddAddressAsync(newAddress);
                     return addReq.ToBase();
@@ -162,7 +162,7 @@ namespace GR.Identity.Profile
 
             if (model.IsDefault)
             {
-                _context.UserAddresses
+                Context.UserAddresses
                     .Where(x => x.UserId.Equals(currentAddress.UserId))
                     .ToList().ForEach(b => b.IsDefault = false);
             }
@@ -177,8 +177,8 @@ namespace GR.Identity.Profile
             currentAddress.IsDefault = model.IsDefault;
             currentAddress.Region = model.Region;
 
-            _context.Update(currentAddress);
-            var result = await _context.PushAsync();
+            Context.Update(currentAddress);
+            var result = await Context.PushAsync();
             return result;
         }
 
@@ -192,14 +192,14 @@ namespace GR.Identity.Profile
             var resultModel = new ResultModel();
             if (!id.HasValue) return new InvalidParametersResultModel<object>().ToBase();
 
-            var currentAddress = await _context.UserAddresses.FindAsync(id.Value);
+            var currentAddress = await Context.UserAddresses.FindAsync(id.Value);
             if (currentAddress == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
                 return resultModel;
             }
-            _context.UserAddresses.Remove(currentAddress);
-            var dbResult = await _context.PushAsync();
+            Context.UserAddresses.Remove(currentAddress);
+            var dbResult = await Context.PushAsync();
             return dbResult;
         }
 
@@ -208,9 +208,9 @@ namespace GR.Identity.Profile
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> AddAddressAsync(AddNewAddressViewModel model)
+        public virtual async Task<ResultModel<Guid>> AddAddressAsync(AddNewAddressViewModel model)
         {
-            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            var currentUserRequest = await UserManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map(Guid.Empty);
             var user = currentUserRequest.Result;
             var address = new Address
@@ -229,13 +229,13 @@ namespace GR.Identity.Profile
 
             if (model.IsDefault)
             {
-                _context.UserAddresses
+                Context.UserAddresses
                     .Where(x => x.UserId.Equals(user.Id))
                     .ToList().ForEach(b => b.IsDefault = false);
             }
 
-            await _context.UserAddresses.AddAsync(address);
-            var dbResult = await _context.PushAsync();
+            await Context.UserAddresses.AddAsync(address);
+            var dbResult = await Context.PushAsync();
             return dbResult.Map(address.Id);
         }
     }

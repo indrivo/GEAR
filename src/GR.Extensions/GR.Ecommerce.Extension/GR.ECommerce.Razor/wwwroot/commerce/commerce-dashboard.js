@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-window.onload = function () {
+$(document).ready(function () {
     const picker = $('.date-rage').daterangepicker({
         opens: 'left'
     }).data('daterangepicker');
@@ -54,7 +54,9 @@ window.onload = function () {
             }
         });
     };
+});
 
+$(document).ready(function () {
     $.ajax({
         url: "/api/Products/GetYearReport",
         success: function (data) {
@@ -99,7 +101,9 @@ window.onload = function () {
                 });
         }
     });
+});
 
+$(document).ready(function () {
     const ctxDoughnut = document.getElementById('chart-area').getContext('2d');
     $.ajax({
         url: "/api/Orders/GetOrdersGraphInfo",
@@ -137,4 +141,4 @@ window.onload = function () {
                 });
         }
     });
-};
+});

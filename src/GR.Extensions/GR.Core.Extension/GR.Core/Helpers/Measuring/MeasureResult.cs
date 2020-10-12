@@ -19,4 +19,9 @@ namespace GR.Core.Helpers.Measuring
         /// </summary>
         public virtual long ElapsedMilliseconds { get; set; }
     }
+
+    public class MeasureResult : MeasureResult<object>
+    {
+
+    }
 }

@@ -54,7 +54,7 @@
             location: eventObj.data('event-location'),
             startDate: requestStartDate,
             endDate: requestEndDate,
-            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
+            priority: this.$helpers.eventPriority[eventObj.data('event-priority')].systemName,
         }
 
         if (eventObj.data('event-members').length != 0) {
@@ -310,7 +310,7 @@
                     helpers = data;
                     helpers.users = users;
                     const selectConfig = {
-                        options: helpers.EventPriority,
+                        options: helpers.eventPriority,
                         selectTarget: $('#add-event .event-priority'),
                         selectedValues: null,
                         translatable: true,
@@ -538,7 +538,7 @@
                     endDateEdit: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('MMM D, YYYY'),
                     startTime: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
                     endTime: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
-                    priority: window.translate(helpers.EventPriority[event.priority].translationKey),
+                    priority: window.translate(helpers.eventPriority[event.priority].translationKey),
                     editable: editable,
                 };
 
@@ -594,7 +594,7 @@
                 });
 
                 const selectConfig = {
-                    options: helpers.EventPriority,
+                    options: helpers.eventPriority,
                     selectTarget: $('.details-popup .event-priority'),
                     selectedValues: [event.priority],
                     translatable: true,
@@ -680,7 +680,7 @@
                 fillMembersSelect(selectMembersConfig);
 
                 const selectConfig = {
-                    options: helpers.EventPriority,
+                    options: helpers.eventPriority,
                     selectTarget: $('#edit-event .event-priority'),
                     selectedValues: [event.priority],
                     translatable: true,

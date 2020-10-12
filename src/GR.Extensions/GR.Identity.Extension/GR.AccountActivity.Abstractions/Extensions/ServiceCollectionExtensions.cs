@@ -1,6 +1,7 @@
 ﻿using System;
 using GR.AccountActivity.Abstractions.ActionFilters;
 using GR.AccountActivity.Abstractions.Helpers;
+using GR.AccountActivity.Abstractions.Helpers.Configuration;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
@@ -19,8 +20,10 @@ namespace GR.AccountActivity.Abstractions.Extensions
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TActivityFilter"></typeparam>
         /// <param name="services"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddUserActivityModule<TService, TActivityFilter>(this IServiceCollection services)
+        public static IServiceCollection AddUserActivityModule<TService, TActivityFilter>(this IServiceCollection services,
+            Action<AccountActivityConfiguration> options = null)
             where TService : class, IUserActivityService
             where TActivityFilter : ActivityTrackerFilter
         {
@@ -43,6 +46,9 @@ namespace GR.AccountActivity.Abstractions.Extensions
                 service.RegisterUserActivityAsync(AccountActivityResources.ActivityTypes.SIGNOUT, args.HttpContext);
             };
 
+            var conf = new AccountActivityConfiguration();
+            options?.Invoke(conf);
+            services.AddGearSingleton(conf);
             return services;
         }
 

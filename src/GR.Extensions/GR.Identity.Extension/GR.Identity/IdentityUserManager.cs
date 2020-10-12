@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -23,6 +24,8 @@ using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace GR.Identity
 {
@@ -77,9 +80,19 @@ namespace GR.Identity
         /// </summary>
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly ICacheService<IDistributedCache> _distributedCache;
+
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        protected readonly ILogger<IdentityUserManager> Logger;
+
         #endregion
 
-        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext, ICacheService cacheService, IMapper mapper)
+        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext, ICacheService cacheService, IMapper mapper, ICacheService<IDistributedCache> distributedCache, ILogger<IdentityUserManager> logger)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -87,6 +100,8 @@ namespace GR.Identity
             IdentityContext = identityContext;
             _cacheService = cacheService;
             _mapper = mapper;
+            _distributedCache = distributedCache;
+            Logger = logger;
         }
 
         /// <summary>
@@ -103,6 +118,7 @@ namespace GR.Identity
                 var emailUser = await UserManager.FindByEmailAsync(user.Email);
                 if (emailUser != null)
                 {
+                    Logger.LogWarning($"Cannot create user, user with {user.Email.ToLowerInvariant()} email already exists");
                     var emailFailResponse = new ResultModel<Guid>();
                     emailFailResponse.AddError($"User with {user.Email.ToLowerInvariant()} email already exists");
                     return emailFailResponse;
@@ -122,7 +138,11 @@ namespace GR.Identity
                     UserId = user.Id,
                     UserName = user.UserName
                 });
+
+                return response;
             }
+
+            Logger.LogWarning("Fail to create user, payload: {User}, errors: {Errors}", user.SerializeAsJson(), response.Errors.SerializeAsJson());
             return response;
         }
 
@@ -138,17 +158,33 @@ namespace GR.Identity
                 result.AddError("Unauthorized user");
                 return result;
             }
-            var nameIdentifierClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (nameIdentifierClaim != null)
+
+            return FindUserIdInClaims(_httpContextAccessor.HttpContext.User);
+        }
+
+        /// <summary>
+        /// Find user 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual ResultModel<Guid> FindUserIdInClaims(ClaimsPrincipal user)
+        {
+            if (user == null) throw new NullReferenceException();
+            var result = new ResultModel<Guid>();
+            if (!user.Identity.IsAuthenticated)
             {
-                result.IsSuccess = true;
-                result.Result = nameIdentifierClaim.Value.ToGuid();
+                result.AddError("Unauthorized user");
                 return result;
             }
 
-            var id = UserManager.GetUserId(_httpContextAccessor.HttpContext.User).ToGuid();
-            result.IsSuccess = id != Guid.Empty;
-            result.Result = id;
+            var nameIdentifierClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            var id = nameIdentifierClaim?.Value?.ToGuid() ?? UserManager.GetUserId(user)?.ToGuid();
+
+            if (id == null) return result;
+
+            result.Result = id.Value;
+            result.IsSuccess = true;
+
             return result;
         }
 
@@ -173,28 +209,64 @@ namespace GR.Identity
         /// <returns></returns>
         public virtual async Task<ResultModel<GearUser>> GetCurrentUserAsync()
         {
+            var idResult = FindUserIdInClaims();
+            if (!idResult.IsSuccess) return idResult.Map<GearUser>();
+
             var result = new ResultModel<GearUser>();
-            if (_httpContextAccessor.HttpContext == null || !_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
-            {
-                result.AddError("Unauthorized user");
-                return result;
-            }
-
-            GearUser user;
-
-            var nameIdentifierClaim = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (nameIdentifierClaim != null)
-            {
-                user = await UserManager.FindByIdAsync(nameIdentifierClaim.Value);
-                result.IsSuccess = user != null;
-                result.Result = user;
-                return result;
-            }
-
-            user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            var user = await UserManager.FindByIdAsync(idResult.Result.ToString());
             result.IsSuccess = user != null;
             result.Result = user;
             return result;
+        }
+
+        /// <summary>
+        /// Get current user info with fields of base identity
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<ResultModel<IdentityUser<Guid>>> GetCurrentBaseUserAsync()
+        {
+            var idResult = FindUserIdInClaims();
+            if (!idResult.IsSuccess) return Task.FromResult(idResult.Map<IdentityUser<Guid>>());
+            var result = new ResultModel<IdentityUser<Guid>>();
+
+            var user = UserManager.Users
+                .AsNoTracking()
+                .Where(x => x.Id == idResult.Result)
+                .Select(x => new IdentityUser<Guid>
+                {
+                    Id = x.Id,
+                    UserName = x.UserName,
+                    Email = x.Email,
+                    EmailConfirmed = x.EmailConfirmed,
+                    ConcurrencyStamp = x.ConcurrencyStamp,
+                    PhoneNumber = x.PhoneNumber,
+                    PhoneNumberConfirmed = x.PhoneNumberConfirmed,
+                    SecurityStamp = x.SecurityStamp
+                }).FirstOrDefault();
+
+            result.IsSuccess = user != null;
+            result.Result = user;
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Get current user with custom fields
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public virtual Task<ResultModel<GearUser>> GetCurrentUserWithCustomFieldsAsync(Expression<Func<GearUser, GearUser>> configuration)
+        {
+            var idResult = FindUserIdInClaims();
+            if (!idResult.IsSuccess) return Task.FromResult(idResult.Map<GearUser>());
+            var result = new ResultModel<GearUser>();
+
+            var user = UserManager.Users
+                .Where(x => x.Id == idResult.Result)
+                .Select(configuration).FirstOrDefault();
+
+            result.IsSuccess = user != null;
+            result.Result = user;
+            return Task.FromResult(result);
         }
 
         /// <inheritdoc />
@@ -208,6 +280,15 @@ namespace GR.Identity
                 .Where(x => x.Type.Equals("role") || x.Type.EndsWith("role")).Select(x => x.Value)
                 .ToList();
             return roles;
+        }
+
+        /// <summary>
+        /// Get claims for current user
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Claim> GetCurrentUserClaims()
+        {
+            return _httpContextAccessor?.HttpContext?.User?.Claims?.ToList() ?? new List<Claim>();
         }
 
         /// <inheritdoc />
@@ -733,6 +814,85 @@ namespace GR.Identity
         {
             var user = await UserManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(phone));
             return user;
+        }
+
+        /// <summary>
+        /// Update security time stamp and store in distributed cache
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<string>> UpdateSecurityStampAsync(GearUser user)
+        {
+            var result = await UserManager.UpdateSecurityStampAsync(user);
+            if (!result.Succeeded) return result.ToResultModel<string>();
+
+            var securityStamp = await UserManager.GetSecurityStampAsync(user);
+            await _distributedCache.SetAsync(user.Id + "-security-time-stamp", securityStamp);
+            return new SuccessResultModel<string>();
+
+        }
+
+        /// <summary>
+        /// Get security token from distributed cache and renew
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<string>> GetSecurityStampAsync(Guid userId)
+        {
+            var cachedSecurityStamp = await _distributedCache.GetAsync<string>(userId + "-security-time-stamp");
+            if (!cachedSecurityStamp.IsNullOrEmpty()) return new SuccessResultModel<string>(cachedSecurityStamp);
+
+            var userResponse = await FindUserByIdAsync(userId);
+            if (!userResponse.IsSuccess) return userResponse.Map<string>();
+            var securityStamp = await UserManager.GetSecurityStampAsync(userResponse.Result);
+            await _distributedCache.SetAsync(userId + "-security-time-stamp", securityStamp);
+            return new SuccessResultModel<string>(securityStamp);
+        }
+
+        /// <summary>
+        /// Return true if current logged user is admin
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task<bool> IsCurrentUserAdmin()
+        {
+            var claims = GetRolesFromClaims().ToList();
+            return Task.FromResult(claims.Contains(GlobalResources.Roles.ADMINISTRATOR));
+        }
+
+        /// <summary>
+        /// Set token
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="tokenName"></param>
+        /// <param name="tokenValue"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SetTokenAsync(Guid userId, string loginProvider, string tokenName, string tokenValue)
+        {
+            var userResult = await FindUserByIdAsync(userId);
+            if (!userResult.IsSuccess) return userResult.ToBase();
+            return await SetTokenAsync(userResult.Result, loginProvider, tokenName, tokenValue);
+        }
+
+        /// <summary>
+        /// Set token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="loginProvider"></param>
+        /// <param name="tokenName"></param>
+        /// <param name="tokenValue"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SetTokenAsync(GearUser user, string loginProvider, string tokenName, string tokenValue)
+        {
+            Arg.NotNull(user, "User cannot be null");
+            var setTokenResult = await UserManager
+                .SetAuthenticationTokenAsync(user, loginProvider, tokenName, tokenValue);
+
+            if (!setTokenResult.Succeeded)
+            {
+                return setTokenResult.ToResultModel();
+            }
+            return new SuccessResultModel();
         }
 
         #region Helpers

@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.0.2" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.0.4" />
   </ItemGroup>
 
   <ItemGroup>

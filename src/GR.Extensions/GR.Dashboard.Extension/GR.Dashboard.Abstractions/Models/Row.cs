@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using GR.Core;
 using GR.Dashboard.Abstractions.Models.RowWidgets;
 
@@ -7,7 +8,7 @@ namespace GR.Dashboard.Abstractions.Models
 {
     public class Row : BaseModel
     {
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Row order
@@ -18,15 +19,16 @@ namespace GR.Dashboard.Abstractions.Models
         /// Ref to dashboard
         /// </summary>
         public virtual DashBoard DashBoard { get; set; }
+        [Required]
         public virtual Guid DashboardId { get; set; }
 
         /// <summary>
         /// Get widget html bodies
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<(Widget, string, WidgetUISettings)> GetWidgetBodies()
+        public IEnumerable<(Widget, string, WidgetUiSettings)> GetWidgetBodies()
         {
-            var widgets = new (Widget, string, WidgetUISettings)[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
+            var widgets = new (Widget, string, WidgetUiSettings)[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
             foreach (var widget in CustomWidgets)
             {
                 widgets[widget.Order] = (widget.CustomWidget, widget.CustomWidget.Render(), widget);

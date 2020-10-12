@@ -5,16 +5,15 @@ using FluentValidation;
 using GR.Core.Extensions;
 using GR.IdentityDocuments.Abstractions;
 using GR.IdentityDocuments.Abstractions.ViewModels;
-using Microsoft.Extensions.Localization;
 
 namespace GR.IdentityDocuments.Validators
 {
     public class UploadIdentityDocumentViewModelValidator : AbstractValidator<UploadIdentityDocumentViewModel>
     {
-        public UploadIdentityDocumentViewModelValidator(IEnumerable<IDocumentType> documentTypes, IStringLocalizer localizer)
+        public UploadIdentityDocumentViewModelValidator(IEnumerable<IDocumentType> documentTypes)
         {
             var availableDocTypes = documentTypes.Select(x => x.Id);
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.Stop;
 
             RuleFor(x => x.Type)
                 .NotNull()

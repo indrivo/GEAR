@@ -33,8 +33,8 @@ namespace GR.Localization.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(AddLocalizationModule));
 
-            services.AddTransient<ILocalizationService, TService>();
-            services.AddTransient<IStringLocalizer, TStringLocalizer>();
+            services.AddScoped<ILocalizationService, TService>();
+            services.AddScoped<IStringLocalizer, TStringLocalizer>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession(opts =>
             {
@@ -57,11 +57,10 @@ namespace GR.Localization.Abstractions.Extensions
         public static IServiceCollection RegisterTranslationService<TExternalTranslationProvider>(this IServiceCollection services, IConfigurationSection section)
             where TExternalTranslationProvider : class, IExternalTranslationProvider
         {
-            services.AddTransient<IExternalTranslationProvider, TExternalTranslationProvider>();
+            services.AddScoped<IExternalTranslationProvider, TExternalTranslationProvider>();
             services.Configure<LocalizationProviderSettings>(section);
             return services;
         }
-
 
         /// <summary>
         /// Add country service
@@ -72,7 +71,7 @@ namespace GR.Localization.Abstractions.Extensions
         public static IServiceCollection AddCountryModule<TCountryService>(this IServiceCollection services)
             where TCountryService : class, ICountryService
         {
-            services.AddGearTransient<ICountryService, TCountryService>();
+            services.AddGearScoped<ICountryService, TCountryService>();
             return services;
         }
 
@@ -86,7 +85,7 @@ namespace GR.Localization.Abstractions.Extensions
         public static IServiceCollection AddCountryModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TContext : DbContext, ICountryContext
         {
-            services.AddTransient<ICountryContext, TContext>();
+            services.AddScoped<ICountryContext, TContext>();
             services.AddDbContext<TContext>(options);
             services.RegisterAuditFor<TContext>("Countries module");
             SystemEvents.Database.OnAllMigrate += (sender, args) =>
