@@ -1,6 +1,6 @@
 # Calendar Module
 
-Calendar is a module for the GEAR framework that allows the creation of events, inviting people to events within an organization. There is a nice interface like the Outlook application. It is possible to synchronize with providers such as Google and Outlook
+Calendar is a module that allows the creation of events, inviting people to events within an organization. There is a nice interface like the Outlook application. It is possible to synchronize with providers such as Google and Outlook
 
 ### Calendar Abstractions
 ###### Command line 
